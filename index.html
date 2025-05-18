@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zona Atletismo - Eventos Deportivos</title>
+  <link rel="icon" type="image/png" href="images/flavicon.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #ccc;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+    }
+
+    header img {
+      width: 250px;
+      max-width: 90%;
+    }
+
+    header h2 {
+      margin-top: 10px;
+      font-size: 1.5em;
+      color: #333;
+    }
+
+    .eventos {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      padding: 40px 20px;
+    }
+
+    .evento {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      overflow: hidden;
+      width: 100%;
+      max-width: 500px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .evento:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .evento img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity 0.3s;
+    }
+
+    .evento .info {
+      padding: 20px;
+    }
+
+    .evento .fecha {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsivo */
+    @media (max-width: 600px) {
+      header h2 {
+        font-size: 1.2em;
+      }
+
+      .evento .info {
+        padding: 15px;
+      }
+
+      .evento .fecha, .evento .descripcion {
+        font-size: 0.95em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="images/zona_atletismo.png" alt="Zona Atletismo Logo">
+    <h2>Eventos Deportivos</h2>
+  </header>
+
+  <section class="eventos">
+    <!-- Evento 1 -->
+    <div class="evento">
+      <a href="https://forms.gle/BjArSM2qqEe9W6yH9" target="_blank">
+        <img src="images/evento1_flyer.png" alt="Flyer Evento 1" 
+             onmouseover="this.src='images/evento1_hover.png'" 
+             onmouseout="this.src='images/evento1_flyer.png'">
+      </a>
+      <div class="info">
+        <div class="fecha">Fecha: 06 de Julio 2025</div>
+        <div class="descripcion">Duatlon Rural La Vanguardia Santa Fe Argentina. 3k.22k.3k. Categorías para todas las edades.</div>
+      </div>
+    </div>
+
+    <!-- Evento 2 -->
+    <div class="evento">
+      <a href="https://forms.gle/toCZYNETMfN4ALqDA" target="_blank">
+        <img src="images/evento2_flyer.png" alt="Flyer Evento 2" 
+             onmouseover="this.src='images/evento2_hover.png'" 
+             onmouseout="this.src='images/evento2_flyer.png'">
+      </a>
+      <div class="info">
+        <div class="fecha">Fecha: 20 de Julio 2025</div>
+        <div class="descripcion">Tercera Edición "THEOBALD CORRE" - Club Recreativo Theobald. Premiación y sorpresas.</div>
+      </div>
+    </div>
+
+    <!-- Evento 3 -->
+    <div class="evento">
+      <a href="https://forms.gle/qTXrPYsnRW6zvqkN7" target="_blank">
+        <img src="images/evento3_flyer.png" alt="Flyer Evento 3" 
+             onmouseover="this.src='images/evento3_hover.png'" 
+             onmouseout="this.src='images/evento3_flyer.png'">
+      </a>
+      <div class="info">
+        <div class="fecha">Fecha: 31 de Agosto 2025</div>
+        <div class="descripcion">Tercera Edición "La Vanguardia Corre". Ideal para quienes buscan un nuevo desafío físico y paisajístico.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Zona Atletismo - Todos los derechos reservados</p>
+    <p>
+      <a href="mailto:zonaatletismo@gmail.com">zonaatletismo@gmail.com</a> |
+      <a href="https://www.instagram.com/zonaatletismo" target="_blank">Instagram</a>
+    </p>
+  </footer>
+</body>
+</html>
