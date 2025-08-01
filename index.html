@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zona Atletismo - Eventos Deportivos</title>
-  <link rel="icon" type="image/png" href="images/flavicon.png">
+  <link rel="icon" type="image/png" href="images/flavicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Montserrat', sans-serif;
     }
 
     body {
-      background-color: #2c2c2c;
+      background: linear-gradient(to bottom right, #1f1f1f, #2c2c2c);
+      color: #fff;
       animation: fadeIn 1s ease-in-out;
     }
 
@@ -30,31 +33,32 @@
 
     header h2 {
       margin-top: 10px;
-      font-size: 1.5em;
-      color: #fff;
+      font-size: 2em;
+      font-weight: 600;
+      color: #ffae00;
+      letter-spacing: 1px;
     }
 
     .eventos {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 30px;
       padding: 40px 20px;
     }
 
     .evento {
       background: #fff;
+      color: #000;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       overflow: hidden;
-      width: 100%;
-      max-width: 500px;
       transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
     }
 
     .evento:hover {
       transform: scale(1.03);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      box-shadow: 0 12px 24px rgba(255, 174, 0, 0.3);
     }
 
     .evento img {
@@ -71,6 +75,55 @@
     .evento .fecha {
       font-weight: bold;
       margin-bottom: 10px;
+      color: #ff7b00;
+    }
+
+    .evento .descripcion {
+      font-size: 0.95em;
+    }
+
+    .evento a.boton {
+      display: inline-block;
+      margin: 15px 20px 20px;
+      padding: 10px 20px;
+      background-color: #ffae00;
+      color: #000;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .evento a.boton:hover {
+      background-color: #ffc94a;
+    }
+
+    /* Estilos para eventos pasados */
+    .evento.pasado {
+      opacity: 0.6;
+      transform: scale(0.95);
+      filter: grayscale(100%);
+      pointer-events: none;
+    }
+
+    .evento.pasado::after {
+      content: "EVENTO FINALIZADO";
+      position: absolute;
+      top: 10px;
+      right: -30px;
+      background: #ff0000cc;
+      color: white;
+      padding: 4px 10px;
+      font-size: 0.8em;
+      font-weight: bold;
+      transform: rotate(15deg);
+      border-radius: 5px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    }
+
+    .evento.pasado:hover {
+      transform: scale(0.95);
+      box-shadow: none;
     }
 
     footer {
@@ -98,7 +151,7 @@
 
     @media (max-width: 600px) {
       header h2 {
-        font-size: 1.2em;
+        font-size: 1.5em;
       }
 
       .evento .info {
@@ -108,78 +161,75 @@
       .evento .fecha, .evento .descripcion {
         font-size: 0.95em;
       }
+
+      .evento a.boton {
+        margin: 10px 15px;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="images/zona_atletismo.png" alt="Zona Atletismo Logo">
+    <img src="images/zona_atletismo.png" alt="Zona Atletismo Logo" />
     <h2>Eventos Deportivos</h2>
   </header>
 
   <section class="eventos">
-    <!-- Evento 1 -->
-    <div class="evento">
-      <a href="https://forms.gle/BjArSM2qqEe9W6yH9" target="_blank">
-        <img src="images/evento1_flyer.png" alt="Flyer Evento 1" 
-             onmouseover="this.src='images/evento1_hover.png'" 
-             onmouseout="this.src='images/evento1_flyer.png'">
+    <!-- Evento 1 (Pasado) -->
+    <div class="evento pasado">
+      <a href="#">
+        <img src="images/evento1_flyer.png" alt="Flyer Evento 1" />
       </a>
       <div class="info">
-        <div class="fecha">Fecha: 06 de Julio 2025</div>
+        <div class="fecha">06 de Julio 2025</div>
         <div class="descripcion">Duatlon Rural La Vanguardia Santa Fe Argentina. 3k.22k.3k. Categorías para todas las edades.</div>
       </div>
     </div>
 
-    <!-- Evento 2 -->
-    <div class="evento">
-      <a href="https://forms.gle/toCZYNETMfN4ALqDA" target="_blank">
-        <img src="images/evento2_flyer.png" alt="Flyer Evento 2" 
-             onmouseover="this.src='images/evento2_hover.png'" 
-             onmouseout="this.src='images/evento2_flyer.png'">
+    <!-- Evento 2 (Pasado) -->
+    <div class="evento pasado">
+      <a href="#">
+        <img src="images/evento2_flyer.png" alt="Flyer Evento 2" />
       </a>
       <div class="info">
-        <div class="fecha">Fecha: 20 de Julio 2025</div>
+        <div class="fecha">20 de Julio 2025</div>
         <div class="descripcion">Tercera Edición "THEOBALD CORRE" - Club Recreativo Theobald. Premiación y sorpresas.</div>
       </div>
     </div>
 
-    <!-- Evento 3 -->
+    <!-- Evento 3 (Próximo) -->
     <div class="evento">
       <a href="https://forms.gle/Ze4Gozp1ndgF6v949" target="_blank">
-        <img src="images/evento3_flyer.png" alt="Flyer Evento 3" 
-             onmouseover="this.src='images/evento3_hover.png'" 
-             onmouseout="this.src='images/evento3_flyer.png'">
+        <img src="images/evento3_flyer.png" alt="Flyer Evento 3" />
       </a>
       <div class="info">
-        <div class="fecha">Fecha: 31 de Agosto 2025</div>
+        <div class="fecha">31 de Agosto 2025</div>
         <div class="descripcion">Tercera Edición "La Vanguardia Corre". Ideal para quienes buscan un nuevo desafío físico y paisajístico.</div>
+        <a class="boton" href="https://forms.gle/Ze4Gozp1ndgF6v949" target="_blank">Inscribirme</a>
       </div>
     </div>
 
-    <!-- Evento 4 -->
+    <!-- Evento 4 (Próximo) -->
     <div class="evento">
       <a href="https://forms.gle/EnlaceProximoEvento4" target="_blank">
-        <img src="images/evento4_flyer.png" alt="Flyer Evento 4" 
-             onmouseover="this.src='images/evento4_hover.png'" 
-             onmouseout="this.src='images/evento4_flyer.png'">
+        <img src="images/evento4_flyer.png" alt="Flyer Evento 4" />
       </a>
       <div class="info">
-        <div class="fecha">Fecha: Domingo 14 de Septiembre 2025</div>
+        <div class="fecha">Domingo 14 de Septiembre 2025</div>
         <div class="descripcion">Jornada por la salud y maratón "re-CORRÉ Soldini". Plaza Domingo Arán - 10k, 5k, caminata y kids.</div>
+        <a class="boton" href="https://forms.gle/EnlaceProximoEvento4" target="_blank">Inscribirme</a>
       </div>
     </div>
 
-    <!-- Evento 5 -->
+    <!-- Evento 5 (Próximo) -->
     <div class="evento">
       <a href="https://forms.gle/a7Mg7nrNhBxVZEoK6" target="_blank">
-        <img src="images/evento5_flyer.png" alt="Flyer Evento 5" 
-             onmouseover="this.src='images/evento5_hover.png'" 
-             onmouseout="this.src='images/evento5_flyer.png'">
+        <img src="images/evento5_flyer.png" alt="Flyer Evento 5" />
       </a>
       <div class="info">
-        <div class="fecha">Fecha: 28 de Septiembre 2025</div>
+        <div class="fecha">28 de Septiembre 2025</div>
         <div class="descripcion">1° Maratón Inclusiva Familiar - Polideportivo de Funes. Distancias: 2k, 4k y 8k. Evento para todas las edades y capacidades.</div>
+        <a class="boton" href="https://forms.gle/a7Mg7nrNhBxVZEoK6" target="_blank">Inscribirme</a>
       </div>
     </div>
   </section>
@@ -187,8 +237,8 @@
   <footer>
     <p>© 2025 Zona Atletismo - Todos los derechos reservados</p>
     <p>
-      <a href="mailto:charly.zonaatletismo@gmail.com">charly.zonaatletismo@gmail.com</a> |
-      <a href="https://www.instagram.com/zonaatletismo" target="_blank">Instagram</a>
+      <a href="mailto:charly.zonaatletismo@gmail.com"><i class="fas fa-envelope"></i> Email</a> |
+      <a href="https://www.instagram.com/zonaatletismo" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
     </p>
   </footer>
 </body>
