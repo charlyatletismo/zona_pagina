@@ -1,56 +1,113 @@
-<section class="eventos">
-  <!-- Evento 1 (Pasado) -->
-  <div class="evento pasado">
-    <a href="#">
-      <img src="images/evento1_flyer.png" alt="Flyer Evento 1" />
-    </a>
-    <div class="info">
-      <div class="fecha">06 de Julio 2025</div>
-      <div class="descripcion">Duatlon Rural La Vanguardia Santa Fe Argentina. 3k.22k.3k. Categorías para todas las edades.</div>
-    </div>
-  </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zona Atletismo - Novedades 2026</title>
 
-  <!-- Evento 2 (Pasado) -->
-  <div class="evento pasado">
-    <a href="#">
-      <img src="images/evento2_flyer.png" alt="Flyer Evento 2" />
-    </a>
-    <div class="info">
-      <div class="fecha">20 de Julio 2025</div>
-      <div class="descripcion">Tercera Edición "THEOBALD CORRE" - Club Recreativo Theobald. Premiación y sorpresas.</div>
-    </div>
-  </div>
+  <style>
+    :root{
+      --negro: #000000;
+      --rojo: #FA4D25;
+      --blanco: #ffffff;
+    }
 
-  <!-- Evento 3 (Finalizado) -->
-  <div class="evento pasado">
-    <a href="#">
-      <img src="images/evento3_flyer.png" alt="Flyer Evento 3" />
-    </a>
-    <div class="info">
-      <div class="fecha">19 de Octubre 2025</div>
-      <div class="descripcion">Tercera Edición "La Vanguardia Corre". Ideal para quienes buscan un nuevo desafío físico y paisajístico.</div>
-    </div>
-  </div>
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(145deg, #000000, #1a0603, #FA4D25);
+      background-size: 180% 180%;
+      animation: bgMove 10s ease-in-out infinite;
+      color: var(--blanco);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+      text-align:center;
+    }
 
-  <!-- Evento 4 (Finalizado) -->
-  <div class="evento pasado">
-    <a href="#">
-      <img src="images/evento4_flyer.png" alt="Flyer Evento 4" />
-    </a>
-    <div class="info">
-      <div class="fecha">Domingo 14 de Septiembre 2025</div>
-      <div class="descripcion">Jornada por la salud y maratón "re-CORRÉ Soldini". Plaza Domingo Arán - 10k, 5k, caminata y kids.</div>
-    </div>
-  </div>
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-  <!-- Evento 5 (Finalizado) -->
-  <div class="evento pasado">
-    <a href="#">
-      <img src="images/evento5_flyer.png" alt="Flyer Evento 5" />
+    .container{
+      width:100%;
+      max-width:650px;
+      padding:20px;
+      animation: fadeIn 1.3s ease forwards;
+      opacity:0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(20px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    img.logo{
+      width: clamp(180px, 40vw, 260px);
+      margin-bottom: 20px;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0px); }
+    }
+
+    h1{
+      font-size: clamp(32px, 6vw, 52px);
+      margin-bottom:10px;
+      color: var(--rojo);
+      letter-spacing:1px;
+    }
+
+    p{
+      font-size: clamp(16px, 4vw, 22px);
+      margin: 10px 0;
+    }
+
+    a.whatsapp{
+      display:inline-block;
+      margin-top:25px;
+      padding: clamp(12px, 3vw, 16px) clamp(18px, 4vw, 26px);
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight:bold;
+      background: var(--rojo);
+      color: var(--negro);
+      border-radius:10px;
+      text-decoration:none;
+      transition:0.2s;
+      animation: fadeIn 1.8s ease forwards;
+      opacity:0;
+    }
+
+    a.whatsapp:hover{
+      background:#ff6039;
+      transform: translateY(-3px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    
+    <!-- LOGO -->
+    <img src="/mnt/data/Zona-Atletismo-Logo-1.1.png" alt="Zona Atletismo" class="logo">
+
+    <h1>ZONA ATLETISMO</h1>
+
+    <p><strong>Pronto se vienen las Novedades 2026</strong></p>
+    <p>Mantente atento a los próximos eventos y competencias.</p>
+
+    <a class="whatsapp" 
+       href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20info%20de%20las%20novedades%202026" 
+       target="_blank">
+      Escribinos por WhatsApp
     </a>
-    <div class="info">
-      <div class="fecha">28 de Septiembre 2025</div>
-      <div class="descripcion">1° Maratón Inclusiva Familiar - Polideportivo de Funes. Distancias: 2k, 4k y 8k. Evento para todas las edades y capacidades.</div>
-    </div>
   </div>
-</section>
+</body>
+</html>
