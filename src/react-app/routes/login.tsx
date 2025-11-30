@@ -194,7 +194,7 @@ function RouteComponent() {
               required={codeSent} />
           </div>
         }
-        <Button type="submit" className='mt-3'>{codeSent ? "Verificar código" : "Iniciar sesión"}</Button>
+        <Button type="submit" className='mt-3'>{codeSent ? "Verificar código" : register ? "Registrarse" : "Iniciar sesión"}</Button>
         {(codeSent || register) &&
           <Button variant="outline" className="ml-2" onClick={() => {
             reset();
@@ -214,7 +214,7 @@ function RouteComponent() {
               if (res.ok) {
 
               } else {
-                alert('Error al reenviar el código');
+                setError('Error al enviar un código nuevo. Por favor, inténtelo de nuevo.');
               }
             });
             scheduleResend(60);
