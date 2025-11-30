@@ -10,7 +10,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "zona-atletismo-webapp",
 	"compatibility_date": "2025-10-08",
-	"main": "./workers/app.ts",
+	"main": "./src/workers/app.ts",
 	"vars": {
 		"VALUE_FROM_CLOUDFLARE": "Hello from Hono/CF"
 	},
