@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { Button } from '@/components/ui/button';
+import * as roles from '@/lib/roles';
 
 
 const navClass = 'border-white focus:bg-transparent border-2 hover:border-accent [&.active]:border-accent';
@@ -47,7 +47,7 @@ const RootLayout = () => (
               </NavigationMenuItem>
             )}
 
-            {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('USER_ROLE') === 'runner' && (
+            {localStorage.getItem('JWT_TOKEN') && roles.R_RUNNER_STATS.includes(localStorage.getItem('USER_ROLE') || '') && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                   <Link to="/stats" className={navClass}>Estadísticas</Link>
@@ -58,23 +58,14 @@ const RootLayout = () => (
             {localStorage.getItem('JWT_TOKEN') && (localStorage.getItem('USER_ROLES')?.split(",").length || 0) > 1 && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                  <Button onClick={() => {
+                  <a onClick={() => {
                     // switch to next role
-                    let flag = false;
-                    localStorage.getItem('USER_ROLES')?.split(",").forEach(role => {
-                      if (role === localStorage.getItem('USER_ROLE')) {
-                        flag = true;
-                      } else if (flag) {
-                        flag = false;
-                        localStorage.setItem('USER_ROLE', role);
-                        window.location.reload();
-                      }
-                    if (!flag) {
-                      localStorage.setItem('USER_ROLE', localStorage.getItem('USER_ROLES')?.split(",")[0] || '');
-                      window.location.reload();
-                    }
-                  });
-                }} className={navClass}>Rol: { localStorage.getItem('USER_ROLE') }</Button>
+                    const roles = localStorage.getItem('USER_ROLES')?.split(",") || [];
+                    const i = roles.indexOf(localStorage.getItem('USER_ROLE') || '') ;
+                    const nextRole = roles[(i + 1) % roles.length];
+                    localStorage.setItem('USER_ROLE', nextRole);
+                    window.location.reload();
+                }} className={navClass}>Rol: { localStorage.getItem('USER_ROLE') }</a>
               </NavigationMenuLink>
             </NavigationMenuItem>
             )}
@@ -82,12 +73,18 @@ const RootLayout = () => (
             <NavigationMenuItem>
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                 {localStorage.getItem('JWT_TOKEN') ? (
-                  <Link to="/logout" className={navClass}>
+                  <a onClick={() => {
+                    localStorage.setItem('JWT_TOKEN', '');
+                    localStorage.setItem('USER_ROLES', '');
+                    localStorage.setItem('USER_ID', '');
+                    localStorage.setItem('USER_ROLE', '');
+                    window.location.href = '/';
+                  }} className={navClass}>
                       <LogOut size={16} />
                     {/* <div className='flex items-center gap-1'>
                       Cerrar sesión
                     </div> */}
-                  </Link>
+                  </a>
                 ) : (
                   <Link to="/login" className={navClass}>
                     <LogIn size={16} />
