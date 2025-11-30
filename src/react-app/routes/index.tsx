@@ -1,15 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button } from "@/components/ui/button"
+import React from 'react'
 
 export const Route = createFileRoute('/')({
   component: Index,
 })
 
 function Index() {
+  const [events, setEvents] = React.useState<Record<string, any[]>>({})
+  React.useEffect(() => {
+    fetch('/api/events')
+      .then((res) => res.json())
+      .then((data) => setEvents(data))
+  }, [])
+
   return (
     <div className="p-2">
-      <h3>Welcome Home!</h3>
-      <Button>Click me</Button>
+      <div className="mt-4">Eventos: {JSON.stringify(events)}
+      </div>
     </div>
   )
 }
