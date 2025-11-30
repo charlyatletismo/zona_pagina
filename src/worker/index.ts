@@ -10,6 +10,8 @@ import { eventsRoute } from "./events";
 export interface Env {
     DB: D1Database;
     JWT_SECRET: string;
+    GRAPH_API_TOKEN: string;
+    GRAPH_API_PHONE_NUMBER_ID: string;
 }
 type Variables = JwtVariables
 

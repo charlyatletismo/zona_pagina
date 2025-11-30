@@ -48,7 +48,7 @@ function RouteComponent() {
           // verify code
           fetch('/api/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ "phone": `+${countryCode}9${phone}`, "code": code }),
+            body: JSON.stringify({ "phone": `${countryCode}9${phone}`, "code": code }),
             headers: {
               'Content-Type': 'application/json'
             }
@@ -71,7 +71,7 @@ function RouteComponent() {
           // register user
           fetch('/api/auth/register', {
             method: 'POST',
-            body: JSON.stringify({ "phone": `+${countryCode}9${phone}`, "user_id": userId }),
+            body: JSON.stringify({ "phone": `${countryCode}9${phone}`, "user_id": userId }),
             headers: {
               'Content-Type': 'application/json'
             }
@@ -92,7 +92,7 @@ function RouteComponent() {
         // send code
         fetch('/api/auth/sendCode', {
           method: 'POST',
-          body: JSON.stringify({ "phone": `+${countryCode}9${phone}` }),
+          body: JSON.stringify({ "phone": `${countryCode}9${phone}` }),
           headers: {
             'Content-Type': 'application/json'
           }
@@ -100,8 +100,10 @@ function RouteComponent() {
           if (res.ok) {
             setError('');
             setCodeSent(true);
-          } else {
+          } else if (res.status === 400) {
             setRegister(true);
+          } else {
+            setError('Error al enviar el código. Por favor, inténtelo de nuevo.');
           }
         });
         scheduleResend(60);
@@ -191,7 +193,7 @@ function RouteComponent() {
               required={codeSent} />
           </div>
         }
-        <Button type="submit">{codeSent ? "Verificar código" : "Iniciar sesión"}</Button>
+        <Button type="submit" className='mt-3'>{codeSent ? "Verificar código" : "Iniciar sesión"}</Button>
         {(codeSent || register) &&
           <Button variant="outline" className="ml-2" onClick={() => {
             reset();

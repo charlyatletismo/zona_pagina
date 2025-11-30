@@ -6,6 +6,29 @@ import { eq, or } from 'drizzle-orm';
 import { users } from './db/schema'
 
 
+const genCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+const sendCodeViaWhatsapp = async (env: Env, phone: string, code: string) => {
+  const body = {
+      "messaging_product": "whatsapp",
+      "to": phone,
+      "text": {"body": `Su código de verificación es: ${code}` }
+    }
+    let response : any;
+    await fetch(`https://graph.facebook.com/v21.0/${env.GRAPH_API_PHONE_NUMBER_ID}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.GRAPH_API_TOKEN}`
+      },
+      body: JSON.stringify(body)
+    }).then(async res => response = await res.json());
+  return response;
+}
+
+
 export const authRoute = new Hono<{ Bindings: Env }>()
   .post("/sendCode", async (c) => {
     const { phone } = await c.req.json();
@@ -22,13 +45,16 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       return c.json({ error: "User does not exist" }, 400);
     }
     // create temp 6-digit code
-    const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const tempCode = genCode();
     await db.update(users)
       .set({ temp_code: tempCode })
       .where(eq(users.id, existingUser[0].id))
       .run();
-    // In real app, send code via SMS
-    console.log(`Temp code for ${phone}: ${tempCode}`);
+    const response = await sendCodeViaWhatsapp(c.env, phone, tempCode);
+    if (response.error) {
+      console.error(JSON.stringify(response));
+      return c.json({ error: "Failed to send message" }, 500);
+    }
     return c.json({ message: "Temp code sent. Check your Whatsapp" });
   })
   .post("/login", async (c) => {
@@ -83,15 +109,18 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       return c.json({ error: "User already exists" }, 400);
     }
     // create user with temp 6-digit code
-    const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const tempCode = genCode();
     await db.insert(users).values({
       id: user_id,
       phone,
       temp_code: tempCode,
       roles: 'runner',
     }).run();
-    // In real app, send code via SMS
-    console.log(`Temp code for ${phone}: ${tempCode}`);
+    const response = await sendCodeViaWhatsapp(c.env, phone, tempCode);
+    if (response.error) {
+      console.error(JSON.stringify(response));
+      return c.json({ error: "Failed to send message" }, 500);
+    }
+
     return c.json({ message: "User register began. Check your Whatsapp" });
   });
-
