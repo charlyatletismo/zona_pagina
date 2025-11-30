@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import React from 'react'
 
 
@@ -17,6 +18,7 @@ function RouteComponent() {
   const [resendAvailable, setResendAvailable] = React.useState(false);
   const [register, setRegister] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [waiting, setWaiting] = React.useState(false);
 
   const reset = () => {
     setCodeSent(false);
@@ -42,7 +44,9 @@ function RouteComponent() {
         : <h1 className="text-2xl font-bold mb-4">Iniciar Sesión</h1>
       }
       {error && <div className="mb-4 text-red-500">{error}</div>}
+      {waiting && <div className='flex gap-2 my-4'><Spinner className='my-auto' /><div className="text-gray-500">Por favor, espere...</div></div>}
       <form method='POST' onSubmit={(event) => {
+        setWaiting(true);
         setError('');
         event.preventDefault();
         if (codeSent) {
@@ -65,6 +69,7 @@ function RouteComponent() {
             } else {
               setError('Código incorrecto. Por favor, inténtelo de nuevo.');
             }
+            setWaiting(false);
           });
           return;
         }
@@ -87,6 +92,7 @@ function RouteComponent() {
                 setError(`Error al registrar el usuario. Por favor, inténtelo de nuevo. ${data.error}`);
               });
             }
+            setWaiting(false);
           });
           return;
         }
@@ -106,6 +112,7 @@ function RouteComponent() {
           } else {
             setError('Error al enviar el código. Por favor, inténtelo de nuevo.');
           }
+          setWaiting(false);
         });
         scheduleResend(60);
       }}>
