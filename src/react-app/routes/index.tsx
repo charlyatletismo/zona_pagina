@@ -8,7 +8,7 @@ export const Route = createFileRoute('/')({
 function Index() {
   const [events, setEvents] = React.useState<Record<string, any[]>>({})
   React.useEffect(() => {
-    fetch('/api/events')
+    fetch('/api/runningEnvents')
       .then((res) => res.json())
       .then((data) => setEvents(data))
   }, [])

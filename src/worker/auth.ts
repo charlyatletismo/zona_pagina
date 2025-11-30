@@ -14,7 +14,35 @@ const sendCodeViaWhatsapp = async (env: Env, phone: string, code: string) => {
   const body = {
       "messaging_product": "whatsapp",
       "to": phone,
-      "text": {"body": `Su código de verificación es: ${code}` }
+      "type": "template",
+      "template": {
+        "name": "verificar_otp",
+        "language": {
+          "code": "es"
+        },
+        "components": [
+          {
+            "type": "body",
+            "parameters": [
+              {
+                "type": "text",
+                "text": code
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "sub_type": "Url",
+            "index": "0",
+            "parameters": [
+              {
+                "type": "payload",
+                "payload": code
+              }
+            ]
+          }
+        ]
+      }
     }
     let response : any;
     await fetch(`https://graph.facebook.com/v21.0/${env.GRAPH_API_PHONE_NUMBER_ID}/messages`, {
@@ -52,7 +80,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       .run();
     const response = await sendCodeViaWhatsapp(c.env, phone, tempCode);
     if (response.error) {
-      console.error(JSON.stringify(response));
+      console.error("response", JSON.stringify(response));
       return c.json({ error: "Failed to send message" }, 500);
     }
     return c.json({ message: "Temp code sent. Check your Whatsapp" });
@@ -118,7 +146,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
     }).run();
     const response = await sendCodeViaWhatsapp(c.env, phone, tempCode);
     if (response.error) {
-      console.error(JSON.stringify(response));
+      console.error("response", JSON.stringify(response));
       return c.json({ error: "Failed to send message" }, 500);
     }
 

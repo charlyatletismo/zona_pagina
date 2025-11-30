@@ -5,7 +5,7 @@ import { lt, gte, desc } from 'drizzle-orm';
 import { events } from './db/schema'
 
 
-export const eventsRoute = new Hono<{ Bindings: Env }>()
+export const runningEventsRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const now = new Date();

@@ -4,7 +4,7 @@ import { cors } from "hono/cors";
 import { jwt } from 'hono/jwt'
 import type { JwtVariables } from 'hono/jwt'
 import { authRoute } from "./auth";
-import { eventsRoute } from "./events";
+import { runningEventsRoute } from "./runningEvents";
 
 
 export interface Env {
@@ -43,7 +43,7 @@ export default {
         })
 
         app.route('/api/auth', authRoute);
-        app.route('/api/events', eventsRoute);
+        app.route('/api/runningEvents', runningEventsRoute);
 
         return app.fetch(request, env, ctx);
     }

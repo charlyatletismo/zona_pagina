@@ -43,6 +43,7 @@ function RouteComponent() {
       }
       {error && <div className="mb-4 text-red-500">{error}</div>}
       <form method='POST' onSubmit={(event) => {
+        setError('');
         event.preventDefault();
         if (codeSent) {
           // verify code
