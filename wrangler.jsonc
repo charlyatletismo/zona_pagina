@@ -77,5 +77,12 @@
 		 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 		 */
 	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
-	"upload_source_maps": true
+	"upload_source_maps": true,
+  "d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "zona-atletismo-webapp-db",
+			"database_id": "759c55a4-e745-4f20-881e-54aa5f0e9267"
+		}
+	]
 }
