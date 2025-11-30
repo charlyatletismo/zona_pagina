@@ -13,6 +13,8 @@
 		"publish": true
 	},
 	"dependencies": {
+		"@radix-ui/react-navigation-menu": "^1.2.14",
+		"@radix-ui/react-slot": "^1.2.4",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/react-router": "^1.139.12",
 		"@tanstack/react-router-devtools": "^1.139.12",
