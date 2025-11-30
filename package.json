@@ -13,11 +13,13 @@
 		"publish": true
 	},
 	"dependencies": {
+		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/react-router": "^1.139.12",
 		"@tanstack/react-router-devtools": "^1.139.12",
 		"hono": "^4.10.7",
 		"react": "19.2.0",
-		"react-dom": "19.2.0"
+		"react-dom": "19.2.0",
+		"tailwindcss": "^4.1.17"
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "1.15.3",

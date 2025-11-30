@@ -6,9 +6,16 @@
 		{ "path": "./tsconfig.worker.json" }
 	],
 	"compilerOptions": {
+    "strict": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [
+				"./src/react-app/*"
+			]
+		},
 		"types": [
 			"./worker-configuration.d.ts",
 			"node"
 		]
-	}
+	},
 }
