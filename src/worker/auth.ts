@@ -88,7 +88,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       id: user_id,
       phone,
       temp_code: tempCode,
-      roles: 'user',
+      roles: 'runner',
     }).run();
     // In real app, send code via SMS
     console.log(`Temp code for ${phone}: ${tempCode}`);
