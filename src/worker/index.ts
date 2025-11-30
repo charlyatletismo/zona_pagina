@@ -29,7 +29,7 @@ export default {
                 console.log("Skipping auth for login");
                 return next();
             }
-            if (c.req.path === '/api/events' && c.req.method === 'GET') {
+            if (c.req.path === '/api/runningEvents' && c.req.method === 'GET') {
                 console.log("Skipping auth for public events");
                 return next();
             }
