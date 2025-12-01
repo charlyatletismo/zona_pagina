@@ -105,17 +105,19 @@ const RootLayout = () => (
     <footer className="
         flex flex-col justify-center 
         items-center bg-accent
-        mt-auto py-7
+        mt-auto py-5
         xl:px-40 md:px-17 sm:px-10 px-5">
-        <p className="text-gray-600">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
-        <a href="https://www.instagram.com/zonaatletismo/" className='flex my-3 text-gray-600 hover:text-pink-400 fill-gray-600 hover:fill-pink-400' target="_blank" rel="noopener noreferrer">
-          <Instagram className="h-6 w-6" />
-          <span className="ml-2">Seguinos en Instagram</span>
-        </a>
-        <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex text-gray-600 hover:text-green-600 fill-gray-600 hover:fill-green-600' target="_blank" rel="noopener noreferrer">
-          <Whatsapp className="h-6 w-6" />
-          <span className="ml-2">Contactanos por WhatsApp</span>
-        </a>
+        <p className="text-gray-600 my-5">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
+        <div className='flex flex-col sm:flex-row items-center gap-5 my-5'>
+          <a href="https://www.instagram.com/zonaatletismo/" className='flex text-gray-600 hover:text-pink-400 fill-gray-600 hover:fill-pink-400' target="_blank" rel="noopener noreferrer">
+            <Instagram className="h-6 w-6" />
+            <span className="ml-2">Seguinos en Instagram</span>
+          </a>
+          <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex text-gray-600 hover:text-green-600 fill-gray-600 hover:fill-green-600' target="_blank" rel="noopener noreferrer">
+            <Whatsapp className="h-6 w-6" />
+            <span className="ml-2">Contactanos por WhatsApp</span>
+          </a>
+        </div>
         {/* <a className="flex items-center justify-center gap-2 text-gray-600 hover:text-black" href="https://goran.com.ar/" target="_blank" rel="noopener noreferrer">
           <Laptop size={22} className='pt-1' />
           <span className="py-2">Powered by gorandp</span>
