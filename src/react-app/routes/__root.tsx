@@ -14,17 +14,22 @@ import {
 import * as roles from '@/lib/roles';
 // import { Code2, Laptop } from 'lucide-react';
 
-const navClass = 'border-white focus:bg-transparent border-2 hover:border-accent [&.active]:border-accent';
+const navClass = 'bg-transparent text-gray-600 hover:text-primary hover:bg-primary/5 [&.active]:text-primary [&.active]:bg-primary/10 font-medium transition-colors';
 
 const RootLayout = () => (
   <div className="flex flex-col min-h-screen">
-    <div className="flex flex-wrap gap-2 justify-center sm:justify-between items-center px-10 mb-2">
-      <div>
-        <Link to="/">
-          <img src={logo_zona} alt="Zona Atletismo Logo" className="max-w-xs h-20 mr-2 py-3" />
-        </Link>
+    <div className="relative bg-primary/5">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-10 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary rounded-full blur-3xl"></div>
       </div>
-      <div className='flex'>
+
+      <div className="relative z-10 flex flex-wrap gap-2 justify-center sm:justify-between items-center px-10">
+        <div>
+          <Link to="/">
+            <img src={logo_zona} alt="Zona Atletismo Logo" className="max-w-xs h-20 mr-2 py-3" />
+          </Link>
+        </div>
+        <div className='flex'>
         <NavigationMenu>
           <NavigationMenuList className="flex-wrap">
             <NavigationMenuItem>
@@ -100,6 +105,7 @@ const RootLayout = () => (
           </NavigationMenuList>
         </NavigationMenu>
       </div>
+    </div>
     </div>
     <Outlet />
     <footer className="
