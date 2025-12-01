@@ -1,6 +1,8 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import logo_zona from "@/assets/logo.png";
+import { Instagram } from '@/components/icons/instagram';
+import { Whatsapp } from '@/components/icons/whatsapp';
 import { LogIn, LogOut } from 'lucide-react';
 import {
   NavigationMenu,
@@ -10,12 +12,12 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import * as roles from '@/lib/roles';
-
+// import { Code2, Laptop } from 'lucide-react';
 
 const navClass = 'border-white focus:bg-transparent border-2 hover:border-accent [&.active]:border-accent';
 
 const RootLayout = () => (
-  <>
+  <div className="flex flex-col min-h-screen">
     <div className="flex flex-wrap gap-2 justify-center sm:justify-between items-center px-10 mb-2">
       <div>
         <Link to="/">
@@ -100,8 +102,28 @@ const RootLayout = () => (
       </div>
     </div>
     <Outlet />
+    <footer className="
+        flex flex-col justify-center 
+        items-center bg-accent
+        mt-auto py-7
+        xl:px-40 md:px-17 sm:px-10 px-5">
+        <p className="text-gray-600">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
+        <a href="https://www.instagram.com/zonaatletismo/" className='flex my-3 text-gray-600 hover:text-pink-400 fill-gray-600 hover:fill-pink-400' target="_blank" rel="noopener noreferrer">
+          <Instagram className="h-6 w-6" />
+          <span className="ml-2">Seguinos en Instagram</span>
+        </a>
+        <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex text-gray-600 hover:text-green-600 fill-gray-600 hover:fill-green-600' target="_blank" rel="noopener noreferrer">
+          <Whatsapp className="h-6 w-6" />
+          <span className="ml-2">Contactanos por WhatsApp</span>
+        </a>
+        {/* <a className="flex items-center justify-center gap-2 text-gray-600 hover:text-black" href="https://goran.com.ar/" target="_blank" rel="noopener noreferrer">
+          <Laptop size={22} className='pt-1' />
+          <span className="py-2">Powered by gorandp</span>
+          <Code2 size={22} className='pt-1' />
+        </a> */}
+    </footer>
     <TanStackRouterDevtools />
-  </>
+  </div>
 )
 
 export const Route = createRootRoute({ component: RootLayout })
