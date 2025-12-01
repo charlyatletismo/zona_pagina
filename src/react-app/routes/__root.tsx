@@ -4,6 +4,8 @@ import logo_zona from "@/assets/logo.png";
 import { Instagram } from '@/components/icons/instagram';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { LogIn, LogOut } from 'lucide-react';
+// import { Sun, Moon } from 'lucide-react';
+// import React from 'react';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -16,7 +18,26 @@ import * as roles from '@/lib/roles';
 
 const navClass = 'bg-transparent text-gray-600 hover:text-primary hover:bg-primary/5 [&.active]:text-primary [&.active]:bg-primary/10 font-medium transition-colors';
 
-const RootLayout = () => (
+const RootLayout = () => {
+  // const [theme, setTheme] = React.useState(() => {
+  //   if (typeof window !== 'undefined') {
+  //     return localStorage.getItem('theme') || 'light'
+  //   }
+  //   return 'light'
+  // })
+
+  // React.useEffect(() => {
+  //   const root = window.document.documentElement
+  //   root.classList.remove('light', 'dark')
+  //   root.classList.add(theme)
+  //   localStorage.setItem('theme', theme)
+  // }, [theme])
+
+  // const toggleTheme = () => {
+  //   setTheme(theme === 'light' ? 'dark' : 'light')
+  // }
+
+  return (
   <div className="flex flex-col min-h-screen">
     <div className="relative bg-primary/5">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-10 pointer-events-none overflow-hidden">
@@ -76,6 +97,12 @@ const RootLayout = () => (
               </NavigationMenuLink>
             </NavigationMenuItem>
             )}
+
+            {/* <NavigationMenuItem>
+              <button onClick={toggleTheme} className={navClass + " px-3 py-2 rounded-md flex items-center cursor-pointer"}>
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+            </NavigationMenuItem> */}
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
@@ -137,6 +164,7 @@ const RootLayout = () => (
     </footer>
     <TanStackRouterDevtools />
   </div>
-)
+  )
+}
 
 export const Route = createRootRoute({ component: RootLayout })
