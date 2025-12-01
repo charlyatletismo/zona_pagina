@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { AlarmClockIcon, CameraIcon, PenToolIcon, Car, Accessibility, ChartArea, BikeIcon, BadgeCheckIcon } from 'lucide-react'
 import { CardGrid } from '../components/cardGrid'
 
@@ -83,11 +83,11 @@ function RouteComponent() {
 
     <div className='flex justify-center my-12'>
       <div className="relative inline-flex group">
-        <Link to="/services">
+        <a href="https://wa.me/5493400660640?text=Hola Zona Atletismo, me interesaría organizar un evento y quisiera un presupuesto" className='flex text-gray-600 hover:text-green-600 fill-gray-600 hover:fill-green-600' target="_blank" rel="noopener noreferrer">
           <div className="bg-white text-gray-900 group-hover:text-primary rounded-lg shadow-md border border-gray-200 group-hover:shadow-lg group-hover:border-primary transition-all duration-300 px-16 py-4 text-xl font-bold text-center">
             Solicitar presupuesto
           </div>
-        </Link>
+        </a>
         <div className="absolute top-0 right-0 -mt-1 -mr-1 flex size-3">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
           <span className="relative inline-flex size-3 rounded-full bg-primary"></span>
