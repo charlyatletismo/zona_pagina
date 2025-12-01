@@ -104,20 +104,25 @@ const RootLayout = () => (
     <Outlet />
     <footer className="
         flex flex-col justify-center 
-        items-center bg-accent
-        mt-auto py-5
-        xl:px-40 md:px-17 sm:px-10 px-5">
-        <p className="text-gray-600 my-5">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
-        <div className='flex flex-col sm:flex-row items-center gap-5 my-5'>
-          <a href="https://www.instagram.com/zonaatletismo/" className='flex text-gray-600 hover:text-pink-400 fill-gray-600 hover:fill-pink-400' target="_blank" rel="noopener noreferrer">
-            <Instagram className="h-6 w-6" />
-            <span className="ml-2">Seguinos en Instagram</span>
+        items-center bg-primary/5 border-t border-primary/10
+        mt-auto py-12
+        xl:px-40 md:px-17 sm:px-10 px-5 relative overflow-hidden">
+        
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-10 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary rounded-full blur-3xl"></div>
+        </div>
+
+        <div className='relative z-10 flex flex-col sm:flex-row items-center gap-8 my-6'>
+          <a href="https://www.instagram.com/zonaatletismo/" className='flex items-center text-gray-600 hover:text-primary transition-colors duration-300 group' target="_blank" rel="noopener noreferrer">
+            <Instagram className="h-6 w-6 group-hover:scale-110 transition-transform" />
+            <span className="ml-2 font-medium">Seguinos en Instagram</span>
           </a>
-          <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex text-gray-600 hover:text-green-600 fill-gray-600 hover:fill-green-600' target="_blank" rel="noopener noreferrer">
-            <Whatsapp className="h-6 w-6" />
-            <span className="ml-2">Contactanos por WhatsApp</span>
+          <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex items-center text-gray-600 hover:text-primary transition-colors duration-300 group' target="_blank" rel="noopener noreferrer">
+            <Whatsapp className="h-6 w-6 group-hover:scale-110 transition-transform" />
+            <span className="ml-2 font-medium">Contactanos por WhatsApp</span>
           </a>
         </div>
+        <p className="relative z-10 text-gray-500 text-sm">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
         {/* <a className="flex items-center justify-center gap-2 text-gray-600 hover:text-black" href="https://goran.com.ar/" target="_blank" rel="noopener noreferrer">
           <Laptop size={22} className='pt-1' />
           <span className="py-2">Powered by gorandp</span>
