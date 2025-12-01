@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
+import { User2 } from 'lucide-react'
 import React from 'react'
 
 
@@ -38,10 +39,25 @@ function RouteComponent() {
   }
 
   return (
-    <div className='max-w-xl mx-auto my-10 p-10'>
+    <div className="relative min-h-[80vh] flex items-center justify-center p-4">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl -z-10"></div>
+      
+      <div className='w-full max-w-md bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-8'>
       {register
-        ? <h1 className="text-2xl font-bold mb-4">Registrarse</h1>
-        : <h1 className="text-2xl font-bold mb-4">Iniciar Sesión</h1>
+        ? <div className="flex flex-col items-center mb-8">
+            <div className="p-3 bg-primary/10 rounded-full mb-4">
+              <User2 className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Crear cuenta</h1>
+            <p className="text-sm text-gray-500 mt-2 text-center">Ingresa tus datos para registrarte</p>
+          </div>
+        : <div className="flex flex-col items-center mb-8">
+            <div className="p-3 bg-primary/10 rounded-full mb-4">
+              <User2 className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Bienvenido</h1>
+            <p className="text-sm text-gray-500 mt-2 text-center">Ingresa tu teléfono para continuar</p>
+          </div>
       }
       {error && <div className="mb-4 text-red-500">{error}</div>}
       {waiting && <div className='flex gap-2 my-4'><Spinner className='my-auto' /><div className="text-gray-500">Por favor, espere...</div></div>}
@@ -228,6 +244,7 @@ function RouteComponent() {
           }} className="text-blue-500 underline">Enviar otro código</a></div>
         }
       </form>
+    </div>
     </div>
   )
 }
