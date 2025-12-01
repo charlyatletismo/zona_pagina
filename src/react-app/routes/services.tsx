@@ -24,7 +24,7 @@ function RouteComponent() {
           </span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Soluciones profesionales 
+          Soluciones profesionales para la organización y gestión de eventos deportivos.
         </p>
       </div>
     </div>
@@ -81,10 +81,10 @@ function RouteComponent() {
       </div>
     </div>
 
-    <div className='flex justify-center my-8'>
-      <div className="border-2 border-primary/30 hover:border-primary/30 hover:bg-primary/70 hover:text-white relative inline-flex rounded-md">
+    <div className='flex justify-center my-12'>
+      <div className="relative inline-flex group">
         <Link to="/services">
-          <div className="text-lg w-md md:w-2xl py-3 font-bold text-center">
+          <div className="bg-white text-gray-900 group-hover:text-primary rounded-lg shadow-md border border-gray-200 group-hover:shadow-lg group-hover:border-primary transition-all duration-300 px-16 py-4 text-xl font-bold text-center">
             Solicitar presupuesto
           </div>
         </Link>
