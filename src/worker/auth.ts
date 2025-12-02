@@ -10,7 +10,28 @@ const genCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-const sendCodeViaWhatsapp = async (env: Env, phone: string, code: string) => {
+// NOTE: Unused because whatsapp requires the user to have messaged the business first
+//   within the last X hours. Using template messages instead.
+// const sendCodeViaWhatsappService = async (env: Env, phone: string, code: string) => {
+//   const body = {
+//     "messaging_product": "whatsapp",
+//     "to": phone,
+//     "text": {"body": `Su código de verificación es: ${code}` }
+//   }
+//   let response : any;
+//   await fetch(`https://graph.facebook.com/v21.0/${env.GRAPH_API_PHONE_NUMBER_ID}/messages`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `Bearer ${env.GRAPH_API_TOKEN}`
+//     },
+//     body: JSON.stringify(body)
+//   }).then(async res => response = await res.json());
+//   console.log("response", JSON.stringify(response));
+//   return response;
+// }
+
+const sendCodeViaWhatsappTemplate = async (env: Env, phone: string, code: string) => {
   const body = {
       "messaging_product": "whatsapp",
       "to": phone,
@@ -78,7 +99,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       .set({ temp_code: tempCode })
       .where(eq(users.id, existingUser[0].id))
       .run();
-    const response = await sendCodeViaWhatsapp(c.env, phone, tempCode);
+    const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {
       console.error("response", JSON.stringify(response));
       return c.json({ error: "Failed to send message" }, 500);
@@ -144,7 +165,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       temp_code: tempCode,
       roles: 'runner',
     }).run();
-    const response = await sendCodeViaWhatsapp(c.env, phone, tempCode);
+    const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {
       console.error("response", JSON.stringify(response));
       return c.json({ error: "Failed to send message" }, 500);
