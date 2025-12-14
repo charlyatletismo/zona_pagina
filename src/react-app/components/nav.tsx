@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { LogIn, LogOut } from 'lucide-react';
-// import { Sun, Moon } from 'lucide-react';
+import { Settings } from 'lucide-react';
 // import React from 'react';
 import {
   NavigationMenu,
@@ -10,20 +10,38 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import * as roles from '@/lib/roles';
+// import { Sun, Moon } from 'lucide-react';
 // import { Code2, Laptop } from 'lucide-react';
 
 
 const navClass = 'bg-transparent text-gray-600 hover:text-primary hover:bg-primary/5 [&.active]:text-primary [&.active]:bg-primary/10 font-medium transition-colors';
 
+const LINK_HOME = { to: '/', label: 'Inicio' };
+const LINK_SERVICES = { to: '/services', label: 'Servicios' };
+const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
+const LINK_SETTINGS = { to: '/settings', label: <Settings size={16} /> };
+// const LINK_RUNNER_STATS = { to: '/runner/stats', label: 'Estadísticas' };
 const LINKS_BY_ROLE: Record<string, any> = {
   "": [
-    { to: '/', label: 'Inicio' },
-    { to: '/services', label: 'Servicios' },
-    { to: '/about', label: 'Nosotros' },
+    LINK_HOME,
+    LINK_SERVICES,
+    LINK_ABOUT,
   ],
   [roles.RUNNER_ROLE]: [
-    { to: '/', label: 'Inicio' },
-    { to: '/runner/stats', label: 'Estadísticas' },
+    LINK_HOME,
+    LINK_SETTINGS,
+    // LINK_RUNNER_STATS,
+  ],
+  [roles.RUNNERS_MANAGER_ROLE]: [
+    LINK_HOME,
+    LINK_SETTINGS,
+    // LINK_RUNNER_STATS,
+  ],
+  [roles.ADMIN_ROLE]: [
+    LINK_HOME,
+  ],
+  [roles.ORGANIZER_ROLE]: [
+    LINK_HOME,
   ],
 }
 
@@ -33,35 +51,13 @@ export const Navigation = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex-wrap">
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link to="/" className={navClass}>Inicio</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-
-        {localStorage.getItem('JWT_TOKEN') ? null : (
-          <NavigationMenuItem>
+        {LINKS_BY_ROLE[current_role]?.map((link: any) => (
+          <NavigationMenuItem key={link.to}>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link to="/services" className={navClass}>Servicios</Link>
+              <Link to={link.to} className={navClass}>{link.label}</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
-        )}
-
-        {localStorage.getItem('JWT_TOKEN') ? null : (
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link to="/about" className={navClass}>Nosotros</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        )}
-
-        {localStorage.getItem('JWT_TOKEN') && roles.R_RUNNER_STATS.includes(localStorage.getItem('USER_ROLE') || '') && (
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link to="/runner/stats" className={navClass}>Estadísticas</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        )}
+        ))}
 
         {localStorage.getItem('JWT_TOKEN') && (localStorage.getItem('USER_ROLES')?.split(",").length || 0) > 1 && (
           <NavigationMenuItem>
