@@ -10,20 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
-import { Route as StatsRouteImport } from './routes/stats'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UserIndexRouteImport } from './routes/user/index'
+import { Route as UserEditRouteImport } from './routes/user/edit'
+import { Route as RunnerStatsRouteImport } from './routes/runner/stats'
 
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StatsRoute = StatsRouteImport.update({
-  id: '/stats',
-  path: '/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -46,22 +43,41 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIndexRoute = UserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserEditRoute = UserEditRouteImport.update({
+  id: '/user/edit',
+  path: '/user/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunnerStatsRoute = RunnerStatsRouteImport.update({
+  id: '/runner/stats',
+  path: '/runner/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
-  '/stats': typeof StatsRoute
   '/users': typeof UsersRoute
+  '/runner/stats': typeof RunnerStatsRoute
+  '/user/edit': typeof UserEditRoute
+  '/user': typeof UserIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
-  '/stats': typeof StatsRoute
   '/users': typeof UsersRoute
+  '/runner/stats': typeof RunnerStatsRoute
+  '/user/edit': typeof UserEditRoute
+  '/user': typeof UserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,15 +85,42 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
-  '/stats': typeof StatsRoute
   '/users': typeof UsersRoute
+  '/runner/stats': typeof RunnerStatsRoute
+  '/user/edit': typeof UserEditRoute
+  '/user/': typeof UserIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/services' | '/stats' | '/users'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/services'
+    | '/users'
+    | '/runner/stats'
+    | '/user/edit'
+    | '/user'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/services' | '/stats' | '/users'
-  id: '__root__' | '/' | '/about' | '/login' | '/services' | '/stats' | '/users'
+  to:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/services'
+    | '/users'
+    | '/runner/stats'
+    | '/user/edit'
+    | '/user'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/login'
+    | '/services'
+    | '/users'
+    | '/runner/stats'
+    | '/user/edit'
+    | '/user/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -85,8 +128,10 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
-  StatsRoute: typeof StatsRoute
   UsersRoute: typeof UsersRoute
+  RunnerStatsRoute: typeof RunnerStatsRoute
+  UserEditRoute: typeof UserEditRoute
+  UserIndexRoute: typeof UserIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -96,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof UsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stats': {
-      id: '/stats'
-      path: '/stats'
-      fullPath: '/stats'
-      preLoaderRoute: typeof StatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -133,6 +171,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/': {
+      id: '/user/'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof UserIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user/edit': {
+      id: '/user/edit'
+      path: '/user/edit'
+      fullPath: '/user/edit'
+      preLoaderRoute: typeof UserEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runner/stats': {
+      id: '/runner/stats'
+      path: '/runner/stats'
+      fullPath: '/runner/stats'
+      preLoaderRoute: typeof RunnerStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -141,8 +200,10 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
-  StatsRoute: StatsRoute,
   UsersRoute: UsersRoute,
+  RunnerStatsRoute: RunnerStatsRoute,
+  UserEditRoute: UserEditRoute,
+  UserIndexRoute: UserIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
