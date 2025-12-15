@@ -79,6 +79,7 @@ function RouteComponent() {
                 localStorage.setItem('JWT_TOKEN', data.token);
                 localStorage.setItem('USER_ROLES', data.roles);
                 localStorage.setItem('USER_ID', data.id);
+                localStorage.setItem('USER_NAME', data.name || 'Nuevo Usuario');
                 localStorage.setItem('USER_ROLE', data.roles.split(",")[0] || '');
                 window.location.href = '/';
               });

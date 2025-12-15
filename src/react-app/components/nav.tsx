@@ -19,7 +19,6 @@ const navClass = 'bg-transparent text-gray-600 hover:text-primary hover:bg-prima
 const LINK_HOME = { to: '/', label: 'Inicio' };
 const LINK_SERVICES = { to: '/services', label: 'Servicios' };
 const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
-const LINK_SETTINGS = { to: '/settings', label: <Settings size={16} /> };
 // const LINK_RUNNER_STATS = { to: '/runner/stats', label: 'Estadísticas' };
 const LINKS_BY_ROLE: Record<string, any> = {
   "": [
@@ -29,12 +28,10 @@ const LINKS_BY_ROLE: Record<string, any> = {
   ],
   [roles.RUNNER_ROLE]: [
     LINK_HOME,
-    LINK_SETTINGS,
     // LINK_RUNNER_STATS,
   ],
   [roles.RUNNERS_MANAGER_ROLE]: [
     LINK_HOME,
-    LINK_SETTINGS,
     // LINK_RUNNER_STATS,
   ],
   [roles.ADMIN_ROLE]: [
@@ -46,8 +43,9 @@ const LINKS_BY_ROLE: Record<string, any> = {
 }
 
 export const Navigation = () => {
-  console.log(LINKS_BY_ROLE)
-  const current_role = localStorage.getItem('JWT_TOKEN') ? (localStorage.getItem('USER_ROLE') || '') : '';
+  const current_role = localStorage.getItem('JWT_TOKEN')
+    ? (localStorage.getItem('USER_ROLE') || '')
+    : '';
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex-wrap">
@@ -80,6 +78,16 @@ export const Navigation = () => {
               </button>
             </NavigationMenuItem> */}
 
+        {localStorage.getItem('JWT_TOKEN') && (
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+              <Link to="/settings" className={navClass}>
+                <Settings className='my-auto' size={16} />
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        )}
+
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             {localStorage.getItem('JWT_TOKEN') ? (
@@ -87,6 +95,7 @@ export const Navigation = () => {
                 localStorage.setItem('JWT_TOKEN', '');
                 localStorage.setItem('USER_ROLES', '');
                 localStorage.setItem('USER_ID', '');
+                localStorage.setItem('USER_NAME', '');
                 localStorage.setItem('USER_ROLE', '');
                 window.location.href = '/';
               }} className={navClass}>

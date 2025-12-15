@@ -24,8 +24,8 @@ function Index() {
         
         <div className="relative container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 mb-6">
-            Eventos <span className="text-primary relative inline-block">
-              Deportivos
+            {localStorage.getItem('USER_NAME') ? 'Hola,' : 'Eventos'} <span className="text-primary relative inline-block">
+              {localStorage.getItem('USER_NAME') ? localStorage.getItem('USER_NAME') : 'Deportivos'}
               <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
               </svg>

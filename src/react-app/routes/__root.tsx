@@ -39,9 +39,9 @@ const RootLayout = () => {
           </Link>
         </div>
         <div className='flex'>
-        <Navigation />
+          <Navigation />
+        </div>
       </div>
-    </div>
     </div>
     <Outlet />
     <footer className="
