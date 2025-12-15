@@ -14,3 +14,33 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     }
     return c.json(user);
   })
+  .post("/", async (c) => {
+    const db = drizzle(c.env.DB);
+    const userId = c.get('jwtPayload').id;
+    const body = await c.req.json();
+
+    // Filter allowed fields
+    const allowedFields = [
+      'name', 'surname', 'sex', 'date_of_birth',
+      'country', 'city', 'full_location',
+      'training_team', 'email'
+    ];
+
+    const updates: any = {};
+    for (const key of allowedFields) {
+      if (body[key] !== undefined) {
+        updates[key] = body[key];
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return c.json({ message: 'No updates provided' });
+    }
+
+    await db.update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .run();
+
+    return c.json({ message: 'Profile updated successfully' });
+  });
