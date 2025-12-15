@@ -5,6 +5,7 @@ import { jwt } from 'hono/jwt'
 import type { JwtVariables } from 'hono/jwt'
 import { authRoute } from "./auth";
 import { runningEventsRoute } from "./runningEvents";
+import { settingsRoute } from "./settings";
 
 
 export interface Env {
@@ -44,6 +45,7 @@ export default {
 
         app.route('/api/auth', authRoute);
         app.route('/api/runningEvents', runningEventsRoute);
+        app.route('/api/settings', settingsRoute);
 
         return app.fetch(request, env, ctx);
     }

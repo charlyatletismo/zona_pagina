@@ -2,6 +2,7 @@ import { int, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 import { sql } from 'drizzle-orm';
 
 
+// Users Table
 export const users = sqliteTable("users", {
   id: text({ length: 28 }).primaryKey(),
   phone: text().unique().notNull(),
@@ -26,6 +27,7 @@ export const users = sqliteTable("users", {
 });
 
 
+// Fee Categories (e.g., General, Student, Veteran, Handicapped, Elderly, etc.)
 export const feesCategories = sqliteTable("fees_categories", {
   id: text({ length: 28 }).primaryKey(),
   name: text({ length: 64 }).notNull(),
@@ -33,6 +35,7 @@ export const feesCategories = sqliteTable("fees_categories", {
 });
 
 
+// Runner Categories (e.g., Adult, Junior, Senior, Wheelchair, etc.)
 export const runnerCategories = sqliteTable("runner_categories", {
   id: text({ length: 28 }).primaryKey(),
   name: text({ length: 64 }).notNull(),
@@ -44,6 +47,7 @@ export const runnerCategories = sqliteTable("runner_categories", {
 });
 
 
+// Event Types (e.g., Marathon, Half-Marathon, 10K, Trail, etc.)
 export const eventTypes = sqliteTable("event_types", {
   id: int().primaryKey({ autoIncrement: true }),
   name: text({ length: 64 }).notNull(),
@@ -51,6 +55,7 @@ export const eventTypes = sqliteTable("event_types", {
 });
 
 
+// Main Events Table
 export const events = sqliteTable("events", {
   id: int().primaryKey({ autoIncrement: true }),
   title: text().notNull(),
@@ -75,6 +80,8 @@ export const events = sqliteTable("events", {
 });
 
 
+// Milestone or Schedule for Events
+// It can be used for start times, award ceremonies, etc.
 export const eventSchedules = sqliteTable("event_schedules", {
   id: int().primaryKey({ autoIncrement: true }),
   event_id: text().notNull().references(() => events.id),
@@ -88,6 +95,8 @@ export const eventSchedules = sqliteTable("event_schedules", {
 });
 
 
+// Details about which runner categories can register for an event, along with fees
+// and distances
 export const eventRunnerCategories = sqliteTable("event_runner_categories", {
   id: int().primaryKey({ autoIncrement: true }),
   event_id: text().notNull().references(() => events.id),
@@ -99,6 +108,7 @@ export const eventRunnerCategories = sqliteTable("event_runner_categories", {
 });
 
 
+// Circuits or Routes within an Event
 export const eventCircuits = sqliteTable("event_circuits", {
   id: int().primaryKey({ autoIncrement: true }),
   event_id: text().notNull().references(() => events.id),
@@ -108,7 +118,7 @@ export const eventCircuits = sqliteTable("event_circuits", {
 });
 
 
-
+// Inscriptions Table
 export const inscriptions = sqliteTable("inscriptions", {
   id: text({ length: 28 }).primaryKey(),
   event_id: text().notNull().references(() => events.id),

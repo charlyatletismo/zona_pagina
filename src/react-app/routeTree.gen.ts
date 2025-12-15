@@ -9,23 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsersRouteImport } from './routes/users'
-import { Route as StatsRouteImport } from './routes/stats'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UsersIndexRouteImport } from './routes/users/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as RunningEventsIndexRouteImport } from './routes/runningEvents/index'
+import { Route as UsersAddRouteImport } from './routes/users/add'
+import { Route as UsersUserIdRouteImport } from './routes/users/$userId'
+import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
+import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
+import { Route as RunningEventsAddRouteImport } from './routes/runningEvents/add'
+import { Route as RunningEventsEventIdRouteImport } from './routes/runningEvents/$eventId'
+import { Route as RunnerStatsRouteImport } from './routes/runner/stats'
+import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
+import { Route as RunningEventsEventIdEnrollRouteImport } from './routes/runningEvents/$eventId.enroll'
+import { Route as RunningEventsEventIdEditRouteImport } from './routes/runningEvents/$eventId.edit'
+import { Route as RunningEventsEventIdRunnerIdRouteImport } from './routes/runningEvents/$eventId.$runnerId'
 
-const UsersRoute = UsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StatsRoute = StatsRouteImport.update({
-  id: '/stats',
-  path: '/stats',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -46,22 +48,119 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersIndexRoute = UsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunningEventsIndexRoute = RunningEventsIndexRouteImport.update({
+  id: '/runningEvents/',
+  path: '/runningEvents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersAddRoute = UsersAddRouteImport.update({
+  id: '/users/add',
+  path: '/users/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersUserIdRoute = UsersUserIdRouteImport.update({
+  id: '/users/$userId',
+  path: '/users/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
+  id: '/settings/profile',
+  path: '/settings/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
+  id: '/settings/notifications',
+  path: '/settings/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunningEventsAddRoute = RunningEventsAddRouteImport.update({
+  id: '/runningEvents/add',
+  path: '/runningEvents/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunningEventsEventIdRoute = RunningEventsEventIdRouteImport.update({
+  id: '/runningEvents/$eventId',
+  path: '/runningEvents/$eventId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RunnerStatsRoute = RunnerStatsRouteImport.update({
+  id: '/runner/stats',
+  path: '/runner/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => UsersUserIdRoute,
+} as any)
+const RunningEventsEventIdEnrollRoute =
+  RunningEventsEventIdEnrollRouteImport.update({
+    id: '/enroll',
+    path: '/enroll',
+    getParentRoute: () => RunningEventsEventIdRoute,
+  } as any)
+const RunningEventsEventIdEditRoute =
+  RunningEventsEventIdEditRouteImport.update({
+    id: '/edit',
+    path: '/edit',
+    getParentRoute: () => RunningEventsEventIdRoute,
+  } as any)
+const RunningEventsEventIdRunnerIdRoute =
+  RunningEventsEventIdRunnerIdRouteImport.update({
+    id: '/$runnerId',
+    path: '/$runnerId',
+    getParentRoute: () => RunningEventsEventIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
-  '/stats': typeof StatsRoute
-  '/users': typeof UsersRoute
+  '/runner/stats': typeof RunnerStatsRoute
+  '/runningEvents/$eventId': typeof RunningEventsEventIdRouteWithChildren
+  '/runningEvents/add': typeof RunningEventsAddRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/users/$userId': typeof UsersUserIdRouteWithChildren
+  '/users/add': typeof UsersAddRoute
+  '/runningEvents': typeof RunningEventsIndexRoute
+  '/settings': typeof SettingsIndexRoute
+  '/users': typeof UsersIndexRoute
+  '/runningEvents/$eventId/$runnerId': typeof RunningEventsEventIdRunnerIdRoute
+  '/runningEvents/$eventId/edit': typeof RunningEventsEventIdEditRoute
+  '/runningEvents/$eventId/enroll': typeof RunningEventsEventIdEnrollRoute
+  '/users/$userId/edit': typeof UsersUserIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
-  '/stats': typeof StatsRoute
-  '/users': typeof UsersRoute
+  '/runner/stats': typeof RunnerStatsRoute
+  '/runningEvents/$eventId': typeof RunningEventsEventIdRouteWithChildren
+  '/runningEvents/add': typeof RunningEventsAddRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/users/$userId': typeof UsersUserIdRouteWithChildren
+  '/users/add': typeof UsersAddRoute
+  '/runningEvents': typeof RunningEventsIndexRoute
+  '/settings': typeof SettingsIndexRoute
+  '/users': typeof UsersIndexRoute
+  '/runningEvents/$eventId/$runnerId': typeof RunningEventsEventIdRunnerIdRoute
+  '/runningEvents/$eventId/edit': typeof RunningEventsEventIdEditRoute
+  '/runningEvents/$eventId/enroll': typeof RunningEventsEventIdEnrollRoute
+  '/users/$userId/edit': typeof UsersUserIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,15 +168,82 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
-  '/stats': typeof StatsRoute
-  '/users': typeof UsersRoute
+  '/runner/stats': typeof RunnerStatsRoute
+  '/runningEvents/$eventId': typeof RunningEventsEventIdRouteWithChildren
+  '/runningEvents/add': typeof RunningEventsAddRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/users/$userId': typeof UsersUserIdRouteWithChildren
+  '/users/add': typeof UsersAddRoute
+  '/runningEvents/': typeof RunningEventsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/users/': typeof UsersIndexRoute
+  '/runningEvents/$eventId/$runnerId': typeof RunningEventsEventIdRunnerIdRoute
+  '/runningEvents/$eventId/edit': typeof RunningEventsEventIdEditRoute
+  '/runningEvents/$eventId/enroll': typeof RunningEventsEventIdEnrollRoute
+  '/users/$userId/edit': typeof UsersUserIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/services' | '/stats' | '/users'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/services'
+    | '/runner/stats'
+    | '/runningEvents/$eventId'
+    | '/runningEvents/add'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/users/$userId'
+    | '/users/add'
+    | '/runningEvents'
+    | '/settings'
+    | '/users'
+    | '/runningEvents/$eventId/$runnerId'
+    | '/runningEvents/$eventId/edit'
+    | '/runningEvents/$eventId/enroll'
+    | '/users/$userId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/services' | '/stats' | '/users'
-  id: '__root__' | '/' | '/about' | '/login' | '/services' | '/stats' | '/users'
+  to:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/services'
+    | '/runner/stats'
+    | '/runningEvents/$eventId'
+    | '/runningEvents/add'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/users/$userId'
+    | '/users/add'
+    | '/runningEvents'
+    | '/settings'
+    | '/users'
+    | '/runningEvents/$eventId/$runnerId'
+    | '/runningEvents/$eventId/edit'
+    | '/runningEvents/$eventId/enroll'
+    | '/users/$userId/edit'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/login'
+    | '/services'
+    | '/runner/stats'
+    | '/runningEvents/$eventId'
+    | '/runningEvents/add'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/users/$userId'
+    | '/users/add'
+    | '/runningEvents/'
+    | '/settings/'
+    | '/users/'
+    | '/runningEvents/$eventId/$runnerId'
+    | '/runningEvents/$eventId/edit'
+    | '/runningEvents/$eventId/enroll'
+    | '/users/$userId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -85,26 +251,20 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
-  StatsRoute: typeof StatsRoute
-  UsersRoute: typeof UsersRoute
+  RunnerStatsRoute: typeof RunnerStatsRoute
+  RunningEventsEventIdRoute: typeof RunningEventsEventIdRouteWithChildren
+  RunningEventsAddRoute: typeof RunningEventsAddRoute
+  SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  SettingsProfileRoute: typeof SettingsProfileRoute
+  UsersUserIdRoute: typeof UsersUserIdRouteWithChildren
+  UsersAddRoute: typeof UsersAddRoute
+  RunningEventsIndexRoute: typeof RunningEventsIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  UsersIndexRoute: typeof UsersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/users': {
-      id: '/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stats': {
-      id: '/stats'
-      path: '/stats'
-      fullPath: '/stats'
-      preLoaderRoute: typeof StatsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -133,16 +293,149 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/': {
+      id: '/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runningEvents/': {
+      id: '/runningEvents/'
+      path: '/runningEvents'
+      fullPath: '/runningEvents'
+      preLoaderRoute: typeof RunningEventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/add': {
+      id: '/users/add'
+      path: '/users/add'
+      fullPath: '/users/add'
+      preLoaderRoute: typeof UsersAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId': {
+      id: '/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof UsersUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/notifications': {
+      id: '/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof SettingsNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runningEvents/add': {
+      id: '/runningEvents/add'
+      path: '/runningEvents/add'
+      fullPath: '/runningEvents/add'
+      preLoaderRoute: typeof RunningEventsAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runningEvents/$eventId': {
+      id: '/runningEvents/$eventId'
+      path: '/runningEvents/$eventId'
+      fullPath: '/runningEvents/$eventId'
+      preLoaderRoute: typeof RunningEventsEventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/runner/stats': {
+      id: '/runner/stats'
+      path: '/runner/stats'
+      fullPath: '/runner/stats'
+      preLoaderRoute: typeof RunnerStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId/edit': {
+      id: '/users/$userId/edit'
+      path: '/edit'
+      fullPath: '/users/$userId/edit'
+      preLoaderRoute: typeof UsersUserIdEditRouteImport
+      parentRoute: typeof UsersUserIdRoute
+    }
+    '/runningEvents/$eventId/enroll': {
+      id: '/runningEvents/$eventId/enroll'
+      path: '/enroll'
+      fullPath: '/runningEvents/$eventId/enroll'
+      preLoaderRoute: typeof RunningEventsEventIdEnrollRouteImport
+      parentRoute: typeof RunningEventsEventIdRoute
+    }
+    '/runningEvents/$eventId/edit': {
+      id: '/runningEvents/$eventId/edit'
+      path: '/edit'
+      fullPath: '/runningEvents/$eventId/edit'
+      preLoaderRoute: typeof RunningEventsEventIdEditRouteImport
+      parentRoute: typeof RunningEventsEventIdRoute
+    }
+    '/runningEvents/$eventId/$runnerId': {
+      id: '/runningEvents/$eventId/$runnerId'
+      path: '/$runnerId'
+      fullPath: '/runningEvents/$eventId/$runnerId'
+      preLoaderRoute: typeof RunningEventsEventIdRunnerIdRouteImport
+      parentRoute: typeof RunningEventsEventIdRoute
+    }
   }
 }
+
+interface RunningEventsEventIdRouteChildren {
+  RunningEventsEventIdRunnerIdRoute: typeof RunningEventsEventIdRunnerIdRoute
+  RunningEventsEventIdEditRoute: typeof RunningEventsEventIdEditRoute
+  RunningEventsEventIdEnrollRoute: typeof RunningEventsEventIdEnrollRoute
+}
+
+const RunningEventsEventIdRouteChildren: RunningEventsEventIdRouteChildren = {
+  RunningEventsEventIdRunnerIdRoute: RunningEventsEventIdRunnerIdRoute,
+  RunningEventsEventIdEditRoute: RunningEventsEventIdEditRoute,
+  RunningEventsEventIdEnrollRoute: RunningEventsEventIdEnrollRoute,
+}
+
+const RunningEventsEventIdRouteWithChildren =
+  RunningEventsEventIdRoute._addFileChildren(RunningEventsEventIdRouteChildren)
+
+interface UsersUserIdRouteChildren {
+  UsersUserIdEditRoute: typeof UsersUserIdEditRoute
+}
+
+const UsersUserIdRouteChildren: UsersUserIdRouteChildren = {
+  UsersUserIdEditRoute: UsersUserIdEditRoute,
+}
+
+const UsersUserIdRouteWithChildren = UsersUserIdRoute._addFileChildren(
+  UsersUserIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
-  StatsRoute: StatsRoute,
-  UsersRoute: UsersRoute,
+  RunnerStatsRoute: RunnerStatsRoute,
+  RunningEventsEventIdRoute: RunningEventsEventIdRouteWithChildren,
+  RunningEventsAddRoute: RunningEventsAddRoute,
+  SettingsNotificationsRoute: SettingsNotificationsRoute,
+  SettingsProfileRoute: SettingsProfileRoute,
+  UsersUserIdRoute: UsersUserIdRouteWithChildren,
+  UsersAddRoute: UsersAddRoute,
+  RunningEventsIndexRoute: RunningEventsIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+  UsersIndexRoute: UsersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
