@@ -1,29 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import React from 'react'
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   component: Index,
-})
-
-function Index() {
-  const [events, setEvents] = React.useState<{
+  loader: () => fetch('/api/runningEvents', { cache: 'no-store' }).then((res) => res.json() as Promise<{
     comingSoon: any[];
     open: any[];
     closed: any[];
     past: any[];
-  }>({
-    comingSoon: [],
-    open: [],
-    closed: [],
-    past: []
-  })
+  }>),
+  staleTime: 1000 * 60 * 5,
+})
 
-  React.useEffect(() => {
-    fetch('/api/runningEvents')
-      .then((res) => res.json())
-      .then((data) => setEvents(data))
-  }, [])
+function Index() {
+  const events = Route.useLoaderData()
 
   return (
     <div>
