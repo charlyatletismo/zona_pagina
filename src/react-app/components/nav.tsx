@@ -96,6 +96,7 @@ export const Navigation = () => {
                 localStorage.setItem('USER_ROLES', '');
                 localStorage.setItem('USER_ID', '');
                 localStorage.setItem('USER_NAME', '');
+                localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
                 localStorage.setItem('USER_ROLE', '');
                 window.location.href = '/';
               }} className={navClass}>

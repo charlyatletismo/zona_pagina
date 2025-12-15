@@ -5,10 +5,14 @@ import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { AlertCircle, Save, ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import authCheck from '@/lib/authCheck';
+
 
 export const Route = createFileRoute('/settings/profile')({
   component: RouteComponent,
+  beforeLoad: authCheck(),
 })
+
 
 interface UserProfile {
   id: string;

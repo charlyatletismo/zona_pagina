@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
@@ -28,6 +29,11 @@ import { Route as RunningEventsEventIdEnrollRouteImport } from './routes/running
 import { Route as RunningEventsEventIdEditRouteImport } from './routes/runningEvents/$eventId.edit'
 import { Route as RunningEventsEventIdRunnerIdRouteImport } from './routes/runningEvents/$eventId.$runnerId'
 
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/runner/stats': typeof RunnerStatsRoute
   '/runningEvents/$eventId': typeof RunningEventsEventIdRouteWithChildren
   '/runningEvents/add': typeof RunningEventsAddRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/runner/stats': typeof RunnerStatsRoute
   '/runningEvents/$eventId': typeof RunningEventsEventIdRouteWithChildren
   '/runningEvents/add': typeof RunningEventsAddRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/unauthorized': typeof UnauthorizedRoute
   '/runner/stats': typeof RunnerStatsRoute
   '/runningEvents/$eventId': typeof RunningEventsEventIdRouteWithChildren
   '/runningEvents/add': typeof RunningEventsAddRoute
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/services'
+    | '/unauthorized'
     | '/runner/stats'
     | '/runningEvents/$eventId'
     | '/runningEvents/add'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/services'
+    | '/unauthorized'
     | '/runner/stats'
     | '/runningEvents/$eventId'
     | '/runningEvents/add'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/services'
+    | '/unauthorized'
     | '/runner/stats'
     | '/runningEvents/$eventId'
     | '/runningEvents/add'
@@ -251,6 +263,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
+  UnauthorizedRoute: typeof UnauthorizedRoute
   RunnerStatsRoute: typeof RunnerStatsRoute
   RunningEventsEventIdRoute: typeof RunningEventsEventIdRouteWithChildren
   RunningEventsAddRoute: typeof RunningEventsAddRoute
@@ -265,6 +278,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -426,6 +446,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
+  UnauthorizedRoute: UnauthorizedRoute,
   RunnerStatsRoute: RunnerStatsRoute,
   RunningEventsEventIdRoute: RunningEventsEventIdRouteWithChildren,
   RunningEventsAddRoute: RunningEventsAddRoute,

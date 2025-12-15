@@ -80,6 +80,7 @@ function RouteComponent() {
                 localStorage.setItem('USER_ROLES', data.roles);
                 localStorage.setItem('USER_ID', data.id);
                 localStorage.setItem('USER_NAME', data.name || 'Nuevo Usuario');
+                localStorage.setItem('REQUIRE_PROFILE_UPDATE', data.require_profile_update);
                 localStorage.setItem('USER_ROLE', data.roles.split(",")[0] || '');
                 window.location.href = '/';
               });

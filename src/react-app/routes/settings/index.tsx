@@ -3,10 +3,14 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { User, Users, UserCog, Mail, Phone, MapPin, Calendar, Edit, Mars, Venus, VenusAndMars } from 'lucide-react'
+import authCheck from '@/lib/authCheck';
+
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
+  beforeLoad: authCheck(),
 })
+
 
 interface UserProfile {
   id: string;
