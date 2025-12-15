@@ -113,6 +113,7 @@ function RouteComponent() {
 
       setSuccess('Perfil actualizado correctamente');
       setTimeout(() => setSuccess(''), 3000);
+      localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
     } catch (err) {
       setError('Error al guardar los cambios');
       console.error(err);

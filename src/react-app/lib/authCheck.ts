@@ -7,6 +7,7 @@ const authCheck = (roles: string[] = []) => {
     const notAuthenticated = !localStorage.getItem('JWT_TOKEN');
     const role = localStorage.getItem('USER_ROLE');
     const notAuthorized = roles.length > 0 && !roles.includes(role || '') && role !== ADMIN_ROLE;
+    const requireProfileUpdate = localStorage.getItem('REQUIRE_PROFILE_UPDATE') === 'true';
 
     if (notAuthenticated) {
       throw redirect({
@@ -21,6 +22,10 @@ const authCheck = (roles: string[] = []) => {
     } else if (notAuthorized) {
       throw redirect({
         to: '/unauthorized',
+      })
+    } else if (requireProfileUpdate && location.pathname !== '/settings/profile') {
+      throw redirect({
+        to: '/settings/profile',
       })
     }
   }

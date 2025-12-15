@@ -138,7 +138,18 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       },
       c.env.JWT_SECRET, "HS256"
     );
-    return c.json({ token, id: user.id, name: user.name, roles: user.roles });
+    const requireProfileUpdate = (
+      !user.phone
+      || !user.name
+      || !user.surname
+      || !user.sex
+      || !user.date_of_birth
+      || !user.country
+      || !user.city
+      || !user.email
+      || !user.phone
+    )
+    return c.json({ token, id: user.id, name: user.name, roles: user.roles, requireProfileUpdate });
   })
   .post("/register", async (c) => {
     const { user_id, phone } = await c.req.json();

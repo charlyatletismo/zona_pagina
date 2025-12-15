@@ -1,9 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { AlarmClockIcon, CameraIcon, PenToolIcon, Car, Accessibility, ChartArea, BikeIcon, BadgeCheckIcon } from 'lucide-react'
 import { CardGrid } from '../components/cardGrid'
+import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
+
 
 export const Route = createFileRoute('/services')({
   component: RouteComponent,
+  beforeLoad: unprotectedCheck(),
 })
 
 

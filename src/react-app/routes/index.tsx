@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
+import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
+
 
 export const Route = createFileRoute('/')({
   component: Index,
+  beforeLoad: unprotectedCheck(),
   loader: () => fetch('/api/runningEvents', { cache: 'no-store' }).then((res) => res.json() as Promise<{
     comingSoon: any[];
     open: any[];
@@ -11,6 +14,7 @@ export const Route = createFileRoute('/')({
   }>),
   staleTime: 1000 * 60 * 5,
 })
+
 
 function Index() {
   const events = Route.useLoaderData();
