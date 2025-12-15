@@ -168,7 +168,7 @@ function RouteComponent() {
                 disabled
                 className="bg-gray-100 text-gray-500 cursor-not-allowed"
               />
-              <p className="text-xs text-gray-400">El DNI no se puede cambiar. Contactar al administrador si se quiere cambiar.</p>
+              <p className="text-xs text-gray-400">El DNI no se puede cambiar. Contactar al administrador si necesita cambiarlo.</p>
             </div>
 
             <div className="space-y-2">
