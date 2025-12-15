@@ -13,7 +13,7 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
-  const events = Route.useLoaderData()
+  const events = Route.useLoaderData();
 
   return (
     <div>
@@ -98,6 +98,22 @@ function Index() {
                   <EventCard event={event} />
                 </Link>
               ))}
+            </div>
+          </section>
+        )}
+
+        {events.open.length === 0 && events.comingSoon.length === 0 && events.closed.length === 0 && events.past.length === 0 && (
+          <section className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CalendarIcon className="h-12 w-12 text-gray-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Próximamente nuevos eventos
+              </h2>
+              <p className="text-gray-600">
+                Estamos preparando eventos increíbles para ti. ¡Vuelve pronto!
+              </p>
             </div>
           </section>
         )}
