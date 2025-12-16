@@ -124,6 +124,10 @@ function RouteComponent() {
 
   const isMissing = (value: string | undefined | null) => !value || value.trim() === '';
 
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 13);
+  const maxDateString = maxDate.toISOString().split('T')[0];
+
   if (loading) {
     return <div className="flex justify-center p-8"><Spinner /></div>;
   }
@@ -337,6 +341,7 @@ function RouteComponent() {
               <Input
                 name="date_of_birth"
                 type="date"
+                max={maxDateString}
                 value={formData.date_of_birth || ''}
                 onChange={handleChange}
                 className={cn(isMissing(formData.date_of_birth) && "border-orange-300 bg-orange-50 focus-visible:ring-orange-300")}
