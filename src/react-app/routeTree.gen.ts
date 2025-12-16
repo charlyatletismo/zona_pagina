@@ -112,9 +112,9 @@ const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
 } as any)
 const RunningEventsEventIdEnrollRoute =
   RunningEventsEventIdEnrollRouteImport.update({
-    id: '/enroll',
-    path: '/enroll',
-    getParentRoute: () => RunningEventsEventIdRoute,
+    id: '/runningEvents/$eventId/enroll',
+    path: '/runningEvents/$eventId/enroll',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const RunningEventsEventIdEditRoute =
   RunningEventsEventIdEditRouteImport.update({
@@ -124,9 +124,9 @@ const RunningEventsEventIdEditRoute =
   } as any)
 const RunningEventsEventIdRunnerIdRoute =
   RunningEventsEventIdRunnerIdRouteImport.update({
-    id: '/$runnerId',
-    path: '/$runnerId',
-    getParentRoute: () => RunningEventsEventIdRoute,
+    id: '/runningEvents/$eventId/$runnerId',
+    path: '/runningEvents/$eventId/$runnerId',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -274,7 +274,9 @@ export interface RootRouteChildren {
   RunningEventsIndexRoute: typeof RunningEventsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
+  RunningEventsEventIdRunnerIdRoute: typeof RunningEventsEventIdRunnerIdRoute
   RunningEventsEventIdEditRoute: typeof RunningEventsEventIdEditRoute
+  RunningEventsEventIdEnrollRoute: typeof RunningEventsEventIdEnrollRoute
   RunningEventsEventIdIndexRoute: typeof RunningEventsEventIdIndexRoute
 }
 
@@ -394,10 +396,10 @@ declare module '@tanstack/react-router' {
     }
     '/runningEvents/$eventId/enroll': {
       id: '/runningEvents/$eventId/enroll'
-      path: '/enroll'
+      path: '/runningEvents/$eventId/enroll'
       fullPath: '/runningEvents/$eventId/enroll'
       preLoaderRoute: typeof RunningEventsEventIdEnrollRouteImport
-      parentRoute: typeof RunningEventsEventIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/runningEvents/$eventId/edit': {
       id: '/runningEvents/$eventId/edit'
@@ -408,10 +410,10 @@ declare module '@tanstack/react-router' {
     }
     '/runningEvents/$eventId/$runnerId': {
       id: '/runningEvents/$eventId/$runnerId'
-      path: '/$runnerId'
+      path: '/runningEvents/$eventId/$runnerId'
       fullPath: '/runningEvents/$eventId/$runnerId'
       preLoaderRoute: typeof RunningEventsEventIdRunnerIdRouteImport
-      parentRoute: typeof RunningEventsEventIdRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -443,7 +445,9 @@ const rootRouteChildren: RootRouteChildren = {
   RunningEventsIndexRoute: RunningEventsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,
+  RunningEventsEventIdRunnerIdRoute: RunningEventsEventIdRunnerIdRoute,
   RunningEventsEventIdEditRoute: RunningEventsEventIdEditRoute,
+  RunningEventsEventIdEnrollRoute: RunningEventsEventIdEnrollRoute,
   RunningEventsEventIdIndexRoute: RunningEventsEventIdIndexRoute,
 }
 export const routeTree = rootRouteImport
