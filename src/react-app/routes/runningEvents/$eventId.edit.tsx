@@ -54,7 +54,7 @@ function RouteComponent() {
     const fetchEventTypes = async () => {
       try {
         const token = localStorage.getItem('JWT_TOKEN');
-        const res = await fetch('/api/eventTypes', {
+        const res = await fetch('/api/runningEventTypes', {
           headers: {
             'Authorization': `Bearer ${token}`
           },
