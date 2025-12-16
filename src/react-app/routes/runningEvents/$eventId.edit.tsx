@@ -10,5 +10,6 @@ export const Route = createFileRoute('/runningEvents/$eventId/edit')({
 
 
 function RouteComponent() {
+  console.log("Hello from /runningEvents/$eventId/edit route");
   return <div>Hello "/runningEvents/$eventId/edit"!</div>
 }
