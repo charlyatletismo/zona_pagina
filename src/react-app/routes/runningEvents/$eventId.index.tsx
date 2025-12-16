@@ -152,15 +152,32 @@ function RouteComponent() {
                 <div className="bg-white p-6 rounded-xl shadow-sm border space-y-6">
                     <div>
                         <h3 className="font-semibold text-gray-900 mb-2">Ubicación</h3>
-                        <div className="flex items-start gap-2 text-gray-600">
-                            <MapPinIcon className="w-5 h-5 shrink-0 mt-0.5" />
-                            <div>
-                                <p>{evData.location_text || "Ubicación por definir"}</p>
-                                {evData.location_hint && (
-                                    <p className="text-sm text-gray-500 mt-1">{evData.location_hint}</p>
-                                )}
+                        {evData.location_lat && evData.location_long ? (
+                            <a 
+                                href={`https://www.google.com/maps/search/?api=1&query=${evData.location_lat},${evData.location_long}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-start gap-2 text-gray-600 hover:text-primary transition-colors group"
+                            >
+                                <MapPinIcon className="w-5 h-5 shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="group-hover:underline">{evData.location_text || "Ubicación por definir"}</p>
+                                    {evData.location_hint && (
+                                        <p className="text-sm text-gray-500 mt-1">{evData.location_hint}</p>
+                                    )}
+                                </div>
+                            </a>
+                        ) : (
+                            <div className="flex items-start gap-2 text-gray-600">
+                                <MapPinIcon className="w-5 h-5 shrink-0 mt-0.5" />
+                                <div>
+                                    <p>{evData.location_text || "Ubicación por definir"}</p>
+                                    {evData.location_hint && (
+                                        <p className="text-sm text-gray-500 mt-1">{evData.location_hint}</p>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="border-t pt-4">
