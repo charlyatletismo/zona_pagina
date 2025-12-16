@@ -57,9 +57,9 @@ CREATE TABLE `events` (
 	`disclaimer_of_liability_content` text(2048),
 	`award_prizes` text(1024),
 	`created_by` text NOT NULL,
-	`created_at` text NOT NULL,
-	`last_update_by` text,
-	`last_update_at` text,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`last_update_by` text NOT NULL,
+	`last_update_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY (`event_type`) REFERENCES `event_types`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`last_update_by`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
@@ -98,10 +98,19 @@ CREATE TABLE `users` (
 	`phone` text NOT NULL,
 	`name` text,
 	`surname` text,
-	`age` integer,
+	`sex` text(1),
+	`date_of_birth` text,
+	`country` text(64),
+	`city` text(64),
+	`full_location` text(256),
+	`manager_id` text(28),
+	`training_team` text(64),
 	`email` text,
 	`temp_code` text(6),
-	`roles` text
+	`roles` text,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`manager_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_phone_unique` ON `users` (`phone`);--> statement-breakpoint
