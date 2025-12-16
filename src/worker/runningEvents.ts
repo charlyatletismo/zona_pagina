@@ -1,8 +1,10 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { lt, gte, desc } from 'drizzle-orm';
+import { eq, lt, gte, desc } from 'drizzle-orm';
 import { events } from './db/schema'
+import { updatedEventTrigger } from "./triggers";
+import { ADMIN_ROLE, ORGANIZER_ROLE } from './_roles';
 
 
 export const runningEventsRoute = new Hono<{ Bindings: Env }>()
@@ -46,4 +48,75 @@ export const runningEventsRoute = new Hono<{ Bindings: Env }>()
       closed: closedInscriptionEvents,
       past: pastEvents,
     });
+  })
+  .get("/:id", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const event = await db.select()
+      .from(events)
+      .where(eq(events.id, Number(id)))
+      .limit(1);
+    if (event.length === 0) {
+      return c.json({ error: "Event not found" }, 404);
+    }
+    return c.json(event[0]);
+  })
+  .post("/add", async (c) => {
+    const userId: string = c.get('jwtPayload').id;
+    const roles: string[] = c.get('jwtPayload').roles.split(',');
+    if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
+      return c.json({ error: "Unauthorized" }, 403);
+    }
+
+    const db = drizzle(c.env.DB);
+    const eventData: Record<string, any> = await c.req.json();
+    if (!eventData.title || !eventData.date || !eventData.event_type) {
+      return c.json({ error: "title, date and event_type are required" }, 400);
+    }
+    const data = {
+      title: eventData.title,
+      description: eventData.description || "",
+      date: eventData.date,
+      inscription_start: eventData.inscription_start,
+      inscription_end: eventData.inscription_end,
+      location_hint: eventData.location_hint,
+      location_text: eventData.location_text,
+      location_lat: eventData.location_lat,
+      location_long: eventData.location_long,
+      circuit_map_url: eventData.circuit_map_url,
+      event_type: eventData.event_type,
+      rules: eventData.rules,
+      disclaimer_of_liability_title: eventData.disclaimer_of_liability_title,
+      disclaimer_of_liability_content: eventData.disclaimer_of_liability_content,
+      award_prizes: eventData.award_prizes,
+      created_by: userId,
+      last_update_by: userId,
+    }
+    const result = await db.insert(events).values(data).returning();
+    updatedEventTrigger(result[0].id);
+    return c.json(result[0]);
+  })
+  .post("/update/:id", async (c) => {
+    const roles: string[] = c.get('jwtPayload').roles.split(',');
+    if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
+      return c.json({ error: "Unauthorized" }, 403);
+    }
+
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const eventData: Record<string, any> = await c.req.json();
+    if (!eventData.title || !eventData.date || !eventData.event_type) {
+      return c.json({ error: "title, date and event_type are required" }, 400);
+    }
+    eventData.last_update_by = c.get('jwtPayload').id;
+    eventData.last_update_at = new Date().toISOString();
+    if (eventData.id) {
+      delete eventData.id;
+    }
+    await db.update(events)
+      .set(eventData)
+      .where(eq(events.id, Number(id)))
+      .run();
+    updatedEventTrigger(Number(id));
+    return c.json({ success: true });
   });

@@ -74,9 +74,13 @@ export const events = sqliteTable("events", {
   disclaimer_of_liability_content: text({ length: 2048 }),
   award_prizes: text({ length: 1024 }),
   created_by: text().notNull().references(() => users.id),
-  created_at: text().notNull(),
-  last_update_by: text().references(() => users.id),
-  last_update_at: text(),
+  created_at: text().notNull()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  last_update_by: text().notNull().references(() => users.id),
+  last_update_at: text()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
 });
 
 
