@@ -43,6 +43,7 @@ CREATE TABLE `events` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
+	`image_url` text(512),
 	`date` text NOT NULL,
 	`inscription_start` text(64),
 	`inscription_end` text(64),

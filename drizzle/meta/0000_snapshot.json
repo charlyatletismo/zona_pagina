@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "38a32227-4efb-479c-b79c-4fda5a3746e8",
+  "id": "c7b3707d-1e04-442c-874a-e0977b71be59",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event_circuits": {
@@ -300,6 +300,13 @@
         "description": {
           "name": "description",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text(512)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

@@ -60,6 +60,7 @@ export const events = sqliteTable("events", {
   id: int().primaryKey({ autoIncrement: true }),
   title: text().notNull(),
   description: text(),
+  image_url: text({ length: 512 }),
   date: text().notNull(), // ISO string
   inscription_start: text({ length: 64 }),
   inscription_end: text({ length: 64 }),
