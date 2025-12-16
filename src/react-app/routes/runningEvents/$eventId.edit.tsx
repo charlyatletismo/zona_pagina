@@ -240,6 +240,17 @@ function RouteComponent() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
+              <label htmlFor="image_url" className="text-sm font-medium text-gray-700">URL de Imagen</label>
+              <Input
+                id="image_url"
+                name="image_url"
+                value={formData.image_url || ''}
+                onChange={handleChange}
+                placeholder="https://ejemplo.com/imagen.jpg"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
               <label htmlFor="location_text" className="text-sm font-medium text-gray-700">Ubicación (Texto)</label>
               <Input
                 id="location_text"

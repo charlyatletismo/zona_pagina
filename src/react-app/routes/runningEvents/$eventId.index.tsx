@@ -101,13 +101,23 @@ function RouteComponent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Main Content - Left Column */}
             <div className="md:col-span-2 space-y-8">
-                {/* Image Placeholder */}
-                <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-                    <div className="text-center text-gray-400">
-                        <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                        <p>Imagen del Evento</p>
+                {/* Image */}
+                {evData.image_url ? (
+                    <div className="aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                        <img 
+                            src={evData.image_url} 
+                            alt={evData.title} 
+                            className="w-full h-full object-cover"
+                        />
                     </div>
-                </div>
+                ) : (
+                    <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                        <div className="text-center text-gray-400">
+                            <ImageIcon className="w-12 h-12 mx-auto mb-2" />
+                            <p>Imagen del Evento</p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Description */}
                 <section>
