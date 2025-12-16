@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, MapPinnedIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { type InferSelectModel } from 'drizzle-orm';
 import { events } from '../../../worker/db/schema';
@@ -20,6 +20,7 @@ function RouteComponent() {
   const [eventTypes, setEventTypes] = useState<Array<{ id: number; name: string; description: string }>>([]);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<InferSelectModel<typeof events>>>({});
+  const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -42,6 +43,7 @@ function RouteComponent() {
 
         const data = await res.json();
         setFormData(data);
+        setCoordinatesGoogleMaps(`${data.location_lat}, ${data.location_long}`)
       } catch (err) {
         setError('Error al cargar la información del evento');
         console.error(err);
@@ -254,6 +256,65 @@ function RouteComponent() {
                 name="location_hint"
                 value={formData.location_hint || ''}
                 onChange={handleChange}
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label htmlFor="coordinatesMap" className="text-sm font-medium text-gray-700">Coordenadas Google Maps (click derecho en pin + click en coordenadas)</label>
+              <div className="flex gap-5">
+                <Input
+                  id="coordinatesMap"
+                  name="coordinatesMap"
+                  placeholder="latitud, longitud"
+                  value={coordinatesGoogleMaps}
+                  onChange={(e) => {
+                    const url = e.target.value;
+                    setCoordinatesGoogleMaps(url);
+
+                    // Extract coordinates from Google Maps URL
+                    const match = url.match(/(-?\d+\.?\d*), (-?\d+\.?\d*)/);
+                    if (match) {
+                      const [, lat, lng] = match;
+                      setFormData(prev => ({
+                        ...prev,
+                        location_lat: parseFloat(lat),
+                        location_long: parseFloat(lng)
+                      }));
+                    }
+                  }}
+                />
+                <Button variant="secondary" className="w-[25%]" asChild>
+                  <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
+                    <MapPinnedIcon className="w-4 h-4 mr-2" />
+                    Ir a Google Maps
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="location_lat" className="text-sm font-medium text-gray-700">Latitud</label>
+              <Input
+                id="location_lat"
+                name="location_lat"
+                type="number"
+                step="any"
+                value={formData.location_lat || ''}
+                onChange={handleChange}
+                disabled
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="location_long" className="text-sm font-medium text-gray-700">Longitud</label>
+              <Input
+                id="location_long"
+                name="location_long"
+                type="number"
+                step="any"
+                value={formData.location_long || ''}
+                onChange={handleChange}
+                disabled
               />
             </div>
 
