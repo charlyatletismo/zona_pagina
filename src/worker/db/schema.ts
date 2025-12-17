@@ -61,6 +61,7 @@ export const sportingEvents = sqliteTable("sporting_events", {
   title: text().notNull(),
   description: text(),
   image_url: text({ length: 512 }),
+  image_preview_url: text({ length: 512 }),
   date: text().notNull(), // ISO string
   inscription_start: text({ length: 64 }),
   inscription_end: text({ length: 64 }),
@@ -76,12 +77,10 @@ export const sportingEvents = sqliteTable("sporting_events", {
   award_prizes: text({ length: 1024 }),
   created_by: text().notNull().references(() => users.id),
   created_at: text().notNull()
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+    .default(sql`CURRENT_TIMESTAMP`),
   last_update_by: text().notNull().references(() => users.id),
-  last_update_at: text()
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+  last_update_at: text().notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
 });
 
 

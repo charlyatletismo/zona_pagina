@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c65055b2-0643-42e3-aaa9-b3204f706775",
+  "id": "012857d5-a0b1-4172-82ef-a2c515ebd638",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "athlete_categories": {
@@ -489,6 +489,13 @@
         },
         "image_url": {
           "name": "image_url",
+          "type": "text(512)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "image_preview_url": {
+          "name": "image_preview_url",
           "type": "text(512)",
           "primaryKey": false,
           "notNull": false,
