@@ -15,7 +15,7 @@ VALUES (
         "Prpic",
         'gorandp@outlook.com',
         NULL,
-        'admin,organizer,runner,runners_manager'
+        'admin,organizer,athlete,athletes_manager'
     );
 
 INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running');

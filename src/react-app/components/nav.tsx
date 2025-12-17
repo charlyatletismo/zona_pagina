@@ -19,20 +19,20 @@ const navClass = 'bg-transparent text-gray-600 hover:text-primary hover:bg-prima
 const LINK_HOME = { to: '/', label: 'Inicio' };
 const LINK_SERVICES = { to: '/services', label: 'Servicios' };
 const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
-// const LINK_RUNNER_STATS = { to: '/runner/stats', label: 'Estadísticas' };
+// const LINK_ATHLETE_STATS = { to: '/athlete/stats', label: 'Estadísticas' };
 const LINKS_BY_ROLE: Record<string, any> = {
   "": [
     LINK_HOME,
     LINK_SERVICES,
     LINK_ABOUT,
   ],
-  [roles.RUNNER_ROLE]: [
+  [roles.ATHLETE_ROLE]: [
     LINK_HOME,
-    // LINK_RUNNER_STATS,
+    // LINK_ATHLETE_STATS,
   ],
-  [roles.RUNNERS_MANAGER_ROLE]: [
+  [roles.ATHLETES_MANAGER_ROLE]: [
     LINK_HOME,
-    // LINK_RUNNER_STATS,
+    // LINK_ATHLETE_STATS,
   ],
   [roles.ADMIN_ROLE]: [
     LINK_HOME,

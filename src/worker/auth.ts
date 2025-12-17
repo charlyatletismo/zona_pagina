@@ -174,7 +174,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       id: user_id,
       phone,
       temp_code: tempCode,
-      roles: 'runner',
+      roles: 'athlete',
     }).run();
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {

@@ -1,4 +1,4 @@
 export const ADMIN_ROLE = 'admin';
 export const ORGANIZER_ROLE = 'organizer';
-export const RUNNER_ROLE = 'runner';
-export const RUNNERS_MANAGER_ROLE = 'runners_manager';
+export const ATHLETE_ROLE = 'athlete';
+export const ATHLETES_MANAGER_ROLE = 'athletes_manager';
