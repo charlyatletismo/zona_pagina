@@ -1,17 +1,14 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
+import { getSportingEvents } from '@/lib/apiCalls'
+import { SportingEvent } from '@/lib/types'
 
 
 export const Route = createFileRoute('/')({
   component: Index,
   beforeLoad: unprotectedCheck(),
-  loader: () => fetch('/api/sportingEvents', { cache: 'no-store' }).then((res) => res.json() as Promise<{
-    comingSoon: any[];
-    open: any[];
-    closed: any[];
-    past: any[];
-  }>),
+  loader: getSportingEvents,
   staleTime: 1000 * 60 * 5,
 })
 
@@ -126,7 +123,7 @@ function Index() {
   )
 }
 
-function EventCard({ event }: { event: any }) {
+function EventCard({ event }: { event: SportingEvent }) {
   return (
     <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 group-hover:shadow-lg transition-all duration-300 flex flex-col h-full group-hover:-translate-y-1'>
       <div className='flex items-start mb-4'>
