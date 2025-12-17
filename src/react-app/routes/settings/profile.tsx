@@ -86,6 +86,11 @@ function RouteComponent() {
       const phone = value + '9' + (formData.barePhone || '');
       setFormData(prev => ({ ...prev, phone, countryCode: value }));
       return;
+    } else if (name === 'name' || name === 'surname') {
+      // capitalize first letter
+      const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
+      setFormData(prev => ({ ...prev, [name]: capitalizedValue }));
+      return;
     }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -95,6 +100,8 @@ function RouteComponent() {
     setSaving(true);
     setError('');
     setSuccess('');
+    // Scroll to top of the page when form is submitted
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       const token = localStorage.getItem('JWT_TOKEN');
@@ -112,8 +119,16 @@ function RouteComponent() {
       }
 
       setSuccess('Perfil actualizado correctamente');
-      setTimeout(() => setSuccess(''), 3000);
+      const req = localStorage.getItem('REQUIRE_PROFILE_UPDATE');
       localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
+      setTimeout(() => {
+        setSuccess('');
+        if (req === 'true') {
+          navigate({ to: '/' });
+        } else {
+          navigate({ to: '/settings' });
+        }
+      }, 3000);
     } catch (err) {
       setError('Error al guardar los cambios');
       console.error(err);
