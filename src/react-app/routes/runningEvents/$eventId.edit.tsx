@@ -84,6 +84,8 @@ function RouteComponent() {
     setSaving(true);
     setError('');
     setSuccess('');
+    // Scroll to top of the page when form is submitted
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       const token = localStorage.getItem('JWT_TOKEN');
