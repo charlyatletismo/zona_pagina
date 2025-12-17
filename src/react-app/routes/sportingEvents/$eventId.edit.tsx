@@ -8,9 +8,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { ArrowLeft, Save, AlertCircle, MapPinnedIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { type InferSelectModel } from 'drizzle-orm';
-import { events } from '../../../worker/db/schema';
+import { sportingEvents } from '../../../worker/db/schema';
 
-export const Route = createFileRoute('/runningEvents/$eventId/edit')({
+export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
 })
@@ -19,7 +19,7 @@ function RouteComponent() {
   const { eventId } = Route.useParams();
   const [eventTypes, setEventTypes] = useState<Array<{ id: number; name: string; description: string }>>([]);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<Partial<InferSelectModel<typeof events>>>({});
+  const [formData, setFormData] = useState<Partial<InferSelectModel<typeof sportingEvents>>>({});
   const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,7 +30,7 @@ function RouteComponent() {
     const fetchEvent = async () => {
       try {
         const token = localStorage.getItem('JWT_TOKEN');
-        const res = await fetch(`/api/runningEvents/${eventId}`, {
+        const res = await fetch(`/api/sportingEvents/${eventId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -54,7 +54,7 @@ function RouteComponent() {
     const fetchEventTypes = async () => {
       try {
         const token = localStorage.getItem('JWT_TOKEN');
-        const res = await fetch('/api/runningEventTypes', {
+        const res = await fetch('/api/sportingEventTypes', {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -89,7 +89,7 @@ function RouteComponent() {
 
     try {
       const token = localStorage.getItem('JWT_TOKEN');
-      const res = await fetch(`/api/runningEvents/update/${eventId}`, {
+      const res = await fetch(`/api/sportingEvents/update/${eventId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ function RouteComponent() {
       setSuccess('Evento actualizado correctamente');
       setTimeout(() => {
         setSuccess('');
-        navigate({ to: `/runningEvents/${eventId}` });
+        navigate({ to: `/sportingEvents/${eventId}` });
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'Error al guardar los cambios');
@@ -131,12 +131,11 @@ function RouteComponent() {
         className="mb-4 pl-0 hover:bg-transparent hover:text-primary" 
         asChild
       >
-        <Link to="/runningEvents/$eventId" params={{ eventId }}>
+        <Link to="/sportingEvents/$eventId" params={{ eventId }}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver al Evento
         </Link>
       </Button>
-
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-800">Editar Evento</h2>
@@ -388,5 +387,5 @@ function RouteComponent() {
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -2,21 +2,21 @@ import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, lt, gte, desc } from 'drizzle-orm';
-import { events } from './db/schema'
+import { sportingEvents } from './db/schema'
 import { updatedEventTrigger } from "./triggers";
 import { ADMIN_ROLE, ORGANIZER_ROLE } from './_roles';
 
 
-export const runningEventsRoute = new Hono<{ Bindings: Env }>()
+export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const now = new Date();
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const activeEvents = await db.select()
-      .from(events)
-      .where(gte(events.date, yesterday.toISOString()))
-      .orderBy(desc(events.date));
+      .from(sportingEvents)
+      .where(gte(sportingEvents.date, yesterday.toISOString()))
+      .orderBy(desc(sportingEvents.date));
 
     let comingSoonEvents = [];
     let openInscriptionEvents = [];
@@ -37,9 +37,9 @@ export const runningEventsRoute = new Hono<{ Bindings: Env }>()
     }
 
     const pastEvents = await db.select()
-      .from(events)
-      .where(lt(events.date, yesterday.toISOString()))
-      .orderBy(desc(events.date))
+      .from(sportingEvents)
+      .where(lt(sportingEvents.date, yesterday.toISOString()))
+      .orderBy(desc(sportingEvents.date))
       .limit(5);
 
     return c.json({
@@ -53,8 +53,8 @@ export const runningEventsRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
     const event = await db.select()
-      .from(events)
-      .where(eq(events.id, Number(id)))
+      .from(sportingEvents)
+      .where(eq(sportingEvents.id, Number(id)))
       .limit(1);
     if (event.length === 0) {
       return c.json({ error: "Event not found" }, 404);
@@ -92,7 +92,7 @@ export const runningEventsRoute = new Hono<{ Bindings: Env }>()
       created_by: userId,
       last_update_by: userId,
     }
-    const result = await db.insert(events).values(data).returning();
+    const result = await db.insert(sportingEvents).values(data).returning();
     updatedEventTrigger(result[0].id);
     return c.json(result[0]);
   })
@@ -113,9 +113,9 @@ export const runningEventsRoute = new Hono<{ Bindings: Env }>()
     if (eventData.id) {
       delete eventData.id;
     }
-    await db.update(events)
+    await db.update(sportingEvents)
       .set(eventData)
-      .where(eq(events.id, Number(id)))
+      .where(eq(sportingEvents.id, Number(id)))
       .run();
     updatedEventTrigger(Number(id));
     return c.json({ success: true });

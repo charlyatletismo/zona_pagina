@@ -35,8 +35,8 @@ export const feesCategories = sqliteTable("fees_categories", {
 });
 
 
-// Runner Categories (e.g., Adult, Junior, Senior, Wheelchair, etc.)
-export const runnerCategories = sqliteTable("runner_categories", {
+// Athlete Categories (e.g., Adult, Junior, Senior, Wheelchair, etc.)
+export const athleteCategories = sqliteTable("athlete_categories", {
   id: text({ length: 28 }).primaryKey(),
   name: text({ length: 64 }).notNull(),
   description: text({ length: 256 }),
@@ -48,7 +48,7 @@ export const runnerCategories = sqliteTable("runner_categories", {
 
 
 // Event Types (e.g., Marathon, Half-Marathon, 10K, Trail, etc.)
-export const eventTypes = sqliteTable("event_types", {
+export const sportingEventTypes = sqliteTable("sporting_event_types", {
   id: int().primaryKey({ autoIncrement: true }),
   name: text({ length: 64 }).notNull(),
   description: text({ length: 256 }),
@@ -56,7 +56,7 @@ export const eventTypes = sqliteTable("event_types", {
 
 
 // Main Events Table
-export const events = sqliteTable("events", {
+export const sportingEvents = sqliteTable("sporting_events", {
   id: int().primaryKey({ autoIncrement: true }),
   title: text().notNull(),
   description: text(),
@@ -69,7 +69,7 @@ export const events = sqliteTable("events", {
   location_lat: real(),
   location_long: real(),
   circuit_map_url: text({ length: 512 }),
-  event_type: int().notNull().references(() => eventTypes.id),
+  event_type: int().notNull().references(() => sportingEventTypes.id),
   rules: text({ length: 2048 }),
   disclaimer_of_liability_title: text({ length: 64 }),
   disclaimer_of_liability_content: text({ length: 2048 }),
@@ -87,9 +87,9 @@ export const events = sqliteTable("events", {
 
 // Milestone or Schedule for Events
 // It can be used for start times, award ceremonies, etc.
-export const eventSchedules = sqliteTable("event_schedules", {
+export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: text().notNull().references(() => events.id),
+  event_id: text().notNull().references(() => sportingEvents.id),
   date: text().notNull(), // ISO string
   title: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
@@ -100,12 +100,12 @@ export const eventSchedules = sqliteTable("event_schedules", {
 });
 
 
-// Details about which runner categories can register for an event, along with fees
+// Details about which athlete categories can register for an event, along with fees
 // and distances
-export const eventRunnerCategories = sqliteTable("event_runner_categories", {
+export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlete_categories", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: text().notNull().references(() => events.id),
-  runner_category_id: text().notNull().references(() => runnerCategories.id),
+  event_id: text().notNull().references(() => sportingEvents.id),
+  athlete_category_id: text().notNull().references(() => athleteCategories.id),
   fee_category_id: text().notNull().references(() => feesCategories.id),
   distance_km: real().notNull(),
   fee_amount: real().notNull(),
@@ -114,9 +114,9 @@ export const eventRunnerCategories = sqliteTable("event_runner_categories", {
 
 
 // Circuits or Routes within an Event
-export const eventCircuits = sqliteTable("event_circuits", {
+export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: text().notNull().references(() => events.id),
+  event_id: text().notNull().references(() => sportingEvents.id),
   name: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
   distance_km: real().notNull(),
@@ -126,7 +126,7 @@ export const eventCircuits = sqliteTable("event_circuits", {
 // Inscriptions Table
 export const inscriptions = sqliteTable("inscriptions", {
   id: text({ length: 28 }).primaryKey(),
-  event_id: text().notNull().references(() => events.id),
+  event_id: text().notNull().references(() => sportingEvents.id),
   user_id: text().notNull().references(() => users.id),
   inscription_date: text().notNull(),
   paid: int().notNull(), // 0 = false, 1 = true

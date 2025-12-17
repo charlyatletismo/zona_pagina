@@ -1,11 +1,293 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c7b3707d-1e04-442c-874a-e0977b71be59",
+  "id": "c65055b2-0643-42e3-aaa9-b3204f706775",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "event_circuits": {
-      "name": "event_circuits",
+    "athlete_categories": {
+      "name": "athlete_categories",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text(28)",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fee_category_id": {
+          "name": "fee_category_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "min_age": {
+          "name": "min_age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "max_age": {
+          "name": "max_age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "condition": {
+          "name": "condition",
+          "type": "text(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "athlete_categories_fee_category_id_fees_categories_id_fk": {
+          "name": "athlete_categories_fee_category_id_fees_categories_id_fk",
+          "tableFrom": "athlete_categories",
+          "tableTo": "fees_categories",
+          "columnsFrom": [
+            "fee_category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "fees_categories": {
+      "name": "fees_categories",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text(28)",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "inscriptions": {
+      "name": "inscriptions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text(28)",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inscription_date": {
+          "name": "inscription_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "paid": {
+          "name": "paid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payment_date": {
+          "name": "payment_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "inscriptions_event_id_sporting_events_id_fk": {
+          "name": "inscriptions_event_id_sporting_events_id_fk",
+          "tableFrom": "inscriptions",
+          "tableTo": "sporting_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "inscriptions_user_id_users_id_fk": {
+          "name": "inscriptions_user_id_users_id_fk",
+          "tableFrom": "inscriptions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "sporting_event_athlete_categories": {
+      "name": "sporting_event_athlete_categories",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "athlete_category_id": {
+          "name": "athlete_category_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fee_category_id": {
+          "name": "fee_category_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "distance_km": {
+          "name": "distance_km",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fee_amount": {
+          "name": "fee_amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "allowed": {
+          "name": "allowed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sporting_event_athlete_categories_event_id_sporting_events_id_fk": {
+          "name": "sporting_event_athlete_categories_event_id_sporting_events_id_fk",
+          "tableFrom": "sporting_event_athlete_categories",
+          "tableTo": "sporting_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_athlete_categories_athlete_category_id_athlete_categories_id_fk": {
+          "name": "sporting_event_athlete_categories_athlete_category_id_athlete_categories_id_fk",
+          "tableFrom": "sporting_event_athlete_categories",
+          "tableTo": "athlete_categories",
+          "columnsFrom": [
+            "athlete_category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_athlete_categories_fee_category_id_fees_categories_id_fk": {
+          "name": "sporting_event_athlete_categories_fee_category_id_fees_categories_id_fk",
+          "tableFrom": "sporting_event_athlete_categories",
+          "tableTo": "fees_categories",
+          "columnsFrom": [
+            "fee_category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "sporting_event_circuits": {
+      "name": "sporting_event_circuits",
       "columns": {
         "id": {
           "name": "id",
@@ -45,10 +327,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "event_circuits_event_id_events_id_fk": {
-          "name": "event_circuits_event_id_events_id_fk",
-          "tableFrom": "event_circuits",
-          "tableTo": "events",
+        "sporting_event_circuits_event_id_sporting_events_id_fk": {
+          "name": "sporting_event_circuits_event_id_sporting_events_id_fk",
+          "tableFrom": "sporting_event_circuits",
+          "tableTo": "sporting_events",
           "columnsFrom": [
             "event_id"
           ],
@@ -63,107 +345,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "event_runner_categories": {
-      "name": "event_runner_categories",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "runner_category_id": {
-          "name": "runner_category_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "fee_category_id": {
-          "name": "fee_category_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "distance_km": {
-          "name": "distance_km",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "fee_amount": {
-          "name": "fee_amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "allowed": {
-          "name": "allowed",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "event_runner_categories_event_id_events_id_fk": {
-          "name": "event_runner_categories_event_id_events_id_fk",
-          "tableFrom": "event_runner_categories",
-          "tableTo": "events",
-          "columnsFrom": [
-            "event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "event_runner_categories_runner_category_id_runner_categories_id_fk": {
-          "name": "event_runner_categories_runner_category_id_runner_categories_id_fk",
-          "tableFrom": "event_runner_categories",
-          "tableTo": "runner_categories",
-          "columnsFrom": [
-            "runner_category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "event_runner_categories_fee_category_id_fees_categories_id_fk": {
-          "name": "event_runner_categories_fee_category_id_fees_categories_id_fk",
-          "tableFrom": "event_runner_categories",
-          "tableTo": "fees_categories",
-          "columnsFrom": [
-            "fee_category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "event_schedules": {
-      "name": "event_schedules",
+    "sporting_event_schedules": {
+      "name": "sporting_event_schedules",
       "columns": {
         "id": {
           "name": "id",
@@ -231,10 +414,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "event_schedules_event_id_events_id_fk": {
-          "name": "event_schedules_event_id_events_id_fk",
-          "tableFrom": "event_schedules",
-          "tableTo": "events",
+        "sporting_event_schedules_event_id_sporting_events_id_fk": {
+          "name": "sporting_event_schedules_event_id_sporting_events_id_fk",
+          "tableFrom": "sporting_event_schedules",
+          "tableTo": "sporting_events",
           "columnsFrom": [
             "event_id"
           ],
@@ -249,8 +432,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "event_types": {
-      "name": "event_types",
+    "sporting_event_types": {
+      "name": "sporting_event_types",
       "columns": {
         "id": {
           "name": "id",
@@ -280,8 +463,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "events": {
-      "name": "events",
+    "sporting_events": {
+      "name": "sporting_events",
       "columns": {
         "id": {
           "name": "id",
@@ -435,10 +618,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "events_event_type_event_types_id_fk": {
-          "name": "events_event_type_event_types_id_fk",
-          "tableFrom": "events",
-          "tableTo": "event_types",
+        "sporting_events_event_type_sporting_event_types_id_fk": {
+          "name": "sporting_events_event_type_sporting_event_types_id_fk",
+          "tableFrom": "sporting_events",
+          "tableTo": "sporting_event_types",
           "columnsFrom": [
             "event_type"
           ],
@@ -448,9 +631,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "events_created_by_users_id_fk": {
-          "name": "events_created_by_users_id_fk",
-          "tableFrom": "events",
+        "sporting_events_created_by_users_id_fk": {
+          "name": "sporting_events_created_by_users_id_fk",
+          "tableFrom": "sporting_events",
           "tableTo": "users",
           "columnsFrom": [
             "created_by"
@@ -461,195 +644,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "events_last_update_by_users_id_fk": {
-          "name": "events_last_update_by_users_id_fk",
-          "tableFrom": "events",
+        "sporting_events_last_update_by_users_id_fk": {
+          "name": "sporting_events_last_update_by_users_id_fk",
+          "tableFrom": "sporting_events",
           "tableTo": "users",
           "columnsFrom": [
             "last_update_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "fees_categories": {
-      "name": "fees_categories",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(28)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text(64)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text(256)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "inscriptions": {
-      "name": "inscriptions",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(28)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inscription_date": {
-          "name": "inscription_date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "paid": {
-          "name": "paid",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "payment_date": {
-          "name": "payment_date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "inscriptions_event_id_events_id_fk": {
-          "name": "inscriptions_event_id_events_id_fk",
-          "tableFrom": "inscriptions",
-          "tableTo": "events",
-          "columnsFrom": [
-            "event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "inscriptions_user_id_users_id_fk": {
-          "name": "inscriptions_user_id_users_id_fk",
-          "tableFrom": "inscriptions",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "runner_categories": {
-      "name": "runner_categories",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text(28)",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text(64)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text(256)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "fee_category_id": {
-          "name": "fee_category_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "min_age": {
-          "name": "min_age",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "max_age": {
-          "name": "max_age",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "condition": {
-          "name": "condition",
-          "type": "text(256)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "runner_categories_fee_category_id_fees_categories_id_fk": {
-          "name": "runner_categories_fee_category_id_fees_categories_id_fk",
-          "tableFrom": "runner_categories",
-          "tableTo": "fees_categories",
-          "columnsFrom": [
-            "fee_category_id"
           ],
           "columnsTo": [
             "id"

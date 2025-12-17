@@ -2,14 +2,14 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
 import React from 'react'
 import { type InferSelectModel } from 'drizzle-orm'
-import { events } from '../../../worker/db/schema'
+import { sportingEvents } from '../../../worker/db/schema'
 import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
 
 
-export const Route = createFileRoute('/runningEvents/$eventId/')({
+export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
 })
@@ -17,8 +17,8 @@ export const Route = createFileRoute('/runningEvents/$eventId/')({
 
 function RouteComponent() {
   const { eventId } = Route.useParams()
-  console.log("Hello from /runningEvents/$eventId route", Route.useParams());
-  const [evData, setEvData] = React.useState<InferSelectModel<typeof events> | null>(null);
+  console.log("Hello from /sportingEvents/$eventId route", Route.useParams());
+  const [evData, setEvData] = React.useState<InferSelectModel<typeof sportingEvents> | null>(null);
   const [loading, setLoading] = React.useState(true);
   const token = localStorage.getItem('JWT_TOKEN');
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
@@ -26,7 +26,7 @@ function RouteComponent() {
 
   React.useEffect(() => {
     setLoading(true);
-    fetch(`/api/runningEvents/${eventId}`, {
+    fetch(`/api/sportingEvents/${eventId}`, {
       cache: 'no-store', method: 'GET', headers: {
         'Authorization': `Bearer ${token}`
       } })
@@ -79,7 +79,7 @@ function RouteComponent() {
 
             {canEdit && (
                 <Button asChild variant="outline">
-                  <Link to="/runningEvents/$eventId/edit" params={{ eventId }}>
+                  <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
                         <Edit className="w-4 h-4 mr-2" />
                         Editar
                     </Link>

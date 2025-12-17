@@ -15,19 +15,19 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsersIndexRouteImport } from './routes/users/index'
+import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as RunningEventsIndexRouteImport } from './routes/runningEvents/index'
 import { Route as UsersAddRouteImport } from './routes/users/add'
 import { Route as UsersUserIdRouteImport } from './routes/users/$userId'
+import { Route as SportingEventsAddRouteImport } from './routes/sportingEvents/add'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
-import { Route as RunningEventsAddRouteImport } from './routes/runningEvents/add'
 import { Route as RunnerStatsRouteImport } from './routes/runner/stats'
-import { Route as RunningEventsEventIdIndexRouteImport } from './routes/runningEvents/$eventId.index'
+import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
 import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
-import { Route as RunningEventsEventIdEnrollRouteImport } from './routes/runningEvents/$eventId.enroll'
-import { Route as RunningEventsEventIdEditRouteImport } from './routes/runningEvents/$eventId.edit'
-import { Route as RunningEventsEventIdRunnerIdRouteImport } from './routes/runningEvents/$eventId.$runnerId'
+import { Route as SportingEventsEventIdEnrollRouteImport } from './routes/sportingEvents/$eventId.enroll'
+import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
+import { Route as SportingEventsEventIdRunnerIdRouteImport } from './routes/sportingEvents/$eventId.$runnerId'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -59,14 +59,14 @@ const UsersIndexRoute = UsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SportingEventsIndexRoute = SportingEventsIndexRouteImport.update({
+  id: '/sportingEvents/',
+  path: '/sportingEvents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RunningEventsIndexRoute = RunningEventsIndexRouteImport.update({
-  id: '/runningEvents/',
-  path: '/runningEvents/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsersAddRoute = UsersAddRouteImport.update({
@@ -79,6 +79,11 @@ const UsersUserIdRoute = UsersUserIdRouteImport.update({
   path: '/users/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SportingEventsAddRoute = SportingEventsAddRouteImport.update({
+  id: '/sportingEvents/add',
+  path: '/sportingEvents/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsProfileRoute = SettingsProfileRouteImport.update({
   id: '/settings/profile',
   path: '/settings/profile',
@@ -89,20 +94,15 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RunningEventsAddRoute = RunningEventsAddRouteImport.update({
-  id: '/runningEvents/add',
-  path: '/runningEvents/add',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RunnerStatsRoute = RunnerStatsRouteImport.update({
   id: '/runner/stats',
   path: '/runner/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RunningEventsEventIdIndexRoute =
-  RunningEventsEventIdIndexRouteImport.update({
-    id: '/runningEvents/$eventId/',
-    path: '/runningEvents/$eventId/',
+const SportingEventsEventIdIndexRoute =
+  SportingEventsEventIdIndexRouteImport.update({
+    id: '/sportingEvents/$eventId/',
+    path: '/sportingEvents/$eventId/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
@@ -110,22 +110,22 @@ const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
   path: '/edit',
   getParentRoute: () => UsersUserIdRoute,
 } as any)
-const RunningEventsEventIdEnrollRoute =
-  RunningEventsEventIdEnrollRouteImport.update({
-    id: '/runningEvents/$eventId/enroll',
-    path: '/runningEvents/$eventId/enroll',
+const SportingEventsEventIdEnrollRoute =
+  SportingEventsEventIdEnrollRouteImport.update({
+    id: '/sportingEvents/$eventId/enroll',
+    path: '/sportingEvents/$eventId/enroll',
     getParentRoute: () => rootRouteImport,
   } as any)
-const RunningEventsEventIdEditRoute =
-  RunningEventsEventIdEditRouteImport.update({
-    id: '/runningEvents/$eventId/edit',
-    path: '/runningEvents/$eventId/edit',
+const SportingEventsEventIdEditRoute =
+  SportingEventsEventIdEditRouteImport.update({
+    id: '/sportingEvents/$eventId/edit',
+    path: '/sportingEvents/$eventId/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
-const RunningEventsEventIdRunnerIdRoute =
-  RunningEventsEventIdRunnerIdRouteImport.update({
-    id: '/runningEvents/$eventId/$runnerId',
-    path: '/runningEvents/$eventId/$runnerId',
+const SportingEventsEventIdRunnerIdRoute =
+  SportingEventsEventIdRunnerIdRouteImport.update({
+    id: '/sportingEvents/$eventId/$runnerId',
+    path: '/sportingEvents/$eventId/$runnerId',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -136,19 +136,19 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/runner/stats': typeof RunnerStatsRoute
-  '/runningEvents/add': typeof RunningEventsAddRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/sportingEvents/add': typeof SportingEventsAddRoute
   '/users/$userId': typeof UsersUserIdRouteWithChildren
   '/users/add': typeof UsersAddRoute
-  '/runningEvents': typeof RunningEventsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/sportingEvents': typeof SportingEventsIndexRoute
   '/users': typeof UsersIndexRoute
-  '/runningEvents/$eventId/$runnerId': typeof RunningEventsEventIdRunnerIdRoute
-  '/runningEvents/$eventId/edit': typeof RunningEventsEventIdEditRoute
-  '/runningEvents/$eventId/enroll': typeof RunningEventsEventIdEnrollRoute
+  '/sportingEvents/$eventId/$runnerId': typeof SportingEventsEventIdRunnerIdRoute
+  '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
+  '/sportingEvents/$eventId/enroll': typeof SportingEventsEventIdEnrollRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
-  '/runningEvents/$eventId': typeof RunningEventsEventIdIndexRoute
+  '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,19 +157,19 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/runner/stats': typeof RunnerStatsRoute
-  '/runningEvents/add': typeof RunningEventsAddRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/sportingEvents/add': typeof SportingEventsAddRoute
   '/users/$userId': typeof UsersUserIdRouteWithChildren
   '/users/add': typeof UsersAddRoute
-  '/runningEvents': typeof RunningEventsIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/sportingEvents': typeof SportingEventsIndexRoute
   '/users': typeof UsersIndexRoute
-  '/runningEvents/$eventId/$runnerId': typeof RunningEventsEventIdRunnerIdRoute
-  '/runningEvents/$eventId/edit': typeof RunningEventsEventIdEditRoute
-  '/runningEvents/$eventId/enroll': typeof RunningEventsEventIdEnrollRoute
+  '/sportingEvents/$eventId/$runnerId': typeof SportingEventsEventIdRunnerIdRoute
+  '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
+  '/sportingEvents/$eventId/enroll': typeof SportingEventsEventIdEnrollRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
-  '/runningEvents/$eventId': typeof RunningEventsEventIdIndexRoute
+  '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,19 +179,19 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/runner/stats': typeof RunnerStatsRoute
-  '/runningEvents/add': typeof RunningEventsAddRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/sportingEvents/add': typeof SportingEventsAddRoute
   '/users/$userId': typeof UsersUserIdRouteWithChildren
   '/users/add': typeof UsersAddRoute
-  '/runningEvents/': typeof RunningEventsIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/sportingEvents/': typeof SportingEventsIndexRoute
   '/users/': typeof UsersIndexRoute
-  '/runningEvents/$eventId/$runnerId': typeof RunningEventsEventIdRunnerIdRoute
-  '/runningEvents/$eventId/edit': typeof RunningEventsEventIdEditRoute
-  '/runningEvents/$eventId/enroll': typeof RunningEventsEventIdEnrollRoute
+  '/sportingEvents/$eventId/$runnerId': typeof SportingEventsEventIdRunnerIdRoute
+  '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
+  '/sportingEvents/$eventId/enroll': typeof SportingEventsEventIdEnrollRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
-  '/runningEvents/$eventId/': typeof RunningEventsEventIdIndexRoute
+  '/sportingEvents/$eventId/': typeof SportingEventsEventIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,19 +202,19 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/runner/stats'
-    | '/runningEvents/add'
     | '/settings/notifications'
     | '/settings/profile'
+    | '/sportingEvents/add'
     | '/users/$userId'
     | '/users/add'
-    | '/runningEvents'
     | '/settings'
+    | '/sportingEvents'
     | '/users'
-    | '/runningEvents/$eventId/$runnerId'
-    | '/runningEvents/$eventId/edit'
-    | '/runningEvents/$eventId/enroll'
+    | '/sportingEvents/$eventId/$runnerId'
+    | '/sportingEvents/$eventId/edit'
+    | '/sportingEvents/$eventId/enroll'
     | '/users/$userId/edit'
-    | '/runningEvents/$eventId'
+    | '/sportingEvents/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -223,19 +223,19 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/runner/stats'
-    | '/runningEvents/add'
     | '/settings/notifications'
     | '/settings/profile'
+    | '/sportingEvents/add'
     | '/users/$userId'
     | '/users/add'
-    | '/runningEvents'
     | '/settings'
+    | '/sportingEvents'
     | '/users'
-    | '/runningEvents/$eventId/$runnerId'
-    | '/runningEvents/$eventId/edit'
-    | '/runningEvents/$eventId/enroll'
+    | '/sportingEvents/$eventId/$runnerId'
+    | '/sportingEvents/$eventId/edit'
+    | '/sportingEvents/$eventId/enroll'
     | '/users/$userId/edit'
-    | '/runningEvents/$eventId'
+    | '/sportingEvents/$eventId'
   id:
     | '__root__'
     | '/'
@@ -244,19 +244,19 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/runner/stats'
-    | '/runningEvents/add'
     | '/settings/notifications'
     | '/settings/profile'
+    | '/sportingEvents/add'
     | '/users/$userId'
     | '/users/add'
-    | '/runningEvents/'
     | '/settings/'
+    | '/sportingEvents/'
     | '/users/'
-    | '/runningEvents/$eventId/$runnerId'
-    | '/runningEvents/$eventId/edit'
-    | '/runningEvents/$eventId/enroll'
+    | '/sportingEvents/$eventId/$runnerId'
+    | '/sportingEvents/$eventId/edit'
+    | '/sportingEvents/$eventId/enroll'
     | '/users/$userId/edit'
-    | '/runningEvents/$eventId/'
+    | '/sportingEvents/$eventId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -266,18 +266,18 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   RunnerStatsRoute: typeof RunnerStatsRoute
-  RunningEventsAddRoute: typeof RunningEventsAddRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
+  SportingEventsAddRoute: typeof SportingEventsAddRoute
   UsersUserIdRoute: typeof UsersUserIdRouteWithChildren
   UsersAddRoute: typeof UsersAddRoute
-  RunningEventsIndexRoute: typeof RunningEventsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
+  SportingEventsIndexRoute: typeof SportingEventsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
-  RunningEventsEventIdRunnerIdRoute: typeof RunningEventsEventIdRunnerIdRoute
-  RunningEventsEventIdEditRoute: typeof RunningEventsEventIdEditRoute
-  RunningEventsEventIdEnrollRoute: typeof RunningEventsEventIdEnrollRoute
-  RunningEventsEventIdIndexRoute: typeof RunningEventsEventIdIndexRoute
+  SportingEventsEventIdRunnerIdRoute: typeof SportingEventsEventIdRunnerIdRoute
+  SportingEventsEventIdEditRoute: typeof SportingEventsEventIdEditRoute
+  SportingEventsEventIdEnrollRoute: typeof SportingEventsEventIdEnrollRoute
+  SportingEventsEventIdIndexRoute: typeof SportingEventsEventIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -324,18 +324,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sportingEvents/': {
+      id: '/sportingEvents/'
+      path: '/sportingEvents'
+      fullPath: '/sportingEvents'
+      preLoaderRoute: typeof SportingEventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/': {
       id: '/settings/'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/runningEvents/': {
-      id: '/runningEvents/'
-      path: '/runningEvents'
-      fullPath: '/runningEvents'
-      preLoaderRoute: typeof RunningEventsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/users/add': {
@@ -352,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sportingEvents/add': {
+      id: '/sportingEvents/add'
+      path: '/sportingEvents/add'
+      fullPath: '/sportingEvents/add'
+      preLoaderRoute: typeof SportingEventsAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/profile': {
       id: '/settings/profile'
       path: '/settings/profile'
@@ -366,13 +373,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/runningEvents/add': {
-      id: '/runningEvents/add'
-      path: '/runningEvents/add'
-      fullPath: '/runningEvents/add'
-      preLoaderRoute: typeof RunningEventsAddRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/runner/stats': {
       id: '/runner/stats'
       path: '/runner/stats'
@@ -380,11 +380,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RunnerStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/runningEvents/$eventId/': {
-      id: '/runningEvents/$eventId/'
-      path: '/runningEvents/$eventId'
-      fullPath: '/runningEvents/$eventId'
-      preLoaderRoute: typeof RunningEventsEventIdIndexRouteImport
+    '/sportingEvents/$eventId/': {
+      id: '/sportingEvents/$eventId/'
+      path: '/sportingEvents/$eventId'
+      fullPath: '/sportingEvents/$eventId'
+      preLoaderRoute: typeof SportingEventsEventIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/users/$userId/edit': {
@@ -394,25 +394,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersUserIdEditRouteImport
       parentRoute: typeof UsersUserIdRoute
     }
-    '/runningEvents/$eventId/enroll': {
-      id: '/runningEvents/$eventId/enroll'
-      path: '/runningEvents/$eventId/enroll'
-      fullPath: '/runningEvents/$eventId/enroll'
-      preLoaderRoute: typeof RunningEventsEventIdEnrollRouteImport
+    '/sportingEvents/$eventId/enroll': {
+      id: '/sportingEvents/$eventId/enroll'
+      path: '/sportingEvents/$eventId/enroll'
+      fullPath: '/sportingEvents/$eventId/enroll'
+      preLoaderRoute: typeof SportingEventsEventIdEnrollRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/runningEvents/$eventId/edit': {
-      id: '/runningEvents/$eventId/edit'
-      path: '/runningEvents/$eventId/edit'
-      fullPath: '/runningEvents/$eventId/edit'
-      preLoaderRoute: typeof RunningEventsEventIdEditRouteImport
+    '/sportingEvents/$eventId/edit': {
+      id: '/sportingEvents/$eventId/edit'
+      path: '/sportingEvents/$eventId/edit'
+      fullPath: '/sportingEvents/$eventId/edit'
+      preLoaderRoute: typeof SportingEventsEventIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/runningEvents/$eventId/$runnerId': {
-      id: '/runningEvents/$eventId/$runnerId'
-      path: '/runningEvents/$eventId/$runnerId'
-      fullPath: '/runningEvents/$eventId/$runnerId'
-      preLoaderRoute: typeof RunningEventsEventIdRunnerIdRouteImport
+    '/sportingEvents/$eventId/$runnerId': {
+      id: '/sportingEvents/$eventId/$runnerId'
+      path: '/sportingEvents/$eventId/$runnerId'
+      fullPath: '/sportingEvents/$eventId/$runnerId'
+      preLoaderRoute: typeof SportingEventsEventIdRunnerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -437,18 +437,18 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   RunnerStatsRoute: RunnerStatsRoute,
-  RunningEventsAddRoute: RunningEventsAddRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
+  SportingEventsAddRoute: SportingEventsAddRoute,
   UsersUserIdRoute: UsersUserIdRouteWithChildren,
   UsersAddRoute: UsersAddRoute,
-  RunningEventsIndexRoute: RunningEventsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
+  SportingEventsIndexRoute: SportingEventsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,
-  RunningEventsEventIdRunnerIdRoute: RunningEventsEventIdRunnerIdRoute,
-  RunningEventsEventIdEditRoute: RunningEventsEventIdEditRoute,
-  RunningEventsEventIdEnrollRoute: RunningEventsEventIdEnrollRoute,
-  RunningEventsEventIdIndexRoute: RunningEventsEventIdIndexRoute,
+  SportingEventsEventIdRunnerIdRoute: SportingEventsEventIdRunnerIdRoute,
+  SportingEventsEventIdEditRoute: SportingEventsEventIdEditRoute,
+  SportingEventsEventIdEnrollRoute: SportingEventsEventIdEnrollRoute,
+  SportingEventsEventIdIndexRoute: SportingEventsEventIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

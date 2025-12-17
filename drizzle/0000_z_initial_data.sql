@@ -18,9 +18,9 @@ VALUES (
         'admin,organizer,runner,runners_manager'
     );
 
-INSERT INTO event_types (id, name) VALUES (1, 'Running');
+INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running');
 
-INSERT INTO events (
+INSERT INTO sporting_events (
   id,
   title,
   description,

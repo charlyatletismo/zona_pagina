@@ -3,11 +3,11 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 
 
-export const Route = createFileRoute('/runningEvents/add')({
+export const Route = createFileRoute('/sportingEvents/add')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
 })
 
 function RouteComponent() {
-  return <div>Hello "/runningEvents/add"!</div>
+  return <div>Hello "/sportingEvents/add"!</div>
 }

@@ -4,9 +4,9 @@ import { cors } from "hono/cors";
 import { jwt } from 'hono/jwt'
 import type { JwtVariables } from 'hono/jwt'
 import { authRoute } from "./auth";
-import { runningEventsRoute } from "./runningEvents";
+import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
-import { runningEventTypesRoute } from "./runningEventTypes";
+import { sportingEventTypesRoute } from "./sportingEventTypes";
 
 
 export interface Env {
@@ -31,7 +31,7 @@ export default {
                 console.log("Skipping auth for login");
                 return next();
             }
-            if (c.req.path === '/api/runningEvents' && c.req.method === 'GET') {
+            if (c.req.path === '/api/sportingEvents' && c.req.method === 'GET') {
                 console.log("Skipping auth for public events");
                 return next();
             }
@@ -45,9 +45,9 @@ export default {
         })
 
         app.route('/api/auth', authRoute);
-        app.route('/api/runningEvents', runningEventsRoute);
+        app.route('/api/sportingEvents', sportingEventsRoute);
         app.route('/api/settings', settingsRoute);
-        app.route('/api/runningEventTypes', runningEventTypesRoute);
+        app.route('/api/sportingEventTypes', sportingEventTypesRoute);
 
         return app.fetch(request, env, ctx);
     }

@@ -6,7 +6,7 @@ import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
 export const Route = createFileRoute('/')({
   component: Index,
   beforeLoad: unprotectedCheck(),
-  loader: () => fetch('/api/runningEvents', { cache: 'no-store' }).then((res) => res.json() as Promise<{
+  loader: () => fetch('/api/sportingEvents', { cache: 'no-store' }).then((res) => res.json() as Promise<{
     comingSoon: any[];
     open: any[];
     closed: any[];
@@ -50,7 +50,7 @@ function Index() {
             </h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {events.open.map(event => (
-                <Link key={event.id} to="/runningEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
+                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
                   <EventCard event={event} />
                 </Link>
               ))}
@@ -66,7 +66,7 @@ function Index() {
             </h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {events.comingSoon.map(event => (
-                <Link key={event.id} to="/runningEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
+                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
                   <EventCard event={event} />
                 </Link>
               ))}
@@ -82,7 +82,7 @@ function Index() {
             </h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {events.closed.map(event => (
-                <Link key={event.id} to="/runningEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
+                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
                   <EventCard event={event} />
                 </Link>
               ))}
@@ -98,7 +98,7 @@ function Index() {
             </h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {events.past.map(event => (
-                <Link key={event.id} to="/runningEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
+                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
                   <EventCard event={event} />
                 </Link>
               ))}

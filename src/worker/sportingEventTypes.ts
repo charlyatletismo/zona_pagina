@@ -1,13 +1,13 @@
 import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
-import { eventTypes } from './db/schema';
+import { sportingEventTypes } from './db/schema';
 
 
-export const runningEventTypesRoute = new Hono<{ Bindings: Env }>()
+export const sportingEventTypesRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
-    const eventType = await db.select().from(eventTypes).all();
+    const eventType = await db.select().from(sportingEventTypes).all();
     if (!eventType) {
       return c.json({ error: 'Event types not found' }, 404);
     }

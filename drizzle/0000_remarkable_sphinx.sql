@@ -1,26 +1,54 @@
-CREATE TABLE `event_circuits` (
+CREATE TABLE `athlete_categories` (
+	`id` text(28) PRIMARY KEY NOT NULL,
+	`name` text(64) NOT NULL,
+	`description` text(256),
+	`fee_category_id` text NOT NULL,
+	`min_age` integer,
+	`max_age` integer,
+	`condition` text(256),
+	FOREIGN KEY (`fee_category_id`) REFERENCES `fees_categories`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `fees_categories` (
+	`id` text(28) PRIMARY KEY NOT NULL,
+	`name` text(64) NOT NULL,
+	`description` text(256)
+);
+--> statement-breakpoint
+CREATE TABLE `inscriptions` (
+	`id` text(28) PRIMARY KEY NOT NULL,
+	`event_id` text NOT NULL,
+	`user_id` text NOT NULL,
+	`inscription_date` text NOT NULL,
+	`paid` integer NOT NULL,
+	`payment_date` text,
+	FOREIGN KEY (`event_id`) REFERENCES `sporting_events`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `sporting_event_athlete_categories` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`event_id` text NOT NULL,
+	`athlete_category_id` text NOT NULL,
+	`fee_category_id` text NOT NULL,
+	`distance_km` real NOT NULL,
+	`fee_amount` real NOT NULL,
+	`allowed` integer NOT NULL,
+	FOREIGN KEY (`event_id`) REFERENCES `sporting_events`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`athlete_category_id`) REFERENCES `athlete_categories`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`fee_category_id`) REFERENCES `fees_categories`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `sporting_event_circuits` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`event_id` text NOT NULL,
 	`name` text(128) NOT NULL,
 	`description` text(512),
 	`distance_km` real NOT NULL,
-	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`event_id`) REFERENCES `sporting_events`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `event_runner_categories` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`event_id` text NOT NULL,
-	`runner_category_id` text NOT NULL,
-	`fee_category_id` text NOT NULL,
-	`distance_km` real NOT NULL,
-	`fee_amount` real NOT NULL,
-	`allowed` integer NOT NULL,
-	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`runner_category_id`) REFERENCES `runner_categories`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`fee_category_id`) REFERENCES `fees_categories`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `event_schedules` (
+CREATE TABLE `sporting_event_schedules` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`event_id` text NOT NULL,
 	`date` text NOT NULL,
@@ -30,16 +58,16 @@ CREATE TABLE `event_schedules` (
 	`location_text` text(256),
 	`location_lat` real,
 	`location_long` real,
-	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`event_id`) REFERENCES `sporting_events`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `event_types` (
+CREATE TABLE `sporting_event_types` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text(64) NOT NULL,
 	`description` text(256)
 );
 --> statement-breakpoint
-CREATE TABLE `events` (
+CREATE TABLE `sporting_events` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
@@ -61,37 +89,9 @@ CREATE TABLE `events` (
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`last_update_by` text NOT NULL,
 	`last_update_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	FOREIGN KEY (`event_type`) REFERENCES `event_types`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`event_type`) REFERENCES `sporting_event_types`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`last_update_by`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `fees_categories` (
-	`id` text(28) PRIMARY KEY NOT NULL,
-	`name` text(64) NOT NULL,
-	`description` text(256)
-);
---> statement-breakpoint
-CREATE TABLE `inscriptions` (
-	`id` text(28) PRIMARY KEY NOT NULL,
-	`event_id` text NOT NULL,
-	`user_id` text NOT NULL,
-	`inscription_date` text NOT NULL,
-	`paid` integer NOT NULL,
-	`payment_date` text,
-	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `runner_categories` (
-	`id` text(28) PRIMARY KEY NOT NULL,
-	`name` text(64) NOT NULL,
-	`description` text(256),
-	`fee_category_id` text NOT NULL,
-	`min_age` integer,
-	`max_age` integer,
-	`condition` text(256),
-	FOREIGN KEY (`fee_category_id`) REFERENCES `fees_categories`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `users` (
