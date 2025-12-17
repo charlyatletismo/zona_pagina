@@ -1,56 +1,28 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
-import React from 'react'
-import { type InferSelectModel } from 'drizzle-orm'
-import { sportingEvents } from '../../../worker/db/schema'
 import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
+import { getAuthenticated } from '@/lib/apiCalls'
+import { SportingEvent } from '@/lib/types'
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
+  loader: async ({ params }) => {
+    const ev: SportingEvent = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
+    return { ev };
+  },
+  staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
   const { eventId } = Route.useParams()
-  console.log("Hello from /sportingEvents/$eventId route", Route.useParams());
-  const [evData, setEvData] = React.useState<InferSelectModel<typeof sportingEvents> | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const token = localStorage.getItem('JWT_TOKEN');
+  const evData = Route.useLoaderData().ev;
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
   const canEdit = currentRole === ADMIN_ROLE || currentRole === ORGANIZER_ROLE;
-
-  React.useEffect(() => {
-    setLoading(true);
-    fetch(`/api/sportingEvents/${eventId}`, {
-      cache: 'no-store', method: 'GET', headers: {
-        'Authorization': `Bearer ${token}`
-      } })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch');
-        return res.json();
-      })
-      .then((data) => {
-        setEvData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, [eventId]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Spinner className="w-10 h-10 text-primary" />
-      </div>
-    )
-  }
 
   if (!evData) {
     return (

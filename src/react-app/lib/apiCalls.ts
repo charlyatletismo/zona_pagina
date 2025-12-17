@@ -44,13 +44,15 @@ export const postAuthenticated = async (path: string, body?: object) => {
   if (res.status === 401) {
     localStorage.removeItem('JWT_TOKEN');
     redirect({ to: '/login' });
+    return {status: 401, data: null};
   }
-  if (res.ok) {
-    return res.json();
-  }
-  console.log("Fetch failed:", res);
-  console.log("Response status:", res.status);
-  console.log("Response status text:", await res.json());
-  alert("Ha ocurrido un error inesperado. Se lo redirigirá al inicio.");
-  redirect({ to: '/' });
+  // if (res.ok) {
+  //   return res.json();
+  // }
+  // console.log("Fetch failed:", res);
+  // console.log("Response status:", res.status);
+  // console.log("Response status text:", await res.json());
+  // alert("Ha ocurrido un error inesperado. Se lo redirigirá al inicio.");
+  // redirect({ to: '/' });
+  return {status: res.status, data: await res.json()};
 }

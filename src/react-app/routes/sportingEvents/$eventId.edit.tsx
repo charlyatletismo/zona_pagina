@@ -1,78 +1,36 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ArrowLeft, Save, AlertCircle, MapPinnedIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { type InferSelectModel } from 'drizzle-orm';
-import { sportingEvents } from '../../../worker/db/schema';
+import { getAuthenticated, postAuthenticated } from '@/lib/apiCalls'
+import { SportingEvent, SportingEventType } from '@/lib/types'
 
 export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
+  loader: async ({ params }) => {
+    const ev: SportingEvent = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
+    const evTypes: SportingEventType[] = await getAuthenticated('/api/sportingEventTypes');
+    return { ev, evTypes };
+  },
+  staleTime: 1000 * 60 * 5,
+  gcTime: 0 // force reload every time
 })
 
 function RouteComponent() {
   const { eventId } = Route.useParams();
-  const [eventTypes, setEventTypes] = useState<Array<{ id: number; name: string; description: string }>>([]);
+  const { ev, evTypes } = Route.useLoaderData();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<Partial<InferSelectModel<typeof sportingEvents>>>({});
+  const [formData, setFormData] = useState<Partial<SportingEvent>>(ev);
   const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const token = localStorage.getItem('JWT_TOKEN');
-        const res = await fetch(`/api/sportingEvents/${eventId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          cache: 'no-store'
-        });
-
-        if (!res.ok) {
-          throw new Error('Error al cargar el evento');
-        }
-
-        const data = await res.json();
-        setFormData(data);
-        setCoordinatesGoogleMaps(`${data.location_lat}, ${data.location_long}`)
-      } catch (err) {
-        setError('Error al cargar la información del evento');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    const fetchEventTypes = async () => {
-      try {
-        const token = localStorage.getItem('JWT_TOKEN');
-        const res = await fetch('/api/sportingEventTypes', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          cache: 'no-store'
-        });
-        if (!res.ok) {
-          throw new Error('Error al cargar los tipos de evento');
-        }
-        const data = await res.json();
-        setEventTypes(data);
-      } catch (err) {
-        console.error('Error fetching event types:', err);
-      }
-    };
-
-    fetchEvent();
-    fetchEventTypes();
-  }, [eventId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -88,25 +46,15 @@ function RouteComponent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      const token = localStorage.getItem('JWT_TOKEN');
-      const res = await fetch(`/api/sportingEvents/update/${eventId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Error al actualizar el evento');
+      const {status, data} = await postAuthenticated(`/api/sportingEvents/update/${eventId}`, formData);
+      if (status !== 200) {
+        throw new Error(data.error || 'Error al actualizar el evento');
       }
 
       setSuccess('Evento actualizado correctamente');
       setTimeout(() => {
         setSuccess('');
-        navigate({ to: `/sportingEvents/${eventId}` });
+        navigate({ to: `/sportingEvents/${eventId}`, reloadDocument: true });
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'Error al guardar los cambios');
@@ -115,14 +63,6 @@ function RouteComponent() {
       setSaving(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Spinner className="w-10 h-10 text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -196,7 +136,7 @@ function RouteComponent() {
                 required
               >
                 <option value="">Seleccionar tipo de evento</option>
-                {eventTypes.map((type) => (
+                {evTypes.map((type) => (
                   <option key={type.id} value={type.id}>
                     {type.name}
                   </option>
