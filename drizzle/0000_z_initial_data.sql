@@ -16,7 +16,16 @@ VALUES (
         'gorandp@outlook.com',
         NULL,
         'admin,organizer,athlete,athletes_manager'
-    );
+      ),
+      (
+        "34525736",
+        "5493400667370",
+        "Carlos",
+        "Lopez",
+        'carlos.emlopez@gmail.com',
+        NULL,
+        'organizer'
+      );
 
 INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running');
 
