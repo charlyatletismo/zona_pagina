@@ -313,8 +313,8 @@ function RouteComponent() {
                 required
               >
                 <option value="">Seleccionar...</option>
-                <option value="male">Hombre</option>
-                <option value="female">Mujer</option>
+                <option value="M">Hombre</option>
+                <option value="F">Mujer</option>
               </select>
             </div>
 

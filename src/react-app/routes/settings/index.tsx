@@ -117,14 +117,14 @@ function RouteComponent() {
             </div>
 
             <div className="flex items-start gap-3">
-              {profile.sex === 'male' ? <Mars className="w-5 h-5 text-gray-500 mt-1" /> :
-               profile.sex === 'female' ? <Venus className="w-5 h-5 text-gray-500 mt-1" /> :
+              {profile.sex === 'M' ? <Mars className="w-5 h-5 text-gray-500 mt-1" /> :
+               profile.sex === 'F' ? <Venus className="w-5 h-5 text-gray-500 mt-1" /> :
                <VenusAndMars className="w-5 h-5 text-gray-500 mt-1" />}
               <div>
                 <p className="text-sm text-gray-500">Sexo</p>
                 <p className="font-medium">{
-                  profile.sex === 'male' ? 'Hombre' :
-                  profile.sex === 'female' ? 'Mujer' :
+                  profile.sex === 'M' ? 'Hombre' :
+                  profile.sex === 'F' ? 'Mujer' :
                   'No especificado'}</p>
               </div>
             </div>
