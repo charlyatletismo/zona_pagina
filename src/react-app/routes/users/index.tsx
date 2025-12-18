@@ -78,6 +78,10 @@ function RouteComponent() {
         header: 'Apellido',
         cell: info => info.getValue(),
       }),
+      columnHelper.accessor('phone', {
+        header: 'Teléfono',
+        cell: info => <span className="text-gray-500">{info.getValue()}</span>,
+      }),
       columnHelper.accessor('email', {
         header: 'Email',
         cell: info => <span className="text-gray-500">{info.getValue()}</span>,
@@ -104,7 +108,7 @@ function RouteComponent() {
               <Badge variant={
                 role.includes(ADMIN_ROLE) ? "destructive" :
                 role === ORGANIZER_ROLE ? "default" :
-                role.includes(ATHLETES_MANAGER_ROLE) ? "secondary" : "outline"
+                role === ATHLETES_MANAGER_ROLE ? "secondary" : "outline"
               } className={className}>
                 {label}
               </Badge>
