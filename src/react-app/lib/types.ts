@@ -1,3 +1,22 @@
+export interface User {
+  id: string;
+  phone: string;
+  name: string;
+  surname: string;
+  sex: string;
+  date_of_birth: string;
+  country: string;
+  city: string;
+  full_location: string;
+  manager_id: string;
+  training_team: string;
+  email: string;
+  temp_code: string;
+  roles: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export type SportingEventType = {
   id: number;
   name: string;
@@ -23,9 +42,9 @@ export type SportingEvent = {
   disclaimer_of_liability_title: string | null;
   disclaimer_of_liability_content: string | null;
   award_prizes: string | null;
-  created_by: string;
+  created_by: User["id"];
   created_at: string;
-  last_update_by: string;
+  last_update_by: User["id"];
   last_update_at: string;
 }
 

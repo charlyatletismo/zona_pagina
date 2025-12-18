@@ -7,6 +7,7 @@ import { authRoute } from "./auth";
 import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
 import { sportingEventTypesRoute } from "./sportingEventTypes";
+import { usersRoute } from "./users";
 
 
 export interface Env {
@@ -48,6 +49,7 @@ export default {
         app.route('/api/sportingEvents', sportingEventsRoute);
         app.route('/api/settings', settingsRoute);
         app.route('/api/sportingEventTypes', sportingEventTypesRoute);
+        app.route('/api/users', usersRoute);
 
         return app.fetch(request, env, ctx);
     }
