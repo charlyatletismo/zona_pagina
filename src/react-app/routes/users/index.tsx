@@ -12,7 +12,21 @@ import {
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ChevronRight, BookUser } from 'lucide-react';
 
 export const Route = createFileRoute('/users/')({
   component: RouteComponent,
@@ -111,26 +125,25 @@ function RouteComponent() {
           return (
             <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="icon-sm"
                 onClick={() => navigate({ to: `/users/${user.id}` })}
                 title="Ver detalles"
               >
-                <Info className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4" />
               </Button>
 
               {canEdit && (
-                <div className="relative group">
-                  <select
-                    className="h-8 w-32 text-sm border rounded px-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
-                    value={currentRole.split(',')[0]} // Simple assumption for single role
-                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                  >
-                    <option value={ATHLETE_ROLE}>Atleta</option>
-                    <option value={ORGANIZER_ROLE}>Organizador</option>
-                    <option value={ATHLETES_MANAGER_ROLE}>Manager</option>
-                  </select>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="secondary"><BookUser className="h-4 w-4" /></Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="start">
+                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, ATHLETE_ROLE)}>Atleta</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, ORGANIZER_ROLE)}>Organizador</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, ATHLETES_MANAGER_ROLE)}>Manager</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           );
@@ -156,37 +169,35 @@ function RouteComponent() {
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id} className="border-b border-gray-200">
-                  {headerGroup.headers.map(header => (
-                    <th key={header.id} className="px-6 py-3">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {table.getRowModel().rows.map(row => (
-                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map(row => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
         {data.length === 0 && (
           <div className="p-8 text-center text-gray-500">
             No se encontraron usuarios.
