@@ -13,7 +13,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       return c.json({ error: "Unauthorized" }, 403);
     }
     // Middleware to log requests to /api/users
-    console.log(`[UsersRoute] ${c.req.method} ${c.req.url}`);
+    // console.log(`[UsersRoute] ${c.req.method} ${c.req.url}`);
     await next();
   })
   .get("/", async (c) => {

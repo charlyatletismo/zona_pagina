@@ -33,7 +33,7 @@ export const Route = createFileRoute('/users/')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
     const usersApi = await getAuthenticated('/api/users');
-    if (usersApi.status === 401) {
+    if (usersApi.status === 403 || usersApi.status === 401) {
       throw redirect({
         to: '/unauthorized',
       });

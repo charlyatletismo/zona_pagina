@@ -57,7 +57,7 @@ export default {
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {
-            if ('status' in err && err.status == 401) {
+            if ('status' in err && (err.status == 401 || err.status == 403)) {
                 // err.message = no authorization included in request
                 return c.json({ message: 'Unauthorized' }, 401);
             }
