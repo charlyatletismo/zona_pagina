@@ -87,9 +87,9 @@ const SportingEventForm = (
       }
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">Editar Evento</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{newSpEvent ? 'Crear Evento' : 'Editar Evento'}</h2>
           <p className="text-gray-500 text-sm mt-1">
-            Actualiza la información del evento.
+            {newSpEvent ? 'Completa el formulario para crear un nuevo evento deportivo.' : 'Actualiza la información del evento.'}
           </p>
         </div>
 
@@ -126,8 +126,8 @@ const SportingEventForm = (
                 id="date"
                 name="date"
                 type="datetime-local"
-                value={formData.date ? new Date(formData.date).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, date: new Date(e.target.value).toISOString() }))}
+                value={formData.date}
+                onChange={handleChange}
                 required
               />
             </div>

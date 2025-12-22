@@ -101,7 +101,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     });
     return c.json({ success: true });
   })
-  .post("/add", async (c) => {
+  .post("/create", async (c) => {
     const userId: string = c.get('jwtPayload').id;
     const roles: string[] = c.get('jwtPayload').roles.split(',');
     if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
