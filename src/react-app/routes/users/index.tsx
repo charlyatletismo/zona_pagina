@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from '@/lib/roles';
 import { getAuthenticated, postAuthenticated } from '@/lib/apiCalls';
@@ -33,6 +33,11 @@ export const Route = createFileRoute('/users/')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
     const usersApi = await getAuthenticated('/api/users');
+    if (usersApi.status === 401) {
+      throw redirect({
+        to: '/unauthorized',
+      });
+    }
     const users: User[] = usersApi.data;
     return { users, usersStatus: usersApi.status};
   },
@@ -40,10 +45,10 @@ export const Route = createFileRoute('/users/')({
 })
 
 const getRoleWeight = (role: string) => {
-  if (role.includes(ADMIN_ROLE)) return 1;
-  if (role.includes(ORGANIZER_ROLE)) return 2;
-  if (role.includes(ATHLETES_MANAGER_ROLE)) return 3;
-  return 4;
+  if (role.includes(ADMIN_ROLE)) return 4;
+  if (role.includes(ORGANIZER_ROLE)) return 1;
+  if (role.includes(ATHLETES_MANAGER_ROLE)) return 2;
+  return 3;
 }
 
 function RouteComponent() {
@@ -52,9 +57,6 @@ function RouteComponent() {
     return [...(users || [])].sort((a, b) => getRoleWeight(a.roles) - getRoleWeight(b.roles));
   });
   const navigate = useNavigate();
-  if (usersStatus === 401) {
-    navigate({ to: '/unauthorized' });
-  }
   if (usersStatus !== 200) {
     return (
       <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm mb-4">
@@ -136,7 +138,8 @@ function RouteComponent() {
           const currentRole = user.roles;
           
           // Don't allow changing admin roles or self (simplified)
-          const canEdit = !currentRole.includes(ADMIN_ROLE); 
+          const canEdit = !currentRole.includes(ADMIN_ROLE) &&
+            localStorage.getItem('USER_ID') !== user.id;
 
           return (
             <div className="flex items-center gap-2">
