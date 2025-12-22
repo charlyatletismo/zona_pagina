@@ -55,7 +55,7 @@ const SportingEventForm = (
       setSuccess('Evento actualizado correctamente');
       setTimeout(() => {
         setSuccess('');
-        navigate({ to: `/sportingEvents/${data.id}`, reloadDocument: true });
+        navigate({ to: `/sportingEvents/${data.id || ev?.id}`, reloadDocument: true });
       }, 1500);
     } catch (err: any) {
       setError(err.message || 'Error al guardar los cambios');
