@@ -6,6 +6,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { AlertCircle, Save, ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import authCheck from '@/lib/authCheck';
+import { postAuthenticated } from '@/lib/apiCalls'
 
 
 export const Route = createFileRoute('/settings/profile')({
@@ -104,20 +105,10 @@ function RouteComponent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      const token = localStorage.getItem('JWT_TOKEN');
-      const res = await fetch('/api/settings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!res.ok) {
+      const res = await postAuthenticated('/api/settings', formData);
+      if (res.status !== 200) {
         throw new Error('Error al actualizar el perfil');
       }
-
       setSuccess('Perfil actualizado correctamente');
       const req = localStorage.getItem('REQUIRE_PROFILE_UPDATE');
       localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
