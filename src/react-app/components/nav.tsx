@@ -21,6 +21,7 @@ const LINK_HOME = { to: '/', label: 'Inicio' };
 const LINK_SERVICES = { to: '/services', label: 'Servicios' };
 const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
 const LINK_USERS = { to: '/users', label: 'Usuarios' };
+const LINK_NEW_EVENT = { to: '/sportingEvents/create', label: 'Crear Evento' };
 // const LINK_ATHLETE_STATS = { to: '/athlete/stats', label: 'Estadísticas' };
 const LINKS_BY_ROLE: Record<string, any> = {
   "": [
@@ -43,6 +44,7 @@ const LINKS_BY_ROLE: Record<string, any> = {
   [roles.ORGANIZER_ROLE]: [
     LINK_HOME,
     LINK_USERS,
+    LINK_NEW_EVENT,
   ],
 }
 
