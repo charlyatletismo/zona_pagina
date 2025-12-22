@@ -159,24 +159,24 @@ function RouteComponent() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="inscription_start" className="text-sm font-medium text-gray-700">Inicio Inscripciones</label>
+              <label htmlFor="registration_start" className="text-sm font-medium text-gray-700">Inicio Inscripciones</label>
               <Input
-                id="inscription_start"
-                name="inscription_start"
+                id="registration_start"
+                name="registration_start"
                 type="datetime-local"
-                value={formData.inscription_start ? new Date(formData.inscription_start).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, inscription_start: new Date(e.target.value).toISOString() }))}
+                value={formData.registration_start ? new Date(formData.registration_start).toISOString().slice(0, 16) : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, registration_start: new Date(e.target.value).toISOString() }))}
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="inscription_end" className="text-sm font-medium text-gray-700">Fin Inscripciones</label>
+              <label htmlFor="registration_end" className="text-sm font-medium text-gray-700">Fin Inscripciones</label>
               <Input
-                id="inscription_end"
-                name="inscription_end"
+                id="registration_end"
+                name="registration_end"
                 type="datetime-local"
-                value={formData.inscription_end ? new Date(formData.inscription_end).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, inscription_end: new Date(e.target.value).toISOString() }))}
+                value={formData.registration_end ? new Date(formData.registration_end).toISOString().slice(0, 16) : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, registration_end: new Date(e.target.value).toISOString() }))}
               />
             </div>
 

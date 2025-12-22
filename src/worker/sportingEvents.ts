@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { eq, lt, gte, desc } from 'drizzle-orm';
-import { sportingEvents } from './db/schema'
+import { eq, lt, gte, desc, and } from 'drizzle-orm';
+import { sportingEvents, sportingEventRegistrations } from './db/schema'
 import { updatedEventTrigger } from "./triggers";
 import { ADMIN_ROLE, ORGANIZER_ROLE } from './_roles';
 
@@ -19,17 +19,17 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       .orderBy(desc(sportingEvents.date));
 
     let comingSoonEvents = [];
-    let openInscriptionEvents = [];
-    let closedInscriptionEvents = [];
+    let openRegistrationEvents = [];
+    let closedRegistrationEvents = [];
 
     for (const event of activeEvents) {
-      if (event.inscription_start && event.inscription_end) {
-        const start = new Date(event.inscription_start);
-        const end = new Date(event.inscription_end);
+      if (event.registration_start && event.registration_end) {
+        const start = new Date(event.registration_start);
+        const end = new Date(event.registration_end);
         if (now >= start && now <= end) {
-          openInscriptionEvents.push(event);
+          openRegistrationEvents.push(event);
         } else {
-          closedInscriptionEvents.push(event);
+          closedRegistrationEvents.push(event);
         }
       } else {
         comingSoonEvents.push(event);
@@ -44,8 +44,8 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
 
     return c.json({
       comingSoon: comingSoonEvents,
-      open: openInscriptionEvents,
-      closed: closedInscriptionEvents,
+      open: openRegistrationEvents,
+      closed: closedRegistrationEvents,
       past: pastEvents,
     });
   })
@@ -59,7 +59,43 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     if (event.length === 0) {
       return c.json({ error: "Event not found" }, 404);
     }
-    return c.json(event[0]);
+    const userId: string = c.get('jwtPayload').id;
+    const registration = await db.select()
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.user_id, userId),
+        eq(sportingEventRegistrations.event_id, Number(id)),
+      ))
+      .limit(1);
+    return c.json({...event[0], user_registered: registration.length > 0 });
+  })
+  .post("/:id/register", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const userId: string = c.get('jwtPayload').id;
+    const event = await db.select()
+      .from(sportingEvents)
+      .where(eq(sportingEvents.id, Number(id)))
+      .limit(1);
+    if (event.length === 0) {
+      return c.json({ error: "Event not found" }, 404);
+    }
+    const registration = await db.select()
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.user_id, userId),
+        eq(sportingEventRegistrations.event_id, Number(id)),
+      ))
+      .limit(1);
+    if (registration.length > 0) {
+      return c.json({ error: "User already registered for this event" }, 400);
+    }
+    await db.insert(sportingEventRegistrations).values({
+      event_id: event[0].id,
+      user_id: userId,
+      registration_date: new Date().toISOString(),
+    });
+    return c.json({ success: true });
   })
   .post("/add", async (c) => {
     const userId: string = c.get('jwtPayload').id;
@@ -77,8 +113,8 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       title: eventData.title,
       description: eventData.description || "",
       date: eventData.date,
-      inscription_start: eventData.inscription_start,
-      inscription_end: eventData.inscription_end,
+      registration_start: eventData.registration_start,
+      registration_end: eventData.registration_end,
       location_hint: eventData.location_hint,
       location_text: eventData.location_text,
       location_lat: eventData.location_lat,

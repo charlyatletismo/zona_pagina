@@ -63,8 +63,8 @@ export const sportingEvents = sqliteTable("sporting_events", {
   image_url: text({ length: 512 }),
   image_preview_url: text({ length: 512 }),
   date: text().notNull(), // ISO string
-  inscription_start: text({ length: 64 }),
-  inscription_end: text({ length: 64 }),
+  registration_start: text({ length: 64 }),
+  registration_end: text({ length: 64 }),
   location_hint: text({ length: 256 }),
   location_text: text({ length: 256 }),
   location_lat: real(),
@@ -122,12 +122,13 @@ export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
 });
 
 
-// Inscriptions Table
-export const inscriptions = sqliteTable("inscriptions", {
-  id: text({ length: 28 }).primaryKey(),
-  event_id: text().notNull().references(() => sportingEvents.id),
+// Sporting events registrations
+export const sportingEventRegistrations = sqliteTable("sporting_event_registrations", {
+  id: int().primaryKey({ autoIncrement: true }),
+  event_id: int().notNull().references(() => sportingEvents.id),
   user_id: text().notNull().references(() => users.id),
-  inscription_date: text().notNull(),
-  paid: int().notNull(), // 0 = false, 1 = true
+  registration_date: text().notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  paid: int().notNull().default(0), // 0 = false, 1 = true
   payment_date: text(),
 });

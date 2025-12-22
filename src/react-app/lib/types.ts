@@ -30,8 +30,8 @@ export type SportingEvent = {
   image_url: string | null;
   image_preview_url: string | null;
   date: string;
-  inscription_start: string | null;
-  inscription_end: string | null;
+  registration_start: string | null;
+  registration_end: string | null;
   location_hint: string | null;
   location_text: string | null;
   location_lat: number | null;
@@ -46,6 +46,7 @@ export type SportingEvent = {
   created_at: string;
   last_update_by: User["id"];
   last_update_at: string;
+  user_registered?: boolean;
 }
 
 export type SportingEventApiResponse = {

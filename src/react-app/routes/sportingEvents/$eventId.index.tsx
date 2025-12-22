@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
-import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit } from 'lucide-react'
+import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
-import { getAuthenticated } from '@/lib/apiCalls'
+import { getAuthenticated, postAuthenticated } from '@/lib/apiCalls'
 import { SportingEvent } from '@/lib/types'
+import React from 'react'
+import { Spinner } from '@/components/ui/spinner'
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/')({
@@ -23,6 +25,31 @@ function RouteComponent() {
   const evData = Route.useLoaderData().ev;
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
   const canEdit = currentRole === ADMIN_ROLE || currentRole === ORGANIZER_ROLE;
+  const openToRegister = evData.registration_start && evData.registration_end
+    ? (new Date() >= new Date(evData.registration_start) && new Date() <= new Date(evData.registration_end))
+    : false;
+  const [registering, setRegistering] = React.useState(false);
+  const [success, setSuccess] = React.useState('');
+  const [error, setError] = React.useState('');
+  const handleRegister = async () => {
+    setRegistering(true);
+    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`);
+    if (res.status !== 200) {
+      setError(res.data.error || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
+      setTimeout(() => {
+          setError('');
+      }, 3000);
+    } else {
+      setSuccess('Inscripción exitosa!');
+      setTimeout(() => {
+          setSuccess('');
+      }, 3000);
+      evData.user_registered = true;
+    }
+    // Scroll to top of the page when form is submitted
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setRegistering(false);
+  };
 
   if (!evData) {
     return (
@@ -37,6 +64,20 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
+
+        {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
+                <AlertCircle className="w-4 h-4" />
+                {error}
+            </div>
+        )}
+
+        {success && (
+            <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm mb-3">
+                {success}
+            </div>
+        )}
+
         <div className="flex justify-between items-center mb-4">
             <Button 
                 variant="ghost" 
@@ -58,8 +99,6 @@ function RouteComponent() {
                 </Button>
             )}
         </div>
-
-        {/* Header */}
 
         {/* Header */}
         <div className="mb-8 text-center">
@@ -167,18 +206,52 @@ function RouteComponent() {
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Inicio:</span>
-                                <span>{evData.inscription_start ? new Date(evData.inscription_start).toLocaleDateString() : 'TBA'}</span>
+                                <span>{evData.registration_start ? new Date(evData.registration_start).toLocaleDateString() : 'TBA'}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Cierre:</span>
-                                <span>{evData.inscription_end ? new Date(evData.inscription_end).toLocaleDateString() : 'TBA'}</span>
+                                <span>{evData.registration_end ? new Date(evData.registration_end).toLocaleDateString() : 'TBA'}</span>
                             </div>
                         </div>
                     </div>
                     
-                    <Button className="w-full" size="lg">
-                        Inscribirse
-                    </Button>
+                    {/* Register Button */}
+                    {
+                      evData.user_registered ? (
+                        <div className="text-center">
+                            <Button
+                                className="w-full bg-green-400"
+                                size="lg"
+                                disabled
+                            >
+                              <Check className="inline-block w-5 h-5 ml-2" /> Inscripto
+                            </Button>
+                        </div>
+                      ) : openToRegister ? (
+                        <div className="text-center">
+                            <Button
+                                className="w-full"
+                                size="lg"
+                                onClick={handleRegister} disabled={registering}
+                              >
+                                {registering && (
+                                  <Spinner />
+                                )}
+                                {registering ? 'Inscribiendo...' : 'Inscribirse'}
+                            </Button>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                            <Button
+                                className="w-full"
+                                size="lg"
+                                disabled
+                            >
+                                Inscripciones Cerradas
+                            </Button>
+                        </div>
+                      )
+                    }
                 </div>
 
                 {/* Map Link */}
