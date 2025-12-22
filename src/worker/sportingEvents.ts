@@ -59,6 +59,10 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     if (event.length === 0) {
       return c.json({ error: "Event not found" }, 404);
     }
+    if (!c.get('jwtPayload')) {
+      // public access
+      return c.json({ ...event[0], user_registered: false });
+    }
     const userId: string = c.get('jwtPayload').id;
     const registration = await db.select()
       .from(sportingEventRegistrations)
@@ -67,7 +71,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
         eq(sportingEventRegistrations.event_id, Number(id)),
       ))
       .limit(1);
-    return c.json({...event[0], user_registered: registration.length > 0 });
+    return c.json({ ...event[0], user_registered: registration.length > 0 });
   })
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);

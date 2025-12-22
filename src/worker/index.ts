@@ -19,6 +19,10 @@ export interface Env {
 type Variables = JwtVariables
 
 
+const RGX_AUTH = /^\/api\/auth\/(sendCode|register|login)$/;
+const RGX_SP_EVENTS = /^\/api\/sportingEvents\/?\d*$/;
+
+
 export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
         const app = new Hono<{ Bindings: Env, Variables: Variables }>();
@@ -28,11 +32,11 @@ export default {
             return cors()(c, next);
         })
         app.use('/api/*', (c, next) => {
-            if (c.req.path.startsWith('/api/auth/') && c.req.method === 'POST') {
+            if (RGX_AUTH.test(c.req.path) && c.req.method === 'POST') {
                 console.log("Skipping auth for login");
                 return next();
             }
-            if (c.req.path === '/api/sportingEvents' && c.req.method === 'GET') {
+            if (RGX_SP_EVENTS.test(c.req.path) && c.req.method === 'GET') {
                 console.log("Skipping auth for public events");
                 return next();
             }
@@ -53,6 +57,10 @@ export default {
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {
+            if ('status' in err && err.status == 401) {
+                // err.message = no authorization included in request
+                return c.json({ message: 'Unauthorized' }, 401);
+            }
             console.error(`[Error] ${c.req.method} ${c.req.url}`, err);
             return c.json({ message: 'Internal Server Error' }, 500);
         });
