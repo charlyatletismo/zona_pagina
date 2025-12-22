@@ -25,6 +25,15 @@ VALUES (
         'carlos.emlopez@gmail.com',
         NULL,
         'organizer'
+      ),
+      (
+        "00000001",
+        "5493400123456",
+        "Ana",
+        "Garcia",
+        'anagarcia@example.com',
+        NULL,
+        'athlete'
       );
 
 INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running');
