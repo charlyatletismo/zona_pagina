@@ -10,6 +10,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import * as roles from '@/lib/roles';
+import { clearUserInfo } from '@/lib/utils';
 // import { Sun, Moon } from 'lucide-react';
 // import { Code2, Laptop } from 'lucide-react';
 
@@ -95,12 +96,7 @@ export const Navigation = () => {
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             {localStorage.getItem('JWT_TOKEN') ? (
               <a onClick={() => {
-                localStorage.setItem('JWT_TOKEN', '');
-                localStorage.setItem('USER_ROLES', '');
-                localStorage.setItem('USER_ID', '');
-                localStorage.setItem('USER_NAME', '');
-                localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
-                localStorage.setItem('USER_ROLE', '');
+                clearUserInfo();
                 window.location.href = '/';
               }} className={navClass}>
                 <LogOut size={16} />

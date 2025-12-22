@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { User2 } from 'lucide-react'
 import React from 'react'
+import { setUserInfo } from '@/lib/utils'
 
 
 export const Route = createFileRoute('/login')({
@@ -76,12 +77,7 @@ function RouteComponent() {
           }).then((res) => {
             if (res.ok) {
               res.json().then((data) => {
-                localStorage.setItem('JWT_TOKEN', data.token);
-                localStorage.setItem('USER_ROLES', data.roles);
-                localStorage.setItem('USER_ID', data.id);
-                localStorage.setItem('USER_NAME', data.name || 'Nuevo Usuario');
-                localStorage.setItem('REQUIRE_PROFILE_UPDATE', data.requireProfileUpdate ? 'true' : '');
-                localStorage.setItem('USER_ROLE', data.roles.split(",")[0] || '');
+                setUserInfo(data)
                 window.location.href = '/';
               });
             } else {
