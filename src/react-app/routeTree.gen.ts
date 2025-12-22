@@ -25,7 +25,6 @@ import { Route as SettingsNotificationsRouteImport } from './routes/settings/not
 import { Route as AthleteStatsRouteImport } from './routes/athlete/stats'
 import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
 import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
-import { Route as SportingEventsEventIdEnrollRouteImport } from './routes/sportingEvents/$eventId.enroll'
 import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
 import { Route as SportingEventsEventIdAthleteIdRouteImport } from './routes/sportingEvents/$eventId.$athleteId'
 
@@ -110,12 +109,6 @@ const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
   path: '/edit',
   getParentRoute: () => UsersUserIdRoute,
 } as any)
-const SportingEventsEventIdEnrollRoute =
-  SportingEventsEventIdEnrollRouteImport.update({
-    id: '/sportingEvents/$eventId/enroll',
-    path: '/sportingEvents/$eventId/enroll',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const SportingEventsEventIdEditRoute =
   SportingEventsEventIdEditRouteImport.update({
     id: '/sportingEvents/$eventId/edit',
@@ -146,7 +139,6 @@ export interface FileRoutesByFullPath {
   '/users': typeof UsersIndexRoute
   '/sportingEvents/$eventId/$athleteId': typeof SportingEventsEventIdAthleteIdRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
-  '/sportingEvents/$eventId/enroll': typeof SportingEventsEventIdEnrollRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
   '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
 }
@@ -167,7 +159,6 @@ export interface FileRoutesByTo {
   '/users': typeof UsersIndexRoute
   '/sportingEvents/$eventId/$athleteId': typeof SportingEventsEventIdAthleteIdRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
-  '/sportingEvents/$eventId/enroll': typeof SportingEventsEventIdEnrollRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
   '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
 }
@@ -189,7 +180,6 @@ export interface FileRoutesById {
   '/users/': typeof UsersIndexRoute
   '/sportingEvents/$eventId/$athleteId': typeof SportingEventsEventIdAthleteIdRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
-  '/sportingEvents/$eventId/enroll': typeof SportingEventsEventIdEnrollRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
   '/sportingEvents/$eventId/': typeof SportingEventsEventIdIndexRoute
 }
@@ -212,7 +202,6 @@ export interface FileRouteTypes {
     | '/users'
     | '/sportingEvents/$eventId/$athleteId'
     | '/sportingEvents/$eventId/edit'
-    | '/sportingEvents/$eventId/enroll'
     | '/users/$userId/edit'
     | '/sportingEvents/$eventId'
   fileRoutesByTo: FileRoutesByTo
@@ -233,7 +222,6 @@ export interface FileRouteTypes {
     | '/users'
     | '/sportingEvents/$eventId/$athleteId'
     | '/sportingEvents/$eventId/edit'
-    | '/sportingEvents/$eventId/enroll'
     | '/users/$userId/edit'
     | '/sportingEvents/$eventId'
   id:
@@ -254,7 +242,6 @@ export interface FileRouteTypes {
     | '/users/'
     | '/sportingEvents/$eventId/$athleteId'
     | '/sportingEvents/$eventId/edit'
-    | '/sportingEvents/$eventId/enroll'
     | '/users/$userId/edit'
     | '/sportingEvents/$eventId/'
   fileRoutesById: FileRoutesById
@@ -276,7 +263,6 @@ export interface RootRouteChildren {
   UsersIndexRoute: typeof UsersIndexRoute
   SportingEventsEventIdAthleteIdRoute: typeof SportingEventsEventIdAthleteIdRoute
   SportingEventsEventIdEditRoute: typeof SportingEventsEventIdEditRoute
-  SportingEventsEventIdEnrollRoute: typeof SportingEventsEventIdEnrollRoute
   SportingEventsEventIdIndexRoute: typeof SportingEventsEventIdIndexRoute
 }
 
@@ -394,13 +380,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersUserIdEditRouteImport
       parentRoute: typeof UsersUserIdRoute
     }
-    '/sportingEvents/$eventId/enroll': {
-      id: '/sportingEvents/$eventId/enroll'
-      path: '/sportingEvents/$eventId/enroll'
-      fullPath: '/sportingEvents/$eventId/enroll'
-      preLoaderRoute: typeof SportingEventsEventIdEnrollRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sportingEvents/$eventId/edit': {
       id: '/sportingEvents/$eventId/edit'
       path: '/sportingEvents/$eventId/edit'
@@ -447,7 +426,6 @@ const rootRouteChildren: RootRouteChildren = {
   UsersIndexRoute: UsersIndexRoute,
   SportingEventsEventIdAthleteIdRoute: SportingEventsEventIdAthleteIdRoute,
   SportingEventsEventIdEditRoute: SportingEventsEventIdEditRoute,
-  SportingEventsEventIdEnrollRoute: SportingEventsEventIdEnrollRoute,
   SportingEventsEventIdIndexRoute: SportingEventsEventIdIndexRoute,
 }
 export const routeTree = rootRouteImport
