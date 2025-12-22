@@ -173,8 +173,8 @@ const SportingEventForm = (
                 id="registration_start"
                 name="registration_start"
                 type="datetime-local"
-                value={formData.registration_start ? new Date(formData.registration_start).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, registration_start: new Date(e.target.value).toISOString() }))}
+                value={formData.registration_start || ''}
+                onChange={handleChange}
               />
             </div>
 
@@ -184,8 +184,8 @@ const SportingEventForm = (
                 id="registration_end"
                 name="registration_end"
                 type="datetime-local"
-                value={formData.registration_end ? new Date(formData.registration_end).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, registration_end: new Date(e.target.value).toISOString() }))}
+                value={formData.registration_end || ''}
+                onChange={handleChange}
               />
             </div>
 
