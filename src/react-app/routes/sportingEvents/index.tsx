@@ -1,13 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
-import authCheck from '@/lib/authCheck';
-import { ORGANIZER_ROLE } from '@/lib/roles';
-
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/sportingEvents/')({
   component: RouteComponent,
-  beforeLoad: authCheck([ORGANIZER_ROLE]),
+  beforeLoad: () => { 
+    throw redirect({ to: '/' });
+  },
 })
 
 function RouteComponent() {
-  return <div>Hello "/sportingEvents/"!</div>
+  return <div>Redirigiendo al inicio...</div>
 }

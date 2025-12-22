@@ -32,8 +32,9 @@ export const Route = createFileRoute('/users/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
-    const users: User[] = await getAuthenticated(`/api/users`);
-    return { users };
+    const usersApi = await getAuthenticated('/api/users');
+    const users: User[] = usersApi.data;
+    return { users, usersStatus: usersApi.status};
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -46,11 +47,22 @@ const getRoleWeight = (role: string) => {
 }
 
 function RouteComponent() {
-  const { users } = Route.useLoaderData();
+  const { users, usersStatus } = Route.useLoaderData();
   const [data, setData] = React.useState<User[]>(() => {
     return [...(users || [])].sort((a, b) => getRoleWeight(a.roles) - getRoleWeight(b.roles));
   });
   const navigate = useNavigate();
+  if (usersStatus === 401) {
+    navigate({ to: '/unauthorized' });
+  }
+  if (usersStatus !== 200) {
+    return (
+      <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm mb-4">
+        <ChevronRight className="w-4 h-4 mr-2" />
+        Error al cargar los usuarios. Por favor, refresque la página.
+      </div>
+    );
+  }
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     if (!confirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) return;

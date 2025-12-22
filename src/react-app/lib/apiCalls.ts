@@ -1,9 +1,7 @@
-import { redirect } from '@tanstack/react-router';
 import { SportingEventApiResponse } from '@/lib/types';
 
 
-export const getSportingEvents: () => Promise<SportingEventApiResponse> = async () => getAuthenticated('/api/sportingEvents');
-
+export const getSportingEvents: () => Promise<{status: number, data: SportingEventApiResponse}> = async () => getAuthenticated('/api/sportingEvents');
 
 
 export const getAuthenticated = async (path: string) => {
@@ -12,18 +10,19 @@ export const getAuthenticated = async (path: string) => {
     options['headers'] = {"Authorization": `Bearer ${localStorage.getItem('JWT_TOKEN')}`}
   }
   const res = await fetch(path, options)
-  if (res.status === 401) {
-    localStorage.removeItem('JWT_TOKEN');
-    redirect({ to: '/login' });
-  }
+  // if (res.status === 401) {
+  //   localStorage.removeItem('JWT_TOKEN');
+  //   redirect({ to: '/login' });
+  // }
   if (res.ok) {
-    return res.json();
+    return {status: res.status, data: await res.json()};
   }
-  console.log("Fetch failed:", res);
-  console.log("Response status:", res.status);
-  console.log("Response status text:", await res.json());
-  alert("Ha ocurrido un error inesperado. Se lo redirigirá al inicio.");
-  redirect({ to: '/' });
+  // console.log("Fetch failed:", res);
+  // console.log("Response status:", res.status);
+  // console.log("Response status text:", JSON.stringify(await res.json()));
+  // alert("Ha ocurrido un error inesperado. Se lo redirigirá al inicio.");
+  // redirect({ to: '/' });
+  return {status: res.status, data: await res.json()};
 }
 
 
@@ -41,11 +40,11 @@ export const postAuthenticated = async (path: string, body?: object) => {
     options['body'] = JSON.stringify(body);
   }
   const res = await fetch(path, options);
-  if (res.status === 401) {
-    localStorage.removeItem('JWT_TOKEN');
-    redirect({ to: '/login' });
-    return {status: 401, data: null};
-  }
+  // if (res.status === 401) {
+  //   localStorage.removeItem('JWT_TOKEN');
+  //   redirect({ to: '/login' });
+  //   return {status: 401, data: null};
+  // }
   // if (res.ok) {
   //   return res.json();
   // }

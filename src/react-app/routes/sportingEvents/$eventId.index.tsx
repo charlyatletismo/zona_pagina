@@ -13,8 +13,9 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
-    const ev: SportingEvent = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
-    return { ev };
+    const spEvApi = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
+    const ev: SportingEvent = spEvApi.data;
+    return { evData: ev, evStatus: spEvApi.status };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -22,7 +23,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
 
 function RouteComponent() {
   const { eventId } = Route.useParams()
-  const evData = Route.useLoaderData().ev;
+  const {evData, evStatus} = Route.useLoaderData();
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
   const canEdit = currentRole === ADMIN_ROLE || currentRole === ORGANIZER_ROLE;
   const openToRegister = evData.registration_start && evData.registration_end
@@ -31,18 +32,25 @@ function RouteComponent() {
   const [registering, setRegistering] = React.useState(false);
   const [success, setSuccess] = React.useState('');
   const [error, setError] = React.useState('');
+  const navigate = Route.useNavigate();
   const handleRegister = async () => {
+    if (!localStorage.getItem('JWT_TOKEN')) {
+      navigate({
+        to: '/login'
+      });
+      return;
+    }
     setRegistering(true);
     const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`);
     if (res.status !== 200) {
       setError(res.data.error || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
       setTimeout(() => {
-          setError('');
+        setError('');
       }, 3000);
     } else {
       setSuccess('Inscripción exitosa!');
       setTimeout(() => {
-          setSuccess('');
+        setSuccess('');
       }, 3000);
       evData.user_registered = true;
     }
@@ -55,6 +63,17 @@ function RouteComponent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <h2 className="text-2xl font-bold">Evento no encontrado</h2>
+        <Button asChild variant="outline">
+            <Link to="/">Volver al inicio</Link>
+        </Button>
+      </div>
+    )
+  }
+
+  if (evStatus !== 200) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
         <Button asChild variant="outline">
             <Link to="/">Volver al inicio</Link>
         </Button>

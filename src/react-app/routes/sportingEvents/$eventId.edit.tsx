@@ -14,9 +14,11 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
-    const ev: SportingEvent = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
-    const evTypes: SportingEventType[] = await getAuthenticated('/api/sportingEventTypes');
-    return { ev, evTypes };
+    const spEvApi = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
+    const ev: SportingEvent = spEvApi.data;
+    const spEvType = await getAuthenticated('/api/sportingEventTypes');
+    const evTypes: SportingEventType[] = spEvType.data;
+    return { ev, evTypes, statusEv: spEvApi.status, statusEvType: spEvType.status};
   },
   staleTime: 1000 * 60 * 5,
   gcTime: 0 // force reload every time
@@ -24,7 +26,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
 
 function RouteComponent() {
   const { eventId } = Route.useParams();
-  const { ev, evTypes } = Route.useLoaderData();
+  const { ev, evTypes, statusEv, statusEvType } = Route.useLoaderData();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<SportingEvent>>(ev);
   const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
@@ -66,6 +68,12 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
+      {(statusEv !== 200 || statusEvType !== 200) && (
+        <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm mb-4">
+          <AlertCircle className="w-4 h-4 mr-2" />
+          Error al cargar los datos del evento.
+        </div>
+      )}
       <Button 
         variant="ghost" 
         className="mb-4 pl-0 hover:bg-transparent hover:text-primary" 
