@@ -51,6 +51,12 @@ export default {
         app.route('/api/sportingEventTypes', sportingEventTypesRoute);
         app.route('/api/users', usersRoute);
 
+        app.notFound((c) => c.json({ message: 'Not Found' }, 404));
+        app.onError((err, c) => {
+            console.error(`[Error] ${c.req.method} ${c.req.url}`, err);
+            return c.json({ message: 'Internal Server Error' }, 500);
+        });
+
         return app.fetch(request, env, ctx);
     }
 } satisfies ExportedHandler<Env>;
