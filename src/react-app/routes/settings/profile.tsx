@@ -93,9 +93,9 @@ function RouteComponent() {
     setTimeout(() => {
       setSuccess('');
       if (req === 'true') {
-        navigate({ to: '/' });
+        navigate({ to: '/', reloadDocument: true });
       } else {
-        navigate({ to: '/settings' });
+        navigate({ to: '/settings', reloadDocument: true });
       }
     }, 3000);
     setSaving(false);
