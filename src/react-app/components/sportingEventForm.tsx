@@ -53,7 +53,7 @@ const SportingEventForm = (
     setTimeout(() => {
       setSuccess('');
       navigate({ to: `/sportingEvents/${res.data.id || ev?.id}`, reloadDocument: true });
-    }, 1500);
+    }, 1000);
     setSaving(false);
   };
 
