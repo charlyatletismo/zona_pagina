@@ -4,6 +4,7 @@ import logo_zona from "@/assets/logo.png";
 import { Instagram } from '@/components/icons/instagram';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { Navigation } from '@/components/nav';
+import { NotFound } from '@/components/notFound';
 
 
 const RootLayout = () => {
@@ -76,4 +77,7 @@ const RootLayout = () => {
   )
 }
 
-export const Route = createRootRoute({ component: RootLayout })
+export const Route = createRootRoute({ 
+  component: RootLayout,
+  notFoundComponent: NotFound
+})
