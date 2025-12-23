@@ -32,6 +32,13 @@ export default {
             return cors()(c, next);
         })
         app.use('/api/*', (c, next) => {
+            const jwtMiddleware = jwt({
+                secret: c.env.JWT_SECRET,
+            })
+            if (c.req.header('Authorization')) {
+                // console.log("Authorization header found, applying JWT middleware");
+                return jwtMiddleware(c, next);
+            }
             if (RGX_AUTH.test(c.req.path) && c.req.method === 'POST') {
                 console.log("Skipping auth for login");
                 return next();
@@ -40,10 +47,7 @@ export default {
                 console.log("Skipping auth for public events");
                 return next();
             }
-            const jwtMiddleware = jwt({
-                secret: c.env.JWT_SECRET,
-            })
-            return jwtMiddleware(c, next)
+            return jwtMiddleware(c, next);
         })
         app.get('/api/authTest', (c) => {
             return c.text('You are authorized')
