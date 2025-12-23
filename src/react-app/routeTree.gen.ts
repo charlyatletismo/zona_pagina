@@ -18,12 +18,12 @@ import { Route as UsersIndexRouteImport } from './routes/users/index'
 import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as UsersAddRouteImport } from './routes/users/add'
-import { Route as UsersUserIdRouteImport } from './routes/users/$userId'
 import { Route as SportingEventsRegistrationsRouteImport } from './routes/sportingEvents/registrations'
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as AthleteStatsRouteImport } from './routes/athlete/stats'
+import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
 import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
 import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
 import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
@@ -74,11 +74,6 @@ const UsersAddRoute = UsersAddRouteImport.update({
   path: '/users/add',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UsersUserIdRoute = UsersUserIdRouteImport.update({
-  id: '/users/$userId',
-  path: '/users/$userId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SportingEventsRegistrationsRoute =
   SportingEventsRegistrationsRouteImport.update({
     id: '/sportingEvents/registrations',
@@ -105,6 +100,11 @@ const AthleteStatsRoute = AthleteStatsRouteImport.update({
   path: '/athlete/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersUserIdIndexRoute = UsersUserIdIndexRouteImport.update({
+  id: '/users/$userId/',
+  path: '/users/$userId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SportingEventsEventIdIndexRoute =
   SportingEventsEventIdIndexRouteImport.update({
     id: '/sportingEvents/$eventId/',
@@ -112,9 +112,9 @@ const SportingEventsEventIdIndexRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => UsersUserIdRoute,
+  id: '/users/$userId/edit',
+  path: '/users/$userId/edit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SportingEventsEventIdEditRoute =
   SportingEventsEventIdEditRouteImport.update({
@@ -140,7 +140,6 @@ export interface FileRoutesByFullPath {
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
-  '/users/$userId': typeof UsersUserIdRouteWithChildren
   '/users/add': typeof UsersAddRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
@@ -149,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
   '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
+  '/users/$userId': typeof UsersUserIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -161,7 +161,6 @@ export interface FileRoutesByTo {
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
-  '/users/$userId': typeof UsersUserIdRouteWithChildren
   '/users/add': typeof UsersAddRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
@@ -170,6 +169,7 @@ export interface FileRoutesByTo {
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
   '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
+  '/users/$userId': typeof UsersUserIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -183,7 +183,6 @@ export interface FileRoutesById {
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
-  '/users/$userId': typeof UsersUserIdRouteWithChildren
   '/users/add': typeof UsersAddRoute
   '/settings/': typeof SettingsIndexRoute
   '/sportingEvents/': typeof SportingEventsIndexRoute
@@ -192,6 +191,7 @@ export interface FileRoutesById {
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
   '/sportingEvents/$eventId/': typeof SportingEventsEventIdIndexRoute
+  '/users/$userId/': typeof UsersUserIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,7 +206,6 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
-    | '/users/$userId'
     | '/users/add'
     | '/settings'
     | '/sportingEvents'
@@ -215,6 +214,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/edit'
     | '/users/$userId/edit'
     | '/sportingEvents/$eventId'
+    | '/users/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,7 +227,6 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
-    | '/users/$userId'
     | '/users/add'
     | '/settings'
     | '/sportingEvents'
@@ -236,6 +235,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/edit'
     | '/users/$userId/edit'
     | '/sportingEvents/$eventId'
+    | '/users/$userId'
   id:
     | '__root__'
     | '/'
@@ -248,7 +248,6 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
-    | '/users/$userId'
     | '/users/add'
     | '/settings/'
     | '/sportingEvents/'
@@ -257,6 +256,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/edit'
     | '/users/$userId/edit'
     | '/sportingEvents/$eventId/'
+    | '/users/$userId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -270,14 +270,15 @@ export interface RootRouteChildren {
   SettingsProfileRoute: typeof SettingsProfileRoute
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
   SportingEventsRegistrationsRoute: typeof SportingEventsRegistrationsRoute
-  UsersUserIdRoute: typeof UsersUserIdRouteWithChildren
   UsersAddRoute: typeof UsersAddRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SportingEventsIndexRoute: typeof SportingEventsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
   SportingEventsEventIdAthleteIdRoute: typeof SportingEventsEventIdAthleteIdRoute
   SportingEventsEventIdEditRoute: typeof SportingEventsEventIdEditRoute
+  UsersUserIdEditRoute: typeof UsersUserIdEditRoute
   SportingEventsEventIdIndexRoute: typeof SportingEventsEventIdIndexRoute
+  UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -345,13 +346,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersAddRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/$userId': {
-      id: '/users/$userId'
-      path: '/users/$userId'
-      fullPath: '/users/$userId'
-      preLoaderRoute: typeof UsersUserIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sportingEvents/registrations': {
       id: '/sportingEvents/registrations'
       path: '/sportingEvents/registrations'
@@ -387,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AthleteStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/$userId/': {
+      id: '/users/$userId/'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof UsersUserIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sportingEvents/$eventId/': {
       id: '/sportingEvents/$eventId/'
       path: '/sportingEvents/$eventId'
@@ -396,10 +397,10 @@ declare module '@tanstack/react-router' {
     }
     '/users/$userId/edit': {
       id: '/users/$userId/edit'
-      path: '/edit'
+      path: '/users/$userId/edit'
       fullPath: '/users/$userId/edit'
       preLoaderRoute: typeof UsersUserIdEditRouteImport
-      parentRoute: typeof UsersUserIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/$eventId/edit': {
       id: '/sportingEvents/$eventId/edit'
@@ -418,18 +419,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface UsersUserIdRouteChildren {
-  UsersUserIdEditRoute: typeof UsersUserIdEditRoute
-}
-
-const UsersUserIdRouteChildren: UsersUserIdRouteChildren = {
-  UsersUserIdEditRoute: UsersUserIdEditRoute,
-}
-
-const UsersUserIdRouteWithChildren = UsersUserIdRoute._addFileChildren(
-  UsersUserIdRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -441,14 +430,15 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsProfileRoute: SettingsProfileRoute,
   SportingEventsCreateRoute: SportingEventsCreateRoute,
   SportingEventsRegistrationsRoute: SportingEventsRegistrationsRoute,
-  UsersUserIdRoute: UsersUserIdRouteWithChildren,
   UsersAddRoute: UsersAddRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SportingEventsIndexRoute: SportingEventsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,
   SportingEventsEventIdAthleteIdRoute: SportingEventsEventIdAthleteIdRoute,
   SportingEventsEventIdEditRoute: SportingEventsEventIdEditRoute,
+  UsersUserIdEditRoute: UsersUserIdEditRoute,
   SportingEventsEventIdIndexRoute: SportingEventsEventIdIndexRoute,
+  UsersUserIdIndexRoute: UsersUserIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

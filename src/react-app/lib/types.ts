@@ -1,8 +1,9 @@
 export interface User {
   id: string;
-  phone: string;
   name: string;
   surname: string;
+  phone: string;
+  email: string;
   sex: string;
   date_of_birth: string;
   country: string;
@@ -10,12 +11,27 @@ export interface User {
   full_location: string;
   manager_id: string;
   training_team: string;
-  email: string;
   temp_code: string;
   roles: string;
   created_at: string;
   updated_at: string;
 }
+
+export interface UserProfile {
+  id: User["id"];
+  name: User["name"];
+  surname: User["surname"];
+  phone: User["phone"];
+  email: User["email"];
+  sex: User["sex"];
+  date_of_birth: User["date_of_birth"];
+  country: User["country"];
+  city: User["city"];
+  full_location: User["full_location"];
+  manager_id: User["manager_id"];
+  training_team: User["training_team"];
+}
+
 
 export type SportingEventType = {
   id: number;
