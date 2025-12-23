@@ -7,6 +7,7 @@ import { authRoute } from "./auth";
 import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
 import { sportingEventTypesRoute } from "./sportingEventTypes";
+import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
 
 
@@ -57,6 +58,7 @@ export default {
         app.route('/api/sportingEvents', sportingEventsRoute);
         app.route('/api/settings', settingsRoute);
         app.route('/api/sportingEventTypes', sportingEventTypesRoute);
+        app.route('/api/sportingEventRegistrations', sportingEventRegistrationsRoute);
         app.route('/api/users', usersRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));

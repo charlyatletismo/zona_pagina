@@ -49,9 +49,45 @@ export type SportingEvent = {
   user_registered?: boolean;
 }
 
-export type SportingEventApiResponse = {
-  open: SportingEvent[];
-  comingSoon: SportingEvent[];
-  closed: SportingEvent[];
-  past: SportingEvent[];
+export interface SportingEventBasicInfo {
+  id: SportingEvent["id"];
+  title: SportingEvent["title"];
+  description?: SportingEvent["description"];
+  date: SportingEvent["date"];
+  registration_start?: SportingEvent["registration_start"];
+  registration_end?: SportingEvent["registration_end"];
+  location_hint?: SportingEvent["location_hint"];
+  location_text?: SportingEvent["location_text"];
 }
+
+export type SportingEventApiResponse = {
+  open: SportingEventBasicInfo[];
+  comingSoon: SportingEventBasicInfo[];
+  closed: SportingEventBasicInfo[];
+  past: SportingEventBasicInfo[];
+}
+
+export type SportingEventRegistration = {
+  id: number;
+  event_id: SportingEvent["id"];
+  user_id: User["id"];
+  registration_date: string;
+  paid: boolean;
+  payment_date: string | null;
+}
+
+export interface SportingEventRegistrationApiResponse {
+  [eventId: SportingEvent["id"]]: {
+    metadata: SportingEventBasicInfo;
+    registrations: {
+      registrationId: SportingEventRegistration["id"];
+      userId: SportingEventRegistration["user_id"];
+      userName: User["name"];
+      userEmail: User["email"];
+      userPhone: User["phone"];
+      registrationDate: SportingEventRegistration["registration_date"];
+      paid: SportingEventRegistration["paid"];
+      paymentDate: SportingEventRegistration["payment_date"];
+    }[];
+  };
+};
