@@ -97,7 +97,7 @@ function RouteComponent() {
       } else {
         navigate({ to: '/settings', reloadDocument: true });
       }
-    }, 3000);
+    }, 1000);
     setSaving(false);
   };
 
