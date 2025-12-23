@@ -15,15 +15,17 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
     }
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const activeEventsRegistrations = await db.select().from(sportingEvents).where(
-      gte(sportingEvents.date, yesterday.toISOString())
-    ).innerJoin(
-      sportingEventRegistrations,
-      eq(sportingEvents.id, sportingEventRegistrations.event_id)
-    ).innerJoin(
-      users,
-      eq(sportingEventRegistrations.user_id, users.id)
-    );
+    const activeEventsRegistrations = await db
+      .select()
+      .from(sportingEvents)
+      .where(gte(sportingEvents.date, yesterday.toISOString()))
+      .innerJoin(
+        sportingEventRegistrations,
+        eq(sportingEvents.id, sportingEventRegistrations.event_id))
+      .innerJoin(
+        users,
+        eq(sportingEventRegistrations.user_id, users.id)
+      );
     if (activeEventsRegistrations.length === 0) {
       return c.json({});
     }
