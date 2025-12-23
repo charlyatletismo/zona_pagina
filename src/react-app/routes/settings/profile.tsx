@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
@@ -7,11 +7,18 @@ import { AlertCircle, Save, ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import authCheck from '@/lib/authCheck';
 import { postAuthenticated } from '@/lib/apiCalls'
+import { getAuthenticatedThrow } from '@/lib/apiCalls'
 
 
 export const Route = createFileRoute('/settings/profile')({
   component: RouteComponent,
   beforeLoad: authCheck(),
+  loader: async () => {
+    const profileApi = await getAuthenticatedThrow('/api/settings');
+    const profile: UserProfile = profileApi.data;
+    return { profile, status: profileApi.status};
+  },
+  staleTime: 0, // force reload every time
 })
 
 
@@ -33,49 +40,19 @@ interface UserProfile {
 }
 
 function RouteComponent() {
+  const res = Route.useLoaderData();
+  if (res.status !== 200) {
+    return <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil. Por favor intenta recargar la página.</div>;
+  }
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<Partial<UserProfile>>({});
-  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState<Partial<UserProfile>>({
+    ...res.profile,
+    countryCode: res.profile.phone ? res.profile.phone.slice(0, res.profile.phone.indexOf("9")) : '',
+    barePhone: res.profile.phone ? res.profile.phone.slice(res.profile.phone.indexOf("9") + 1) : '',
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem('JWT_TOKEN');
-        if (!token) {
-          setError('No estás autenticado');
-          setLoading(false);
-          return;
-        }
-
-        const res = await fetch('/api/settings', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error('Error al cargar el perfil');
-        }
-
-        const data = await res.json();
-        setFormData({
-          ...data,
-          countryCode: data.phone ? data.phone.slice(0, data.phone.indexOf("9")) : '',
-          barePhone: data.phone ? data.phone.slice(data.phone.indexOf("9") + 1) : '',
-        });
-      } catch (err) {
-        setError('Error al cargar la información del perfil');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -104,28 +81,24 @@ function RouteComponent() {
     // Scroll to top of the page when form is submitted
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    try {
-      const res = await postAuthenticated('/api/settings', formData);
-      if (res.status !== 200) {
-        throw new Error('Error al actualizar el perfil');
-      }
-      setSuccess('Perfil actualizado correctamente');
-      const req = localStorage.getItem('REQUIRE_PROFILE_UPDATE');
-      localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
-      setTimeout(() => {
-        setSuccess('');
-        if (req === 'true') {
-          navigate({ to: '/' });
-        } else {
-          navigate({ to: '/settings' });
-        }
-      }, 3000);
-    } catch (err) {
-      setError('Error al guardar los cambios');
-      console.error(err);
-    } finally {
+    const res = await postAuthenticated('/api/settings', formData, navigate);
+    if (res.status !== 200) {
+      setError(res.data?.error || 'Error al actualizar el perfil');
       setSaving(false);
+      return;
     }
+    setSuccess('Perfil actualizado correctamente');
+    const req = localStorage.getItem('REQUIRE_PROFILE_UPDATE');
+    localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
+    setTimeout(() => {
+      setSuccess('');
+      if (req === 'true') {
+        navigate({ to: '/' });
+      } else {
+        navigate({ to: '/settings' });
+      }
+    }, 3000);
+    setSaving(false);
   };
 
   const isMissing = (value: string | undefined | null) => !value || value.trim() === '';
@@ -133,10 +106,6 @@ function RouteComponent() {
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() - 13);
   const maxDateString = maxDate.toISOString().split('T')[0];
-
-  if (loading) {
-    return <div className="flex justify-center p-8"><Spinner /></div>;
-  }
 
   return (
     <div className="p-4 w-full md:max-w-2xl mx-auto">

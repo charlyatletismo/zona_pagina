@@ -1,14 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { User, Users, UserCog, Mail, Phone, MapPin, Calendar, Edit, Mars, Venus, VenusAndMars } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
+import { getAuthenticatedThrow } from '@/lib/apiCalls'
 
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
   beforeLoad: authCheck(),
+  loader: async () => {
+    const profileApi = await getAuthenticatedThrow('/api/settings');
+    const profile: UserProfile = profileApi.data;
+    return { profile, status: profileApi.status};
+  },
+  staleTime: 1000 * 60 * 5,
 })
 
 
@@ -28,54 +33,17 @@ interface UserProfile {
 }
 
 function RouteComponent() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const res = Route.useLoaderData();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem('JWT_TOKEN');
-        if (!token) {
-          setError('No estás autenticado');
-          setLoading(false);
-          return;
-        }
-
-        const res = await fetch('/api/settings', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error('Error al cargar el perfil');
-        }
-
-        const data = await res.json();
-        setProfile(data);
-      } catch (err) {
-        setError('Error al cargar la información del perfil');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  if (loading) {
-    return <div className="flex justify-center p-8"><Spinner /></div>;
+  if (res.status !== 200) {
+    return <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil</div>;
   }
 
-  if (error) {
-    return <div className="text-red-500 p-8 text-center">{error}</div>;
-  }
-
-  if (!profile) {
+  if (!res.profile) {
     return <div className="p-8 text-center">No se encontró información del perfil</div>;
   }
+
+  const profile = res.profile;
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
