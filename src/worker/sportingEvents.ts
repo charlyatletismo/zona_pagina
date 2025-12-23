@@ -1,11 +1,12 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { eq, lt, gte, desc, and } from 'drizzle-orm';
+import { eq, lt, gte, desc, and, InferSelectModel } from 'drizzle-orm';
 import { sportingEvents, sportingEventRegistrations } from './db/schema'
 import { updatedEventTrigger } from "./triggers";
 import { ADMIN_ROLE, ORGANIZER_ROLE } from './_roles';
 
+type SportingEvent = InferSelectModel<typeof sportingEvents>;
 
 export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
@@ -18,6 +19,19 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       .where(gte(sportingEvents.date, yesterday.toISOString()))
       .orderBy(desc(sportingEvents.date));
 
+    const getBasicEventInfo = (event: SportingEvent) => {
+      return {
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        date: event.date,
+        registration_start: event.registration_start,
+        registration_end: event.registration_end,
+        location_hint: event.location_hint,
+        location_text: event.location_text,
+      };
+    };
+
     let comingSoonEvents = [];
     let openRegistrationEvents = [];
     let closedRegistrationEvents = [];
@@ -27,12 +41,12 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
         const start = new Date(event.registration_start);
         const end = new Date(event.registration_end);
         if (now >= start && now <= end) {
-          openRegistrationEvents.push(event);
+          openRegistrationEvents.push(getBasicEventInfo(event));
         } else {
-          closedRegistrationEvents.push(event);
+          closedRegistrationEvents.push(getBasicEventInfo(event));
         }
       } else {
-        comingSoonEvents.push(event);
+        comingSoonEvents.push(getBasicEventInfo(event));
       }
     }
 
@@ -46,7 +60,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       comingSoon: comingSoonEvents,
       open: openRegistrationEvents,
       closed: closedRegistrationEvents,
-      past: pastEvents,
+      past: pastEvents.map(getBasicEventInfo),
     });
   })
   .get("/:id", async (c) => {

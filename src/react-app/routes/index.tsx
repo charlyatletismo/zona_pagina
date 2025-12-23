@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
 import { getSportingEvents } from '@/lib/apiCalls'
-import { SportingEvent } from '@/lib/types'
+import { SportingEventBasicInfo } from '@/lib/types'
 
 
 export const Route = createFileRoute('/')({
@@ -124,7 +124,7 @@ function Index() {
   )
 }
 
-function EventCard({ event }: { event: SportingEvent }) {
+function EventCard({ event }: { event: SportingEventBasicInfo }) {
   return (
     <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 group-hover:shadow-lg transition-all duration-300 flex flex-col h-full group-hover:-translate-y-1'>
       <div className='flex items-start mb-4'>
