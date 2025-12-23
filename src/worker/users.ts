@@ -60,4 +60,20 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       .run();
 
     return c.json({ success: true, message: 'User role updated successfully' });
+  })
+  .post("/:id/update", async (c) => {
+    // const roles: string[] = c.get('jwtPayload').roles.split(',');
+    // if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
+    //   return c.json({ error: "Unauthorized" }, 403);
+    // }
+    const db = drizzle(c.env.DB);
+    const userId = c.req.param("id");
+    const updateData = await c.req.json();
+
+    await db.update(users)
+      .set(updateData)
+      .where(eq(users.id, userId))
+      .run();
+
+    return c.json({ success: true, message: 'User profile updated successfully' });
   });

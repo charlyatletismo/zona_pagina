@@ -27,7 +27,7 @@ interface UserProfileForm {
 }
 
 
-export const ProfileForm = ({ profile }: { profile: UserProfile }) => {
+export const ProfileForm = ({ profile, postUrl }: { profile: UserProfile, postUrl: string }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<UserProfileForm>>({
     ...profile,
@@ -65,21 +65,25 @@ export const ProfileForm = ({ profile }: { profile: UserProfile }) => {
     // Scroll to top of the page when form is submitted
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    const res = await postAuthenticated('/api/settings', formData, navigate);
+    const res = await postAuthenticated(postUrl, formData, navigate);
     if (res.status !== 200) {
       setError(res.data?.error || 'Error al actualizar el perfil');
       setSaving(false);
       return;
     }
     setSuccess('Perfil actualizado correctamente');
-    const req = localStorage.getItem('REQUIRE_PROFILE_UPDATE');
-    localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
+    let req = '';
+    if (postUrl === '/api/settings') {
+      // only for profile settings update
+      req = localStorage.getItem('REQUIRE_PROFILE_UPDATE') || '';
+      localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
+    }
     setTimeout(() => {
       setSuccess('');
       if (req === 'true') {
         navigate({ to: '/', reloadDocument: true });
       } else {
-        navigate({ to: '/settings', reloadDocument: true });
+        navigate({ to: '..', reloadDocument: true });
       }
     }, 1000);
     setSaving(false);

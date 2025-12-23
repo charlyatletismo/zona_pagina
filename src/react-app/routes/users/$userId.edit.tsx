@@ -22,6 +22,7 @@ export const Route = createFileRoute('/users/$userId/edit')({
 
 
 function RouteComponent() {
+  const { userId } = Route.useParams();
   const res = Route.useLoaderData();
   const navigate = useNavigate();
 
@@ -46,7 +47,8 @@ function RouteComponent() {
             Ajustar perfil de usuario.
           </p>
         </div>
-        <ProfileForm profile={res.profile} />
+
+        <ProfileForm profile={res.profile} postUrl={`/api/users/${userId}/update`} />
       </div>
     </div>
   );

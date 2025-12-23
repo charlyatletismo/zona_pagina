@@ -45,7 +45,7 @@ function RouteComponent() {
           </p>
         </div>
 
-      <ProfileForm profile={res.profile} />
+        <ProfileForm profile={res.profile} postUrl='/api/settings' />
       </div>
     </div>
   );
