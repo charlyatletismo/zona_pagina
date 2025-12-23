@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import { Edit } from 'lucide-react'
+import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { UserProfile } from '@/lib/types'
@@ -21,14 +21,45 @@ export const Route = createFileRoute('/settings/')({
 
 function RouteComponent() {
   const res = Route.useLoaderData();
-
-  if (res.status !== 200) {
-    return <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil</div>;
-  }
+  const navigate = useNavigate();
 
   if (!res.profile) {
     return <div className="p-8 text-center">No se encontró información del perfil</div>;
   }
+
+  if (res.status === 404 || !res.profile) {
+    return (
+      <div className="p-4 w-full md:max-w-4xl mx-auto">
+        <Button
+          variant="ghost"
+          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
+          onClick={() => navigate({ to: '..' })}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Volver atrás
+        </Button>
+
+        <div className="p-8 text-center">No se encontró información del perfil</div>
+      </div>
+    );
+  }
+
+  if (res.status !== 200) {
+    return (
+      <div className="p-4 w-full md:max-w-4xl mx-auto">
+        <Button
+          variant="ghost"
+          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
+          onClick={() => navigate({ to: '..' })}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Volver atrás
+        </Button>
+        <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil</div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">

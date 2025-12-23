@@ -25,6 +25,40 @@ function RouteComponent() {
   const res = Route.useLoaderData();
   const navigate = useNavigate();
 
+  if (res.status === 404 || !res.profile) {
+    return (
+      <div className="p-4 w-full md:max-w-4xl mx-auto">
+        <Button
+          variant="ghost"
+          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
+          onClick={() => navigate({ to: '..' })}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Volver atrás
+        </Button>
+        
+        <div className="p-8 text-center">No se encontró información del perfil</div>
+      </div>
+    );
+  }
+
+  if (res.status !== 200) {
+    return (
+      <div className="p-4 w-full md:max-w-4xl mx-auto">
+        <Button
+          variant="ghost"
+          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
+          onClick={() => navigate({ to: '..' })}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Volver atrás
+        </Button>
+        <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil</div>
+      </div>
+    );
+  }
+
+
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
       <Button
