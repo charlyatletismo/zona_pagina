@@ -3,7 +3,7 @@ import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
 import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
-import { getAuthenticated, postAuthenticated } from '@/lib/apiCalls'
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import { SportingEvent } from '@/lib/types'
 import React from 'react'
 import { Spinner } from '@/components/ui/spinner'
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
-    const spEvApi = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
+    const spEvApi = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
     const ev: SportingEvent = spEvApi.data;
     return { evData: ev, evStatus: spEvApi.status };
   },
@@ -34,6 +34,8 @@ function RouteComponent() {
   const [error, setError] = React.useState('');
   const navigate = Route.useNavigate();
   const handleRegister = async () => {
+    // Scroll to top of the page when form is submitted
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!localStorage.getItem('JWT_TOKEN')) {
       navigate({
         to: '/login'
@@ -41,7 +43,7 @@ function RouteComponent() {
       return;
     }
     setRegistering(true);
-    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`);
+    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`, navigate);
     if (res.status !== 200) {
       setError(res.data.error || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
       setTimeout(() => {
@@ -54,8 +56,6 @@ function RouteComponent() {
       }, 3000);
       evData.user_registered = true;
     }
-    // Scroll to top of the page when form is submitted
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     setRegistering(false);
   };
 

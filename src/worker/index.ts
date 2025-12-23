@@ -57,9 +57,13 @@ export default {
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {
-            if ('status' in err && (err.status == 401 || err.status == 403)) {
+            if ('status' in err && err.status == 401) {
                 // err.message = no authorization included in request
                 return c.json({ message: 'Unauthorized' }, 401);
+            }
+            if ('status' in err && err.status == 403) {
+                // err.message = no authorization included in request
+                return c.json({ message: 'Forbidden' }, 403);
             }
             console.error(`[Error] ${c.req.method} ${c.req.url}`, err);
             return c.json({ message: 'Internal Server Error' }, 500);

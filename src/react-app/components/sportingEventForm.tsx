@@ -36,33 +36,25 @@ const SportingEventForm = (
     // Scroll to top of the page when form is submitted
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    try {
-      let status: number;
-      let data: any;
-      if (newSpEvent) {
-        const res = await postAuthenticated(`/api/sportingEvents/create`, formData);
-        status = res.status;
-        data = res.data;
-      } else {
-        const res = await postAuthenticated(`/api/sportingEvents/update/${formData.id}`, formData);
-        status = res.status;
-        data = res.data;
-      }
-      if (status !== 200) {
-        throw new Error(data.error || 'Error al actualizar el evento');
-      }
-
-      setSuccess('Evento actualizado correctamente');
-      setTimeout(() => {
-        setSuccess('');
-        navigate({ to: `/sportingEvents/${data.id || ev?.id}`, reloadDocument: true });
-      }, 1500);
-    } catch (err: any) {
-      setError(err.message || 'Error al guardar los cambios');
-      console.error(err);
-    } finally {
-      setSaving(false);
+    let res: {status: number, data: any};
+    if (newSpEvent) {
+      res = await postAuthenticated(`/api/sportingEvents/create`, formData, navigate);
+    } else {
+      res = await postAuthenticated(`/api/sportingEvents/update/${formData.id}`, formData, navigate);
     }
+    if (res.status !== 200) {
+      setError('Error al guardar los cambios');
+      console.error('Error al guardar los cambios', res.data);
+      setSaving(false);
+      return;
+    }
+
+    setSuccess('Evento actualizado correctamente');
+    setTimeout(() => {
+      setSuccess('');
+      navigate({ to: `/sportingEvents/${res.data.id || ev?.id}`, reloadDocument: true });
+    }, 1500);
+    setSaving(false);
   };
 
   return (

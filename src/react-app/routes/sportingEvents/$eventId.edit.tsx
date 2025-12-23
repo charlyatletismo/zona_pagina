@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
-import { getAuthenticated } from '@/lib/apiCalls'
+import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { SportingEvent, SportingEventType } from '@/lib/types'
 import SportingEventForm from '@/components/sportingEventForm';
 
@@ -9,9 +9,9 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
-    const spEvApi = await getAuthenticated(`/api/sportingEvents/${params.eventId}`);
+    const spEvApi = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
     const ev: SportingEvent = spEvApi.data;
-    const spEvType = await getAuthenticated('/api/sportingEventTypes');
+    const spEvType = await getAuthenticatedThrow('/api/sportingEventTypes');
     const evTypes: SportingEventType[] = spEvType.data;
     return { ev, evTypes, statusEv: spEvApi.status, statusEvType: spEvType.status};
   },

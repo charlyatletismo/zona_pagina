@@ -1,32 +1,43 @@
+import { redirect } from '@tanstack/react-router';
 import { SportingEventApiResponse } from '@/lib/types';
+import { clearUserInfo } from './utils';
 
 
 export const getSportingEvents: () => Promise<{status: number, data: SportingEventApiResponse}> = async () => getAuthenticated('/api/sportingEvents');
 
 
-export const getAuthenticated = async (path: string) => {
+export const getAuthenticatedThrow = async (path: string) => {
+  return getAuthenticated(path,
+    (to: string, reloadDocument: boolean) => {
+      throw redirect({
+        to,
+        reloadDocument,
+      });
+    }
+  );
+}
+
+
+export const getAuthenticated = async (path: string, navigate: any = () => {}) => {
   const options: Record<string, any> = {method: "GET"}
   if (localStorage.getItem('JWT_TOKEN')) {
     options['headers'] = {"Authorization": `Bearer ${localStorage.getItem('JWT_TOKEN')}`}
   }
   const res = await fetch(path, options)
-  // if (res.status === 401) {
-  //   localStorage.removeItem('JWT_TOKEN');
-  //   redirect({ to: '/login' });
-  // }
-  if (res.ok) {
-    return {status: res.status, data: await res.json()};
+  if (res.status === 401) {
+    // Unauthorized, clear user info
+    clearUserInfo();
+    navigate({ to: '/login', reloadDocument: true });
   }
-  // console.log("Fetch failed:", res);
-  // console.log("Response status:", res.status);
-  // console.log("Response status text:", JSON.stringify(await res.json()));
-  // alert("Ha ocurrido un error inesperado. Se lo redirigirá al inicio.");
-  // redirect({ to: '/' });
+  if (res.status === 403) {
+    // Forbidden
+    navigate({ to: '/unauthorized' });
+  }
   return {status: res.status, data: await res.json()};
 }
 
 
-export const postAuthenticated = async (path: string, body?: object) => {
+export const postAuthenticated = async (path: string, body?: object, navigate: any = () => {}) => {
   const options: Record<string, any> = {
     method: "POST",
     headers: {
@@ -40,18 +51,14 @@ export const postAuthenticated = async (path: string, body?: object) => {
     options['body'] = JSON.stringify(body);
   }
   const res = await fetch(path, options);
-  // if (res.status === 401) {
-  //   localStorage.removeItem('JWT_TOKEN');
-  //   redirect({ to: '/login' });
-  //   return {status: 401, data: null};
-  // }
-  // if (res.ok) {
-  //   return res.json();
-  // }
-  // console.log("Fetch failed:", res);
-  // console.log("Response status:", res.status);
-  // console.log("Response status text:", await res.json());
-  // alert("Ha ocurrido un error inesperado. Se lo redirigirá al inicio.");
-  // redirect({ to: '/' });
+  if (res.status === 401) {
+    // Unauthorized, clear user info
+    clearUserInfo();
+    navigate({ to: '/login', reloadDocument: true });
+  }
+  if (res.status === 403) {
+    // Forbidden
+    navigate({ to: '/unauthorized' });
+  }
   return {status: res.status, data: await res.json()};
 }

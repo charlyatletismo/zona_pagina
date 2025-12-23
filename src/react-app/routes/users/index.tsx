@@ -1,7 +1,7 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from '@/lib/roles';
-import { getAuthenticated, postAuthenticated } from '@/lib/apiCalls';
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { User } from '@/lib/types';
 import React from 'react';
 import {
@@ -32,12 +32,7 @@ export const Route = createFileRoute('/users/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
-    const usersApi = await getAuthenticated('/api/users');
-    if (usersApi.status === 403 || usersApi.status === 401) {
-      throw redirect({
-        to: '/unauthorized',
-      });
-    }
+    const usersApi = await getAuthenticatedThrow('/api/users');
     const users: User[] = usersApi.data;
     return { users, usersStatus: usersApi.status};
   },
@@ -69,7 +64,7 @@ function RouteComponent() {
   const handleRoleChange = async (userId: string, newRole: string) => {
     if (!confirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) return;
 
-    const res = await postAuthenticated(`/api/users/${userId}/setRole`, { role: newRole });
+    const res = await postAuthenticated(`/api/users/${userId}/setRole`, { role: newRole }, navigate);
     if (res.status === 200) {
       setData(prev => {
         const newData = prev.map(u => u.id === userId ? { ...u, roles: newRole } : u);
