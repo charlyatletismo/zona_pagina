@@ -23,7 +23,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     const allowedFields = [
       'name', 'surname', 'sex', 'date_of_birth',
       'country', 'city', 'full_location',
-      'training_team', 'email'
+      'training_team', 'email', 'phone',
     ];
 
     const updates: any = {};
