@@ -108,6 +108,7 @@ VALUES (
         NULL,
         NULL,
         "diegofernandez@example.com",
+        NULL,
         'athletes_manager'
       );
 
