@@ -108,7 +108,7 @@ VALUES (
         NULL,
         NULL,
         "diegofernandez@example.com",
-        'athlete'
+        'athletes_manager'
       );
 
 INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running'), (2, 'Cycling'), (3, 'Triathlon'), (4, 'Duatlon');
