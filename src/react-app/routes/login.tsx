@@ -120,6 +120,12 @@ function RouteComponent() {
         }).then((res) => {
           if (res.ok) {
             setError('');
+            // FIXME: Don't show temp code in production
+            res.json().then((data) => {
+              if (data.tempCode) {
+                setError(`Código de prueba para usuario de test: ${data.tempCode}`);
+              }
+            });
             setCodeSent(true);
           } else if (res.status === 400) {
             setRegister(true);

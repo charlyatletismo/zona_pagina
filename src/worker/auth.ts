@@ -99,6 +99,12 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       .set({ temp_code: tempCode })
       .where(eq(users.id, existingUser[0].id))
       .run();
+
+    // FIXME: Remove skip sending Whatsapp message for test users
+    if (["42556386", "00000001", "00000002", "00000003", "00000004"].includes(existingUser[0].id)) {
+      console.log("Test user - skipping Whatsapp message sending");
+      return c.json({ message: "Temp code set for test user", tempCode });
+    }
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {
       console.error("response", JSON.stringify(response));
