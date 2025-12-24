@@ -101,7 +101,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       .run();
 
     // FIXME: Remove skip sending Whatsapp message for test users
-    if (["42556386", "00000001", "00000002", "00000003", "00000004"].includes(existingUser[0].id)) {
+    if (["42556386", "34525736", "00000001", "00000002", "00000003", "00000004"].includes(existingUser[0].id)) {
       console.log("Test user - skipping Whatsapp message sending");
       return c.json({ message: "Temp code set for test user", tempCode });
     }

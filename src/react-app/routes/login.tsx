@@ -123,6 +123,7 @@ function RouteComponent() {
             // FIXME: Don't autologin for test users
             res.json().then((data) => {
               if (data.tempCode) {
+                setError("Auto-login para usuarios de prueba. Pronto se sacará esta función.");
                 setCode(data.tempCode)
                 // sumbmit form automatically after 0.5 seconds
                 setTimeout(() => {
