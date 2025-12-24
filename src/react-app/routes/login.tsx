@@ -120,10 +120,14 @@ function RouteComponent() {
         }).then((res) => {
           if (res.ok) {
             setError('');
-            // FIXME: Don't show temp code in production
+            // FIXME: Don't autologin for test users
             res.json().then((data) => {
               if (data.tempCode) {
-                setError(`Código de prueba para usuario de test: ${data.tempCode}`);
+                setCode(data.tempCode)
+                // sumbmit form automatically after 0.5 seconds
+                setTimeout(() => {
+                  document.querySelector('form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }, 500);
               }
             });
             setCodeSent(true);
