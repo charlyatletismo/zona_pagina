@@ -112,7 +112,7 @@ VALUES (
         'athletes_manager'
       );
 
-INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running'), (2, 'Cycling'), (3, 'Triathlon'), (4, 'Duatlon');
+INSERT INTO sporting_event_types (id, name) VALUES (1, 'Running'), (2, 'Cycling'), (3, 'Triathlon'), (4, 'Duathlon');
 
 INSERT INTO sporting_events (
   id,
