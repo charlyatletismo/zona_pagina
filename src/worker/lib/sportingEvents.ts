@@ -32,10 +32,10 @@ export const getSpEvent = async (db: DrizzleD1Database, eventId: number, userId?
     ...event[0],
     circuits,
     schedules,
-    user_registered: false,
+    user_registered_to_circuit: -1,
   };
   if (userId) {
-    ev.user_registered = await userRegisteredInEvent(db, eventId, userId);
+    ev.user_registered_to_circuit = await userRegisteredInEvent(db, eventId, userId);
   }
   return ev;
 }

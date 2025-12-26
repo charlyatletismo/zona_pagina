@@ -18,5 +18,8 @@ export const userRegisteredInEvent = async (db: any, eventId: number, userId: st
       eq(sportingEventRegistrations.event_id, eventId),
     ))
     .limit(1);
-  return registration.length > 0;
+  if (registration.length === 0) {
+    return -1;
+  }
+  return registration[0].circuit_id;
 }

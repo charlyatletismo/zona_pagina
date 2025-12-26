@@ -62,7 +62,7 @@ export type SportingEvent = {
   created_at: string;
   last_update_by: User["id"];
   last_update_at: string;
-  user_registered?: boolean;
+  user_registered_to_circuit?: number;
   circuits?: SportingEventCircuit[] | null;
   schedules?: SportingEventSchedule[] | null;
 }

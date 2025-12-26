@@ -29,7 +29,7 @@ function RouteComponent() {
   const openToRegister = evData.registration_start && evData.registration_end
     ? (new Date() >= new Date(evData.registration_start) && new Date() <= new Date(evData.registration_end))
     : false;
-  const [registering, setRegistering] = React.useState(false);
+  const [registering, setRegistering] = React.useState(-1);
   const [success, setSuccess] = React.useState('');
   const [error, setError] = React.useState('');
   const navigate = Route.useNavigate();
@@ -42,7 +42,7 @@ function RouteComponent() {
       });
       return;
     }
-    setRegistering(true);
+    setRegistering(circuitId);
     const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`, {"circuitId": circuitId}, navigate);
     if (res.status !== 200) {
       setError(res.data.error || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
@@ -54,9 +54,9 @@ function RouteComponent() {
       setTimeout(() => {
         setSuccess('');
       }, 3000);
-      evData.user_registered = true;
+      evData.user_registered_to_circuit = circuitId;
     }
-    setRegistering(false);
+    setRegistering(-1);
   };
 
   if (!evData) {
@@ -255,12 +255,15 @@ function RouteComponent() {
                                           Ver Mapa del Circuito
                                       </a>
                                   )}
-                                  {!evData.user_registered && openToRegister && (
-                                    <RegisterButton
-                                      handleRegister={() => handleRegister(circuit.id || -1)}
-                                      registering={registering}
-                                      openToRegister={openToRegister}
-                                      userRegistered={evData.user_registered || false} />
+                                  {evData.user_registered_to_circuit === -1 && openToRegister && (
+                                    <div className="text-center">
+                                      <RegisterButton
+                                        handleRegister={handleRegister}
+                                        circuitId={circuit.id || -1}
+                                        registering={registering}
+                                        openToRegister={openToRegister}
+                                        userRegistered={evData.user_registered_to_circuit} />
+                                    </div>
                                   )}
                               </div>
                             ))}
@@ -274,45 +277,63 @@ function RouteComponent() {
 }
 
 
-const RegisterButton = ({ handleRegister, registering, openToRegister, userRegistered }: { handleRegister: () => void; registering: boolean; openToRegister: boolean; userRegistered: boolean}) => {
-  if (userRegistered) {
+const RegisterButton = (
+  { handleRegister,
+    circuitId,
+    registering,
+    openToRegister,
+    userRegistered }: {
+      handleRegister: (circuitId: number) => void;
+      circuitId: number;
+      registering: number;
+      openToRegister: boolean;
+      userRegistered: number}
+    ) => {
+  if (userRegistered === circuitId) {
     return (
-      <div className="text-center">
-        <Button
-          className="w-full bg-green-400"
-          size="lg"
-          disabled
-        >
-          <Check className="inline-block w-5 h-5 ml-2" /> Inscripto
-        </Button>
-      </div>
-    )
-  }
-  if (openToRegister) {
-    return (
-      <div className="text-center">
-        <Button
-          className="w-full"
-          size="lg"
-          onClick={handleRegister} disabled={registering}
-        >
-          {registering && (
-            <Spinner />
-          )}
-          {registering ? 'Inscribiendo...' : 'Inscribirse'}
-        </Button>
-      </div>
-    )
-  }
-  return (
-    <div className="text-center">
       <Button
-        className="w-full"
+        className="w-full bg-green-400"
         size="lg"
         disabled
       >
-        Inscripciones Cerradas
+        <Check className="inline-block w-5 h-5 ml-2" /> Inscripto
       </Button>
-    </div>
+    )
+  }
+  if (userRegistered > 0) {
+    return (
+      <Button
+        className='w-full'
+        variant={'outline'}
+        size="lg"
+        disabled
+      >
+        Inscripto en otro circuito
+      </Button>
+    );
+  }
+  if (openToRegister) {
+    return (
+      <Button
+        className="w-full"
+        size="lg"
+        onClick={() => handleRegister(circuitId)}
+        disabled={registering > 0}
+      >
+        {registering === circuitId && (
+          <Spinner />
+        )}
+        {registering === circuitId ? 'Inscribiendo...' : 'Inscribirse'}
+      </Button>
+    )
+  }
+  return (
+    <Button
+      className="w-full"
+      size="lg"
+      disabled
+    >
+      Inscripciones Cerradas
+    </Button>
   );
 }
