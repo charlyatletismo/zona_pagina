@@ -306,11 +306,11 @@ const RegisterButton = (
       openToRegister: boolean;
       userRegistered: number}
     ) => {
-  const classDisabled = "w-full bg-gray-300 text-gray-600 cursor-not-allowed";
+  const classDisabled = "w-full mt-2 bg-gray-300 text-gray-600 cursor-not-allowed";
   if (userRegistered === circuitId) {
     return (
       <Button
-        className="w-full bg-green-400"
+        className="w-full mt-2 bg-green-400"
         size="sm"
         disabled
       >
@@ -337,8 +337,8 @@ const RegisterButton = (
           registering > 0 ?
           registering !== circuitId
             ? classDisabled
-            : 'w-full'
-          : 'w-full'
+            : 'w-full mt-2'
+          : 'w-full mt-2'
           }
         size="sm"
         onClick={() => handleRegister(circuitId)}
