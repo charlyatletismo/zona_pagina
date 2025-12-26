@@ -3,7 +3,7 @@ import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from './db/schema';
 import { eq } from 'drizzle-orm';
-import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from './_roles';
+import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from './lib/roles';
 
 
 export const usersRoute = new Hono<{ Bindings: Env }>()

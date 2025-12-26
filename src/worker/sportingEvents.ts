@@ -1,36 +1,43 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { eq, lt, gte, desc, and, InferSelectModel } from 'drizzle-orm';
-import { users, sportingEvents, sportingEventRegistrations, sportingEventAthleteCategories, athleteCategories } from './db/schema'
+import { eq, lt, gte, desc, and, asc } from 'drizzle-orm';
+import {
+  users,
+  sportingEvents,
+  sportingEventRegistrations,
+  sportingEventAthleteCategories,
+  athleteCategories,
+  sportingEventCircuits,
+  sportingEventSchedules
+} from './db/schema'
 import { updatedEventTrigger } from "./triggers";
-import { ADMIN_ROLE, ORGANIZER_ROLE } from './_roles';
+import { ADMIN_ROLE, ORGANIZER_ROLE, authorizedRoles } from './lib/roles';
+import { getSpEvent, addSpEvent } from "./lib/sportingEvents";
+import { SportingEventFormData } from "./lib/types";
 
-type SportingEvent = InferSelectModel<typeof sportingEvents>;
 
 export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
+    const SELECT_QUERY = {
+      id: sportingEvents.id,
+      title: sportingEvents.title,
+      description: sportingEvents.description,
+      date: sportingEvents.date,
+      registration_start: sportingEvents.registration_start,
+      registration_end: sportingEvents.registration_end,
+      location_hint: sportingEvents.location_hint,
+      location_text: sportingEvents.location_text,
+    };
     const now = new Date();
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const activeEvents = await db.select()
+    const activeEvents = await db
+      .select(SELECT_QUERY)
       .from(sportingEvents)
       .where(gte(sportingEvents.date, yesterday.toISOString()))
       .orderBy(desc(sportingEvents.date));
-
-    const getBasicEventInfo = (event: SportingEvent) => {
-      return {
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        date: event.date,
-        registration_start: event.registration_start,
-        registration_end: event.registration_end,
-        location_hint: event.location_hint,
-        location_text: event.location_text,
-      };
-    };
 
     let comingSoonEvents = [];
     let openRegistrationEvents = [];
@@ -41,16 +48,17 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
         const start = new Date(event.registration_start);
         const end = new Date(event.registration_end);
         if (now >= start && now <= end) {
-          openRegistrationEvents.push(getBasicEventInfo(event));
+          openRegistrationEvents.push(event);
         } else {
-          closedRegistrationEvents.push(getBasicEventInfo(event));
+          closedRegistrationEvents.push(event);
         }
       } else {
-        comingSoonEvents.push(getBasicEventInfo(event));
+        comingSoonEvents.push(event);
       }
     }
 
-    const pastEvents = await db.select()
+    const pastEvents = await db
+      .select(SELECT_QUERY)
       .from(sportingEvents)
       .where(lt(sportingEvents.date, yesterday.toISOString()))
       .orderBy(desc(sportingEvents.date))
@@ -60,37 +68,23 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       comingSoon: comingSoonEvents,
       open: openRegistrationEvents,
       closed: closedRegistrationEvents,
-      past: pastEvents.map(getBasicEventInfo),
+      past: pastEvents,
     });
   })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const event = await db.select()
-      .from(sportingEvents)
-      .where(eq(sportingEvents.id, Number(id)))
-      .limit(1);
-    if (event.length === 0) {
+    const userId: string | null = c.get('jwtPayload')?.id || null;
+    const event = await getSpEvent(db, Number(id), userId);
+    if (!event) {
       return c.json({ error: "Event not found" }, 404);
     }
-    if (!c.get('jwtPayload')) {
-      // public access
-      return c.json({ ...event[0], user_registered: false });
-    }
-    const userId: string = c.get('jwtPayload').id;
-    const registration = await db.select()
-      .from(sportingEventRegistrations)
-      .where(and(
-        eq(sportingEventRegistrations.user_id, userId),
-        eq(sportingEventRegistrations.event_id, Number(id)),
-      ))
-      .limit(1);
-    return c.json({ ...event[0], user_registered: registration.length > 0 });
+    return c.json(event);
   })
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const payload = await c.req.parseBody(); // await c.req.json();
+    const payload = await c.req.json();
     if (!payload || !payload.circuitId) {
       return c.json({ error: "circuitId is required" }, 400);
     }
@@ -173,37 +167,16 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   .post("/create", async (c) => {
     const userId: string = c.get('jwtPayload').id;
     const roles: string[] = c.get('jwtPayload').roles.split(',');
-    if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
+    if (!authorizedRoles([ADMIN_ROLE, ORGANIZER_ROLE], roles)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
-
     const db = drizzle(c.env.DB);
-    const eventData: Record<string, any> = await c.req.json();
+    const eventData: SportingEventFormData = await c.req.json();
     if (!eventData.title || !eventData.date || !eventData.event_type) {
       return c.json({ error: "title, date and event_type are required" }, 400);
     }
-    const data = {
-      title: eventData.title,
-      description: eventData.description || "",
-      date: eventData.date,
-      registration_start: eventData.registration_start,
-      registration_end: eventData.registration_end,
-      location_hint: eventData.location_hint,
-      location_text: eventData.location_text,
-      location_lat: eventData.location_lat,
-      location_long: eventData.location_long,
-      circuit_map_url: eventData.circuit_map_url,
-      event_type: eventData.event_type,
-      rules: eventData.rules,
-      disclaimer_of_liability_title: eventData.disclaimer_of_liability_title,
-      disclaimer_of_liability_content: eventData.disclaimer_of_liability_content,
-      award_prizes: eventData.award_prizes,
-      created_by: userId,
-      last_update_by: userId,
-    }
-    const result = await db.insert(sportingEvents).values(data).returning();
-    updatedEventTrigger(result[0].id);
-    return c.json(result[0]);
+    const eventId = await addSpEvent(db, eventData, userId);
+    return c.json({success: true, eventId: eventId});
   })
   .post("/update/:id", async (c) => {
     const roles: string[] = c.get('jwtPayload').roles.split(',');

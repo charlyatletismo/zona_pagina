@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { sportingEvents, sportingEventRegistrations, users } from './db/schema';
-import { ADMIN_ROLE, ORGANIZER_ROLE } from './_roles';
+import { ADMIN_ROLE, ORGANIZER_ROLE } from './lib/roles';
 import { gte, eq } from 'drizzle-orm';
 
 

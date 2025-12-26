@@ -90,7 +90,7 @@ export const sportingEvents = sqliteTable("sporting_events", {
 // It can be used for start times, award ceremonies, etc.
 export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: text().notNull().references(() => sportingEvents.id),
+  event_id: int().notNull().references(() => sportingEvents.id),
   date: text().notNull(), // ISO string
   title: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
@@ -118,7 +118,7 @@ export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlet
 // Circuits or Routes within an Event
 export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: text().notNull().references(() => sportingEvents.id),
+  event_id: int().notNull().references(() => sportingEvents.id),
   name: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
   distance_km: real().notNull(),
