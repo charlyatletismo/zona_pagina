@@ -44,13 +44,3 @@ export interface SportingEventCircuitFormData {
   distance_km: number;
   map_url?: string;
 }
-
-export interface SportingEventUpdateFormData {
-  updateFields?: Partial<SportingEventFormData>;
-  addCircuits?: SportingEventCircuitFormData[];
-  updateCircuits?: SportingEventCircuitFormData[];
-  deleteCircuitIds?: number[];
-  addSchedules?: SportingEventScheduleFormData[];
-  updateSchedules?: SportingEventScheduleFormData[];
-  deleteScheduleIds?: number[];
-}

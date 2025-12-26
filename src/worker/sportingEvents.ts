@@ -1,75 +1,25 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { eq, lt, gte, desc, and, asc } from 'drizzle-orm';
+import { eq, lt, gte, and } from 'drizzle-orm';
 import {
   users,
   sportingEvents,
   sportingEventRegistrations,
   sportingEventAthleteCategories,
-  athleteCategories,
-  sportingEventCircuits,
-  sportingEventSchedules
+  athleteCategories
 } from './db/schema'
-import { updatedEventTrigger } from "./triggers";
 import { ADMIN_ROLE, ORGANIZER_ROLE, authorizedRoles } from './lib/roles';
-import { getSpEvent, addSpEvent } from "./lib/sportingEvents";
+import { getSpEvent, addSpEvent, updateSpEvent } from "./lib/sportingEvents";
+import { mainSportingEventsList } from "./lib/sportingEventList";
 import { SportingEventFormData } from "./lib/types";
 
 
 export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
-    const SELECT_QUERY = {
-      id: sportingEvents.id,
-      title: sportingEvents.title,
-      description: sportingEvents.description,
-      date: sportingEvents.date,
-      registration_start: sportingEvents.registration_start,
-      registration_end: sportingEvents.registration_end,
-      location_hint: sportingEvents.location_hint,
-      location_text: sportingEvents.location_text,
-    };
-    const now = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const activeEvents = await db
-      .select(SELECT_QUERY)
-      .from(sportingEvents)
-      .where(gte(sportingEvents.date, yesterday.toISOString()))
-      .orderBy(desc(sportingEvents.date));
-
-    let comingSoonEvents = [];
-    let openRegistrationEvents = [];
-    let closedRegistrationEvents = [];
-
-    for (const event of activeEvents) {
-      if (event.registration_start && event.registration_end) {
-        const start = new Date(event.registration_start);
-        const end = new Date(event.registration_end);
-        if (now >= start && now <= end) {
-          openRegistrationEvents.push(event);
-        } else {
-          closedRegistrationEvents.push(event);
-        }
-      } else {
-        comingSoonEvents.push(event);
-      }
-    }
-
-    const pastEvents = await db
-      .select(SELECT_QUERY)
-      .from(sportingEvents)
-      .where(lt(sportingEvents.date, yesterday.toISOString()))
-      .orderBy(desc(sportingEvents.date))
-      .limit(5);
-
-    return c.json({
-      comingSoon: comingSoonEvents,
-      open: openRegistrationEvents,
-      closed: closedRegistrationEvents,
-      past: pastEvents,
-    });
+    const res = await mainSportingEventsList(db);
+    return c.json(res);
   })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
@@ -179,26 +129,17 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     return c.json({success: true, eventId: eventId});
   })
   .post("/update/:id", async (c) => {
+    const userId: string = c.get('jwtPayload').id;
     const roles: string[] = c.get('jwtPayload').roles.split(',');
-    if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
+    if (!authorizedRoles([ADMIN_ROLE, ORGANIZER_ROLE], roles)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
-
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const eventData: Record<string, any> = await c.req.json();
+    const eventData: Partial<SportingEventFormData> = await c.req.json();
     if (!eventData.title || !eventData.date || !eventData.event_type) {
       return c.json({ error: "title, date and event_type are required" }, 400);
     }
-    eventData.last_update_by = c.get('jwtPayload').id;
-    eventData.last_update_at = new Date().toISOString();
-    if (eventData.id) {
-      delete eventData.id;
-    }
-    await db.update(sportingEvents)
-      .set(eventData)
-      .where(eq(sportingEvents.id, Number(id)))
-      .run();
-    updatedEventTrigger(Number(id));
+    await updateSpEvent(db, Number(id), eventData, userId);
     return c.json({ success: true });
   });
