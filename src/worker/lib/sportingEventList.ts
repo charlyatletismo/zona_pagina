@@ -1,7 +1,6 @@
 import { lt, gte, desc } from 'drizzle-orm';
-import {
-  sportingEvents
-} from '../db/schema'
+import { sportingEvents } from '../db/schema'
+
 
 export const mainSportingEventsList = async (db: any) => {
   const SELECT_QUERY = {
@@ -48,7 +47,7 @@ export const mainSportingEventsList = async (db: any) => {
     .orderBy(desc(sportingEvents.date))
     .limit(5);
 
-    return {
+  return {
     comingSoon: comingSoonEvents,
     open: openRegistrationEvents,
     closed: closedRegistrationEvents,
