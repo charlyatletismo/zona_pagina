@@ -63,6 +63,29 @@ export type SportingEvent = {
   last_update_by: User["id"];
   last_update_at: string;
   user_registered?: boolean;
+  circuits?: SportingEventCircuit[] | null;
+  schedules?: SportingEventSchedule[] | null;
+}
+
+export interface SportingEventCircuit {
+  id?: number;
+  event_id?: SportingEvent["id"];
+  name: string;
+  description?: string;
+  distance_km: number;
+  map_url?: string;
+}
+
+export interface SportingEventSchedule {
+  id?: number;
+  event_id: SportingEvent["id"];
+  date: string;
+  title: string;
+  description?: string;
+  location_hint?: string;
+  location_text?: string;
+  location_lat?: number;
+  location_long?: number;
 }
 
 export interface SportingEventBasicInfo {

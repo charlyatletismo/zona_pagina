@@ -4,7 +4,7 @@ import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon
 import { Button } from '@/components/ui/button'
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
-import { SportingEvent } from '@/lib/types'
+import { SportingEvent, SportingEventCircuit } from '@/lib/types'
 import React from 'react'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -33,7 +33,7 @@ function RouteComponent() {
   const [success, setSuccess] = React.useState('');
   const [error, setError] = React.useState('');
   const navigate = Route.useNavigate();
-  const handleRegister = async () => {
+  const handleRegister = async (circuitId: number) => {
     // Scroll to top of the page when form is submitted
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!localStorage.getItem('JWT_TOKEN')) {
@@ -43,7 +43,7 @@ function RouteComponent() {
       return;
     }
     setRegistering(true);
-    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`, navigate);
+    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`, {"circuitId": circuitId}, navigate);
     if (res.status !== 200) {
       setError(res.data.error || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
       setTimeout(() => {
@@ -233,59 +233,86 @@ function RouteComponent() {
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Register Button */}
-                    {
-                      evData.user_registered ? (
-                        <div className="text-center">
-                            <Button
-                                className="w-full bg-green-400"
-                                size="lg"
-                                disabled
-                            >
-                              <Check className="inline-block w-5 h-5 ml-2" /> Inscripto
-                            </Button>
-                        </div>
-                      ) : openToRegister ? (
-                        <div className="text-center">
-                            <Button
-                                className="w-full"
-                                size="lg"
-                                onClick={handleRegister} disabled={registering}
-                              >
-                                {registering && (
-                                  <Spinner />
-                                )}
-                                {registering ? 'Inscribiendo...' : 'Inscribirse'}
-                            </Button>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                            <Button
-                                className="w-full"
-                                size="lg"
-                                disabled
-                            >
-                                Inscripciones Cerradas
-                            </Button>
-                        </div>
-                      )
-                    }
                 </div>
 
                 {/* Map Link */}
-                {evData.circuit_map_url && (
-                    <a 
-                        href={evData.circuit_map_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="block p-4 bg-blue-50 text-blue-700 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors text-center font-medium"
-                    >
-                        Ver Mapa del Circuito
-                    </a>
+                {evData.circuits && evData.circuits.length > 0 && (
+                    <div className="bg-white p-6 rounded-xl shadow-sm border">
+                        <h3 className="font-semibold text-gray-900 mb-4">Circuitos</h3>
+                        <div className="space-y-4">
+                          {evData.circuits.map((circuit: SportingEventCircuit) => (
+                              <div key={circuit.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                  <h4 className="font-medium text-gray-800">{circuit.name}</h4>
+                                  <p className="text-sm text-gray-600 mt-1">{circuit.description || 'Sin descripción'}</p>
+                                  <p className="text-sm text-gray-500 mt-1">Distancia: {circuit.distance_km} km</p>
+                                  {circuit.map_url && (
+                                      <a 
+                                          href={circuit.map_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-sm text-primary hover:underline mt-2 inline-block"
+                                      >
+                                          Ver Mapa del Circuito
+                                      </a>
+                                  )}
+                                  {!evData.user_registered && openToRegister && (
+                                    <RegisterButton
+                                      handleRegister={() => handleRegister(circuit.id || -1)}
+                                      registering={registering}
+                                      openToRegister={openToRegister}
+                                      userRegistered={evData.user_registered || false} />
+                                  )}
+                              </div>
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
     </div>
   )
+}
+
+
+const RegisterButton = ({ handleRegister, registering, openToRegister, userRegistered }: { handleRegister: () => void; registering: boolean; openToRegister: boolean; userRegistered: boolean}) => {
+  if (userRegistered) {
+    return (
+      <div className="text-center">
+        <Button
+          className="w-full bg-green-400"
+          size="lg"
+          disabled
+        >
+          <Check className="inline-block w-5 h-5 ml-2" /> Inscripto
+        </Button>
+      </div>
+    )
+  }
+  if (openToRegister) {
+    return (
+      <div className="text-center">
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleRegister} disabled={registering}
+        >
+          {registering && (
+            <Spinner />
+          )}
+          {registering ? 'Inscribiendo...' : 'Inscribirse'}
+        </Button>
+      </div>
+    )
+  }
+  return (
+    <div className="text-center">
+      <Button
+        className="w-full"
+        size="lg"
+        disabled
+      >
+        Inscripciones Cerradas
+      </Button>
+    </div>
+  );
 }

@@ -1,6 +1,6 @@
 import { useNavigate, Link } from '@tanstack/react-router'
 import React, { useState } from 'react';
-import { ArrowLeft, Save, AlertCircle, MapPinnedIcon } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, MapPinnedIcon, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { postAuthenticated } from '@/lib/apiCalls'
 import { SportingEvent, SportingEventType } from '@/lib/types'
@@ -272,16 +272,6 @@ const SportingEventForm = (
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label htmlFor="circuit_map_url" className="text-sm font-medium text-gray-700">URL del Mapa</label>
-              <Input
-                id="circuit_map_url"
-                name="circuit_map_url"
-                value={formData.circuit_map_url || ''}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
               <label htmlFor="rules" className="text-sm font-medium text-gray-700">Reglamento</label>
               <textarea
                 id="rules"
@@ -309,6 +299,102 @@ const SportingEventForm = (
               />
             </div>
           </div>
+
+          <hr className="my-6" />
+          <div className="text-lg font-semibold mt-6 mb-2">Circuitos del Evento</div>
+          <div className="space-y-2 md:col-span-2">
+            <Button variant={'outline'} type='button' onClick={
+              () => setFormData(prev => ({ ...prev, circuits: [...(prev.circuits || []), { name: "", distance_km: 0 }] }))
+            }>{
+              'Agregar nuevo circuito'
+            }</Button>
+          </div>
+          {formData.circuits && formData.circuits.map((circuit, index) => (
+            <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2 items-end">
+              <div className='space-y-2 md:col-span-2'>
+                <label htmlFor={`circuits.${index}`} className="text-sm font-medium text-gray-700">{`Circuito ${index + 1}`}</label>
+                <div className="flex gap-2">
+                  <Button variant={'destructive'} type='button' onClick={
+                    () => {
+                      const newCircuits = [...(formData.circuits || [])];
+                      newCircuits.splice(index, 1);
+                      setFormData(prev => ({ ...prev, circuits: newCircuits }));
+                    }
+                  }>{
+                      <Trash2 className="w-4 h-4" />
+                    }</Button>
+                  <Input
+                    id={`circuits.${index}.name`}
+                    name={`circuits.${index}.name`}
+                    value={circuit.name || ''}
+                    onChange={(e) => {
+                      const newCircuits = [...(formData.circuits || [])];
+                      newCircuits[index].name = e.target.value;
+                      setFormData(prev => ({ ...prev, circuits: newCircuits }));
+                    }}
+                    placeholder="Nombre del circuito"
+                    />
+                </div>
+              </div>
+              <div className='space-y-2 md:col-span-2'>
+                <label htmlFor={`circuits.${index}.description`} className="text-sm font-medium text-gray-700">Descripción del Circuito</label>
+                <textarea
+                  id={`circuits.${index}.description`}
+                  name={`circuits.${index}.description`}
+                  rows={3}
+                  className={cn(
+                    "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  )}
+                  value={circuit.description || ''}
+                  onChange={(e) => {
+                    const newCircuits = [...(formData.circuits || [])];
+                    newCircuits[index].description = e.target.value;
+                    setFormData(prev => ({ ...prev, circuits: newCircuits }));
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor={`circuits.${index}.distance_km`} className="text-sm font-medium text-gray-700">Distancia (en kilómetros)</label>
+                <Input
+                  id={`circuits.${index}.distance_km`}
+                  name={`circuits.${index}.distance_km`}
+                  type="number"
+                  step="any"
+                  value={circuit.distance_km || ''}
+                  onChange={(e) => {
+                    const newCircuits = [...(formData.circuits || [])];
+                    newCircuits[index].distance_km = parseFloat(e.target.value);
+                    setFormData(prev => ({ ...prev, circuits: newCircuits }));
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label htmlFor={`circuits.${index}.map_url`} className="text-sm font-medium text-gray-700">URL del Mapa</label>
+                <div className="flex gap-2">
+                  <Input
+                    id={`circuits.${index}.map_url`}
+                    name={`circuits.${index}.map_url`}
+                    value={circuit.map_url || ''}
+                    onChange={(e) => {
+                      const newCircuits = [...(formData.circuits || [])];
+                      newCircuits[index].map_url = e.target.value;
+                      setFormData(prev => ({ ...prev, circuits: newCircuits }));
+                    }}
+                    placeholder="https://www.google.com/maps/d/..."
+                  />
+                  <Button variant="secondary" className="w-[25%]" asChild>
+                    <a href="https://www.google.com/mymaps" target="_blank" rel="noopener noreferrer">
+                      <MapPinnedIcon className="w-4 h-4 mr-2" />
+                      Ir a My Maps
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <hr className="my-6" />
 
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={saving}>
