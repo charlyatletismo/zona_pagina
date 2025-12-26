@@ -1,13 +1,5 @@
-import { eq, lt, gte, desc, and, asc } from 'drizzle-orm';
-import {
-  users,
-  sportingEvents,
-  sportingEventRegistrations,
-  sportingEventAthleteCategories,
-  athleteCategories,
-  sportingEventCircuits,
-  sportingEventSchedules
-} from '../db/schema'
+import { eq, and } from 'drizzle-orm';
+import { sportingEventRegistrations } from '../db/schema'
 
 
 export const userRegisteredInEvent = async (db: any, eventId: number, userId: string) => {
