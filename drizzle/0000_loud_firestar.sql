@@ -32,7 +32,7 @@ CREATE TABLE `sporting_event_athlete_categories` (
 --> statement-breakpoint
 CREATE TABLE `sporting_event_circuits` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`event_id` text NOT NULL,
+	`event_id` integer NOT NULL,
 	`name` text(128) NOT NULL,
 	`description` text(512),
 	`distance_km` real NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE `sporting_event_registrations` (
 --> statement-breakpoint
 CREATE TABLE `sporting_event_schedules` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`event_id` text NOT NULL,
+	`event_id` integer NOT NULL,
 	`date` text NOT NULL,
 	`title` text(128) NOT NULL,
 	`description` text(512),

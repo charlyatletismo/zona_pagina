@@ -252,3 +252,29 @@ VALUES
     '34525736',
     '2025-08-15T11:00:00.374Z'
   );
+
+
+INSERT INTO sporting_event_circuits (
+  id,
+  event_id,
+  name,
+  description,
+  distance_km,
+  map_url)
+VALUES
+  (
+    1,
+    3,
+    '10K Circuito Principal',
+    'Circuito principal de 10 kilómetros que recorre las principales calles de La Vanguardia.',
+    10.0,
+    NULL
+  ),
+  (
+    2,
+    3,
+    '5K Circuito Alternativo',
+    'Circuito alternativo de 5 kilómetros ideal para corredores principiantes.',
+    5.0,
+    NULL
+  );

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ad65afaf-10a5-4978-acac-b19ddae157b6",
+  "id": "c4f1134c-0fb6-459a-86e8-dd165856df49",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "athlete_categories": {
@@ -239,7 +239,7 @@
         },
         "event_id": {
           "name": "event_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -406,7 +406,7 @@
         },
         "event_id": {
           "name": "event_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
