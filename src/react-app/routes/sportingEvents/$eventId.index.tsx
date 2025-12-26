@@ -184,6 +184,25 @@ function RouteComponent() {
                         </div>
                     </section>
                 )}
+                {evData.schedules && evData.schedules.length > 0 && (
+                  <section>
+                      <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                          <CalendarIcon className="w-6 h-6 text-primary" />
+                          Cronograma
+                      </h2>
+                      <div className="space-y-4">
+                        {evData.schedules.map((schedule) => (
+                          <div key={schedule.id} className="mb-2 border-l-4 border-primary pl-4">
+                              <h3 className="text-lg font-medium mb-1">{schedule.title}</h3>
+                              <div className="text-sm text-gray-500 mb-2">{new Date(schedule.date).toLocaleString()}</div>
+                              {schedule.description && (
+                                <p className="text-gray-600 whitespace-pre-wrap">{schedule.description}</p>
+                              )}
+                          </div>
+                        ))}
+                      </div>
+                  </section>
+                )}
             </div>
 
             {/* Sidebar - Right Column */}
@@ -233,44 +252,42 @@ function RouteComponent() {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Map Link */}
-                {evData.circuits && evData.circuits.length > 0 && (
-                    <div className="bg-white p-6 rounded-xl shadow-sm border">
-                        <h3 className="font-semibold text-gray-900 mb-4">Circuitos</h3>
-                        <div className="space-y-4">
-                          {evData.circuits.map((circuit: SportingEventCircuit) => (
-                              <div key={circuit.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                  <h4 className="font-medium text-gray-800">{circuit.name}</h4>
-                                  <p className="text-sm text-gray-600 mt-1">{circuit.description || 'Sin descripción'}</p>
-                                  <p className="text-sm text-gray-500 mt-1">Distancia: {circuit.distance_km} km</p>
-                                  {circuit.map_url && (
-                                      <a 
-                                          href={circuit.map_url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-sm text-primary hover:underline mt-2 inline-block"
-                                      >
-                                          Ver Mapa del Circuito
-                                      </a>
-                                  )}
-                                  {evData.user_registered_to_circuit === -1 && openToRegister && (
-                                    <div className="text-center">
-                                      <RegisterButton
-                                        handleRegister={handleRegister}
-                                        circuitId={circuit.id || -1}
-                                        registering={registering}
-                                        openToRegister={openToRegister}
-                                        userRegistered={evData.user_registered_to_circuit} />
-                                    </div>
-                                  )}
-                              </div>
-                            ))}
-                        </div>
+                  {evData.circuits && evData.circuits.length > 0 && (
+                    <div className="border-t pt-4">
+                      <h3 className="font-semibold text-gray-900 mb-4">Circuitos</h3>
+                      <div className="space-y-4">
+                        {evData.circuits.map((circuit: SportingEventCircuit) => (
+                            <div key={circuit.id} className="p-1">
+                              <h4 className="mb-2 border-l-2 border-primary pl-4">{circuit.name}</h4>
+                                <p className="text-sm text-gray-600 mt-1">{circuit.description || 'Sin descripción'}</p>
+                                <p className="text-sm text-gray-500 mt-1">Distancia: {circuit.distance_km} km</p>
+                                {circuit.map_url && (
+                                    <a 
+                                        href={circuit.map_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm text-primary hover:underline mt-2 inline-block"
+                                    >
+                                        Ver Mapa del Circuito
+                                    </a>
+                                )}
+                                {openToRegister && (
+                                  <div className="text-center">
+                                    <RegisterButton
+                                      handleRegister={handleRegister}
+                                      circuitId={circuit.id || -1}
+                                      registering={registering}
+                                      openToRegister={openToRegister}
+                                      userRegistered={evData.user_registered_to_circuit || -1} />
+                                  </div>
+                                )}
+                            </div>
+                          ))}
+                      </div>
                     </div>
-                )}
+                  )}
             </div>
+          </div>
         </div>
     </div>
   )
@@ -293,7 +310,7 @@ const RegisterButton = (
     return (
       <Button
         className="w-full bg-green-400"
-        size="lg"
+        size="sm"
         disabled
       >
         <Check className="inline-block w-5 h-5 ml-2" /> Inscripto
@@ -305,7 +322,7 @@ const RegisterButton = (
       <Button
         className='w-full'
         variant={'outline'}
-        size="lg"
+        size="sm"
         disabled
       >
         Inscripto en otro circuito
@@ -316,7 +333,7 @@ const RegisterButton = (
     return (
       <Button
         className="w-full"
-        size="lg"
+        size="sm"
         onClick={() => handleRegister(circuitId)}
         disabled={registering > 0}
       >
@@ -330,7 +347,7 @@ const RegisterButton = (
   return (
     <Button
       className="w-full"
-      size="lg"
+      size="sm"
       disabled
     >
       Inscripciones Cerradas

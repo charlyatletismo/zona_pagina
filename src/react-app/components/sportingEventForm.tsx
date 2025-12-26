@@ -301,6 +301,91 @@ const SportingEventForm = (
           </div>
 
           <hr className="my-6" />
+          <div className="text-lg font-semibold mt-6 mb-2">Horarios del Evento</div>
+          <div className="space-y-2 md:col-span-2">
+            <Button variant={'outline'} type='button' onClick={
+              () => setFormData(prev => ({ ...prev, schedules: [...(prev.schedules || []), { event_id: formData.id || 0, date: '', title: '' }] }))
+            }>{
+              'Agregar nuevo horario'
+            }</Button>
+          </div>
+          {formData.schedules && formData.schedules.map((schedule, index) => (
+            <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2 items-end">
+              <div className='space-y-2 md:col-span-2'>
+                <label htmlFor={`schedules.${index}`} className="text-sm font-medium text-gray-700">{`Horario ${index + 1}`}</label>
+                <div className="flex gap-2">
+                  <Button variant={'destructive'} type='button' onClick={
+                    () => {
+                      const newSchedules = [...(formData.schedules || [])];
+                      newSchedules.splice(index, 1);
+                      setFormData(prev => ({ ...prev, schedules: newSchedules }));
+                    }
+                  }>{
+                      <Trash2 className="w-4 h-4" />
+                    }</Button>
+                  <Input
+                    id={`schedules.${index}.title`}
+                    name={`schedules.${index}.title`}
+                    value={schedule.title || ''}
+                    onChange={(e) => {
+                      const newSchedules = [...(formData.schedules || [])];
+                      newSchedules[index].title = e.target.value;
+                      setFormData(prev => ({ ...prev, schedules: newSchedules }));
+                    }}
+                    placeholder="Título del horario"
+                    />
+                </div>
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label htmlFor={`schedules.${index}.description`} className="text-sm font-medium text-gray-700">Descripción del Horario</label>
+                <textarea
+                  id={`schedules.${index}.description`}
+                  name={`schedules.${index}.description`}
+                  rows={3}
+                  className={cn(
+                    "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  )}
+                  value={schedule.description || ''}
+                  onChange={(e) => {
+                    const newSchedules = [...(formData.schedules || [])];
+                    newSchedules[index].description = e.target.value;
+                    setFormData(prev => ({ ...prev, schedules: newSchedules }));
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor={`schedules.${index}.date`} className="text-sm font-medium text-gray-700">Fecha y Hora</label>
+                <Input
+                  id={`schedules.${index}.date`}
+                  name={`schedules.${index}.date`}
+                  type="datetime-local"
+                  value={schedule.date || ''}
+                  onChange={(e) => {
+                    const newSchedules = [...(formData.schedules || [])];
+                    newSchedules[index].date = e.target.value;
+                    setFormData(prev => ({ ...prev, schedules: newSchedules }));
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label htmlFor={`schedules.${index}.location_text`} className="text-sm font-medium text-gray-700">Ubicación (Texto)</label>
+                <Input
+                  id={`schedules.${index}.location_text`}
+                  name={`schedules.${index}.location_text`}
+                  value={schedule.location_text || ''}
+                  onChange={(e) => {
+                    const newSchedules = [...(formData.schedules || [])];
+                    newSchedules[index].location_text = e.target.value;
+                    setFormData(prev => ({ ...prev, schedules: newSchedules }));
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+          <hr className="my-6" />
           <div className="text-lg font-semibold mt-6 mb-2">Circuitos del Evento</div>
           <div className="space-y-2 md:col-span-2">
             <Button variant={'outline'} type='button' onClick={
