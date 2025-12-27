@@ -301,18 +301,18 @@ const SportingEventForm = (
           </div>
 
           <hr className="my-6" />
-          <div className="text-lg font-semibold mt-6 mb-2">Horarios del Evento</div>
+          <div className="text-lg font-semibold mt-6 mb-2">Cronograma del Evento</div>
           <div className="space-y-2 md:col-span-2">
             <Button variant={'outline'} type='button' onClick={
               () => setFormData(prev => ({ ...prev, schedules: [...(prev.schedules || []), { event_id: formData.id || 0, date: '', title: '' }] }))
             }>{
-              'Agregar nuevo horario'
+              'Agregar nuevo hito del evento'
             }</Button>
           </div>
           {formData.schedules && formData.schedules.map((schedule, index) => (
             <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2 items-end">
               <div className='space-y-2 md:col-span-2'>
-                <label htmlFor={`schedules.${index}`} className="text-sm font-medium text-gray-700">{`Horario ${index + 1}`}</label>
+                <label htmlFor={`schedules.${index}`} className="text-sm font-medium text-gray-700">{`Hito ${index + 1}`}</label>
                 <div className="flex gap-2">
                   <Button variant={'destructive'} type='button' onClick={
                     () => {
@@ -332,13 +332,13 @@ const SportingEventForm = (
                       newSchedules[index].title = e.target.value;
                       setFormData(prev => ({ ...prev, schedules: newSchedules }));
                     }}
-                    placeholder="Título del horario"
+                    placeholder="Título del hito"
                     />
                 </div>
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <label htmlFor={`schedules.${index}.description`} className="text-sm font-medium text-gray-700">Descripción del Horario</label>
+                <label htmlFor={`schedules.${index}.description`} className="text-sm font-medium text-gray-700">Descripción del hito</label>
                 <textarea
                   id={`schedules.${index}.description`}
                   name={`schedules.${index}.description`}
