@@ -44,6 +44,7 @@ export const athleteCategories = sqliteTable("athlete_categories", {
   name: text({ length: 64 }).notNull(),
   description: text({ length: 256 }),
   fee_category_id: int().notNull().references(() => feesCategories.id),
+  sex: text({ length: 1 }), // 'M', 'F', or null for all
   min_age: int(),
   max_age: int(),
   condition: text({ length: 256 }), // e.g. "must have completed at least 3 events", "wheelchair users only", etc.
