@@ -1,9 +1,13 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
-import { eq, asc, inArray } from 'drizzle-orm';
+import { eq, asc, inArray, lt, gte, and } from 'drizzle-orm';
 import {
+  users,
   sportingEvents,
   sportingEventCircuits,
-  sportingEventSchedules
+  sportingEventSchedules,
+  sportingEventRegistrations,
+  sportingEventAthleteCategories,
+  athleteCategories
 } from '../db/schema'
 import { userRegisteredInEvent } from './sportingEventRegistrations';
 import { SportingEventFormData } from './types';
@@ -216,6 +220,83 @@ export const updateSpEvent = async (db: DrizzleD1Database, eventId: number, even
     await db.delete(sportingEventSchedules)
       .where(inArray(sportingEventSchedules.id, resSchedules.delete))
       .run();
+  } 
+}
+
+
+export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, userId: string, circuitId: number) => {
+  const event = await db.select()
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .limit(1);
+  if (event.length === 0) {
+    return { error: true, error_404: "Event not found" };
   }
-  
+  const registration = await db.select({id: sportingEventRegistrations.id})
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.user_id, userId),
+      eq(sportingEventRegistrations.event_id, eventId),
+    ))
+    .limit(1);
+  if (registration.length > 0) {
+    return { error: true, error_400: "User already registered for this event" };
+  }
+  let categoryId: number | null = null;
+  const userData = await db
+    .select({
+      dob: users.date_of_birth,
+      category: users.hard_category})
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  if (userData.length === 0) {
+    return { error: true, error_404: "User not found" };
+  }
+  if (userData[0].category) {
+    categoryId = userData[0].category;
+  } else {
+    // try to find category based on age
+    if (!userData[0].dob) {
+      return { error: true, error_400: "User date of birth not set" };
+    }
+    const birthDate = new Date(userData[0].dob);
+    const today = new Date();
+    let age = today.getUTCMilliseconds() - birthDate.getUTCMilliseconds();
+    age /= 1000 * 60 * 60 * 24;
+    age = Math.floor(age / 365.25);
+    const category = await db
+      .select({id: athleteCategories.id})
+      .from(athleteCategories)
+      .where(and(
+        gte(athleteCategories.min_age, age),
+        lt(athleteCategories.max_age, age + 1),
+      ))
+      .limit(1);
+    if (category.length === 0) {
+      return { error: true, error_400: "No athlete category found for user's age" };
+    }
+    categoryId = category[0].id;
+  }
+
+  const spCategory = await db
+    .select({id: sportingEventAthleteCategories.id})
+    .from(sportingEventAthleteCategories)
+    .where(and(
+      eq(sportingEventAthleteCategories.event_id, eventId),
+      eq(sportingEventAthleteCategories.athlete_category_id, categoryId),
+      eq(sportingEventAthleteCategories.circuit_id, circuitId),
+    ))
+    .limit(1);
+  if (spCategory.length === 0) {
+    return { error: true, error_400: "No sporting event category found for user" };
+  }
+
+  await db.insert(sportingEventRegistrations).values({
+    event_id: event[0].id,
+    user_id: userId,
+    registration_date: new Date().toISOString(),
+    category_id: spCategory[0].id,
+  });
+  return { success: true };
 }
