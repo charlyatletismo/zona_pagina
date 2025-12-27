@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
-import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { SportingEvent, SportingEventType } from '@/lib/types'
+import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import { SportingEvent, SportingEventType } from '@/lib/types';
 import SportingEventForm from '@/components/sportingEventForm';
 
 export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
