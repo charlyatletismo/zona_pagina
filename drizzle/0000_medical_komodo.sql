@@ -3,6 +3,7 @@ CREATE TABLE `athlete_categories` (
 	`name` text(64) NOT NULL,
 	`description` text(256),
 	`fee_category_id` integer NOT NULL,
+	`sex` text(1),
 	`min_age` integer,
 	`max_age` integer,
 	`condition` text(256),

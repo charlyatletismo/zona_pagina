@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c4f1134c-0fb6-459a-86e8-dd165856df49",
+  "id": "54b74002-6672-46e8-81dc-f2ebdf9e0fb5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "athlete_categories": {
@@ -33,6 +33,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "sex": {
+          "name": "sex",
+          "type": "text(1)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "min_age": {

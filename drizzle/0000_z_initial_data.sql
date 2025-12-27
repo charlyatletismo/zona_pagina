@@ -251,6 +251,29 @@ VALUES
     '2025-08-15T11:00:00.374Z',
     '34525736',
     '2025-08-15T11:00:00.374Z'
+  ),
+  (
+    6,
+    'Villa Corre',
+    'Todo villa corre!!',
+    NULL,
+    NULL,
+    '2026-02-20T10:00',
+    '2025-12-10T10:00',
+    '2026-02-10T10:00',
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    1,
+    'Acá van las reglas del evento',
+    NULL,
+    NULL,
+    '1 - Una banda de plata / 2 - Algo de plata / 3 - Un ferrari',
+    '42556386',
+    '2025-12-25T18:00:38.954Z',
+    '42556386',
+    '2025-12-26T21:30:38.954Z'
   );
 
 
@@ -277,4 +300,72 @@ VALUES
     'Circuito alternativo de 5 kilómetros ideal para corredores principiantes.',
     5.0,
     NULL
+  ),
+  (
+    3,
+    6,
+    'Principal 10K',
+    'Descripción 10K',
+    10.0,
+    NULL
+  ),
+  (
+    4,
+    6,
+    'Alternativo 3K',
+    'Descripción 3K',
+    3.0,
+    NULL
   );
+
+
+INSERT INTO sporting_event_schedules (
+  id,
+  event_id,
+  date,
+  title,
+  description,
+  location_hint,
+  location_text,
+  location_lat,
+  location_long)
+VALUES
+  (
+    1,
+    6,
+    '2026-02-20T10:00',
+    'Inicio de carrera',
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+  ),
+  (
+    2,
+    6,
+    '2026-02-20T15:00',
+    'Entrega de premios',
+    'Se hará la entrega de premios a los ganadores',
+    NULL,
+    'Municipalidad',
+    NULL,
+    NULL
+  );
+
+
+INSERT INTO fees_categories (id, name, description) VALUES
+  (1, 'General', 'Categoría general para todos los participantes.'),
+  (2, 'Estudiantes', 'Descuento especial para estudiantes con credencial vigente.'),
+  (3, 'Veteranos', 'Categoría especial para atletas mayores de 60 años.');
+
+
+INSERT INTO athlete_categories (id, name, min_age, max_age, sex, fee_category_id) VALUES
+  (1, 'Juveniles Masculino', 18, 25, 'M', 1),
+  (2, 'Juveniles Femenino', 18, 25, 'F', 1),
+  (3, 'Senior Masculino', 26, 40, 'M', 1),
+  (4, 'Senior Femenino', 26, 40, 'F', 1),
+  (5, 'Veteranos Masculino', 41, 60, 'M', 3),
+  (6, 'Veteranos Femenino', 41, 60, 'F', 3),
+  (7, 'Master Masculino', 61, NULL, 'M', 3),
+  (8, 'Master Femenino', 61, NULL, 'F', 3);
