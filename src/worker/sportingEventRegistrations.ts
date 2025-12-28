@@ -2,17 +2,21 @@ import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { sportingEvents, sportingEventRegistrations, users } from './db/schema';
-import { ADMIN_ROLE, ORGANIZER_ROLE } from './lib/roles';
+import { authorizedOrg } from './lib/roles';
 import { gte, eq } from 'drizzle-orm';
 
 
 export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
-  .get("/", async (c) => {
-    const db = drizzle(c.env.DB);
-    const roles: string[] = c.get('jwtPayload').roles.split(',');
-    if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
+  .use(async (c, next) => {
+    if (!authorizedOrg(c.get('jwtPayload')?.roles)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
+    // Middleware to log requests to /api/users
+    // console.log(`[UsersRoute] ${c.req.method} ${c.req.url}`);
+    await next();
+  })
+  .get("/", async (c) => {
+    const db = drizzle(c.env.DB);
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const activeEventsRegistrations = await db
@@ -58,10 +62,6 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
   })
   .post("/:registrationId/updatePayment", async (c) => {
     const db = drizzle(c.env.DB);
-    const roles: string[] = c.get('jwtPayload').roles.split(',');
-    if (!roles.includes(ADMIN_ROLE) && !roles.includes(ORGANIZER_ROLE)) {
-      return c.json({ error: "Unauthorized" }, 403);
-    }
     const registrationId = Number(c.req.param('registrationId'));
     const body = await c.req.json();
     const paid = body.paid ? 1 : 0;

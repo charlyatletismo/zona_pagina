@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { ADMIN_ROLE, ORGANIZER_ROLE, authorizedRoles } from './lib/roles';
+import { authorizedOrg } from './lib/roles';
 import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
 import { SportingEventFormData } from "./lib/types";
@@ -45,8 +45,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   })
   .post("/create", async (c) => {
     const userId: string = c.get('jwtPayload').id;
-    const roles: string[] = c.get('jwtPayload').roles.split(',');
-    if (!authorizedRoles([ADMIN_ROLE, ORGANIZER_ROLE], roles)) {
+    if (!authorizedOrg(c.get('jwtPayload').roles)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     const db = drizzle(c.env.DB);
@@ -59,8 +58,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   })
   .post("/update/:id", async (c) => {
     const userId: string = c.get('jwtPayload').id;
-    const roles: string[] = c.get('jwtPayload').roles.split(',');
-    if (!authorizedRoles([ADMIN_ROLE, ORGANIZER_ROLE], roles)) {
+    if (!authorizedOrg(c.get('jwtPayload').roles)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     const db = drizzle(c.env.DB);
