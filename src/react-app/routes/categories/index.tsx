@@ -206,7 +206,7 @@ function RouteComponent() {
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between">
             <h2 className='text-gray-700 text-2xl mb-5'>Tarifas</h2>
-            <Link to='/categories/fee' title='Agregar nueva categoría' className=''>
+            <Link to='/categories/fee/create' title='Agregar nueva categoría' className=''>
               <Button className='cursor-pointer'><Plus className="h-6 w-6" /></Button>
             </Link>
           </div>
@@ -291,7 +291,7 @@ function RouteComponent() {
                   sex: !visibleColAth,
                 });
               }}>{visibleColAth ? <Eye className="h-6 w-6" /> : <EyeOff className="h-6 w-6" />}</Button>
-              <Link to='/categories/athlete' title='Agregar nueva categoría'>
+              <Link to='/categories/athlete/create' title='Agregar nueva categoría'>
                 <Button className='cursor-pointer'><Plus className="h-6 w-6" /></Button>
               </Link>
             </div>
