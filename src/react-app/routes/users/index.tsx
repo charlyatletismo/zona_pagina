@@ -39,7 +39,8 @@ export const Route = createFileRoute('/users/')({
   staleTime: 1000 * 60 * 5,
 })
 
-const getRoleWeight = (role: string) => {
+const getRoleWeight = (role: string | undefined) => {
+  if (!role) return 5;
   if (role.includes(ADMIN_ROLE)) return 4;
   if (role.includes(ORGANIZER_ROLE)) return 1;
   if (role.includes(ATHLETES_MANAGER_ROLE)) return 2;
@@ -98,6 +99,7 @@ function RouteComponent() {
         header: 'Rol',
         cell: info => {
           const role = info.getValue();
+          if (!role) return null;
           let className = ""
           let label = "Atleta";
 
@@ -131,16 +133,20 @@ function RouteComponent() {
           const user = props.row.original;
           const currentRole = user.roles;
           
+          // Don't allow changing roles when not admin or organizer,
           // Don't allow changing admin roles or self (simplified)
-          const canEdit = !currentRole.includes(ADMIN_ROLE) &&
-            localStorage.getItem('USER_ID') !== user.id;
+          const canEdit = (
+            localStorage.getItem("USER_ROLE") === ORGANIZER_ROLE
+            || localStorage.getItem("USER_ROLE") === ADMIN_ROLE)
+            && currentRole && !currentRole.includes(ADMIN_ROLE)
+            && localStorage.getItem('USER_ID') !== user.id;
 
           return (
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon-sm"
-                onClick={() => navigate({ to: `/users/${user.id}` })}
+                onClick={() => navigate({ to: `/users/$userId`, params: { userId: user.id } })}
                 title="Ver detalles"
               >
                 <ChevronRight className="h-4 w-4" />
