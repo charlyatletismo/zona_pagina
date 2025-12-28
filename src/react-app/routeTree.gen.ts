@@ -27,9 +27,13 @@ import { Route as CategoriesExampleRouteImport } from './routes/categories/examp
 import { Route as AthleteStatsRouteImport } from './routes/athlete/stats'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
 import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
+import { Route as CategoriesFeeIndexRouteImport } from './routes/categories/fee.index'
+import { Route as CategoriesAthleteIndexRouteImport } from './routes/categories/athlete.index'
 import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
 import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
 import { Route as SportingEventsEventIdAthleteIdRouteImport } from './routes/sportingEvents/$eventId.$athleteId'
+import { Route as CategoriesFeeFeeIdIndexRouteImport } from './routes/categories/fee.$feeId.index'
+import { Route as CategoriesAthleteAthleteIdIndexRouteImport } from './routes/categories/athlete.$athleteId.index'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -123,6 +127,16 @@ const SportingEventsEventIdIndexRoute =
     path: '/sportingEvents/$eventId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CategoriesFeeIndexRoute = CategoriesFeeIndexRouteImport.update({
+  id: '/categories/fee/',
+  path: '/categories/fee/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesAthleteIndexRoute = CategoriesAthleteIndexRouteImport.update({
+  id: '/categories/athlete/',
+  path: '/categories/athlete/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
   id: '/users/$userId/edit',
   path: '/users/$userId/edit',
@@ -138,6 +152,17 @@ const SportingEventsEventIdAthleteIdRoute =
   SportingEventsEventIdAthleteIdRouteImport.update({
     id: '/sportingEvents/$eventId/$athleteId',
     path: '/sportingEvents/$eventId/$athleteId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CategoriesFeeFeeIdIndexRoute = CategoriesFeeFeeIdIndexRouteImport.update({
+  id: '/categories/fee/$feeId/',
+  path: '/categories/fee/$feeId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesAthleteAthleteIdIndexRoute =
+  CategoriesAthleteAthleteIdIndexRouteImport.update({
+    id: '/categories/athlete/$athleteId/',
+    path: '/categories/athlete/$athleteId/',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -161,8 +186,12 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/$eventId/$athleteId': typeof SportingEventsEventIdAthleteIdRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
+  '/categories/athlete': typeof CategoriesAthleteIndexRoute
+  '/categories/fee': typeof CategoriesFeeIndexRoute
   '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
+  '/categories/athlete/$athleteId': typeof CategoriesAthleteAthleteIdIndexRoute
+  '/categories/fee/$feeId': typeof CategoriesFeeFeeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -184,8 +213,12 @@ export interface FileRoutesByTo {
   '/sportingEvents/$eventId/$athleteId': typeof SportingEventsEventIdAthleteIdRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
+  '/categories/athlete': typeof CategoriesAthleteIndexRoute
+  '/categories/fee': typeof CategoriesFeeIndexRoute
   '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
   '/users/$userId': typeof UsersUserIdIndexRoute
+  '/categories/athlete/$athleteId': typeof CategoriesAthleteAthleteIdIndexRoute
+  '/categories/fee/$feeId': typeof CategoriesFeeFeeIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -208,8 +241,12 @@ export interface FileRoutesById {
   '/sportingEvents/$eventId/$athleteId': typeof SportingEventsEventIdAthleteIdRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
+  '/categories/athlete/': typeof CategoriesAthleteIndexRoute
+  '/categories/fee/': typeof CategoriesFeeIndexRoute
   '/sportingEvents/$eventId/': typeof SportingEventsEventIdIndexRoute
   '/users/$userId/': typeof UsersUserIdIndexRoute
+  '/categories/athlete/$athleteId/': typeof CategoriesAthleteAthleteIdIndexRoute
+  '/categories/fee/$feeId/': typeof CategoriesFeeFeeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -233,8 +270,12 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/$athleteId'
     | '/sportingEvents/$eventId/edit'
     | '/users/$userId/edit'
+    | '/categories/athlete'
+    | '/categories/fee'
     | '/sportingEvents/$eventId'
     | '/users/$userId'
+    | '/categories/athlete/$athleteId'
+    | '/categories/fee/$feeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -256,8 +297,12 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/$athleteId'
     | '/sportingEvents/$eventId/edit'
     | '/users/$userId/edit'
+    | '/categories/athlete'
+    | '/categories/fee'
     | '/sportingEvents/$eventId'
     | '/users/$userId'
+    | '/categories/athlete/$athleteId'
+    | '/categories/fee/$feeId'
   id:
     | '__root__'
     | '/'
@@ -279,8 +324,12 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/$athleteId'
     | '/sportingEvents/$eventId/edit'
     | '/users/$userId/edit'
+    | '/categories/athlete/'
+    | '/categories/fee/'
     | '/sportingEvents/$eventId/'
     | '/users/$userId/'
+    | '/categories/athlete/$athleteId/'
+    | '/categories/fee/$feeId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -303,8 +352,12 @@ export interface RootRouteChildren {
   SportingEventsEventIdAthleteIdRoute: typeof SportingEventsEventIdAthleteIdRoute
   SportingEventsEventIdEditRoute: typeof SportingEventsEventIdEditRoute
   UsersUserIdEditRoute: typeof UsersUserIdEditRoute
+  CategoriesAthleteIndexRoute: typeof CategoriesAthleteIndexRoute
+  CategoriesFeeIndexRoute: typeof CategoriesFeeIndexRoute
   SportingEventsEventIdIndexRoute: typeof SportingEventsEventIdIndexRoute
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
+  CategoriesAthleteAthleteIdIndexRoute: typeof CategoriesAthleteAthleteIdIndexRoute
+  CategoriesFeeFeeIdIndexRoute: typeof CategoriesFeeFeeIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -435,6 +488,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SportingEventsEventIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categories/fee/': {
+      id: '/categories/fee/'
+      path: '/categories/fee'
+      fullPath: '/categories/fee'
+      preLoaderRoute: typeof CategoriesFeeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/athlete/': {
+      id: '/categories/athlete/'
+      path: '/categories/athlete'
+      fullPath: '/categories/athlete'
+      preLoaderRoute: typeof CategoriesAthleteIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/users/$userId/edit': {
       id: '/users/$userId/edit'
       path: '/users/$userId/edit'
@@ -454,6 +521,20 @@ declare module '@tanstack/react-router' {
       path: '/sportingEvents/$eventId/$athleteId'
       fullPath: '/sportingEvents/$eventId/$athleteId'
       preLoaderRoute: typeof SportingEventsEventIdAthleteIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/fee/$feeId/': {
+      id: '/categories/fee/$feeId/'
+      path: '/categories/fee/$feeId'
+      fullPath: '/categories/fee/$feeId'
+      preLoaderRoute: typeof CategoriesFeeFeeIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/athlete/$athleteId/': {
+      id: '/categories/athlete/$athleteId/'
+      path: '/categories/athlete/$athleteId'
+      fullPath: '/categories/athlete/$athleteId'
+      preLoaderRoute: typeof CategoriesAthleteAthleteIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -479,8 +560,12 @@ const rootRouteChildren: RootRouteChildren = {
   SportingEventsEventIdAthleteIdRoute: SportingEventsEventIdAthleteIdRoute,
   SportingEventsEventIdEditRoute: SportingEventsEventIdEditRoute,
   UsersUserIdEditRoute: UsersUserIdEditRoute,
+  CategoriesAthleteIndexRoute: CategoriesAthleteIndexRoute,
+  CategoriesFeeIndexRoute: CategoriesFeeIndexRoute,
   SportingEventsEventIdIndexRoute: SportingEventsEventIdIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
+  CategoriesAthleteAthleteIdIndexRoute: CategoriesAthleteAthleteIdIndexRoute,
+  CategoriesFeeFeeIdIndexRoute: CategoriesFeeFeeIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

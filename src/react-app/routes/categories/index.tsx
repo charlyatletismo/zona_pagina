@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
@@ -42,6 +42,7 @@ export const Route = createFileRoute('/categories/')({
   staleTime: 1000 * 60 * 5, // 5 minutes
 })
 
+
 function RouteComponent() {
   const {
     athleteCategories,
@@ -73,6 +74,21 @@ function RouteComponent() {
     columnHelperFee.accessor('description', {
       header: 'Descripción',
       cell: info => info.getValue() || 'Sin descripción',
+    }),
+    columnHelperFee.display({
+      id: 'actions',
+      header: '',
+      cell: (info) => {
+        return (
+          <Link
+            to='/categories/fee/$feeId'
+            params={{ feeId: info.row.original.id.toString() }}
+          >
+            <Button size="sm"><Edit2 className="h-4 w-4" /></Button>
+          </Link>
+        );
+      },
+      enableSorting: false,
     }),
   ], []);
   const tableFee = useReactTable({
@@ -149,9 +165,14 @@ function RouteComponent() {
     columnHelperAthlete.display({
       id: 'actions',
       header: '',
-      cell: () => {
+      cell: (info) => {
         return (
-          <Button size="sm"><Edit2 className="h-4 w-4" /></Button>
+          <Link
+            to='/categories/athlete/$athleteId'
+            params={{ athleteId: info.row.original.id.toString() }}
+            >
+            <Button size="sm"><Edit2 className="h-4 w-4" /></Button>
+          </Link>
         );
       },
       enableSorting: false,
@@ -185,7 +206,9 @@ function RouteComponent() {
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between">
             <h2 className='text-gray-700 text-2xl mb-5'>Tarifas</h2>
-            <Button><Plus className="h-6 w-6" /></Button>
+            <Link to='/categories/fee'>
+              <Button><Plus className="h-6 w-6" /></Button>
+            </Link>
           </div>
           <Table>
             <TableHeader>
@@ -265,7 +288,9 @@ function RouteComponent() {
                   sex: !visibleColAth,
                 });
               }}>{visibleColAth ? <Eye className="h-6 w-6" /> : <EyeOff className="h-6 w-6" />}</Button>
-              <Button><Plus className="h-6 w-6" /></Button>
+              <Link to='/categories/athlete'>
+                <Button><Plus className="h-6 w-6" /></Button>
+              </Link>
             </div>
           </div>
           <Table>
