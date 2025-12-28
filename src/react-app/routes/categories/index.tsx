@@ -84,7 +84,7 @@ function RouteComponent() {
             to='/categories/fee/$feeId'
             params={{ feeId: info.row.original.id.toString() }}
           >
-            <Button size="sm"><Edit2 className="h-4 w-4" /></Button>
+            <Button size="sm" className='cursor-pointer'><Edit2 className="h-4 w-4" /></Button>
           </Link>
         );
       },
@@ -171,7 +171,7 @@ function RouteComponent() {
             to='/categories/athlete/$athleteId'
             params={{ athleteId: info.row.original.id.toString() }}
             >
-            <Button size="sm"><Edit2 className="h-4 w-4" /></Button>
+            <Button size="sm" className='cursor-pointer'><Edit2 className="h-4 w-4" /></Button>
           </Link>
         );
       },
@@ -206,8 +206,8 @@ function RouteComponent() {
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between">
             <h2 className='text-gray-700 text-2xl mb-5'>Tarifas</h2>
-            <Link to='/categories/fee'>
-              <Button><Plus className="h-6 w-6" /></Button>
+            <Link to='/categories/fee' title='Agregar nueva categoría' className=''>
+              <Button className='cursor-pointer'><Plus className="h-6 w-6" /></Button>
             </Link>
           </div>
           <Table>
@@ -280,7 +280,10 @@ function RouteComponent() {
           <div className="flex justify-between">
             <h2 className='text-gray-700 text-2xl mb-5'>Atletas</h2>
             <div className='flex gap-2'>
-              <Button onClick={() => {
+              <Button
+                className='cursor-pointer'
+                title={visibleColAth ? 'Mostrar menos columnas' : 'Mostrar más columnas'}
+                onClick={() => {
                 setVisibleColAth(!visibleColAth);
                 setVisibilityAthlete({
                   description: !visibleColAth,
@@ -288,8 +291,8 @@ function RouteComponent() {
                   sex: !visibleColAth,
                 });
               }}>{visibleColAth ? <Eye className="h-6 w-6" /> : <EyeOff className="h-6 w-6" />}</Button>
-              <Link to='/categories/athlete'>
-                <Button><Plus className="h-6 w-6" /></Button>
+              <Link to='/categories/athlete' title='Agregar nueva categoría'>
+                <Button className='cursor-pointer'><Plus className="h-6 w-6" /></Button>
               </Link>
             </div>
           </div>
