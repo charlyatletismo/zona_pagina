@@ -17,11 +17,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsersIndexRouteImport } from './routes/users/index'
 import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as CategoriesIndexRouteImport } from './routes/categories/index'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as SportingEventsRegistrationsRouteImport } from './routes/sportingEvents/registrations'
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
+import { Route as CategoriesExampleRouteImport } from './routes/categories/example'
 import { Route as AthleteStatsRouteImport } from './routes/athlete/stats'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
 import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
@@ -69,6 +71,11 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersCreateRoute = UsersCreateRouteImport.update({
   id: '/users/create',
   path: '/users/create',
@@ -93,6 +100,11 @@ const SettingsProfileRoute = SettingsProfileRouteImport.update({
 const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   id: '/settings/notifications',
   path: '/settings/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesExampleRoute = CategoriesExampleRouteImport.update({
+  id: '/categories/example',
+  path: '/categories/example',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AthleteStatsRoute = AthleteStatsRouteImport.update({
@@ -136,11 +148,13 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
+  '/categories/example': typeof CategoriesExampleRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/users/create': typeof UsersCreateRoute
+  '/categories': typeof CategoriesIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
   '/users': typeof UsersIndexRoute
@@ -157,11 +171,13 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
+  '/categories/example': typeof CategoriesExampleRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/users/create': typeof UsersCreateRoute
+  '/categories': typeof CategoriesIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
   '/users': typeof UsersIndexRoute
@@ -179,11 +195,13 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
+  '/categories/example': typeof CategoriesExampleRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/users/create': typeof UsersCreateRoute
+  '/categories/': typeof CategoriesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/sportingEvents/': typeof SportingEventsIndexRoute
   '/users/': typeof UsersIndexRoute
@@ -202,11 +220,13 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
+    | '/categories/example'
     | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
     | '/users/create'
+    | '/categories'
     | '/settings'
     | '/sportingEvents'
     | '/users'
@@ -223,11 +243,13 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
+    | '/categories/example'
     | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
     | '/users/create'
+    | '/categories'
     | '/settings'
     | '/sportingEvents'
     | '/users'
@@ -244,11 +266,13 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
+    | '/categories/example'
     | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
     | '/users/create'
+    | '/categories/'
     | '/settings/'
     | '/sportingEvents/'
     | '/users/'
@@ -266,11 +290,13 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   AthleteStatsRoute: typeof AthleteStatsRoute
+  CategoriesExampleRoute: typeof CategoriesExampleRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
   SportingEventsRegistrationsRoute: typeof SportingEventsRegistrationsRoute
   UsersCreateRoute: typeof UsersCreateRoute
+  CategoriesIndexRoute: typeof CategoriesIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SportingEventsIndexRoute: typeof SportingEventsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
@@ -339,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categories/': {
+      id: '/categories/'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/users/create': {
       id: '/users/create'
       path: '/users/create'
@@ -372,6 +405,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/notifications'
       fullPath: '/settings/notifications'
       preLoaderRoute: typeof SettingsNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/example': {
+      id: '/categories/example'
+      path: '/categories/example'
+      fullPath: '/categories/example'
+      preLoaderRoute: typeof CategoriesExampleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/athlete/stats': {
@@ -426,11 +466,13 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   AthleteStatsRoute: AthleteStatsRoute,
+  CategoriesExampleRoute: CategoriesExampleRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SportingEventsCreateRoute: SportingEventsCreateRoute,
   SportingEventsRegistrationsRoute: SportingEventsRegistrationsRoute,
   UsersCreateRoute: UsersCreateRoute,
+  CategoriesIndexRoute: CategoriesIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SportingEventsIndexRoute: SportingEventsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,

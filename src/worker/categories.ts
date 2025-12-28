@@ -30,19 +30,19 @@ export const categoriesRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     // async fetch both categories in parallel
-    const [feeCats, athleteCats] = await Promise.all([
+    const [feeCategories, athleteCategories] = await Promise.all([
       getFeeCategories(db),
       getAthleteCategories(db)
     ]);
-    return c.json({ feeCategories: feeCats, athleteCategories: athleteCats });
+    return c.json({ feeCategories, athleteCategories });
   })
   .get("/fees", async (c) => {
     const db = drizzle(c.env.DB);
-    const feesCats = await getFeeCategories(db);
-    return c.json(feesCats);
+    const feeCategories = await getFeeCategories(db);
+    return c.json(feeCategories);
   })
   .get("/athlete", async (c) => {
     const db = drizzle(c.env.DB);
-    const athleteCats = await getAthleteCategories(db);
-    return c.json(athleteCats);
+    const athleteCategories = await getAthleteCategories(db);
+    return c.json(athleteCategories);
   });

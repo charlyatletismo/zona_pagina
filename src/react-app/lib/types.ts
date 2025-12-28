@@ -130,3 +130,21 @@ export interface SportingEventRegistrationApiResponse {
     }[];
   };
 };
+
+export interface FeeCategory {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
+export interface AthleteCategory {
+  id: number;
+  name: string;
+  description: string | null;
+  fee_category_id: FeeCategory["id"];
+  fee_category_name: FeeCategory["name"];
+  sex: string | null;
+  min_age: number | null;
+  max_age: number | null;
+  condition: string | null;
+}
