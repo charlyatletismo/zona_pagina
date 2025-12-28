@@ -21,9 +21,22 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     let allUsers;
     if (roles.length === 1 && roles[0] === ATHLETES_MANAGER_ROLE) {
       const managerId = c.get('jwtPayload').id;
-      allUsers = await db.select().from(users).where(eq(users.manager_id, managerId)).all();
+      allUsers = await db.select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+        phone: users.phone,
+        email: users.email,
+      }).from(users).where(eq(users.manager_id, managerId)).all();
     } else {
-      allUsers = await db.select().from(users).all();
+      allUsers = await db.select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+        phone: users.phone,
+        email: users.email,
+        roles: users.roles,
+      }).from(users).all();
     }
     if (!allUsers) {
       return c.json({ error: 'Users not found' }, 404);
