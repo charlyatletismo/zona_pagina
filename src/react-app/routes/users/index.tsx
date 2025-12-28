@@ -48,18 +48,17 @@ const getRoleWeight = (role: string) => {
 
 function RouteComponent() {
   const { users, usersStatus } = Route.useLoaderData();
-  const [data, setData] = React.useState<User[]>(() => {
-    return [...(users || [])].sort((a, b) => getRoleWeight(a.roles) - getRoleWeight(b.roles));
-  });
-  const navigate = useNavigate();
   if (usersStatus !== 200) {
     return (
-      <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm mb-4">
-        <ChevronRight className="w-4 h-4 mr-2" />
+      <div className="text-red-600 p-3 rounded-md flex items-center text-sm my-4 mx-auto">
         Error al cargar los usuarios. Por favor, refresque la página.
       </div>
     );
   }
+  const [data, setData] = React.useState<User[]>(() => {
+    return [...(users || [])].sort((a, b) => getRoleWeight(a.roles) - getRoleWeight(b.roles));
+  });
+  const navigate = useNavigate();
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     if (!confirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) return;
