@@ -8,7 +8,7 @@ export const getSportingEvents: () => Promise<{status: number, data: SportingEve
 
 export const getAuthenticatedThrow = async (path: string) => {
   return getAuthenticated(path,
-    (to: string, reloadDocument: boolean) => {
+    ({to, reloadDocument}: {to: string, reloadDocument: boolean}) => {
       throw redirect({
         to,
         reloadDocument,
