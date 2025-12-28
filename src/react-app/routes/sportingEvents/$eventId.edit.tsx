@@ -4,6 +4,8 @@ import { ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { SportingEvent, SportingEventType } from '@/lib/types';
 import SportingEventForm from '@/components/sportingEventForm';
+import { FormBox } from '@/components/formBox';
+
 
 export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   component: RouteComponent,
@@ -19,7 +21,19 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   gcTime: 0 // force reload every time
 })
 
+
 function RouteComponent() {
   const { ev, evTypes, statusEv, statusEvType } = Route.useLoaderData();
-  return <SportingEventForm ev={ev} evTypes={evTypes} statusEv={statusEv} statusEvType={statusEvType} />;
+  return (
+    <FormBox
+      error={(statusEv !== 200 || statusEvType !== 200) ? "Error al cargar los datos del evento." : null}
+      title="Editar Evento Deportivo"
+      description="Actualiza la información del evento deportivo."
+      returnText="Volver al Evento"
+      returnPath="/sportingEvents/$eventId"
+      returnParams={{ eventId: ev.id?.toString() }}
+    >
+      <SportingEventForm ev={ev} evTypes={evTypes} />
+    </FormBox>
+  );
 }

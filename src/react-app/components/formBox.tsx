@@ -4,19 +4,19 @@ import { ArrowLeft, AlertCircle } from 'lucide-react';
 
 
 export const FormBox = ({
-    error,
     title,
     description,
     returnText,
     returnPath,
     returnParams,
+    error,
     children } : {
-      error: string | null,
       title: string,
       description: string,
-      returnText: string | null,
-      returnPath: string,
-      returnParams: object,
+      returnText?: string | null,
+      returnPath?: string,
+      returnParams?: object,
+      error?: string | null,
       children: React.ReactNode
     }) => {
   return (
@@ -27,13 +27,13 @@ export const FormBox = ({
           {error}
         </div>
       )}
-      {returnText &&
+      {returnText && returnPath &&
         <Button
           variant="ghost"
           className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
           asChild
         >
-          <Link to={returnPath} params={returnParams}>
+          <Link to={returnPath} params={returnParams ? returnParams : {}}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             {returnText}
           </Link>
