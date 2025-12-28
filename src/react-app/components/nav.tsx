@@ -37,6 +37,7 @@ const LINKS_BY_ROLE: Record<string, any> = {
   ],
   [roles.ATHLETES_MANAGER_ROLE]: [
     LINK_HOME,
+    LINK_USERS,
     // LINK_ATHLETE_STATS,
   ],
   [roles.ADMIN_ROLE]: [
