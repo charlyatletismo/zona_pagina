@@ -84,13 +84,30 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const userId = c.req.param("id");
     const updateData = await c.req.json();
+    const data: Record<string, any> = {
+      phone: updateData.phone,
+      name: updateData.name,
+      surname: updateData.surname,
+      sex: updateData.sex,
+      date_of_birth: updateData.date_of_birth,
+      country: updateData.country,
+      city: updateData.city,
+      full_location: updateData.full_location,
+      manager_id: updateData.manager_id,
+      training_team: updateData.training_team,
+      email: updateData.email,
+      profile_image_url: updateData.profile_image_url,
+      profile_image_preview_url: updateData.profile_image_preview_url,
+      updated_at: new Date().toISOString(),
+    }
 
     const roles = c.get('jwtPayload').roles.split(",");
     let wasUpdated = false;
     if (roles.length === 1 && roles[0] === ATHLETES_MANAGER_ROLE) {
+      // Athletes Manager can only update their own athletes
       const managerId = c.get('jwtPayload').id;
       const res = await db.update(users)
-        .set(updateData)
+        .set(data)
         .where(and(
           eq(users.id, userId),
           eq(users.manager_id, managerId)
@@ -98,8 +115,11 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
         .run();
       wasUpdated = res.meta.changes > 0;
     } else {
+      // Admin or Organizer can update roles and hard_category
+      data.roles = updateData.roles;
+      data.hard_category = updateData.hard_category;
       const res = await db.update(users)
-        .set(updateData)
+        .set(data)
         .where(eq(users.id, userId))
         .run();
       wasUpdated = res.meta.changes > 0;
