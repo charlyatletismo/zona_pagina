@@ -140,11 +140,11 @@ export interface FeeCategory {
 export interface AthleteCategory {
   id: number;
   name: string;
-  description: string | null;
+  description?: string | null;
   fee_category_id: FeeCategory["id"];
   fee_category_name: FeeCategory["name"];
-  sex: string | null;
-  min_age: number | null;
-  max_age: number | null;
-  condition: string | null;
+  sex?: string | null;
+  min_age?: number | null;
+  max_age?: number | null;
+  condition?: string | null;
 }
