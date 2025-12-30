@@ -91,7 +91,7 @@ export const categoriesRoute = new Hono<{ Bindings: Env }>()
       .update(feesCategories)
       .set({
         name: reqBody.name,
-        description: reqBody.description,
+        description: reqBody.description || null,
       })
       .where(eq(feesCategories.id, Number(feeId)))
       .returning()
@@ -158,12 +158,12 @@ export const categoriesRoute = new Hono<{ Bindings: Env }>()
       .update(athleteCategories)
       .set({
         name: reqBody.name,
-        description: reqBody.description,
-        sex: reqBody.sex,
-        min_age: reqBody.min_age,
-        max_age: reqBody.max_age,
+        description: reqBody.description || null,
+        sex: reqBody.sex || null,
+        min_age: reqBody.min_age || null,
+        max_age: reqBody.max_age || null,
         fee_category_id: reqBody.fee_category_id,
-        condition: reqBody.condition,
+        condition: reqBody.condition || null,
       })
       .where(eq(athleteCategories.id, Number(athleteId)))
       .returning()

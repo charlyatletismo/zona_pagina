@@ -10,18 +10,18 @@ import { AthleteCategory, FeeCategory } from '@/lib/types';
 export const Route = createFileRoute('/categories/athlete/$athleteId/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
-    loader: async ({ params }) => {
-      const resAth: {
-        data: AthleteCategory;
-        status: number;
-      } = await getAuthenticatedThrow(`/api/categories/athlete/${params.athleteId}`);
-      const resFees: {
-        data: FeeCategory[];
-        status: number;
-      } = await getAuthenticatedThrow(`/api/categories/fee`);
-      return {resAth, resFees};
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+  loader: async ({ params }) => {
+    const resAth: {
+      data: AthleteCategory;
+      status: number;
+    } = await getAuthenticatedThrow(`/api/categories/athlete/${params.athleteId}`);
+    const resFees: {
+      data: FeeCategory[];
+      status: number;
+    } = await getAuthenticatedThrow(`/api/categories/fee`);
+    return {resAth, resFees};
+  },
+  staleTime: 1000 * 60 * 5, // 5 minutes
 })
 
 
