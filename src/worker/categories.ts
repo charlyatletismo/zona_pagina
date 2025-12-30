@@ -51,7 +51,7 @@ export const categoriesRoute = new Hono<{ Bindings: Env }>()
     const feeCategories = await getFeeCategories(db);
     return c.json(feeCategories);
   })
-  .post("/fee", async (c) => {
+  .post("/fee/create", async (c) => {
     const reqBody = await c.req.json();
     if (!reqBody.name) {
       return c.json({ error: "Missing required field: name" }, 400);
@@ -107,7 +107,7 @@ export const categoriesRoute = new Hono<{ Bindings: Env }>()
     const athleteCategories = await getAthleteCategories(db);
     return c.json(athleteCategories);
   })
-  .post("/athlete", async (c) => {
+  .post("/athlete/create", async (c) => {
     const reqBody = await c.req.json();
     if (!reqBody.name || !reqBody.fee_category_id) {
       return c.json({ error: "Missing required fields: name or fee_category_id" }, 400);
