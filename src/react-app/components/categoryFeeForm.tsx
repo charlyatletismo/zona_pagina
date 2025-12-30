@@ -104,7 +104,7 @@ export const CategoryFeeForm = ({ feeCat }: { feeCat: FeeCategory | null }) => {
               id={field.name}
               name={field.name}
               value={field.state.value || ''}
-              onChange={(e) => field.handleChange(e.target.value)}
+              onChange={(e) => field.handleChange(e.target.value || null)}
               onBlur={() => field.handleBlur()}
               className={!field.state.meta.isValid ? 'border-destructive' : ''}
             />
