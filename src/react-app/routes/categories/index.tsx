@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { FeeCategory, AthleteCategory } from '@/lib/types';
+import { FeeCategory, AthleteCategory, SportingEventType } from '@/lib/types';
 import React from 'react';
 import { ArrowUp, ArrowDown, Plus, Eye, EyeOff, Edit2 } from "lucide-react"
 import {
@@ -34,9 +34,12 @@ export const Route = createFileRoute('/categories/')({
       athleteCategories: AthleteCategory[];
       feeCategories: FeeCategory[];
     } = resCategories.data;
+    const sportingEventTypes = await getAuthenticatedThrow(`/api/sportingEventTypes`);
     return {
       ...categoriesData,
-      status: resCategories.status
+      status: resCategories.status,
+      spTypes: sportingEventTypes.data,
+      statusSpTypes: sportingEventTypes.status,
     };
   },
   staleTime: 1000 * 60 * 5, // 5 minutes
@@ -47,16 +50,65 @@ function RouteComponent() {
   const {
     athleteCategories,
     feeCategories,
-    status
+    spTypes,
+    status,
+    statusSpTypes,
   } = Route.useLoaderData();
 
-  if (status !== 200) {
+  if (status !== 200 || statusSpTypes !== 200) {
     return (
       <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm mb-4">
-        Error al cargar las categorías. Por favor, refresque la página.
+        Error al cargar las categorías y/o tipos de evento. Por favor, refresque la página.
       </div>
     )
   };
+
+  const [sortingSpType, setSortingSpType] = React.useState<SortingState>([])
+  const columnHelperSpType = createColumnHelper<SportingEventType>();
+  const columnsSpType = React.useMemo(() => [
+    columnHelperSpType.accessor('id', {
+      header: 'ID',
+      cell: info => info.getValue(),
+      enableSorting: true,
+    }),
+    columnHelperSpType.accessor('name', {
+      header: 'Nombre',
+      cell: info => info.getValue(),
+      enableSorting: true,
+    }),
+    columnHelperSpType.accessor('description', {
+      header: 'Descripción',
+      cell: info => info.getValue() || 'Sin descripción',
+      enableSorting: false,
+    }),
+    columnHelperSpType.display({
+      id: 'actions',
+      header: '',
+      cell: (info) => {
+        return (
+          <Link
+            style={{textAlign: 'right'}}
+            to='/categories/sportingEventTypes/$spTypeId'
+            params={{ spTypeId: info.row.original.id.toString() }}
+          >
+            <Button size="sm" className='cursor-pointer'><Edit2 className="h-4 w-4" /></Button>
+          </Link>
+        );
+      },
+      enableSorting: false,
+    }),
+  ], []);
+  const tableSpType = useReactTable({
+    data: spTypes,
+    columns: columnsSpType,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting: sortingSpType,
+    },
+    onSortingChange: setSortingSpType,
+  });
 
   const [sortingFee, setSortingFee] = React.useState<SortingState>([])
   const columnHelperFee = createColumnHelper<FeeCategory>();
@@ -203,10 +255,78 @@ function RouteComponent() {
           </p>
         </div>
 
+        <div className='p-6 border-b border-gray-200'>
+          <div className='flex justify-between'>
+            <h2 className='text-gray-700 text-2xl mb-5'>Tipos de Evento Deportivo</h2>
+            <Link to='/categories/sportingEventTypes/create' title='Agregar nuevo tipo de evento'>
+              <Button className='cursor-pointer'><Plus className="h-6 w-6" /></Button>
+            </Link>
+          </div>
+          <Table>
+            <TableHeader>
+              {tableSpType.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={
+                            header.column.getCanSort()
+                              ? 'cursor-pointer select-none flex gap-2 items-center'
+                              : ''
+                          }
+                          onClick={header.column.getToggleSortingHandler()}
+                          title={
+                            header.column.getCanSort()
+                              ? header.column.getNextSortingOrder() === 'asc'
+                                ? 'Ordenar ascendentemente'
+                                : header.column.getNextSortingOrder() === 'desc'
+                                  ? 'Ordenar descendentemente'
+                                  : 'Sacar orden'
+                              : undefined
+                          }
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {{
+                            asc: <ArrowUp className="h-4 w-4" />,
+                            desc: <ArrowDown className="h-4 w-4" />,
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {tableSpType.getRowModel().rows.length > 0
+                ? tableSpType.getRowModel().rows.map(row => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id} className={cell.column.id === 'actions' ? 'flex justify-end' : ''}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={columnsSpType.length} className="h-20 text-center">
+                      No se encontraron tipos de eventos deportivos.
+                    </TableCell>
+                  </TableRow>
+                )
+              }
+            </TableBody>
+          </Table>
+        </div>
+
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between">
             <h2 className='text-gray-700 text-2xl mb-5'>Tarifas</h2>
-            <Link to='/categories/fee/create' title='Agregar nueva categoría' className=''>
+            <Link to='/categories/fee/create' title='Agregar nueva categoría'>
               <Button className='cursor-pointer'><Plus className="h-6 w-6" /></Button>
             </Link>
           </div>
@@ -259,7 +379,7 @@ function RouteComponent() {
                     tabIndex={-1}
                   >
                     {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className={cell.column.id === 'actions' ? 'flex justify-end' : ''}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -340,7 +460,7 @@ function RouteComponent() {
                 ? (tableAthlete.getRowModel().rows.map(row => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className={cell.column.id === 'actions' ? 'flex justify-end' : ''}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
