@@ -21,12 +21,6 @@ export const FormBox = ({
     }) => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm mb-4">
-          <AlertCircle className="w-4 h-4 mr-2" />
-          {error}
-        </div>
-      )}
       {returnText && returnPath &&
         <Button
           variant="ghost"
@@ -47,7 +41,12 @@ export const FormBox = ({
           </p>
         </div>
 
-        {children}
+        {error ? ( (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm m-4">
+            <AlertCircle className="w-4 h-4 mr-2" />
+            {error}
+          </div>
+        )) : children}
       </div>
     </div>
   );
