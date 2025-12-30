@@ -23,7 +23,6 @@ import { Route as SportingEventsRegistrationsRouteImport } from './routes/sporti
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
-import { Route as CategoriesExampleRouteImport } from './routes/categories/example'
 import { Route as AthleteStatsRouteImport } from './routes/athlete/stats'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
 import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
@@ -108,11 +107,6 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   path: '/settings/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriesExampleRoute = CategoriesExampleRouteImport.update({
-  id: '/categories/example',
-  path: '/categories/example',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AthleteStatsRoute = AthleteStatsRouteImport.update({
   id: '/athlete/stats',
   path: '/athlete/stats',
@@ -185,7 +179,6 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
-  '/categories/example': typeof CategoriesExampleRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
@@ -214,7 +207,6 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
-  '/categories/example': typeof CategoriesExampleRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
@@ -244,7 +236,6 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
-  '/categories/example': typeof CategoriesExampleRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
@@ -275,7 +266,6 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
-    | '/categories/example'
     | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/create'
@@ -304,7 +294,6 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
-    | '/categories/example'
     | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/create'
@@ -333,7 +322,6 @@ export interface FileRouteTypes {
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
-    | '/categories/example'
     | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/create'
@@ -363,7 +351,6 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   AthleteStatsRoute: typeof AthleteStatsRoute
-  CategoriesExampleRoute: typeof CategoriesExampleRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
@@ -486,13 +473,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categories/example': {
-      id: '/categories/example'
-      path: '/categories/example'
-      fullPath: '/categories/example'
-      preLoaderRoute: typeof CategoriesExampleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/athlete/stats': {
       id: '/athlete/stats'
       path: '/athlete/stats'
@@ -587,7 +567,6 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   AthleteStatsRoute: AthleteStatsRoute,
-  CategoriesExampleRoute: CategoriesExampleRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SportingEventsCreateRoute: SportingEventsCreateRoute,
