@@ -123,6 +123,17 @@ export const sportingEvents = sqliteTable("sporting_events", {
 });
 
 
+// Circuits or Routes within an Event
+export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
+  id: int().primaryKey({ autoIncrement: true }),
+  event_id: int().notNull().references(() => sportingEvents.id),
+  name: text({ length: 128 }).notNull(),
+  description: text({ length: 512 }),
+  distance_km: real().notNull(),
+  map_url: text({ length: 512 }),
+});
+
+
 // Milestone or Schedule for Events
 // It can be used for start times, award ceremonies, etc.
 export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
@@ -131,8 +142,8 @@ export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
   date: text().notNull(), // ISO string
   title: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
-  location_address: text({ length: 128 }),
   location: text({ length: 256 }).references(() => locations.id),
+  location_address: text({ length: 128 }),
   location_lat: real(),
   location_long: real(),
 });
@@ -163,17 +174,6 @@ export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlet
 });
 
 
-// Circuits or Routes within an Event
-export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
-  id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
-  name: text({ length: 128 }).notNull(),
-  description: text({ length: 512 }),
-  distance_km: real().notNull(),
-  map_url: text({ length: 512 }),
-});
-
-
 export const clothing = sqliteTable("clothing", {
   id: int().primaryKey({ autoIncrement: true }),
   event_id: int().notNull().references(() => sportingEvents.id),
@@ -181,7 +181,7 @@ export const clothing = sqliteTable("clothing", {
   size: text({ length: 8 }).notNull(), // e.g., "XS", "S", "M", "L", "XL", "XXL"
   available_quantity: int().notNull().default(0),
   demanded_quantity: int().notNull().default(0),
-  registrations_complete_quantity: int().notNull().default(0),
+  reserved_quantity: int().notNull().default(0),
 });
 
 
