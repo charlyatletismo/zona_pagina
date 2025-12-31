@@ -1,11 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "54b74002-6672-46e8-81dc-f2ebdf9e0fb5",
+  "id": "81db628e-7150-4b75-88df-e7bde660be83",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "athlete_categories": {
-      "name": "athlete_categories",
+    "athlete_category_templates": {
+      "name": "athlete_category_templates",
       "columns": {
         "id": {
           "name": "id",
@@ -14,30 +14,32 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
+        "base_name": {
+          "name": "base_name",
           "type": "text(64)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "description": {
-          "name": "description",
-          "type": "text(256)",
+        "male_name": {
+          "name": "male_name",
+          "type": "text(64)",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'Masculino'"
         },
-        "fee_category_id": {
-          "name": "fee_category_id",
-          "type": "integer",
+        "female_name": {
+          "name": "female_name",
+          "type": "text(64)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'Femenino'"
         },
-        "sex": {
-          "name": "sex",
-          "type": "text(1)",
+        "unisex_name": {
+          "name": "unisex_name",
+          "type": "text(64)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -55,23 +57,78 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "clothing": {
+      "name": "clothing",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
         },
-        "condition": {
-          "name": "condition",
-          "type": "text(256)",
+        "event_id": {
+          "name": "event_id",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
+        },
+        "clothing_type": {
+          "name": "clothing_type",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "size": {
+          "name": "size",
+          "type": "text(8)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "available_quantity": {
+          "name": "available_quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "demanded_quantity": {
+          "name": "demanded_quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "reserved_quantity": {
+          "name": "reserved_quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "athlete_categories_fee_category_id_fees_categories_id_fk": {
-          "name": "athlete_categories_fee_category_id_fees_categories_id_fk",
-          "tableFrom": "athlete_categories",
-          "tableTo": "fees_categories",
+        "clothing_event_id_sporting_events_id_fk": {
+          "name": "clothing_event_id_sporting_events_id_fk",
+          "tableFrom": "clothing",
+          "tableTo": "sporting_events",
           "columnsFrom": [
-            "fee_category_id"
+            "event_id"
           ],
           "columnsTo": [
             "id"
@@ -84,8 +141,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "fees_categories": {
-      "name": "fees_categories",
+    "disclaimers_of_liability": {
+      "name": "disclaimers_of_liability",
       "columns": {
         "id": {
           "name": "id",
@@ -94,16 +151,68 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
+        "title": {
+          "name": "title",
           "type": "text(64)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "description": {
-          "name": "description",
+        "content": {
+          "name": "content",
+          "type": "text(2048)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "locations": {
+      "name": "locations",
+      "columns": {
+        "id": {
+          "name": "id",
           "type": "text(256)",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "locality": {
+          "name": "locality",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "province": {
+          "name": "province",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "country": {
+          "name": "country",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "real",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -132,20 +241,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "athlete_category_id": {
-          "name": "athlete_category_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "fee_category_id": {
-          "name": "fee_category_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "circuit_id": {
           "name": "circuit_id",
           "type": "integer",
@@ -153,25 +248,32 @@
           "notNull": true,
           "autoincrement": false
         },
-        "distance_km": {
-          "name": "distance_km",
-          "type": "real",
+        "name": {
+          "name": "name",
+          "type": "text(64)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "fee_amount": {
-          "name": "fee_amount",
-          "type": "real",
+        "sex": {
+          "name": "sex",
+          "type": "text(1)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
-        "allowed": {
-          "name": "allowed",
+        "min_age": {
+          "name": "min_age",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "max_age": {
+          "name": "max_age",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -183,32 +285,6 @@
           "tableTo": "sporting_events",
           "columnsFrom": [
             "event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sporting_event_athlete_categories_athlete_category_id_athlete_categories_id_fk": {
-          "name": "sporting_event_athlete_categories_athlete_category_id_athlete_categories_id_fk",
-          "tableFrom": "sporting_event_athlete_categories",
-          "tableTo": "athlete_categories",
-          "columnsFrom": [
-            "athlete_category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sporting_event_athlete_categories_fee_category_id_fees_categories_id_fk": {
-          "name": "sporting_event_athlete_categories_fee_category_id_fees_categories_id_fk",
-          "tableFrom": "sporting_event_athlete_categories",
-          "tableTo": "fees_categories",
-          "columnsFrom": [
-            "fee_category_id"
           ],
           "columnsTo": [
             "id"
@@ -331,6 +407,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "training_team": {
+          "name": "training_team",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "registration_date": {
           "name": "registration_date",
           "type": "text",
@@ -339,16 +422,98 @@
           "autoincrement": false,
           "default": "CURRENT_TIMESTAMP"
         },
-        "paid": {
-          "name": "paid",
+        "discount_percentage": {
+          "name": "discount_percentage",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": 0
         },
-        "payment_date": {
-          "name": "payment_date",
+        "discount_reason": {
+          "name": "discount_reason",
+          "type": "text(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fee_amount_after_discount": {
+          "name": "fee_amount_after_discount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "paid_amount": {
+          "name": "paid_amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "paid_percentage": {
+          "name": "paid_percentage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "demanded_clothing_id": {
+          "name": "demanded_clothing_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reserved_clothing_id": {
+          "name": "reserved_clothing_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "special_needs": {
+          "name": "special_needs",
+          "type": "text(512)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text(16)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "full_payment_date": {
+          "name": "full_payment_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_by": {
+          "name": "updated_by",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -389,6 +554,58 @@
           "tableTo": "sporting_event_athlete_categories",
           "columnsFrom": [
             "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_registrations_training_team_training_teams_id_fk": {
+          "name": "sporting_event_registrations_training_team_training_teams_id_fk",
+          "tableFrom": "sporting_event_registrations",
+          "tableTo": "training_teams",
+          "columnsFrom": [
+            "training_team"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_registrations_demanded_clothing_id_clothing_id_fk": {
+          "name": "sporting_event_registrations_demanded_clothing_id_clothing_id_fk",
+          "tableFrom": "sporting_event_registrations",
+          "tableTo": "clothing",
+          "columnsFrom": [
+            "demanded_clothing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_registrations_reserved_clothing_id_clothing_id_fk": {
+          "name": "sporting_event_registrations_reserved_clothing_id_clothing_id_fk",
+          "tableFrom": "sporting_event_registrations",
+          "tableTo": "clothing",
+          "columnsFrom": [
+            "reserved_clothing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_registrations_updated_by_users_id_fk": {
+          "name": "sporting_event_registrations_updated_by_users_id_fk",
+          "tableFrom": "sporting_event_registrations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "updated_by"
           ],
           "columnsTo": [
             "id"
@@ -439,16 +656,16 @@
           "notNull": false,
           "autoincrement": false
         },
-        "location_hint": {
-          "name": "location_hint",
+        "location": {
+          "name": "location",
           "type": "text(256)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "location_text": {
-          "name": "location_text",
-          "type": "text(256)",
+        "location_address": {
+          "name": "location_address",
+          "type": "text(128)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -476,6 +693,19 @@
           "tableTo": "sporting_events",
           "columnsFrom": [
             "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_event_schedules_location_locations_id_fk": {
+          "name": "sporting_event_schedules_location_locations_id_fk",
+          "tableFrom": "sporting_event_schedules",
+          "tableTo": "locations",
+          "columnsFrom": [
+            "location"
           ],
           "columnsTo": [
             "id"
@@ -532,7 +762,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'EUR'"
+          "default": "'ARS'"
         },
         "description": {
           "name": "description",
@@ -717,13 +947,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text(256)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
@@ -791,15 +1014,15 @@
           "notNull": false,
           "autoincrement": false
         },
-        "location_hint": {
-          "name": "location_hint",
+        "location": {
+          "name": "location",
           "type": "text(256)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "location_text": {
-          "name": "location_text",
+        "location_address": {
+          "name": "location_address",
           "type": "text(256)",
           "primaryKey": false,
           "notNull": false,
@@ -833,16 +1056,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "disclaimer_of_liability_title": {
-          "name": "disclaimer_of_liability_title",
-          "type": "text(64)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "disclaimer_of_liability_content": {
-          "name": "disclaimer_of_liability_content",
-          "type": "text(2048)",
+        "disclaimer_of_liability_id": {
+          "name": "disclaimer_of_liability_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -853,6 +1069,21 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "fee_amount": {
+          "name": "fee_amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fee_currency": {
+          "name": "fee_currency",
+          "type": "text(3)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'ARS'"
         },
         "created_by": {
           "name": "created_by",
@@ -887,12 +1118,38 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "sporting_events_location_locations_id_fk": {
+          "name": "sporting_events_location_locations_id_fk",
+          "tableFrom": "sporting_events",
+          "tableTo": "locations",
+          "columnsFrom": [
+            "location"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "sporting_events_event_type_sporting_event_types_id_fk": {
           "name": "sporting_events_event_type_sporting_event_types_id_fk",
           "tableFrom": "sporting_events",
           "tableTo": "sporting_event_types",
           "columnsFrom": [
             "event_type"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sporting_events_disclaimer_of_liability_id_disclaimers_of_liability_id_fk": {
+          "name": "sporting_events_disclaimer_of_liability_id_disclaimers_of_liability_id_fk",
+          "tableFrom": "sporting_events",
+          "tableTo": "disclaimers_of_liability",
+          "columnsFrom": [
+            "disclaimer_of_liability_id"
           ],
           "columnsTo": [
             "id"
@@ -931,6 +1188,175 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "training_teams": {
+      "name": "training_teams",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text(128)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "coach_name": {
+          "name": "coach_name",
+          "type": "text(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "coach_user_id": {
+          "name": "coach_user_id",
+          "type": "text(28)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "contact_email": {
+          "name": "contact_email",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "contact_phone": {
+          "name": "contact_phone",
+          "type": "text(32)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "training_teams_location_locations_id_fk": {
+          "name": "training_teams_location_locations_id_fk",
+          "tableFrom": "training_teams",
+          "tableTo": "locations",
+          "columnsFrom": [
+            "location"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "training_teams_coach_user_id_users_id_fk": {
+          "name": "training_teams_coach_user_id_users_id_fk",
+          "tableFrom": "training_teams",
+          "tableTo": "users",
+          "columnsFrom": [
+            "coach_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "user_updates": {
+      "name": "user_updates",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text(28)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "old_value": {
+          "name": "old_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "new_value": {
+          "name": "new_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_updates_user_id_users_id_fk": {
+          "name": "user_updates_user_id_users_id_fk",
+          "tableFrom": "user_updates",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "users": {
       "name": "users",
       "columns": {
@@ -938,13 +1364,6 @@
           "name": "id",
           "type": "text(28)",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "phone": {
-          "name": "phone",
-          "type": "text",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -957,6 +1376,34 @@
         },
         "surname": {
           "name": "surname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emergency_contact_name": {
+          "name": "emergency_contact_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "emergency_contact_phone": {
+          "name": "emergency_contact_phone",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -976,26 +1423,48 @@
           "notNull": false,
           "autoincrement": false
         },
-        "country": {
-          "name": "country",
-          "type": "text(64)",
+        "clothing_tshirt_size": {
+          "name": "clothing_tshirt_size",
+          "type": "text(8)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "city": {
-          "name": "city",
-          "type": "text(64)",
+        "address": {
+          "name": "address",
+          "type": "text(256)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
-        "full_location": {
-          "name": "full_location",
+        "location": {
+          "name": "location",
           "type": "text(256)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "location_temp": {
+          "name": "location_temp",
+          "type": "text(256)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "special_needs": {
+          "name": "special_needs",
+          "type": "text(512)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "discount_percentage": {
+          "name": "discount_percentage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "manager_id": {
           "name": "manager_id",
@@ -1006,35 +1475,14 @@
         },
         "training_team": {
           "name": "training_team",
-          "type": "text(64)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "temp_code": {
-          "name": "temp_code",
-          "type": "text(6)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "roles": {
-          "name": "roles",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "hard_category": {
-          "name": "hard_category",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "training_team_temp": {
+          "name": "training_team_temp",
+          "type": "text(128)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1049,6 +1497,20 @@
         "profile_image_preview_url": {
           "name": "profile_image_preview_url",
           "type": "text(512)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "temp_code": {
+          "name": "temp_code",
+          "type": "text(6)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1087,6 +1549,19 @@
         }
       },
       "foreignKeys": {
+        "users_location_locations_id_fk": {
+          "name": "users_location_locations_id_fk",
+          "tableFrom": "users",
+          "tableTo": "locations",
+          "columnsFrom": [
+            "location"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "users_manager_id_users_id_fk": {
           "name": "users_manager_id_users_id_fk",
           "tableFrom": "users",
@@ -1100,12 +1575,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "users_hard_category_athlete_categories_id_fk": {
-          "name": "users_hard_category_athlete_categories_id_fk",
+        "users_training_team_training_teams_id_fk": {
+          "name": "users_training_team_training_teams_id_fk",
           "tableFrom": "users",
-          "tableTo": "athlete_categories",
+          "tableTo": "training_teams",
           "columnsFrom": [
-            "hard_category"
+            "training_team"
           ],
           "columnsTo": [
             "id"
