@@ -13,7 +13,7 @@ VALUES (
     'Santa Fe',
     'Argentina',
     NULL,
-    NULL,
+    NULL
   ),
   (
     'Empalme Villa Constitución, Santa Fe, Argentina',
@@ -21,7 +21,7 @@ VALUES (
     'Santa Fe',
     'Argentina',
     NULL,
-    NULL,
+    NULL
   ),
   (
     'San Nicolás de los Arroyos, Buenos Aires, Argentina',
@@ -29,7 +29,7 @@ VALUES (
     'Buenos Aires',
     'Argentina',
     NULL,
-    NULL,
+    NULL
   ),
   (
     'La Vanguardia, Santa Fe, Argentina',
@@ -37,7 +37,7 @@ VALUES (
     'Santa Fe',
     'Argentina',
     -33.3577567,
-    -60.6590607,
+    -60.6590607
   ),
   (
     'Theobald, Santa Fe, Argentina',
@@ -45,7 +45,7 @@ VALUES (
     'Santa Fe',
     'Argentina',
     NULL,
-    NULL,
+    NULL
   ),
   (
     'Soldini, Santa Fe, Argentina',
@@ -53,7 +53,7 @@ VALUES (
     'Santa Fe',
     'Argentina',
     NULL,
-    NULL,
+    NULL
   ),
   (
     'Funes, Santa Fe, Argentina',
@@ -61,7 +61,7 @@ VALUES (
     'Santa Fe',
     'Argentina',
     NULL,
-    NULL,
+    NULL
   );
 
 
@@ -69,7 +69,7 @@ INSERT INTO
 training_teams (
     id,
     name,
-    location,
+    location
   )
 VALUES (
     1,
@@ -103,7 +103,7 @@ users (
     manager_id,
     training_team,
     temp_code,
-    role,
+    role
   )
 VALUES (
     "42556386",
@@ -206,7 +206,6 @@ VALUES (
     NULL,
     0,
     NULL,
-    NULL,
     2,
     NULL,
     'athlete'
@@ -227,7 +226,6 @@ VALUES (
     NULL,
     NULL,
     0,
-    NULL,
     NULL,
     NULL,
     NULL,
@@ -413,8 +411,9 @@ VALUES
     1,
     'Acá van las reglas del evento',
     NULL,
-    NULL,
     '1 - Una banda de plata / 2 - Algo de plata / 3 - Un ferrari',
+    0,
+    'ARS',
     '42556386',
     '2025-12-25T18:00:38.954Z',
     '42556386',
@@ -530,9 +529,9 @@ VALUES
   (3, 6, 3, '10K Senior Masculino', 'M', 20, 39),
   (4, 6, 3, '10K Senior Femenino', 'F', 20, 39),
   (5, 6, 4, '3K Juveniles Masculino', 'M', 16, 19),
-  (5, 6, 4, '3K Juveniles Femenino', 'F', 16, 19),
-  (6, 6, 4, '3K Senior Masculino', 'M', 20, 39),
-  (6, 6, 4, '3K Senior Femenino', 'F', 20, 39);
+  (6, 6, 4, '3K Juveniles Femenino', 'F', 16, 19),
+  (7, 6, 4, '3K Senior Masculino', 'M', 20, 39),
+  (8, 6, 4, '3K Senior Femenino', 'F', 20, 39);
 
 
 INSERT INTO
@@ -543,7 +542,7 @@ clothing (
   size,
   available_quantity,
   demanded_quantity,
-  reserved_quantity,
+  reserved_quantity
 )
 VALUES
   (1, 6, 'tshirt', 'XS', 10, 0, 0),
