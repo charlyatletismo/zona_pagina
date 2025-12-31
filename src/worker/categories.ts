@@ -29,7 +29,7 @@ const getAthleteCategories = async (db: ReturnType<typeof drizzle>) => {
 
 export const categoriesRoute = new Hono<{ Bindings: Env }>()
   .use(async (c, next) => {
-    if (!authorizedOrg(c.get('jwtPayload')?.roles)) {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     // Middleware to log requests to /api/users

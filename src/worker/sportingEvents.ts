@@ -45,7 +45,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   })
   .post("/create", async (c) => {
     const userId: string = c.get('jwtPayload').id;
-    if (!authorizedOrg(c.get('jwtPayload').roles)) {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     const db = drizzle(c.env.DB);
@@ -58,7 +58,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   })
   .post("/update/:id", async (c) => {
     const userId: string = c.get('jwtPayload').id;
-    if (!authorizedOrg(c.get('jwtPayload').roles)) {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     const db = drizzle(c.env.DB);

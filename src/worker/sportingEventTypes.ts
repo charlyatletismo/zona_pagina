@@ -12,7 +12,7 @@ export const sportingEventTypesRoute = new Hono<{ Bindings: Env }>()
       await next();
       return;
     }
-    if (!authorizedOrg(c.get('jwtPayload')?.roles)) {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     // Middleware to log requests to /api/users

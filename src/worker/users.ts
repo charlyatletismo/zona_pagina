@@ -2,13 +2,13 @@ import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from './db/schema';
-import { eq, and, not, like } from 'drizzle-orm';
+import { eq, and, not } from 'drizzle-orm';
 import { ADMIN_ROLE, ATHLETES_MANAGER_ROLE, authorizedAthMan, authorizedOrg } from './lib/roles';
 
 
 export const usersRoute = new Hono<{ Bindings: Env }>()
   .use(async (c, next) => {
-    if (!authorizedAthMan(c.get('jwtPayload')?.roles)) {
+    if (!authorizedAthMan(c.get('jwtPayload')?.role)) {
       return c.json({ error: "Unauthorized" }, 403);
     }
     // Middleware to log requests to /api/users
@@ -17,9 +17,8 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
   })
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
-    const roles = c.get('jwtPayload').roles.split(",");
     let allUsers;
-    if (roles.length === 1 && roles[0] === ATHLETES_MANAGER_ROLE) {
+    if (c.get('jwtPayload').role === ATHLETES_MANAGER_ROLE) {
       const managerId = c.get('jwtPayload').id;
       allUsers = await db.select({
         id: users.id,
@@ -35,7 +34,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
         surname: users.surname,
         phone: users.phone,
         email: users.email,
-        roles: users.roles,
+        role: users.role,
       }).from(users).all();
     }
     if (!allUsers) {
@@ -50,8 +49,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     if (!user) {
       return c.json({ error: 'User not found' }, 404);
     }
-    const roles = c.get('jwtPayload').roles.split(",");
-    if (roles.length === 1 && roles[0] === ATHLETES_MANAGER_ROLE) {
+    if (c.get('jwtPayload').role === ATHLETES_MANAGER_ROLE) {
       const managerId = c.get('jwtPayload').id;
       if (user.manager_id !== managerId) {
         return c.json({ error: "Unauthorized" }, 403);
@@ -63,14 +61,14 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const userId = c.req.param("id");
     const { role } = await c.req.json();
-    if (!authorizedOrg(c.get('jwtPayload')?.roles)) {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
       return c.json({ error: "Invalid role" }, 400);
     }
     const res = await db.update(users)
-      .set({ roles: role })
+      .set({ role: role })
       .where(and(
         eq(users.id, userId),
-        not(like(users.roles, ADMIN_ROLE)) // Prevent changing admin role
+        not(eq(users.role, ADMIN_ROLE)) // Prevent changing admin role
       ))
       .run();
 
@@ -101,9 +99,8 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       updated_at: new Date().toISOString(),
     }
 
-    const roles = c.get('jwtPayload').roles.split(",");
     let wasUpdated = false;
-    if (roles.length === 1 && roles[0] === ATHLETES_MANAGER_ROLE) {
+    if (c.get('jwtPayload').role === ATHLETES_MANAGER_ROLE) {
       // Athletes Manager can only update their own athletes
       const managerId = c.get('jwtPayload').id;
       const res = await db.update(users)
@@ -115,12 +112,14 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
         .run();
       wasUpdated = res.meta.changes > 0;
     } else {
-      // Admin or Organizer can update roles and hard_category
-      data.roles = updateData.roles;
-      data.hard_category = updateData.hard_category;
+      // Admin or Organizer can update roles
+      data.role = updateData.role;
       const res = await db.update(users)
         .set(data)
-        .where(eq(users.id, userId))
+        .where(and(
+          eq(users.id, userId),
+          not(eq(users.role, ADMIN_ROLE)) // Prevent changing admin role
+        ))
         .run();
       wasUpdated = res.meta.changes > 0;
     }

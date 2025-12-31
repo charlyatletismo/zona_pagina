@@ -139,7 +139,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
     const token = await sign({
         id: user.id,
         phone: user.phone,
-        roles: user.roles,
+        role: user.role,
         name: user.name,
       },
       c.env.JWT_SECRET, "HS256"
@@ -155,7 +155,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       || !user.email
       || !user.phone
     )
-    return c.json({ token, id: user.id, name: user.name, roles: user.roles, requireProfileUpdate });
+    return c.json({ token, id: user.id, name: user.name, role: user.role, requireProfileUpdate });
   })
   .post("/register", async (c) => {
     const { user_id, phone } = await c.req.json();
@@ -180,7 +180,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       id: user_id,
       phone,
       temp_code: tempCode,
-      roles: 'athlete',
+      role: 'athlete',
     }).run();
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {

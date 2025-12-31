@@ -52,7 +52,7 @@ export const users = sqliteTable("users", {
   profile_image_url: text({ length: 512 }),
   profile_image_preview_url: text({ length: 512 }),
   temp_code: text({ length: 6 }),
-  role: text(), // comma-separated roles
+  role: text(), // admin, organizer, athletes_manager, athlete
   created_at: text()
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

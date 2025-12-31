@@ -41,9 +41,9 @@ export const Route = createFileRoute('/users/')({
 
 const getRoleWeight = (role: string | undefined) => {
   if (!role) return 5;
-  if (role.includes(ADMIN_ROLE)) return 4;
-  if (role.includes(ORGANIZER_ROLE)) return 1;
-  if (role.includes(ATHLETES_MANAGER_ROLE)) return 2;
+  if (role === ADMIN_ROLE) return 4;
+  if (role === ORGANIZER_ROLE) return 1;
+  if (role === ATHLETES_MANAGER_ROLE) return 2;
   return 3;
 }
 
@@ -57,7 +57,7 @@ function RouteComponent() {
     );
   }
   const [data, setData] = React.useState<User[]>(() => {
-    return [...(users || [])].sort((a, b) => getRoleWeight(a.roles) - getRoleWeight(b.roles));
+    return [...(users || [])].sort((a, b) => getRoleWeight(a.role) - getRoleWeight(b.role));
   });
   const navigate = useNavigate();
 
@@ -67,8 +67,8 @@ function RouteComponent() {
     const res = await postAuthenticated(`/api/users/${userId}/setRole`, { role: newRole }, navigate);
     if (res.status === 200) {
       setData(prev => {
-        const newData = prev.map(u => u.id === userId ? { ...u, roles: newRole } : u);
-        return newData.sort((a, b) => getRoleWeight(a.roles) - getRoleWeight(b.roles));
+        const newData = prev.map(u => u.id === userId ? { ...u, role: newRole } : u);
+        return newData.sort((a, b) => getRoleWeight(a.role) - getRoleWeight(b.role));
       });
     } else {
       alert('Error al actualizar el rol');
@@ -95,28 +95,24 @@ function RouteComponent() {
         header: 'Email',
         cell: info => <span className="text-gray-500">{info.getValue()}</span>,
       }),
-      columnHelper.accessor('roles', {
+      columnHelper.accessor('role', {
+        // TODO: Hide role when is not admin or organizer
         header: 'Rol',
         cell: info => {
           const role = info.getValue();
           if (!role) return null;
-          let className = ""
-          let label = "Atleta";
-
-          if (role.includes(ADMIN_ROLE)) {
-            label = "Admin";
-          } else if (role === ORGANIZER_ROLE) {
-            label = "Organizador";
-          } else if (role.includes(ATHLETES_MANAGER_ROLE)) {
-            className = "bg-blue-500 text-white dark:bg-blue-600";
-            label = "Manager";
-          }
+          let className = role !== ATHLETES_MANAGER_ROLE ? "" : "bg-blue-500 text-white dark:bg-blue-600"
+          let label = {
+            [ADMIN_ROLE]: "Admin",
+            [ORGANIZER_ROLE]: "Organizador",
+            [ATHLETES_MANAGER_ROLE]: "Manager",
+            [ATHLETE_ROLE]: "Atleta",
+          }[role];
 
           return (
             <div>
-              
               <Badge variant={
-                role.includes(ADMIN_ROLE) ? "destructive" :
+                role === ADMIN_ROLE ? "destructive" :
                 role === ORGANIZER_ROLE ? "default" :
                 role === ATHLETES_MANAGER_ROLE ? "secondary" : "outline"
               } className={className}>
@@ -131,14 +127,14 @@ function RouteComponent() {
         header: 'Acciones',
         cell: props => {
           const user = props.row.original;
-          const currentRole = user.roles;
-          
+          const currentRole = user.role;
+
           // Don't allow changing roles when not admin or organizer,
           // Don't allow changing admin roles or self (simplified)
           const canEdit = (
             localStorage.getItem("USER_ROLE") === ORGANIZER_ROLE
             || localStorage.getItem("USER_ROLE") === ADMIN_ROLE)
-            && currentRole && !currentRole.includes(ADMIN_ROLE)
+            && currentRole && currentRole !== ADMIN_ROLE
             && localStorage.getItem('USER_ID') !== user.id;
 
           return (

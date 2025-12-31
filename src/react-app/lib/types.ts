@@ -12,7 +12,7 @@ export interface User {
   manager_id: string;
   training_team: string;
   temp_code: string;
-  roles: string;
+  role: string;
   created_at: string;
   updated_at: string;
 }

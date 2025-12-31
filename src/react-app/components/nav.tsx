@@ -68,14 +68,14 @@ export const Navigation = () => {
           </NavigationMenuItem>
         ))}
 
-        {localStorage.getItem('JWT_TOKEN') && (localStorage.getItem('USER_ROLES')?.split(",").length || 0) > 1 && (
+        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && (
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
               <a onClick={() => {
                 // switch to next role
-                const roles = localStorage.getItem('USER_ROLES')?.split(",") || [];
-                const i = roles.indexOf(localStorage.getItem('USER_ROLE') || '');
-                const nextRole = roles[(i + 1) % roles.length];
+                const all_roles = [roles.ADMIN_ROLE, roles.ORGANIZER_ROLE, roles.ATHLETES_MANAGER_ROLE, roles.ATHLETE_ROLE];
+                const i = all_roles.indexOf(localStorage.getItem('USER_ROLE') || '');
+                const nextRole = all_roles[(i + 1) % all_roles.length];
                 localStorage.setItem('USER_ROLE', nextRole);
                 window.location.reload();
               }} className={navClass}>Rol: {localStorage.getItem('USER_ROLE')}</a>
