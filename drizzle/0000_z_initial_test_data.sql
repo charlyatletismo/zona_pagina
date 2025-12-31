@@ -124,7 +124,7 @@ VALUES (
     NULL,
     NULL,
     NULL,
-    'admin,organizer,athlete,athletes_manager'
+    'admin'
   ),
   (
     "34525736",
