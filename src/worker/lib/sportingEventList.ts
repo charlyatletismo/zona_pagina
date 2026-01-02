@@ -10,8 +10,8 @@ export const mainSportingEventsList = async (db: any) => {
     date: sportingEvents.date,
     registration_start: sportingEvents.registration_start,
     registration_end: sportingEvents.registration_end,
-    location_hint: sportingEvents.location_hint,
-    location_text: sportingEvents.location_text,
+    location: sportingEvents.location,
+    location_address: sportingEvents.location_address,
   };
   const now = new Date();
   const yesterday = new Date();

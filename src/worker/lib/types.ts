@@ -7,14 +7,13 @@ export interface SportingEventFormData {
   date: string;
   registration_start?: string;
   registration_end?: string;
-  location_hint?: string;
-  location_text?: string;
+  location?: string;
+  location_address?: string;
   location_lat?: number;
   location_long?: number;
-  event_type: number;
+  event_type: string;
   rules?: string;
-  disclaimer_of_liability_title?: string;
-  disclaimer_of_liability_content?: string;
+  disclaimer_of_liability?: string;
   award_prizes?: string;
   created_by?: string;
   created_at?: string;
@@ -30,8 +29,8 @@ export interface SportingEventScheduleFormData {
   date: string;
   title: string;
   description?: string;
-  location_hint?: string;
-  location_text?: string;
+  location?: string;
+  location_address?: string;
   location_lat?: number;
   location_long?: number;
 }
