@@ -238,19 +238,6 @@ sporting_event_types (id, name)
 VALUES (1, 'Maratón'), (2, 'Duatlón'), (3, 'Triatlón'), (4, 'Ciclismo');
 
 
-INSERT INTO
-disclaimers_of_liability (
-    id,
-    title,
-    content
-  )
-VALUES (
-    1,
-    'Descargo de responsabilidad',
-    'Al participar en este evento, usted acepta que lo hace bajo su propio riesgo y que la organización no se hace responsable de cualquier lesión, daño o pérdida que pueda ocurrir.'
-  );
-
-
 INSERT INTO sporting_events (
   id,
   title,
@@ -266,7 +253,6 @@ INSERT INTO sporting_events (
   location_long,
   event_type,
   rules,
-  disclaimer_of_liability_id,
   award_prizes,
   fee_amount,
   fee_currency,
@@ -290,7 +276,6 @@ VALUES
     -60.6590607,
     2,
     NULL,
-    1,
     '1er puesto: 100mil pesos\n2do puesto: Bicicleta Mountain Bike\n3er puesto: Casco deportivo',
     30000,
     'ARS',
@@ -314,7 +299,6 @@ VALUES
     -60.3100641,
     1,
     NULL,
-    1,
     '1er puesto: 70mil pesos\n2do puesto: Remera deportiva Adidas\n3er puesto: Gorro deportivo',
     25000,
     'ARS',
@@ -338,7 +322,6 @@ VALUES
     -60.6590607,
     1,
     NULL,
-    1,
     '1er puesto: 50mil pesos\n2do puesto: Remera deportiva Nike\n3er puesto: Botella térmica',
     30000,
     'ARS',
@@ -362,7 +345,6 @@ VALUES
     -60.75664752048362,
     1,
     NULL,
-    1,
     '1er puesto: 60mil pesos\n2do puesto: Zapatillas deportivas\n3er puesto: Gorro deportivo',
     30000,
     'ARS',
@@ -386,7 +368,6 @@ VALUES
     -60.80751302197444,
     1,
     NULL,
-    1,
     '1er puesto: 80mil pesos\n2do puesto: Zapatillas deportivas\n3er puesto: Reloj deportivo',
     30000,
     'ARS',
@@ -410,7 +391,6 @@ VALUES
     NULL,
     1,
     'Acá van las reglas del evento',
-    NULL,
     '1 - Una banda de plata / 2 - Algo de plata / 3 - Un ferrari',
     0,
     'ARS',

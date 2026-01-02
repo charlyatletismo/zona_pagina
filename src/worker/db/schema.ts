@@ -41,11 +41,12 @@ export const users = sqliteTable("users", {
   sex: text({ length: 1 }),
   date_of_birth: text(),
   clothing_tshirt_size: text({ length: 8 }), // e.g., "XS", "S", "M", "L", "XL", "XXL"
-  address: text({ length: 256 }).notNull(),
   location: text({ length: 256 }).references(() => locations.id),
+  location_address: text({ length: 256 }).notNull(),
   location_temp: text({ length: 256 }), // temporary location text when not registered in the system
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   discount_percentage: int().notNull().default(0), // for special discounts
+  // auto_assign_athlete_category: int().notNull().default(1), // whether to auto-assign athlete category based on age, for example if it has special needs it should be 0
   manager_id: text({ length: 28 }).references((): any => users.id),
   training_team_id: int().references(() => trainingTeams.id),
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
@@ -80,20 +81,6 @@ export const userUpdates = sqliteTable("user_updates", {
 });
 
 
-// Event Types (e.g., Marathon, Half-Marathon, 10K, Trail, etc.)
-export const sportingEventTypes = sqliteTable("sporting_event_types", {
-  id: int().primaryKey({ autoIncrement: true }),
-  name: text({ length: 64 }).notNull(),
-});
-
-
-export const disclaimersOfLiability = sqliteTable("disclaimers_of_liability", {
-  id: int().primaryKey({ autoIncrement: true }),
-  title: text({ length: 64 }).notNull(),
-  content: text({ length: 2048 }).notNull(),
-});
-
-
 // Main Events Table
 export const sportingEvents = sqliteTable("sporting_events", {
   id: int().primaryKey({ autoIncrement: true }),
@@ -108,9 +95,9 @@ export const sportingEvents = sqliteTable("sporting_events", {
   location_address: text({ length: 256 }),
   location_lat: real(),
   location_long: real(),
-  event_type: int().notNull().references(() => sportingEventTypes.id),
+  event_type: text({ length: 32 }).notNull(), // marathon, half_marathon, duathlon, trail, cycling, etc.
   rules: text({ length: 2048 }),
-  disclaimer_of_liability_id: int().references(() => disclaimersOfLiability.id),
+  disclaimer_of_liability: text({ length: 4096 }),
   award_prizes: text({ length: 1024 }),
   fee_amount: real(),
   fee_currency: text({ length: 3 }).default('ARS'),
