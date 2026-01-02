@@ -101,7 +101,7 @@ users (
     special_needs,
     discount_percentage,
     manager_id,
-    training_team,
+    training_team_id,
     temp_code,
     role
   )

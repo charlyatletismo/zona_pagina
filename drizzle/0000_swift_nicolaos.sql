@@ -61,7 +61,7 @@ CREATE TABLE `sporting_event_registrations` (
 	`event_id` integer NOT NULL,
 	`user_id` text NOT NULL,
 	`category_id` integer NOT NULL,
-	`training_team` integer,
+	`training_team_id` integer,
 	`registration_date` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`discount_percentage` integer DEFAULT 0 NOT NULL,
 	`discount_reason` text(256),
@@ -79,7 +79,7 @@ CREATE TABLE `sporting_event_registrations` (
 	FOREIGN KEY (`event_id`) REFERENCES `sporting_events`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`category_id`) REFERENCES `sporting_event_athlete_categories`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`training_team`) REFERENCES `training_teams`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`training_team_id`) REFERENCES `training_teams`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`demanded_clothing_id`) REFERENCES `clothing`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`reserved_clothing_id`) REFERENCES `clothing`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`updated_by`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
@@ -202,7 +202,7 @@ CREATE TABLE `users` (
 	`special_needs` text(512),
 	`discount_percentage` integer DEFAULT 0 NOT NULL,
 	`manager_id` text(28),
-	`training_team` integer,
+	`training_team_id` integer,
 	`training_team_temp` text(128),
 	`profile_image_url` text(512),
 	`profile_image_preview_url` text(512),
@@ -212,7 +212,7 @@ CREATE TABLE `users` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY (`location`) REFERENCES `locations`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`manager_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`training_team`) REFERENCES `training_teams`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`training_team_id`) REFERENCES `training_teams`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_phone_unique` ON `users` (`phone`);--> statement-breakpoint

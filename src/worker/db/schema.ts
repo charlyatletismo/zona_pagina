@@ -47,7 +47,7 @@ export const users = sqliteTable("users", {
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   discount_percentage: int().notNull().default(0), // for special discounts
   manager_id: text({ length: 28 }).references((): any => users.id),
-  training_team: int().references(() => trainingTeams.id),
+  training_team_id: int().references(() => trainingTeams.id),
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
   profile_image_url: text({ length: 512 }),
   profile_image_preview_url: text({ length: 512 }),
@@ -191,7 +191,7 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
   event_id: int().notNull().references(() => sportingEvents.id),
   user_id: text().notNull().references(() => users.id),
   category_id: int().notNull().references(() => sportingEventAthleteCategories.id),
-  training_team: int().references(() => trainingTeams.id), // after 10 people, it have 10% discount
+  training_team_id: int().references(() => trainingTeams.id), // after 10 people, it have 10% discount
   registration_date: text().notNull().default(sql`CURRENT_TIMESTAMP`),
   discount_percentage: int().notNull().default(0), // for special discounts
   discount_reason: text({ length: 256 }),

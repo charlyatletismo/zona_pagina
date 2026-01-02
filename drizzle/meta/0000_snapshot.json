@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "81db628e-7150-4b75-88df-e7bde660be83",
+  "id": "cec7ed70-8a89-4669-8b75-f77e3060ede4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "athlete_category_templates": {
@@ -407,8 +407,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "training_team": {
-          "name": "training_team",
+        "training_team_id": {
+          "name": "training_team_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -561,12 +561,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "sporting_event_registrations_training_team_training_teams_id_fk": {
-          "name": "sporting_event_registrations_training_team_training_teams_id_fk",
+        "sporting_event_registrations_training_team_id_training_teams_id_fk": {
+          "name": "sporting_event_registrations_training_team_id_training_teams_id_fk",
           "tableFrom": "sporting_event_registrations",
           "tableTo": "training_teams",
           "columnsFrom": [
-            "training_team"
+            "training_team_id"
           ],
           "columnsTo": [
             "id"
@@ -1473,8 +1473,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "training_team": {
-          "name": "training_team",
+        "training_team_id": {
+          "name": "training_team_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -1575,12 +1575,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "users_training_team_training_teams_id_fk": {
-          "name": "users_training_team_training_teams_id_fk",
+        "users_training_team_id_training_teams_id_fk": {
+          "name": "users_training_team_id_training_teams_id_fk",
           "tableFrom": "users",
           "tableTo": "training_teams",
           "columnsFrom": [
-            "training_team"
+            "training_team_id"
           ],
           "columnsTo": [
             "id"
