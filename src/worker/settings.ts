@@ -65,7 +65,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
       profile_image_preview_url: body.profile_image_preview_url,
       language: body.language,
     };
-    
+
     const userBeforeUpdate = await db
       .select({phone: users.phone, email: users.email})
       .from(users)
