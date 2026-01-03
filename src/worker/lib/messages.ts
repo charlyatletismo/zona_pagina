@@ -110,6 +110,20 @@ export const M = {
     [EN]: "User qualifies for multiple categories in the sporting event. Contact organizer. Categories qualified for: "
   },
 
+  // -------------------------- SPORTING EVENT REGISTRATIONS --------------------------
+  SPORTING_EVENT_REGISTRATION_NOT_FOUND: {
+    [ES]: "Registro de evento deportivo no encontrado",
+    [EN]: "Sporting event registration not found"
+  },
+  SPORTING_EVENT_REGISTRATION_PAYMENT_MISSING_REQUIRED_FIELDS: {
+    [ES]: "Faltan campos obligatorios en el pago del registro del evento deportivo",
+    [EN]: "Missing required fields in sporting event registration payment"
+  },
+  SPORTING_EVENT_REGISTRATION_PAYMENT_SUCCESSFUL: {
+    [ES]: "Pago del registro del evento deportivo realizado con éxito",
+    [EN]: "Sporting event registration payment successful"
+  },
+
   // -------------------------- ATHLETE CATEGORY TEMPLATES --------------------------
   ATHLETE_CATEGORY_TEMPLATE_NOT_FOUND: {
     [ES]: "Plantilla de categoría de atleta no encontrada",

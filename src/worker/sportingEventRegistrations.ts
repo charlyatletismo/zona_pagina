@@ -1,15 +1,20 @@
 import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
-import { sportingEvents, sportingEventRegistrations, users } from './db/schema';
+import {
+  sportingEvents,
+  sportingEventRegistrations,
+  sportingEventTransactions,
+  users } from './db/schema';
 import { authorizedOrg } from './lib/roles';
 import { gte, eq } from 'drizzle-orm';
+import { M } from './lib/messages';
 
 
 export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
   .use(async (c, next) => {
     if (!authorizedOrg(c.get('jwtPayload')?.role)) {
-      return c.json({ error: "Unauthorized" }, 403);
+      return c.json({ message: M.UNAUTHORIZED }, 403);
     }
     // Middleware to log requests to /api/users
     // console.log(`[UsersRoute] ${c.req.method} ${c.req.url}`);
@@ -38,7 +43,7 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
       if (!out[event.sporting_events.id]) {
         out[event.sporting_events.id] = {
           metadata: {
-            eventId: event.sporting_events.id,
+            event_id: event.sporting_events.id,
             title: event.sporting_events.title,
             date: event.sporting_events.date,
             registration_start: event.sporting_events.registration_start,
@@ -48,36 +53,83 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
         };
       }
       out[event.sporting_events.id].registrations.push({
-        registrationId: event.sporting_event_registrations.id,
-        userId: event.users.id,
-        userName: event.users.name,
-        userEmail: event.users.email,
-        userPhone: event.users.phone,
-        registrationDate: event.sporting_event_registrations.registration_date,
-        paid: event.sporting_event_registrations.paid === 1,
-        paymentDate: event.sporting_event_registrations.payment_date,
+        registration_id: event.sporting_event_registrations.id,
+        user_id: event.users.id,
+        user_name: event.users.name,
+        user_email: event.users.email,
+        user_phone: event.users.phone,
+        registration_date: event.sporting_event_registrations.registration_date,
+        registration_status: event.sporting_event_registrations.status,
+        paid_percentage: event.sporting_event_registrations.paid_percentage,
+        full_payment_date: event.sporting_event_registrations.full_payment_date,
       });
     }
     return c.json(out);
   })
-  .post("/:registrationId/updatePayment", async (c) => {
+  .post("/:registrationId/newPayment", async (c) => {
+    const userId = c.get('jwtPayload')?.id;
+    if (!userId) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
     const db = drizzle(c.env.DB);
     const registrationId = Number(c.req.param('registrationId'));
-    const body = await c.req.json();
-    const paid = body.paid ? 1 : 0;
-    const payment_date = paid === 1 ? new Date().toISOString() : null;
-    const updateResult = await db.update(sportingEventRegistrations)
+    const { amount, transaction_date, receipt_url, payment_method, status, notes } = await c.req.json();
+    if (!amount || !transaction_date || !receipt_url || !payment_method || !status) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_MISSING_REQUIRED_FIELDS }, 400);
+    }
+    const registration = await db
+      .select()
+      .from(sportingEventRegistrations)
+      .where(eq(sportingEventRegistrations.id, registrationId))
+      .limit(1)
+      .get();
+    if (!registration) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
+    }
+    const spEvent = await db
+      .select()
+      .from(sportingEvents)
+      .where(eq(sportingEvents.id, registration.event_id))
+      .limit(1)
+      .get();
+    if (!spEvent) {
+      return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+    }
+
+    await db.insert(sportingEventTransactions).values({
+      event_id: registration.event_id,
+      transaction_type: 'income',
+      category: 'registration',
+      amount,
+      currency: spEvent.fee_currency!,
+      description: `Payment for registration / Pago de registro`,
+      transaction_date,
+      user_id: registration.user_id,
+      registration_id: registration.id,
+      receipt_url,
+      payment_method,
+      status,
+      created_by: userId,
+      updated_by: userId,
+      notes,
+    }).run();
+
+    const totalPaid = (registration.paid_amount || 0) + amount;
+    const fullyPaid = totalPaid >= registration.fee_amount_after_discount;
+
+    await db.update(sportingEventRegistrations)
       .set({
-        paid,
-        payment_date,
+        paid_amount: totalPaid,
+        paid_percentage:
+          registration.fee_amount_after_discount !== 0
+          ? (totalPaid / registration.fee_amount_after_discount) * 100
+          : 100,
+        full_payment_date: fullyPaid ? new Date().toISOString() : null,
+        status: fullyPaid ? 'paid' : 'partially_paid',
+        updated_at: new Date().toISOString(),
+        updated_by: userId,
       })
       .where(eq(sportingEventRegistrations.id, registrationId))
-      .returning();
-    if (updateResult.length === 0) {
-      return c.json({ error: "Registration not found" }, 404);
-    }
-    return c.json({
-      paid: updateResult[0].paid,
-      payment_date: updateResult[0].payment_date,
-    });
+      .run();
+    return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_SUCCESSFUL });
   });
