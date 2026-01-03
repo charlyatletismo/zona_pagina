@@ -146,6 +146,7 @@ export const athleteCategoryTemplates = sqliteTable("athlete_category_templates"
   unisex_name: text({ length: 64 }),
   min_age: int(),
   max_age: int(),
+  exclude_auto_qualify: int().notNull().default(0), // if 1, athletes won't be auto-assigned to this category
 });
 
 

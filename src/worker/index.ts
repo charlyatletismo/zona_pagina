@@ -9,7 +9,7 @@ import { settingsRoute } from "./settings";
 import { sportingEventTypesRoute } from "./sportingEventTypes";
 import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
-import { categoriesRoute } from "./categories";
+import { athleteCategoryTemplatesRoute } from "./categories";
 
 
 export interface Env {
@@ -61,7 +61,7 @@ export default {
         app.route('/api/sportingEventTypes', sportingEventTypesRoute);
         app.route('/api/sportingEventRegistrations', sportingEventRegistrationsRoute);
         app.route('/api/users', usersRoute);
-        app.route('/api/categories', categoriesRoute);
+        app.route('/api/athleteCategoryTemplates', athleteCategoryTemplatesRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {

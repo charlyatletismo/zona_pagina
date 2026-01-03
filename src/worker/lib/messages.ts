@@ -12,6 +12,13 @@ export const appendToMessage = (baseMessage: Record<string, string>, appendMessa
 }
 
 export const M = {
+  // -------------------------- GENERIC --------------------------
+  UNAUTHORIZED: {
+    [ES]: "No autorizado",
+    [EN]: "Unauthorized"
+  },
+
+  // -------------------------- AUTH --------------------------
   AUTH_USER_ID_REQUIRED: {
     [ES]: "El ID de usuario es obligatorio",
     [EN]: "User ID is required"
@@ -49,6 +56,7 @@ export const M = {
     [EN]: "Too many failed attempts. Please request a new code."
   },
 
+  // -------------------------- USERS --------------------------
   USER_NOT_FOUND: {
     [ES]: "Usuario no encontrado",
     [EN]: "User not found"
@@ -66,6 +74,7 @@ export const M = {
     [EN]: "User shirt size not set"
   },
 
+  // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {
     [ES]: "Evento deportivo no encontrado",
     [EN]: "Sporting event not found"
@@ -85,5 +94,19 @@ export const M = {
   SPORTING_EVENT_USER_QUALIFIES_FOR_MULTIPLE_CATEGORIES_$APPEND: {
     [ES]: "El usuario califica para múltiples categorías del evento deportivo. Contacta al organizador. Categorías calificadas: ",
     [EN]: "User qualifies for multiple categories in the sporting event. Contact organizer. Categories qualified for: "
+  },
+
+  // -------------------------- ATHLETE CATEGORY TEMPLATES --------------------------
+  ATHLETE_CATEGORY_TEMPLATE_NOT_FOUND: {
+    [ES]: "Plantilla de categoría de atleta no encontrada",
+    [EN]: "Athlete category template not found"
+  },
+  ATHLETE_CATEGORY_TEMPLATE_REQUIRED_BASE_NAME_MISSING: {
+    [ES]: "El nombre base es obligatorio en la plantilla de categoría de atleta",
+    [EN]: "Base name is required in athlete category template"
+  },
+  ATHLETE_CATEGORY_TEMPLATE_ERROR_CREATING: {
+    [ES]: "Error al crear la plantilla de categoría de atleta",
+    [EN]: "Error creating athlete category template"
   },
 }

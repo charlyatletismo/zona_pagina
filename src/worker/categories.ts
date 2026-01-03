@@ -1,36 +1,25 @@
 import { Hono } from 'hono';
 import { Env } from './index';
-import { drizzle } from 'drizzle-orm/d1';
+import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
-import { feesCategories, athleteCategories } from './db/schema';
+import { athleteCategoryTemplates } from './db/schema';
 import { authorizedOrg } from './lib/roles';
+import { M } from './lib/messages';
 
 
-const getFeeCategories = async (db: ReturnType<typeof drizzle>) => {
-  return await db.select().from(feesCategories).all();
-};
-
-
-const getAthleteCategories = async (db: ReturnType<typeof drizzle>) => {
+const getAthleteCategoryTemplates = async (db: DrizzleD1Database) => {
   const res = await db
     .select()
-    .from(athleteCategories)
-    .innerJoin(
-      feesCategories,
-      eq(athleteCategories.fee_category_id, feesCategories.id))
+    .from(athleteCategoryTemplates)
     .all();
-  return res.map(r => ({
-    ...r.athlete_categories,
-    fee_category_name: r.fees_categories?.name,
-    fee_category_description: r.fees_categories?.description,
-  }));
+  return res;
 };
 
 
-export const categoriesRoute = new Hono<{ Bindings: Env }>()
+export const athleteCategoryTemplatesRoute = new Hono<{ Bindings: Env }>()
   .use(async (c, next) => {
     if (!authorizedOrg(c.get('jwtPayload')?.role)) {
-      return c.json({ error: "Unauthorized" }, 403);
+      return c.json({ message: M.UNAUTHORIZED }, 403);
     }
     // Middleware to log requests to /api/users
     // console.log(`[UsersRoute] ${c.req.method} ${c.req.url}`);
@@ -38,138 +27,73 @@ export const categoriesRoute = new Hono<{ Bindings: Env }>()
   })
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
-    // async fetch both categories in parallel
-    const [feeCategories, athleteCategories] = await Promise.all([
-      getFeeCategories(db),
-      getAthleteCategories(db)
-    ]);
-    return c.json({ feeCategories, athleteCategories });
+    return c.json(getAthleteCategoryTemplates(db));
   })
-  /////////////////////////////////////////// Fee Categories ///////////////////////////////////////////
-  .get("/fee", async (c) => {
-    const db = drizzle(c.env.DB);
-    const feeCategories = await getFeeCategories(db);
-    return c.json(feeCategories);
-  })
-  .post("/fee/create", async (c) => {
+  .post("/create", async (c) => {
     const reqBody = await c.req.json();
-    if (!reqBody.name) {
-      return c.json({ error: "Missing required field: name" }, 400);
+    if (!reqBody.base_name) {
+      return c.json({
+        message: M.ATHLETE_CATEGORY_TEMPLATE_REQUIRED_BASE_NAME_MISSING },
+        400);
     }
     const db = drizzle(c.env.DB);
-    const feeCategory = await db
-      .insert(feesCategories)
-      .values({
-        name: reqBody.name,
-        description: reqBody.description,
-      })
-      .returning()
-      .get();
-    return c.json(feeCategory);
+    let category;
+    try {
+      category = await db
+        .insert(athleteCategoryTemplates)
+        .values({
+          base_name: reqBody.base_name,
+          male_name: reqBody.male_name,
+          female_name: reqBody.female_name,
+          unisex_name: reqBody.unisex_name,
+          min_age: reqBody.min_age,
+          max_age: reqBody.max_age,
+          exclude_auto_qualify: reqBody.exclude_auto_qualify || 0,
+        })
+        .returning()
+        .get();
+    } catch (error) {
+      console.error("Error creating athlete category template:", error);
+      return c.json({ message: M.ATHLETE_CATEGORY_TEMPLATE_ERROR_CREATING }, 500);
+    }
+    return c.json({id: category.id});
   })
-  .get("/fee/:feeId", async (c) => {
-    const feeId = c.req.param("feeId");
+  .get("/:categoryId", async (c) => {
     const db = drizzle(c.env.DB);
-    const feeCategory = await db
+    const categoryId = c.req.param("categoryId");
+    const category = await db
       .select()
-      .from(feesCategories)
-      .where(eq(feesCategories.id, Number(feeId)))
+      .from(athleteCategoryTemplates)
+      .where(eq(athleteCategoryTemplates.id, Number(categoryId)))
       .get();
-    if (!feeCategory) {
-      return c.json({ error: "Fee category not found" }, 404);
+    if (!category) {
+      return c.json({ message: M.ATHLETE_CATEGORY_TEMPLATE_NOT_FOUND }, 404);
     }
-    return c.json(feeCategory);
+    return c.json(category);
   })
-  .post("/fee/:feeId", async (c) => {
-    const feeId = c.req.param("feeId");
+  .post("/:categoryId", async (c) => {
+    const categoryId = c.req.param("categoryId");
     const reqBody = await c.req.json();
-    if (!reqBody.name) {
-      return c.json({ error: "Missing required fields: name" }, 400);
+    if (!reqBody.base_name) {
+      return c.json({ message: M.ATHLETE_CATEGORY_TEMPLATE_REQUIRED_BASE_NAME_MISSING }, 400);
     }
     const db = drizzle(c.env.DB);
-    const feeCategory = await db
-      .update(feesCategories)
+    const category = await db
+      .update(athleteCategoryTemplates)
       .set({
-        name: reqBody.name,
-        description: reqBody.description || null,
-      })
-      .where(eq(feesCategories.id, Number(feeId)))
-      .returning()
-      .get();
-    if (!feeCategory) {
-      return c.json({ error: "Fee category not found" }, 404);
-    }
-    return c.json(feeCategory);
-  })
-  /////////////////////////////////////////// Athlete Categories ///////////////////////////////////////////
-  .get("/athlete", async (c) => {
-    const db = drizzle(c.env.DB);
-    const athleteCategories = await getAthleteCategories(db);
-    return c.json(athleteCategories);
-  })
-  .post("/athlete/create", async (c) => {
-    const reqBody = await c.req.json();
-    if (!reqBody.name || !reqBody.fee_category_id) {
-      return c.json({ error: "Missing required fields: name or fee_category_id" }, 400);
-    }
-    const db = drizzle(c.env.DB);
-    const athleteCategory = await db
-      .insert(athleteCategories)
-      .values({
-        name: reqBody.name,
-        description: reqBody.description,
-        sex: reqBody.sex,
+        base_name: reqBody.base_name,
+        male_name: reqBody.male_name,
+        female_name: reqBody.female_name,
+        unisex_name: reqBody.unisex_name,
         min_age: reqBody.min_age,
         max_age: reqBody.max_age,
-        fee_category_id: reqBody.fee_category_id,
-        condition: reqBody.condition,
+        exclude_auto_qualify: reqBody.exclude_auto_qualify || 0,
       })
+      .where(eq(athleteCategoryTemplates.id, Number(categoryId)))
       .returning()
       .get();
-    return c.json(athleteCategory);
-  })
-  .get("/athlete/:athleteId", async (c) => {
-    const athleteId = c.req.param("athleteId");
-    const db = drizzle(c.env.DB);
-    const athleteCategory = await db
-      .select()
-      .from(athleteCategories)
-      .innerJoin(
-        feesCategories,
-        eq(athleteCategories.fee_category_id, feesCategories.id))
-      .where(eq(athleteCategories.id, Number(athleteId)))
-      .get();
-    if (!athleteCategory) {
-      return c.json({ error: "Athlete category not found" }, 404);
+    if (!category) {
+      return c.json({ message: M.ATHLETE_CATEGORY_TEMPLATE_NOT_FOUND }, 404);
     }
-    return c.json({
-      ...athleteCategory.athlete_categories,
-      fee_category_name: athleteCategory.fees_categories?.name,
-    });
-  })
-  .post("/athlete/:athleteId", async (c) => {
-    const athleteId = c.req.param("athleteId");
-    const reqBody = await c.req.json();
-    if (!reqBody.name || !reqBody.fee_category_id) {
-      return c.json({ error: "Missing required fields: name or fee_category_id" }, 400);
-    }
-    const db = drizzle(c.env.DB);
-    const athleteCategory = await db
-      .update(athleteCategories)
-      .set({
-        name: reqBody.name,
-        description: reqBody.description || null,
-        sex: reqBody.sex || null,
-        min_age: reqBody.min_age || null,
-        max_age: reqBody.max_age || null,
-        fee_category_id: reqBody.fee_category_id,
-        condition: reqBody.condition || null,
-      })
-      .where(eq(athleteCategories.id, Number(athleteId)))
-      .returning()
-      .get();
-    if (!athleteCategory) {
-      return c.json({ error: "Athlete category not found" }, 404);
-    }
-    return c.json(athleteCategory);
+    return c.json(category);
   });
