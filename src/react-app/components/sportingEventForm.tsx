@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Save, AlertCircle, MapPinnedIcon, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { postAuthenticated } from '@/lib/apiCalls'
-import { SportingEvent, SportingEventTypeEnum } from '@/lib/types'
+import { SportingEventType, SportingEventTypeEnum } from '@/lib/types'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
@@ -11,11 +11,11 @@ import { Spinner } from '@/components/ui/spinner';
 
 const SportingEventForm = (
     {ev, evTypes} : {
-      ev: SportingEvent | null,
+    ev: SportingEventType | null,
       evTypes: SportingEventTypeEnum[]}) => {
   const navigate = useNavigate();
   const apiEndpointPath = ev === null ? '/api/sportingEvents/create' : `/api/sportingEvents/update/${ev.id}`;
-  const [formData, setFormData] = useState<Partial<SportingEvent>>(ev || {});
+  const [formData, setFormData] = useState<Partial<SportingEventType>>(ev || {});
   const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
