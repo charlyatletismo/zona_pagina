@@ -17,6 +17,14 @@ export const M = {
     [ES]: "No autorizado",
     [EN]: "Unauthorized"
   },
+  INTERNAL_SERVER_ERROR: {
+    [ES]: "Error interno del servidor",
+    [EN]: "Internal server error"
+  },
+  FORBIDDEN: {
+    [ES]: "Prohibido. Debe iniciar sesión primero.",
+    [EN]: "Forbidden. Must be logged in first."
+  },
 
   // -------------------------- AUTH --------------------------
   AUTH_USER_ID_REQUIRED: {
