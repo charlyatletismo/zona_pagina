@@ -98,6 +98,18 @@ export const getRegistrationStatusDescription = (status: string | null) => {
     || "Desconocido";
 }
 
+
+export const AthleteCategoryTemplateSchema = z.object({
+  id: z.number(),
+  base_name: z.string(),
+  male_name: z.string().nullable(),
+  female_name: z.string().nullable(),
+  min_age: z.number().nullable(),
+  max_age: z.number().nullable(),
+  exclude_auto_qualify: z.coerce.boolean().nullable(),
+});
+
+
 export const SportingEventCircuitSchema = z.object({
   id: z.number(),
   event_id: z.number(),
@@ -106,6 +118,7 @@ export const SportingEventCircuitSchema = z.object({
   distance_km: z.number(),
   map_url: z.string().max(512).nullable(),
 });
+
 
 export const SportingEventScheduleSchema = z.object({
   id: z.number(),
@@ -119,6 +132,7 @@ export const SportingEventScheduleSchema = z.object({
   location_long: z.number().nullable(),
 });
 
+
 export const SportingEventAthleteCategorySchema = z.object({
   id: z.number(),
   event_id: z.number(),
@@ -129,6 +143,7 @@ export const SportingEventAthleteCategorySchema = z.object({
   max_age: z.number().nullable(),
   exclude_auto_qualify: z.coerce.boolean().nullable(),
 });
+
 
 export const SportingEventSchema = z.object({
   id: z.number(),
@@ -180,7 +195,6 @@ export const SportingEventSchema = z.object({
 });
 
 
-
 export const SportingEventBasicInfoSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -208,6 +222,8 @@ export type SportingEventBasicInfoType = z.infer<typeof SportingEventBasicInfoSc
 export type SportingEventAthleteCategoryType = z.infer<typeof SportingEventAthleteCategorySchema>;
 export type SportingEventScheduleType = z.infer<typeof SportingEventScheduleSchema>;
 export type SportingEventCircuitType = z.infer<typeof SportingEventCircuitSchema>;
+
+export type AthleteCategoryTemplateType = z.infer<typeof AthleteCategoryTemplateSchema>;
 
 export type SportingEventApiResponseType = z.infer<typeof SportingEventApiResponseSchema>;
 
