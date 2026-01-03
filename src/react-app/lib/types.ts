@@ -143,8 +143,6 @@ export const SportingEventSchema = z.object({
   }).nullable(),
 });
 
-export type SportingEventType = z.infer<typeof SportingEventSchema>;
-
 export const SportingEventBasicInfoSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -156,7 +154,6 @@ export const SportingEventBasicInfoSchema = z.object({
   location_address: z.string().max(256).nullable(),
 });
 
-export type SportingEventBasicInfoType = z.infer<typeof SportingEventBasicInfoSchema>;
 
 export const SportingEventApiResponseSchema = z.object({
   open: z.array(SportingEventBasicInfoSchema),
@@ -164,6 +161,15 @@ export const SportingEventApiResponseSchema = z.object({
   closed: z.array(SportingEventBasicInfoSchema),
   past: z.array(SportingEventBasicInfoSchema),
 });
+
+
+export type UserType = z.infer<typeof UserSchema>;
+
+export type SportingEventType = z.infer<typeof SportingEventSchema>;
+export type SportingEventBasicInfoType = z.infer<typeof SportingEventBasicInfoSchema>;
+export type SportingEventAthleteCategoryType = z.infer<typeof SportingEventAthleteCategorySchema>;
+export type SportingEventScheduleType = z.infer<typeof SportingEventScheduleSchema>;
+export type SportingEventCircuitType = z.infer<typeof SportingEventCircuitSchema>;
 
 export type SportingEventApiResponseType = z.infer<typeof SportingEventApiResponseSchema>;
 
