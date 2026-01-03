@@ -5,18 +5,18 @@ export const ATHLETE_ROLE = 'athlete';
 export const ATHLETES_MANAGER_ROLE = 'athletes_manager';
 
 
-export const authorizedRoles = (allowedRoles: string[], userRole: string) => {
-  return allowedRoles.includes(userRole);
-}
+const authOrg = [ORGANIZER_ROLE, ADMIN_ROLE];
+const authAthMan = [ATHLETES_MANAGER_ROLE, ORGANIZER_ROLE, ADMIN_ROLE];
 
 
 export const authorizedOrg = (userRole: string | null) => {
   if (!userRole) return false;
-  return authorizedRoles([ORGANIZER_ROLE, ADMIN_ROLE], userRole);
+  return authOrg.includes(userRole);
 }
+
 
 
 export const authorizedAthMan = (userRole: string | null) => {
   if (!userRole) return false;
-  return authorizedRoles([ATHLETES_MANAGER_ROLE, ORGANIZER_ROLE, ADMIN_ROLE], userRole);
+  return authAthMan.includes(userRole);
 }

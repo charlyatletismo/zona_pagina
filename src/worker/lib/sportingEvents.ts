@@ -1,15 +1,17 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
-import { eq, asc, inArray, lt, gte, and } from 'drizzle-orm';
+import { eq, asc, inArray, and } from 'drizzle-orm';
 import {
   users,
   sportingEvents,
   sportingEventCircuits,
   sportingEventSchedules,
   sportingEventRegistrations,
-  sportingEventAthleteCategories
+  sportingEventAthleteCategories,
+  sportingEventClothing
 } from '../db/schema'
 import { userRegisteredInEvent } from './sportingEventRegistrations';
 import { SportingEventFormData } from './types';
+import { M, appendToMessage } from './messages';
 
 
 export const getSpEvent = async (db: DrizzleD1Database, eventId: number, userId?: string | null) => {
@@ -19,7 +21,10 @@ export const getSpEvent = async (db: DrizzleD1Database, eventId: number, userId?
     .where(eq(sportingEvents.id, eventId))
     .limit(1)
   if (event.length === 0) {
-    return null;
+    return {
+      status: 404,
+      message: M.SPORTING_EVENT_NOT_FOUND
+    };
   }
   const circuits = await db
     .select()
@@ -30,17 +35,38 @@ export const getSpEvent = async (db: DrizzleD1Database, eventId: number, userId?
     .from(sportingEventSchedules)
     .where(eq(sportingEventSchedules.event_id, eventId))
     .orderBy(asc(sportingEventSchedules.date));
+  const athleteCategories = await db
+    .select()
+    .from(sportingEventAthleteCategories)
+    .where(eq(sportingEventAthleteCategories.event_id, eventId))
+    .orderBy(asc(sportingEventAthleteCategories.circuit_id), asc(sportingEventAthleteCategories.name));
+  const athletesRegistered = await db
+    .select()
+    .from(sportingEventRegistrations)
+    .where(eq(sportingEventRegistrations.event_id, eventId));
+  const athletesConfirmed = athletesRegistered.filter(
+    ar => ar.status === 'paid' || ar.status === 'partially_paid');
   // console.log(event);
   const ev = {
     ...event[0],
     circuits,
     schedules,
-    user_registered_to_circuit: -1,
+    categories: athleteCategories,
+    athletes_registered: athletesRegistered.length,
+    athletes_confirmed: athletesConfirmed.length,
+    user_registration_status: {
+      registration_status: 'not_registered',
+      category_name: '',
+      circuit_id: -1,
+    }, // not registered
   };
   if (userId) {
-    ev.user_registered_to_circuit = await userRegisteredInEvent(db, eventId, userId);
+    ev.user_registration_status = await userRegisteredInEvent(db, eventId, userId);
   }
-  return ev;
+  return {
+    status: 200,
+    data: ev
+  };
 }
 
 
@@ -67,7 +93,10 @@ export const addSpEvent = async (db: DrizzleD1Database, eventData: SportingEvent
     });
     await db.insert(sportingEventSchedules).values(schedules);
   }
-  return result[0].id;
+  return {
+    status: 200,
+    data: result[0].id,
+  };
 }
 
 
@@ -187,14 +216,19 @@ export const updateSpEvent = async (db: DrizzleD1Database, eventId: number, even
 }
 
 
-export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, userId: string, circuitId: number) => {
-  const event = await db.select()
+export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, reqUserId: string, userId: string, circuitId: number) => {
+  const spEvent = await db.select()
     .from(sportingEvents)
     .where(eq(sportingEvents.id, eventId))
     .limit(1);
-  if (event.length === 0) {
-    return { error: true, error_404: "Event not found" };
+  if (spEvent.length === 0) {
+    return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
+  const feeAmount = spEvent[0].fee_amount;
+  if (feeAmount === null || feeAmount === undefined) {
+    return { status: 400, message: M.SPORTING_EVENT_FEE_NOT_SET};
+  }
+  
   const registration = await db.select({id: sportingEventRegistrations.id})
     .from(sportingEventRegistrations)
     .where(and(
@@ -203,63 +237,109 @@ export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, 
     ))
     .limit(1);
   if (registration.length > 0) {
-    return { error: true, error_400: "User already registered for this event" };
+    return { status: 400, message: M.SPORTING_EVENT_ALREADY_REGISTERED };
   }
-  let categoryId: number | null = null;
   const userData = await db
     .select({
-      dob: users.date_of_birth,
-      category: users.hard_category})
+      sex: users.sex,
+      date_of_birth: users.date_of_birth,
+      clothing_shirt_size: users.clothing_shirt_size,
+      special_needs: users.special_needs,
+      discount_percentage: users.discount_percentage,
+      manual_athlete_category: users.manual_athlete_category,
+      training_team_id: users.training_team_id,
+    })
     .from(users)
     .where(eq(users.id, userId))
     .limit(1);
   if (userData.length === 0) {
-    return { error: true, error_404: "User not found" };
+    return { status: 404, message: M.USER_NOT_FOUND };
   }
-  if (userData[0].category) {
-    categoryId = userData[0].category;
+  // determine athlete category
+  const athleteCategories = await db
+    .select()
+    .from(sportingEventAthleteCategories)
+    .where(and(
+      eq(sportingEventAthleteCategories.event_id, eventId),
+      eq(sportingEventAthleteCategories.circuit_id, circuitId)
+    ));
+  let categoryId: number | null = null;
+  if (userData[0].manual_athlete_category) {
+    // find category by name
+    const matchingCategories = athleteCategories
+      .filter(cat => 
+        cat.name.toLowerCase()
+          .startsWith(
+            userData[0].manual_athlete_category!
+              .toLowerCase())
+    );
+    if (matchingCategories.length === 0) {
+      categoryId = null; // organizer will have to set it manually
+    } else {
+      categoryId = matchingCategories[0].id;
+    }
   } else {
     // try to find category based on age
-    if (!userData[0].dob) {
-      return { error: true, error_400: "User date of birth not set" };
+    if (!userData[0].date_of_birth) {
+      return { status: 400, message: M.USER_DATE_OF_BIRTH_NOT_SET };
     }
-    const birthDate = new Date(userData[0].dob);
+    const birthDate = new Date(userData[0].date_of_birth!);
     const today = new Date();
     let age = today.getUTCMilliseconds() - birthDate.getUTCMilliseconds();
     age /= 1000 * 60 * 60 * 24;
     age = Math.floor(age / 365.25);
-    const category = await db
-      .select({id: athleteCategories.id})
-      .from(athleteCategories)
-      .where(and(
-        gte(athleteCategories.min_age, age),
-        lt(athleteCategories.max_age, age + 1),
-      ))
-      .limit(1);
-    if (category.length === 0) {
-      return { error: true, error_400: "No athlete category found for user's age" };
+    const qualifiedCategories = athleteCategories.filter(cat => {
+      if (cat.exclude_auto_qualify) {
+        return false;
+      }
+      const minAgeOk = (cat.min_age === null || age >= cat.min_age);
+      const maxAgeOk = (cat.max_age === null || age <= cat.max_age);
+      const sexOk = (cat.sex === null || userData[0].sex === cat.sex);
+      return minAgeOk && maxAgeOk && sexOk;
+    });
+    if (qualifiedCategories.length === 0) {
+      return { status: 400, message: M.SPORTING_EVENT_USER_UNQUALIFIED_FOR_ANY_CATEGORY };
+    } else if (qualifiedCategories.length > 1) {
+      return {
+        status: 400,
+        message: appendToMessage(
+          M.SPORTING_EVENT_USER_QUALIFIES_FOR_MULTIPLE_CATEGORIES_$APPEND,
+          qualifiedCategories.map(cat => cat.name).join(', ')
+        )
+      };
     }
-    categoryId = category[0].id;
+    categoryId = qualifiedCategories[0].id;
   }
 
-  const spCategory = await db
-    .select({id: sportingEventAthleteCategories.id})
-    .from(sportingEventAthleteCategories)
+  if (!userData[0].clothing_shirt_size) {
+    return { status: 400, message: M.USER_SHIRT_SIZE_NOT_SET };
+  }
+
+  const userClothing = await db
+    .select()
+    .from(sportingEventClothing)
     .where(and(
-      eq(sportingEventAthleteCategories.event_id, eventId),
-      eq(sportingEventAthleteCategories.athlete_category_id, categoryId),
-      eq(sportingEventAthleteCategories.circuit_id, circuitId),
+      eq(sportingEventClothing.event_id, eventId),
+      eq(sportingEventClothing.size, userData[0].clothing_shirt_size),
     ))
     .limit(1);
-  if (spCategory.length === 0) {
-    return { error: true, error_400: "No sporting event category found for user" };
-  }
 
   await db.insert(sportingEventRegistrations).values({
-    event_id: event[0].id,
+    event_id: eventId,
     user_id: userId,
-    registration_date: new Date().toISOString(),
-    category_id: spCategory[0].id,
+    category_id: categoryId,
+    training_team_id: userData[0].training_team_id,
+    discount_percentage: userData[0].discount_percentage || 0,
+    discount_reason: 
+    userData[0].discount_percentage
+    ? "Descuento automático para usuario (fijado en la configuración del usuario)"
+    : null,
+    fee_amount_after_discount: feeAmount * (1 - (userData[0].discount_percentage || 0) / 100),
+    demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
+    special_needs: userData[0].special_needs,
+    status: "pending",
+    created_by: reqUserId,
+    updated_by: reqUserId,
   });
-  return { success: true };
+  return { status: 200 };
 }

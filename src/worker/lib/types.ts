@@ -21,6 +21,7 @@ export interface SportingEventFormData {
   last_update_at?: string;
   circuits?: SportingEventCircuitFormData[];
   schedules?: SportingEventScheduleFormData[];
+  athleteCategories?: string[];
 }
 
 export interface SportingEventScheduleFormData {
@@ -42,4 +43,14 @@ export interface SportingEventCircuitFormData {
   description?: string;
   distance_km: number;
   map_url?: string;
+}
+
+export interface SportingEventAthleteCategoriesFormData {
+  id?: number;
+  event_id: number;
+  circuit_id: SportingEventCircuitFormData['id'];
+  name: string;
+  sex: 'M' | 'F' | null;
+  min_age: number | null;
+  max_age: number | null;
 }

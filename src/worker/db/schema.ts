@@ -40,20 +40,21 @@ export const users = sqliteTable("users", {
   emergency_contact_phone: text(),
   sex: text({ length: 1 }),
   date_of_birth: text(),
-  clothing_tshirt_size: text({ length: 8 }), // e.g., "XS", "S", "M", "L", "XL", "XXL"
+  clothing_shirt_size: text({ length: 8 }), // e.g., "XS", "S", "M", "L", "XL", "XXL"
   location: text({ length: 256 }).references(() => locations.id),
-  location_address: text({ length: 256 }).notNull(),
   location_temp: text({ length: 256 }), // temporary location text when not registered in the system
+  location_address: text({ length: 256 }),
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   discount_percentage: int().notNull().default(0), // for special discounts
-  // auto_assign_athlete_category: int().notNull().default(1), // whether to auto-assign athlete category based on age, for example if it has special needs it should be 0
+  manual_athlete_category: text({ length: 64 }), // if set, selects athlete category that matches this name or the beggining of it
   manager_id: text({ length: 28 }).references((): any => users.id),
   training_team_id: int().references(() => trainingTeams.id),
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
   profile_image_url: text({ length: 512 }),
   profile_image_preview_url: text({ length: 512 }),
+  language: text({ length: 2 }).default('es'), // 'es', 'en', etc.
   temp_code: text({ length: 6 }),
-  role: text(), // admin, organizer, athletes_manager, athlete
+  role: text().notNull(), // admin, organizer, athletes_manager, athlete
   created_at: text()
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -158,10 +159,11 @@ export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlet
   sex: text({ length: 1 }), // 'M', 'F', or null for all
   min_age: int(),
   max_age: int(),
+  exclude_auto_qualify: int().notNull().default(0), // if 1, athletes won't be auto-assigned to this category
 });
 
 
-export const clothing = sqliteTable("clothing", {
+export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
   id: int().primaryKey({ autoIncrement: true }),
   event_id: int().notNull().references(() => sportingEvents.id),
   clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tank_top" (musculosa)
@@ -177,7 +179,7 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
   id: int().primaryKey({ autoIncrement: true }),
   event_id: int().notNull().references(() => sportingEvents.id),
   user_id: text().notNull().references(() => users.id),
-  category_id: int().notNull().references(() => sportingEventAthleteCategories.id),
+  category_id: int().references(() => sportingEventAthleteCategories.id),
   training_team_id: int().references(() => trainingTeams.id), // after 10 people, it have 10% discount
   registration_date: text().notNull().default(sql`CURRENT_TIMESTAMP`),
   discount_percentage: int().notNull().default(0), // for special discounts
@@ -185,14 +187,15 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
   fee_amount_after_discount: real().notNull(), // final amount after discounts
   paid_amount: real().notNull().default(0),
   paid_percentage: real().notNull().default(0), // 0 to 100 %
-  demanded_clothing_id: int().notNull().references(() => clothing.id),
-  reserved_clothing_id: int().references(() => clothing.id),
+  demanded_clothing_id: int().references(() => sportingEventClothing.id),
+  reserved_clothing_id: int().references(() => sportingEventClothing.id),
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   status: text({ length: 16 }).notNull().default('pending'), // "pending", "partially_paid", "paid", "cancelled", etc.
   full_payment_date: text(),
   created_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
+  created_by: text().notNull().references(() => users.id),
   updated_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
-  updated_by: text().references(() => users.id),
+  updated_by: text().notNull().references(() => users.id),
 });
 
 
