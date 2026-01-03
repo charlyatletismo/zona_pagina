@@ -1,61 +1,15 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { sign } from 'hono/jwt'
+import { sign } from 'hono/jwt';
 import { eq, or } from 'drizzle-orm';
-import { users } from './db/schema'
+import { users } from './db/schema';
 import { M } from "./lib/messages";
+import { sendCodeViaWhatsappTemplate } from "./lib/whatsapp";
 
 
 const genCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-
-const sendCodeViaWhatsappTemplate = async (env: Env, phone: string, code: string) => {
-  const body = {
-      "messaging_product": "whatsapp",
-      "to": phone,
-      "type": "template",
-      "template": {
-        "name": "verificar_otp",
-        "language": {
-          "code": "es"
-        },
-        "components": [
-          {
-            "type": "body",
-            "parameters": [
-              {
-                "type": "text",
-                "text": code
-              }
-            ]
-          },
-          {
-            "type": "button",
-            "sub_type": "Url",
-            "index": "0",
-            "parameters": [
-              {
-                "type": "payload",
-                "payload": code
-              }
-            ]
-          }
-        ]
-      }
-    }
-    let response : any;
-    await fetch(`https://graph.facebook.com/v21.0/${env.GRAPH_API_PHONE_NUMBER_ID}/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.GRAPH_API_TOKEN}`
-      },
-      body: JSON.stringify(body)
-    }).then(async res => response = await res.json());
-  return response;
 }
 
 
@@ -92,7 +46,13 @@ export const authRoute = new Hono<{ Bindings: Env }>()
         "00000003",
         "00000004"].includes(user.id)) {
       console.log("Test user - skipping Whatsapp message sending");
-      return c.json({ message: "Temp code set for test user", tempCode });
+      return c.json({
+        message: {
+          "en": "Temp code set for test user",
+          "es": "Código temporal establecido para usuario de prueba"
+        },
+        tempCode
+      });
     }
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {
