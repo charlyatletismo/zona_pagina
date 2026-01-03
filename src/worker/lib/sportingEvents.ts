@@ -175,7 +175,7 @@ export const updateSpEvent = async (
     .set(data)
     .where(eq(sportingEvents.id, eventId))
     .run();
-  if (res.meta.rows_written === 0) {
+  if (res.meta.changes === 0) {
     return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
 
