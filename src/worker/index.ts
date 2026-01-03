@@ -10,6 +10,7 @@ import { sportingEventTypesRoute } from "./sportingEventTypes";
 import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
 import { athleteCategoryTemplatesRoute } from "./categories";
+import { M } from "./lib/messages";
 
 
 export interface Env {
@@ -42,11 +43,11 @@ export default {
                 return jwtMiddleware(c, next);
             }
             if (RGX_AUTH.test(c.req.path) && c.req.method === 'POST') {
-                console.log("Skipping auth for login");
+                // console.log("Skipping auth for login");
                 return next();
             }
             if (RGX_SP_EVENTS.test(c.req.path) && c.req.method === 'GET') {
-                console.log("Skipping auth for public events");
+                // console.log("Skipping auth for public events");
                 return next();
             }
             return jwtMiddleware(c, next);
@@ -67,14 +68,14 @@ export default {
         app.onError((err, c) => {
             if ('status' in err && err.status == 401) {
                 // err.message = no authorization included in request
-                return c.json({ message: 'Unauthorized' }, 401);
+                return c.json({ message: M.UNAUTHORIZED }, 401);
             }
             if ('status' in err && err.status == 403) {
                 // err.message = no authorization included in request
-                return c.json({ message: 'Forbidden' }, 403);
+                return c.json({ message: M.FORBIDDEN }, 403);
             }
             console.error(`[Error] ${c.req.method} ${c.req.url}`, err);
-            return c.json({ message: 'Internal Server Error' }, 500);
+            return c.json({ message: M.INTERNAL_SERVER_ERROR }, 500);
         });
 
         return app.fetch(request, env, ctx);
