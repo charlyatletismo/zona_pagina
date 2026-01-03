@@ -1,3 +1,39 @@
+import z from "zod";
+
+import { ALL_ROLES } from "./roles";
+
+const USER_ID_MAX_LENGTH = 28;
+
+
+export const UserSchema = z.object({
+  id: z.string().max(USER_ID_MAX_LENGTH),
+  name: z.string().nullable(),
+  surname: z.string().nullable(),
+  phone: z.string().nullable(),
+  email: z.string().nullable(),
+  emergency_contact_name: z.string().nullable(),
+  emergency_contact_phone: z.string().nullable(),
+  sex: z.string().max(1).nullable(),
+  date_of_birth: z.date().nullable(),
+  clothing_shirt_size: z.string().max(8).nullable(),
+  location: z.string().max(256).nullable(),
+  location_temp: z.string().max(256).nullable(),
+  location_address: z.string().max(256).nullable(),
+  special_needs: z.string().max(512).nullable(),
+  discount_percentage: z.number().nullable().default(0),
+  manual_athlete_category: z.string().max(64).nullable(),
+  manager_id: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  training_team_id: z.number().nullable(),
+  training_team_temp: z.string().max(128).nullable(),
+  profile_image_url: z.string().max(512).nullable(),
+  profile_image_preview_url: z.string().max(512).nullable(),
+  language: z.string().max(2).nullable(),
+  temp_code: z.string().nullable(),
+  role: z.enum(ALL_ROLES).nullable(),
+  created_at: z.date().nullable(),
+  updated_at: z.date().nullable(),
+});
+
 export interface User {
   id: string;
   name: string;
@@ -32,12 +68,114 @@ export interface UserProfile {
   training_team: User["training_team"];
 }
 
+export const SportingEventCircuit = z.object({
+  id: z.number(),
+  event_id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  distance_km: z.number(),
+  map_url: z.string().max(512).nullable(),
+});
 
-export type SportingEventType = {
-  id: number;
-  name: string;
-  description: string;
-}
+export const SportingEventSchedule = z.object({
+  id: z.number(),
+  event_id: z.number(),
+  date: z.date(),
+  title: z.string(),
+  description: z.string().nullable(),
+  location: z.string().max(256).nullable(),
+  location_address: z.string().max(128).nullable(),
+  location_lat: z.number().nullable(),
+  location_long: z.number().nullable(),
+});
+
+export const SportingEventAthleteCategory = z.object({
+  id: z.number(),
+  event_id: z.number(),
+  circuit_id: z.number(),
+  name: z.string(),
+  sex: z.string().max(1).nullable(),
+  min_age: z.number().nullable(),
+  max_age: z.number().nullable(),
+  exclude_auto_qualify: z.boolean().nullable(),
+});
+
+export const SportingEventSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  description: z.string().nullable(),
+  image_url: z.string().max(512).nullable(),
+  image_preview_url: z.string().max(512).nullable(),
+  date: z.date(),
+  registration_start: z.date().nullable(),
+  registration_end: z.date().nullable(),
+  location: z.string().max(256).nullable(),
+  location_address: z.string().max(256).nullable(),
+  location_lat: z.number().nullable(),
+  location_long: z.number().nullable(),
+  event_type: z.enum([
+    'marathon',
+    'half_marathon',
+    'duathlon',
+    'triathlon',
+    'trail',
+    'cycling',
+    'swimming',
+    'other']),
+  rules: z.string().max(2048).nullable(),
+  disclaimer_of_liability: z.string().max(4096).nullable(),
+  award_prizes: z.string().max(1024).nullable(),
+  fee_amount: z.number().nullable(),
+  fee_currency: z.string().max(3).nullable(),
+  created_by: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  created_at: z.date().nullable(),
+  updated_by: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  updated_at: z.date().nullable(),
+  circuits: z.array(SportingEventCircuit).nullable(),
+  schedules: z.array(SportingEventSchedule).nullable(),
+  categories: z.array(SportingEventAthleteCategory).nullable(),
+  athletes_registered: z.number().nullable(),
+  athletes_confirmed: z.number().nullable(),
+  user_registration_status: z.object({
+    registration_status: z.string().nullable(),
+    category_name: z.string().nullable(),
+    circuit_id: z.number().nullable(),
+  }).nullable(),
+});
+
+export const SportingEventBasicInfoSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  description: z.string().nullable(),
+  date: z.date(),
+  registration_start: z.date().nullable(),
+  registration_end: z.date().nullable(),
+  location: z.string().max(256).nullable(),
+  location_address: z.string().max(256).nullable(),
+});
+
+export type SportingEventBasicInfoType = z.infer<typeof SportingEventBasicInfoSchema>;
+
+export const SportingEventApiResponseSchema = z.object({
+  open: z.array(SportingEventBasicInfoSchema),
+  comingSoon: z.array(SportingEventBasicInfoSchema),
+  closed: z.array(SportingEventBasicInfoSchema),
+  past: z.array(SportingEventBasicInfoSchema),
+});
+
+export type SportingEventApiResponseType = z.infer<typeof SportingEventApiResponseSchema>;
+
+
+export type SportingEventType =
+  'marathon'
+  | 'half_marathon'
+  | 'triathlon'
+  | 'duathlon'
+  | 'trail'
+  | 'cycling'
+  | 'swimming'
+  | 'other';
+
 
 export type SportingEvent = {
   id: number;
@@ -53,15 +191,15 @@ export type SportingEvent = {
   location_lat: number | null;
   location_long: number | null;
   circuit_map_url: string | null;
-  event_type: SportingEventType["id"];
+  event_type: SportingEventType;
   rules: string | null;
   disclaimer_of_liability_title: string | null;
   disclaimer_of_liability_content: string | null;
   award_prizes: string | null;
   created_by: User["id"];
   created_at: string;
-  last_update_by: User["id"];
-  last_update_at: string;
+  updated_by: User["id"];
+  updated_at: string;
   user_registered_to_circuit?: number;
   circuits?: SportingEventCircuit[] | null;
   schedules?: SportingEventSchedule[] | null;

@@ -1,9 +1,14 @@
 import { redirect } from '@tanstack/react-router';
-import { SportingEventApiResponse } from '@/lib/types';
+import { SportingEventApiResponseType } from '@/lib/types';
 import { clearUserInfo } from './utils';
 
 
-export const getSportingEvents: () => Promise<{status: number, data: SportingEventApiResponse}> = async () => getAuthenticated('/api/sportingEvents');
+export const getSportingEvents: () => Promise<{
+  status: number,
+  data: SportingEventApiResponseType
+}> = async () => {
+  return getAuthenticated('/api/sportingEvents')
+};
 
 
 export const getAuthenticatedThrow = async (path: string) => {

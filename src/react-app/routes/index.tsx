@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
 import { getSportingEvents } from '@/lib/apiCalls'
-import { SportingEventBasicInfo } from '@/lib/types'
+import { SportingEventBasicInfoType } from '@/lib/types'
 
 
 export const Route = createFileRoute('/')({
@@ -21,9 +21,9 @@ function Index() {
     <div>
       <div className="relative py-16 bg-primary/5 mb-12 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-10 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-primary rounded-full blur-3xl"></div>
         </div>
-        
+
         <div className="relative container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 mb-6">
             {localStorage.getItem('USER_NAME') ? 'Hola,' : 'Eventos'} <span className="text-primary relative inline-block">
@@ -124,7 +124,7 @@ function Index() {
   )
 }
 
-function EventCard({ event }: { event: SportingEventBasicInfo }) {
+function EventCard({ event }: { event: SportingEventBasicInfoType }) {
   return (
     <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 group-hover:shadow-lg transition-all duration-300 flex flex-col h-full group-hover:-translate-y-1'>
       <div className='flex items-start mb-4'>
@@ -138,16 +138,19 @@ function EventCard({ event }: { event: SportingEventBasicInfo }) {
           </p>
         </div>
       </div>
-      
+
       <p className='text-gray-600 mb-6 grow line-clamp-3'>{event.description}</p>
-      
+
       <div className="pt-4 border-t border-gray-100 mt-auto">
-        {event.location_text && (
-          <div className="flex items-center text-gray-500 text-sm">
-            <MapPinIcon className="h-4 w-4 mr-2 shrink-0" />
-            <span className="truncate">{event.location_text}</span>
-          </div>
-        )}
+      {event.location && (
+        <div className="flex items-center text-gray-500 text-sm">
+          <MapPinIcon className="h-4 w-4 mr-2 shrink-0" />
+          <span className="truncate">
+            {event.location_address
+              ? event.location_address + " "
+              : ""}{event.location}</span>
+        </div>
+      )}
       </div>
     </div>
   )
