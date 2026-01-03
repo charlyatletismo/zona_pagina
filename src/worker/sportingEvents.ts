@@ -5,6 +5,7 @@ import { authorizedOrg } from './lib/roles';
 import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
 import { SportingEventFormData } from "./lib/types";
+import { M } from "./lib/messages";
 
 
 export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
@@ -17,56 +18,62 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
     const userId: string | null = c.get('jwtPayload')?.id || null;
-    const event = await getSpEvent(db, Number(id), userId);
-    if (!event) {
-      return c.json({ error: "Event not found" }, 404);
+    const res = await getSpEvent(db, Number(id), userId);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
     }
-    return c.json(event);
+    return c.json(res.data);
   })
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const payload = await c.req.json();
-    if (!payload || !payload.circuitId) {
+    const { circuitId, userId }
+      : {circuitId: number, userId: string} = await c.req.json();
+    if (!circuitId) {
       return c.json({ error: "circuitId is required" }, 400);
     }
-    const userId: string = c.get('jwtPayload').id;
-    const res = await registerToSpEvent(db, Number(id), userId, Number(payload.circuitId));
-    if (res.error) {
-      if (res.error_404) {
-        return c.json({ message: res.error_404 }, 404);
-      }
-      if (res.error_400) {
-        return c.json({ message: res.error_400 }, 400);
-      }
-      throw new Error("Unhandled error");
+    const reqUserId: string = c.get('jwtPayload')?.id;
+    const res = await registerToSpEvent(
+      db,
+      Number(id),
+      reqUserId,
+      userId,
+      circuitId);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
     }
-    return c.json({ success: true });
+    return c.json({ message: res.message });
   })
   .post("/create", async (c) => {
-    const userId: string = c.get('jwtPayload').id;
     if (!authorizedOrg(c.get('jwtPayload').role)) {
-      return c.json({ error: "Unauthorized" }, 403);
+      return c.json({ message: M.UNAUTHORIZED }, 403);
     }
+    const userId: string = c.get('jwtPayload').id;
     const db = drizzle(c.env.DB);
     const eventData: SportingEventFormData = await c.req.json();
     if (!eventData.title || !eventData.date || !eventData.event_type) {
-      return c.json({ error: "title, date and event_type are required" }, 400);
+      return c.json({ message: M.SPORTING_EVENT_MISSING_REQUIRED_FIELDS }, 400);
     }
-    const eventId = await addSpEvent(db, eventData, userId);
-    return c.json({success: true, eventId: eventId});
+    const res = await addSpEvent(db, eventData, userId);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: M.SPORTING_EVENT_CREATED_SUCCESSFULLY, eventId: res.data});
   })
   .post("/update/:id", async (c) => {
-    const userId: string = c.get('jwtPayload').id;
     if (!authorizedOrg(c.get('jwtPayload').role)) {
-      return c.json({ error: "Unauthorized" }, 403);
+      return c.json({ message: M.UNAUTHORIZED }, 403);
     }
+    const userId: string = c.get('jwtPayload').id;
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
     const eventData: Partial<SportingEventFormData> = await c.req.json();
     if (!eventData.title || !eventData.date || !eventData.event_type) {
-      return c.json({ error: "title, date and event_type are required" }, 400);
+      return c.json({ message: M.SPORTING_EVENT_MISSING_REQUIRED_FIELDS }, 400);
     }
-    await updateSpEvent(db, Number(id), eventData, userId);
-    return c.json({ success: true });
+    const res = await updateSpEvent(db, Number(id), eventData, userId);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: M.SPORTING_EVENT_UPDATED_SUCCESSFULLY });
   });

@@ -1,5 +1,6 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq, asc, inArray, and } from 'drizzle-orm';
+import { ContentfulStatusCode } from 'hono/utils/http-status';
 import {
   users,
   sportingEvents,
@@ -14,7 +15,21 @@ import { SportingEventFormData } from './types';
 import { M, appendToMessage } from './messages';
 
 
-export const getSpEvent = async (db: DrizzleD1Database, eventId: number, userId?: string | null) => {
+interface DataResult {
+  status: ContentfulStatusCode;
+  message?: Record<string, string>;
+  data?: any;
+}
+interface NoDataResult {
+  status: ContentfulStatusCode;
+  message: Record<string, string>;
+}
+
+
+export const getSpEvent = async (
+    db: DrizzleD1Database,
+    eventId: number,
+    userId?: string | null): Promise<DataResult> => {
   const event = await db
     .select()
     .from(sportingEvents)
@@ -70,7 +85,10 @@ export const getSpEvent = async (db: DrizzleD1Database, eventId: number, userId?
 }
 
 
-export const addSpEvent = async (db: DrizzleD1Database, eventData: SportingEventFormData, userId: string) => {
+export const addSpEvent = async (
+    db: DrizzleD1Database,
+    eventData: SportingEventFormData,
+    userId: string): Promise<DataResult> => {
   const circuits = eventData.circuits || [];
   const schedules = eventData.schedules || [];
   delete eventData.circuits;
@@ -100,7 +118,10 @@ export const addSpEvent = async (db: DrizzleD1Database, eventData: SportingEvent
 }
 
 
-export const crudArray = async (eventId: number, array: any[], dbArray: any[]) => {
+export const crudArray = async (
+    eventId: number,
+    array: any[],
+    dbArray: any[]) => {
   const arrayMap = new Map<number, any>();
   const newElements = [];
   const delElements = [];
@@ -134,7 +155,11 @@ export const crudArray = async (eventId: number, array: any[], dbArray: any[]) =
 }
 
 
-export const updateSpEvent = async (db: DrizzleD1Database, eventId: number, eventData: Partial<SportingEventFormData>, userId: string) => {
+export const updateSpEvent = async (
+    db: DrizzleD1Database,
+    eventId: number,
+    eventData: Partial<SportingEventFormData>,
+    userId: string): Promise<NoDataResult> => {
   const circuits = eventData.circuits || [];
   const schedules = eventData.schedules || [];
   delete eventData.circuits;
@@ -146,11 +171,14 @@ export const updateSpEvent = async (db: DrizzleD1Database, eventId: number, even
     last_update_by: userId,
     last_update_at: new Date().toISOString(),
   }
-  await db.update(sportingEvents)
+  const res = await db.update(sportingEvents)
     .set(data)
     .where(eq(sportingEvents.id, eventId))
     .run();
-  
+  if (res.meta.rows_written === 0) {
+    return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
+  }
+
   // Update, delete or insert circuits
   // map by id the form circuits
   const dbCircuits = await db
@@ -212,11 +240,17 @@ export const updateSpEvent = async (db: DrizzleD1Database, eventId: number, even
     await db.delete(sportingEventSchedules)
       .where(inArray(sportingEventSchedules.id, resSchedules.delete))
       .run();
-  } 
+  }
+  return { status: 200, message: M.SPORTING_EVENT_UPDATED_SUCCESSFULLY };
 }
 
 
-export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, reqUserId: string, userId: string, circuitId: number) => {
+export const registerToSpEvent = async (
+    db: DrizzleD1Database,
+    eventId: number,
+    reqUserId: string,
+    userId: string,
+    circuitId: number): Promise<NoDataResult> => {
   const spEvent = await db.select()
     .from(sportingEvents)
     .where(eq(sportingEvents.id, eventId))
@@ -228,7 +262,7 @@ export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, 
   if (feeAmount === null || feeAmount === undefined) {
     return { status: 400, message: M.SPORTING_EVENT_FEE_NOT_SET};
   }
-  
+
   const registration = await db.select({id: sportingEventRegistrations.id})
     .from(sportingEventRegistrations)
     .where(and(
@@ -267,7 +301,7 @@ export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, 
   if (userData[0].manual_athlete_category) {
     // find category by name
     const matchingCategories = athleteCategories
-      .filter(cat => 
+      .filter(cat =>
         cat.name.toLowerCase()
           .startsWith(
             userData[0].manual_athlete_category!
@@ -330,7 +364,7 @@ export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, 
     category_id: categoryId,
     training_team_id: userData[0].training_team_id,
     discount_percentage: userData[0].discount_percentage || 0,
-    discount_reason: 
+    discount_reason:
     userData[0].discount_percentage
     ? "Descuento automático para usuario (fijado en la configuración del usuario)"
     : null,
@@ -341,5 +375,5 @@ export const registerToSpEvent = async (db: DrizzleD1Database, eventId: number, 
     created_by: reqUserId,
     updated_by: reqUserId,
   });
-  return { status: 200 };
+  return { status: 200, message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY };
 }

@@ -109,6 +109,18 @@ export const M = {
     [ES]: "El usuario califica para múltiples categorías del evento deportivo. Contacta al organizador. Categorías calificadas: ",
     [EN]: "User qualifies for multiple categories in the sporting event. Contact organizer. Categories qualified for: "
   },
+  SPORTING_EVENT_UPDATED_SUCCESSFULLY: {
+    [ES]: "Evento deportivo actualizado correctamente",
+    [EN]: "Sporting event updated successfully"
+  },
+  SPORTING_EVENT_CREATED_SUCCESSFULLY: {
+    [ES]: "Evento deportivo creado correctamente",
+    [EN]: "Sporting event created successfully"
+  },
+  SPORTING_EVENT_MISSING_REQUIRED_FIELDS: {
+    [ES]: "Faltan campos obligatorios en el evento deportivo",
+    [EN]: "Missing required fields in sporting event"
+  },
 
   // -------------------------- SPORTING EVENT REGISTRATIONS --------------------------
   SPORTING_EVENT_REGISTRATION_NOT_FOUND: {
@@ -118,6 +130,10 @@ export const M = {
   SPORTING_EVENT_REGISTRATION_PAYMENT_MISSING_REQUIRED_FIELDS: {
     [ES]: "Faltan campos obligatorios en el pago del registro del evento deportivo",
     [EN]: "Missing required fields in sporting event registration payment"
+  },
+  SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY: {
+    [ES]: "Registro del evento deportivo creado con éxito",
+    [EN]: "Sporting event registration created successfully"
   },
   SPORTING_EVENT_REGISTRATION_PAYMENT_SUCCESSFUL: {
     [ES]: "Pago del registro del evento deportivo realizado con éxito",
