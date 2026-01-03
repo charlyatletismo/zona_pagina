@@ -87,6 +87,26 @@ export const M = {
     [ES]: "La talla de remera del usuario no está establecida",
     [EN]: "User shirt size not set"
   },
+  USERS_UNAVAILABLE: {
+    [ES]: "Lista de usuarios no disponible",
+    [EN]: "Users list unavailable"
+  },
+  USER_NOT_FOUND_OR_CANNOT_CHANGE_ADMIN_ROLE: {
+    [ES]: "Usuario no encontrado o no se puede cambiar el rol de administrador",
+    [EN]: "User not found or cannot change admin role"
+  },
+  USER_ROLE_UPDATED_SUCCESSFULLY: {
+    [ES]: "Rol de usuario actualizado correctamente",
+    [EN]: "User role updated successfully"
+  },
+  USER_NOT_FOUND_OR_UNAUTHORIZED: {
+    [ES]: "Usuario no encontrado o no autorizado",
+    [EN]: "User not found or unauthorized"
+  },
+  USER_PROFILE_UPDATED_SUCCESSFULLY: {
+    [ES]: "Perfil de usuario actualizado correctamente",
+    [EN]: "User profile updated successfully"
+  },
 
   // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {
