@@ -4,7 +4,7 @@ import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon
 import { Button } from '@/components/ui/button'
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
-import { SportingEvent, SportingEventCircuit } from '@/lib/types'
+import { SportingEventSchema, SportingEventType, SportingEventCircuitSchema } from '@/lib/types'
 import React from 'react'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -13,21 +13,35 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
-    const spEvApi = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
-    const ev: SportingEvent = spEvApi.data;
-    return { evData: ev, evStatus: spEvApi.status };
+    const { status, data, message }: {
+      status: number,
+      data?: SportingEventType,
+      message?: Record<string, string>} = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
+    return { status, data: SportingEventSchema.parse(data), message };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const { eventId } = Route.useParams()
-  const {evData, evStatus} = Route.useLoaderData();
+  const { eventId } = Route.useParams();
+  const {data, status, message} = Route.useLoaderData();
+  if (status !== 200 || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
+        <div className='text-center text-gray-600' >{message ? message[localStorage.getItem('LANG') || 'es'] : 'Error desconocido'}</div>
+        <Button asChild variant="outline">
+            <Link to="/">Volver al inicio</Link>
+        </Button>
+      </div>
+    )
+  }
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
-  const canEdit = currentRole === ADMIN_ROLE || currentRole === ORGANIZER_ROLE;
-  const openToRegister = evData.registration_start && evData.registration_end
-    ? (new Date() >= new Date(evData.registration_start) && new Date() <= new Date(evData.registration_end))
+  const canEdit = [ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole);
+  const openToRegister =
+    data.registration_start && data.registration_end
+    ? (new Date() >= new Date(data.registration_start) && new Date() <= new Date(data.registration_end))
     : false;
   const [registering, setRegistering] = React.useState(-1);
   const [success, setSuccess] = React.useState('');
@@ -43,7 +57,13 @@ function RouteComponent() {
       return;
     }
     setRegistering(circuitId);
-    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/register`, {"circuitId": circuitId}, navigate);
+    const res = await postAuthenticated(
+      `/api/sportingEvents/${eventId}/register`,
+      {
+        "circuitId": circuitId,
+        "userId": localStorage.getItem('USER_ID')
+      },
+      navigate);
     if (res.status !== 200) {
       setError(res.data.error || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
       setTimeout(() => {
@@ -54,12 +74,16 @@ function RouteComponent() {
       setTimeout(() => {
         setSuccess('');
       }, 3000);
-      evData.user_registered_to_circuit = circuitId;
+      data.user_registration_status = {
+        registration_status: res.data.registration_status,
+        category_name: res.data.category_name,
+        circuit_id: res.data.circuit_id,
+      }
     }
     setRegistering(-1);
   };
 
-  if (!evData) {
+  if (!data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <h2 className="text-2xl font-bold">Evento no encontrado</h2>
@@ -69,6 +93,14 @@ function RouteComponent() {
       </div>
     )
   }
+  // return (
+  //     <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+  //       <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
+  //       <Button asChild variant="outline">
+  //           <Link to="/">Volver al inicio</Link>
+  //       </Button>
+  //     </div>
+  //   )
 
   if (evStatus !== 200) {
     return (

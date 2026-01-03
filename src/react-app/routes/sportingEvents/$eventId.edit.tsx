@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { SportingEvent, SportingEventType } from '@/lib/types';
+import { SportingEvent, SportingEventTypeEnum } from '@/lib/types';
 import SportingEventForm from '@/components/sportingEventForm';
 import { FormBox } from '@/components/formBox';
 
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
     const spEvApi = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
     const ev: SportingEvent = spEvApi.data;
     const spEvType = await getAuthenticatedThrow('/api/sportingEventTypes');
-    const evTypes: SportingEventType[] = spEvType.data;
+    const evTypes: SportingEventTypeEnum[] = spEvType.data;
     return { ev, evTypes, statusEv: spEvApi.status, statusEvType: spEvType.status};
   },
   staleTime: 1000 * 60 * 5,

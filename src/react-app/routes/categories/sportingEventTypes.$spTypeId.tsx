@@ -3,7 +3,7 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 import { FormBox } from '@/components/formBox';
 import { SportingEventTypeForm } from '@/components/sportingEventTypeForm';
-import { SportingEventType } from '@/lib/types';
+import { SportingEventTypeEnum } from '@/lib/types';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 
 
@@ -14,7 +14,7 @@ export const Route = createFileRoute(
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
     const res: {
-      data: SportingEventType;
+      data: SportingEventTypeEnum;
       status: number;
     } = await getAuthenticatedThrow(`/api/sportingEventTypes/${params.spTypeId}`);
     return res;

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { FeeCategory, AthleteCategory, SportingEventType } from '@/lib/types';
+import { FeeCategory, AthleteCategory, SportingEventTypeEnum } from '@/lib/types';
 import React from 'react';
 import { ArrowUp, ArrowDown, Plus, Eye, EyeOff, Edit2 } from "lucide-react"
 import {
@@ -64,7 +64,7 @@ function RouteComponent() {
   };
 
   const [sortingSpType, setSortingSpType] = React.useState<SortingState>([])
-  const columnHelperSpType = createColumnHelper<SportingEventType>();
+  const columnHelperSpType = createColumnHelper<SportingEventTypeEnum>();
   const columnsSpType = React.useMemo(() => [
     columnHelperSpType.accessor('id', {
       header: 'ID',

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from './ui/spinner';
-import { SportingEventType } from '@/lib/types';
+import { SportingEventTypeEnum } from '@/lib/types';
 import { postAuthenticated } from '@/lib/apiCalls';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -25,7 +25,7 @@ const { useAppForm } = createFormHook({
 });
 
 
-export const SportingEventTypeForm = ({ spType }: { spType: SportingEventType | null }) => {
+export const SportingEventTypeForm = ({ spType }: { spType: SportingEventTypeEnum | null }) => {
   const navigate = useNavigate();
 
   const form = useAppForm({
