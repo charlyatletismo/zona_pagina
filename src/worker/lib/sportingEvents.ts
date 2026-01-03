@@ -96,7 +96,7 @@ export const addSpEvent = async (
   const data = {
     ...eventData,
     created_by: userId,
-    last_update_by: userId
+    updated_by: userId
   }
   const result = await db.insert(sportingEvents).values(data).returning();
   if (circuits && circuits.length > 0) {
@@ -168,8 +168,8 @@ export const updateSpEvent = async (
   delete eventData.created_at;
   const data = {
     ...eventData,
-    last_update_by: userId,
-    last_update_at: new Date().toISOString(),
+    updated_by: userId,
+    updated_at: new Date().toISOString(),
   }
   const res = await db.update(sportingEvents)
     .set(data)

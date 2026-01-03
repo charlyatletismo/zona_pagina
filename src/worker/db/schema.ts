@@ -2,6 +2,9 @@ import { int, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 import { sql } from 'drizzle-orm';
 
 
+const USER_ID_MAX_LENGTH = 28;
+
+
 export const locations = sqliteTable("locations", {
   id: text({ length: 256 }).primaryKey(), // Locality, Province, Country concatenated
   locality: text({ length: 64 }).notNull(),
@@ -17,7 +20,7 @@ export const trainingTeams = sqliteTable("training_teams", {
   name: text({ length: 128 }).notNull(),
   location: text({ length: 256 }).references(() => locations.id),
   coach_name: text({ length: 128 }),
-  coach_user_id: text({ length: 28 }).references((): any => users.id),
+  coach_user_id: text({ length: USER_ID_MAX_LENGTH }).references((): any => users.id),
   contact_email: text({ length: 64 }),
   contact_phone: text({ length: 32 }),
   created_at: text()
@@ -31,7 +34,7 @@ export const trainingTeams = sqliteTable("training_teams", {
 
 // Users Table
 export const users = sqliteTable("users", {
-  id: text({ length: 28 }).primaryKey(),
+  id: text({ length: USER_ID_MAX_LENGTH }).primaryKey(),
   name: text(),
   surname: text(),
   phone: text().unique(),
@@ -47,7 +50,7 @@ export const users = sqliteTable("users", {
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   discount_percentage: int().notNull().default(0), // for special discounts
   manual_athlete_category: text({ length: 64 }), // if set, selects athlete category that matches this name or the beggining of it
-  manager_id: text({ length: 28 }).references((): any => users.id),
+  manager_id: text({ length: USER_ID_MAX_LENGTH }).references((): any => users.id),
   training_team_id: int().references(() => trainingTeams.id),
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
   profile_image_url: text({ length: 512 }),
@@ -72,14 +75,14 @@ export const users = sqliteTable("users", {
 // This is done only for sensitive fields: email, phone, address, emergency contacts
 export const userUpdates = sqliteTable("user_updates", {
   id: int().primaryKey({ autoIncrement: true }),
-  user_id: text({ length: 28 }).notNull().references(() => users.id),
+  user_id: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
   field_name: text({ length: 64 }).notNull(),
   old_value: text(),
   new_value: text(),
   updated_at: text()
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updated_by: text({ length: 28 }).notNull().references(() => users.id),
+  updated_by: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
 });
 
 
@@ -103,11 +106,11 @@ export const sportingEvents = sqliteTable("sporting_events", {
   award_prizes: text({ length: 1024 }),
   fee_amount: real(),
   fee_currency: text({ length: 3 }).default('ARS'),
-  created_by: text().notNull().references(() => users.id),
+  created_by: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
   created_at: text().notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  last_update_by: text().notNull().references(() => users.id),
-  last_update_at: text().notNull()
+  updated_by: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
+  updated_at: text().notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
 

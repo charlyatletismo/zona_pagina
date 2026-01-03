@@ -17,8 +17,8 @@ export interface SportingEventFormData {
   award_prizes?: string;
   created_by?: string;
   created_at?: string;
-  last_update_by?: string;
-  last_update_at?: string;
+  updated_by?: string;
+  updated_at?: string;
   circuits?: SportingEventCircuitFormData[];
   schedules?: SportingEventScheduleFormData[];
   athleteCategories?: string[];

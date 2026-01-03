@@ -94,12 +94,13 @@ users (
     emergency_contact_phone,
     sex,
     date_of_birth,
-    clothing_tshirt_size,
-    address,
+    clothing_shirt_size,
+    location_address,
     location,
     location_temp,
     special_needs,
     discount_percentage,
+    manual_athlete_category,
     manager_id,
     training_team_id,
     temp_code,
@@ -124,6 +125,7 @@ VALUES (
     NULL,
     NULL,
     NULL,
+    NULL,
     'admin'
   ),
   (
@@ -142,6 +144,7 @@ VALUES (
     NULL,
     NULL,
     0,
+    NULL,
     NULL,
     1,
     NULL,
@@ -163,6 +166,7 @@ VALUES (
     NULL,
     NULL,
     0,
+    NULL,
     '00000004',
     NULL,
     NULL,
@@ -184,6 +188,7 @@ VALUES (
     NULL,
     "Síndrome de Down, requiere acompañamiento",
     100,
+    'inclusiv',
     '00000004',
     2,
     NULL,
@@ -205,6 +210,7 @@ VALUES (
     NULL,
     NULL,
     0,
+    NULL,
     NULL,
     2,
     NULL,
@@ -229,13 +235,9 @@ VALUES (
     NULL,
     NULL,
     NULL,
+    NULL,
     'athletes_manager'
   );
-
-
-INSERT INTO
-sporting_event_types (id, name)
-VALUES (1, 'Maratón'), (2, 'Duatlón'), (3, 'Triatlón'), (4, 'Ciclismo');
 
 
 INSERT INTO sporting_events (
@@ -258,8 +260,8 @@ INSERT INTO sporting_events (
   fee_currency,
   created_by,
   created_at,
-  last_update_by,
-  last_update_at)
+  updated_by,
+  updated_at)
 VALUES
   (
     1,
@@ -274,7 +276,7 @@ VALUES
     'Plaza principal',
     -33.3577567,
     -60.6590607,
-    2,
+    'duathlon',
     NULL,
     '1er puesto: 100mil pesos\n2do puesto: Bicicleta Mountain Bike\n3er puesto: Casco deportivo',
     30000,
@@ -297,7 +299,7 @@ VALUES
     'Club Atlético Recreativo Theobald',
     -33.3115726,
     -60.3100641,
-    1,
+    'marathon',
     NULL,
     '1er puesto: 70mil pesos\n2do puesto: Remera deportiva Adidas\n3er puesto: Gorro deportivo',
     25000,
@@ -320,7 +322,7 @@ VALUES
     'Plaza principal',
     -33.3577567,
     -60.6590607,
-    1,
+    'marathon',
     NULL,
     '1er puesto: 50mil pesos\n2do puesto: Remera deportiva Nike\n3er puesto: Botella térmica',
     30000,
@@ -343,7 +345,7 @@ VALUES
     'Plaza Domingo Arán',
     -33.02759348102319,
     -60.75664752048362,
-    1,
+    'marathon',
     NULL,
     '1er puesto: 60mil pesos\n2do puesto: Zapatillas deportivas\n3er puesto: Gorro deportivo',
     30000,
@@ -366,7 +368,7 @@ VALUES
     'Polideportivo de Funes',
     -32.91168210884132,
     -60.80751302197444,
-    1,
+    'marathon',
     NULL,
     '1er puesto: 80mil pesos\n2do puesto: Zapatillas deportivas\n3er puesto: Reloj deportivo',
     30000,
@@ -389,7 +391,7 @@ VALUES
     NULL,
     NULL,
     NULL,
-    1,
+    'marathon',
     'Acá van las reglas del evento',
     '1 - Una banda de plata / 2 - Algo de plata / 3 - Un ferrari',
     0,
@@ -501,21 +503,24 @@ sporting_event_athlete_categories (
   name,
   sex,
   min_age,
-  max_age
+  max_age,
+  exclude_auto_qualify
 )
 VALUES
-  (1, 6, 3, '10K Juveniles Masculino', 'M', 16, 19),
-  (2, 6, 3, '10K Juveniles Femenino', 'F', 16, 19),
-  (3, 6, 3, '10K Senior Masculino', 'M', 20, 39),
-  (4, 6, 3, '10K Senior Femenino', 'F', 20, 39),
-  (5, 6, 4, '3K Juveniles Masculino', 'M', 16, 19),
-  (6, 6, 4, '3K Juveniles Femenino', 'F', 16, 19),
-  (7, 6, 4, '3K Senior Masculino', 'M', 20, 39),
-  (8, 6, 4, '3K Senior Femenino', 'F', 20, 39);
+  (1, 6, 3, '10K Juveniles Masculino', 'M', 16, 19, 0),
+  (2, 6, 3, '10K Juveniles Femenino', 'F', 16, 19, 0),
+  (3, 6, 3, '10K Senior Masculino', 'M', 20, 39, 0),
+  (4, 6, 3, '10K Senior Femenino', 'F', 20, 39, 0),
+  (5, 6, 3, '10K Inclusiva Unisex', NULL, NULL, NULL, 1),
+  (6, 6, 4, '3K Juveniles Masculino', 'M', 16, 19, 0),
+  (7, 6, 4, '3K Juveniles Femenino', 'F', 16, 19, 0),
+  (8, 6, 4, '3K Senior Masculino', 'M', 20, 39, 0),
+  (9, 6, 4, '3K Senior Femenino', 'F', 20, 39, 0),
+  (10, 6, 4, '3K Inclusiva Unisex', NULL, NULL, NULL, 1);
 
 
 INSERT INTO
-clothing (
+sporting_event_clothing (
   id,
   event_id,
   clothing_type,
