@@ -42,7 +42,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
     }
-    return c.json({ message: res.message });
+    return c.json({ message: res.message, data: res.data });
   })
   .post("/create", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

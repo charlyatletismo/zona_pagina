@@ -1,13 +1,14 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
-import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles'
-import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
-import { SportingEventSchema, SportingEventType } from '@/lib/types'
-import { getLang } from '@/lib/utils'
-import React from 'react'
-import { Spinner } from '@/components/ui/spinner'
+import { createFileRoute, Link } from '@tanstack/react-router';
+import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
+import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
+import { SportingEventSchema, SportingEventType, getRegistrationStatusDescription } from '@/lib/types';
+import { getLang } from '@/lib/utils';
+import React from 'react';
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/')({
@@ -127,17 +128,44 @@ function RouteComponent() {
         data.user_registration_status
         && data.user_registration_status.registration_status !== 'not_registered'
         &&
-        <div className="bg-blue-50 text-blue-600 p-3 rounded-md text-sm mb-3">
-          <Check className="inline-block w-5 h-5 mr-2" />
-          <p>
-            Estás inscripto en el circuito {data.user_registration_status.circuit_id}
-          </p>
-          <p>
-            Categoría: {data.user_registration_status.category_name}
-          </p>
-          <p>
-            Estado de la inscripción: {data.user_registration_status.registration_status}
-          </p>
+        <div className="text-white text-center rounded-md mb-3 flex justify-center md:justify-start flex-wrap">
+          <div className='px-1 py-1 my-auto'>
+            <Badge
+              className='py-1 px-2 bg-green-500 dark:bg-green-700'
+            >
+              <Check className="h-1 w-1 my-auto" /> <b>Inscripto</b>
+            </Badge>
+          </div>
+          <div className='px-1 py-1 my-auto'>
+            <Badge
+              className='py-1 px-2 bg-blue-500 dark:bg-blue-600'
+            >
+              <b>Circuito</b> {data.circuits?.find(c => c.id === data.user_registration_status?.circuit_id)?.name || ''}
+            </Badge>
+          </div>
+          <div className='px-1 py-1 my-auto'>
+            <Badge
+              className='py-1 px-2 bg-blue-500 dark:bg-blue-600'
+            >
+              <b>Categoría</b> {data.user_registration_status.category_name}
+            </Badge>
+          </div>
+          <div className='px-1 py-1 my-auto'>
+            <Badge
+              className={
+                'py-1 px-2 '
+                + {
+                  'paid': 'bg-green-500 dark:bg-green-600',
+                  'cancelled': 'bg-red-500 dark:bg-red-600',
+                  'pending': 'bg-yellow-500 dark:bg-yellow-600',
+                  'partially_paid': 'bg-orange-500 dark:bg-orange-600',
+                  '': 'bg-gray-500 dark:bg-gray-600',
+                }[data.user_registration_status.registration_status || '']
+              }
+            >
+              <b>Estado</b> {getRegistrationStatusDescription(data.user_registration_status.registration_status)}
+            </Badge>
+          </div>
         </div>
       }
 

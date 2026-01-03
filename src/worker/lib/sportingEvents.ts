@@ -250,7 +250,7 @@ export const registerToSpEvent = async (
     eventId: number,
     reqUserId: string,
     userId: string,
-    circuitId: number): Promise<NoDataResult> => {
+    circuitId: number): Promise<DataResult> => {
   const spEvent = await db.select()
     .from(sportingEvents)
     .where(eq(sportingEvents.id, eventId))
@@ -298,6 +298,7 @@ export const registerToSpEvent = async (
       eq(sportingEventAthleteCategories.circuit_id, circuitId)
     ));
   let categoryId: number | null = null;
+  let categoryName: string | null = null;
   if (userData[0].manual_athlete_category) {
     // find category by name
     const matchingCategories = athleteCategories
@@ -309,17 +310,19 @@ export const registerToSpEvent = async (
     );
     if (matchingCategories.length === 0) {
       categoryId = null; // organizer will have to set it manually
+      categoryName = null;
     } else {
       categoryId = matchingCategories[0].id;
+      categoryName = matchingCategories[0].name;
     }
   } else {
     // try to find category based on age
     if (!userData[0].date_of_birth) {
       return { status: 400, message: M.USER_DATE_OF_BIRTH_NOT_SET };
     }
-    const birthDate = new Date(userData[0].date_of_birth!);
+    const birthDate = new Date(userData[0].date_of_birth);
     const today = new Date();
-    let age = today.getUTCMilliseconds() - birthDate.getUTCMilliseconds();
+    let age = today.getTime() - birthDate.getTime();
     age /= 1000 * 60 * 60 * 24;
     age = Math.floor(age / 365.25);
     const qualifiedCategories = athleteCategories.filter(cat => {
@@ -343,6 +346,7 @@ export const registerToSpEvent = async (
       };
     }
     categoryId = qualifiedCategories[0].id;
+    categoryName = qualifiedCategories[0].name;
   }
 
   if (!userData[0].clothing_shirt_size) {
@@ -375,5 +379,13 @@ export const registerToSpEvent = async (
     created_by: reqUserId,
     updated_by: reqUserId,
   });
-  return { status: 200, message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY };
+  return {
+    status: 200,
+    message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY,
+    data: {
+      registration_status: 'pending',
+      category_name: categoryName,
+      circuit_id: circuitId,
+    }
+  };
 }

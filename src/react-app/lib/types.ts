@@ -1,6 +1,7 @@
 import z from "zod";
 
 import { ALL_ROLES } from "./roles";
+import { getLang } from "./utils";
 
 const USER_ID_MAX_LENGTH = 28;
 
@@ -66,6 +67,35 @@ export interface UserProfile {
   full_location: User["full_location"];
   manager_id: User["manager_id"];
   training_team: User["training_team"];
+}
+
+const RegistrationStatusDescriptions: {[key: string]: {[key: string]: string}} = {
+  not_registered: {
+    es: "No inscripto",
+    en: "Not registered",
+  },
+  pending: {
+    es: "Pendiente de pago",
+    en: "Pending payment",
+  },
+  partially_paid: {
+    es: "Parcialmente pagado",
+    en: "Partially paid",
+  },
+  paid: {
+    es: "Pagado",
+    en: "Paid",
+  },
+  cancelled: {
+    es: "Cancelado",
+    en: "Cancelled",
+  },
+};
+
+export const getRegistrationStatusDescription = (status: string | null) => {
+  if (!status) return "Desconocido";
+  return RegistrationStatusDescriptions[status][getLang()]
+    || "Desconocido";
 }
 
 export const SportingEventCircuitSchema = z.object({
@@ -137,11 +167,19 @@ export const SportingEventSchema = z.object({
   athletes_registered: z.number().nullable(),
   athletes_confirmed: z.number().nullable(),
   user_registration_status: z.object({
-    registration_status: z.string().nullable(),
+    registration_status: z.enum([
+      'not_registered',
+      'pending',
+      'partially_paid',
+      'paid',
+      'cancelled',
+    ]).nullable(),
     category_name: z.string().nullable(),
     circuit_id: z.number().nullable(),
   }).nullable(),
 });
+
+
 
 export const SportingEventBasicInfoSchema = z.object({
   id: z.number(),
