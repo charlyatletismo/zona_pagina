@@ -52,7 +52,7 @@ export const users = sqliteTable("users", {
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
   profile_image_url: text({ length: 512 }),
   profile_image_preview_url: text({ length: 512 }),
-  language: text({ length: 2 }).default('es'), // 'es', 'en', etc.
+  language: text({ length: 2 }).notNull().default('es'), // 'es', 'en', etc.
   temp_code: text({ length: 6 }),
   role: text().notNull(), // admin, organizer, athletes_manager, athlete
   created_at: text()
@@ -79,6 +79,7 @@ export const userUpdates = sqliteTable("user_updates", {
   updated_at: text()
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
+  updated_by: text({ length: 28 }).notNull().references(() => users.id),
 });
 
 

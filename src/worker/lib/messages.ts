@@ -64,6 +64,12 @@ export const M = {
     [EN]: "Too many failed attempts. Please request a new code."
   },
 
+  // -------------------------- SETTINGS --------------------------
+  SETTINGS_PROFILE_UPDATED: {
+    [ES]: "Perfil actualizado correctamente",
+    [EN]: "Profile updated successfully"
+  },
+
   // -------------------------- USERS --------------------------
   USER_NOT_FOUND: {
     [ES]: "Usuario no encontrado",
