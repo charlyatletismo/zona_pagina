@@ -6,7 +6,6 @@ import type { JwtVariables } from 'hono/jwt'
 import { authRoute } from "./auth";
 import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
-import { sportingEventTypesRoute } from "./sportingEventTypes";
 import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
 import { athleteCategoryTemplatesRoute } from "./categories";
@@ -59,7 +58,6 @@ export default {
         app.route('/api/auth', authRoute);
         app.route('/api/sportingEvents', sportingEventsRoute);
         app.route('/api/settings', settingsRoute);
-        app.route('/api/sportingEventTypes', sportingEventTypesRoute);
         app.route('/api/sportingEventRegistrations', sportingEventRegistrationsRoute);
         app.route('/api/users', usersRoute);
         app.route('/api/athleteCategoryTemplates', athleteCategoryTemplatesRoute);
