@@ -33,7 +33,7 @@ export const Route = createFileRoute('/users/')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
     const usersApi = await getAuthenticatedThrow('/api/users');
-    const users: User[] = usersApi.data;
+    const users: User[] = usersApi.body.data;
     return { users, usersStatus: usersApi.status};
   },
   staleTime: 1000 * 60 * 5,

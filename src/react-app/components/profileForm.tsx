@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { AlertCircle, Save } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, getMessage } from '@/lib/utils'
 import { postAuthenticated } from '@/lib/apiCalls'
 import { UserProfile } from '@/lib/types'
 
@@ -67,7 +67,7 @@ export const ProfileForm = ({ profile, postUrl }: { profile: UserProfile, postUr
 
     const res = await postAuthenticated(postUrl, formData, navigate);
     if (res.status !== 200) {
-      setError(res.data?.error || 'Error al actualizar el perfil');
+      setError(getMessage(res.body?.message, 'Error al actualizar el perfil'));
       setSaving(false);
       return;
     }

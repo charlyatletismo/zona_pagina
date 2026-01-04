@@ -12,7 +12,7 @@ export const Route = createFileRoute('/settings/')({
   beforeLoad: authCheck(),
   loader: async () => {
     const profileApi = await getAuthenticatedThrow('/api/settings');
-    const profile: UserProfile = profileApi.data;
+    const profile: UserProfile = profileApi.body.data;
     return { profile, status: profileApi.status};
   },
   staleTime: 1000 * 60 * 5,

@@ -47,7 +47,7 @@ export const CategoryFeeForm = ({ feeCat }: { feeCat: FeeCategory | null }) => {
         `/api/categories/fee${feeCat ? `/${feeCat.id}` : '/create'}`,
         value,
         navigate)
-      alert(res.status !== 200 ? `Error al guardar la categoría de tarifa: ${res.data.error}` : 'Categoría de tarifa guardada con éxito');
+      alert(res.status !== 200 ? `Error al guardar la categoría de tarifa: ${res.body.message}` : 'Categoría de tarifa guardada con éxito');
       if (res.status === 200) {
         navigate({ to: '/categories', reloadDocument: true });
       }

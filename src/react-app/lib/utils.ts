@@ -39,3 +39,12 @@ export const clearUserInfo = () => {
 export const getLang = (): string => {
   return localStorage.getItem('USER_LANGUAGE') || 'es';
 }
+
+export const getMessage = (
+  message: Record<string, string> | undefined,
+  defaultMessage: string = ''
+): string => {
+  if (!message) return defaultMessage;
+  const lang = getLang();
+  return message[lang] || message['es'] || defaultMessage;
+}

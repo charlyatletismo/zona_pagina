@@ -13,7 +13,7 @@ export const Route = createFileRoute('/users/$userId/')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
     const profileApi = await getAuthenticatedThrow(`/api/users/${params.userId}`);
-    const profile: UserProfile = profileApi.data;
+    const profile: UserProfile = profileApi.body.data;
     return { profile, status: profileApi.status};
   },
   staleTime: 1000 * 60 * 5,

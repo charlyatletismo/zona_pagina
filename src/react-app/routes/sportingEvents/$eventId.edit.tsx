@@ -2,7 +2,12 @@ import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { SportingEventSchema, SportingEventType, AthleteCategoryTemplateSchema, AthleteCategoryTemplateType } from '@/lib/types';
+import {
+  SportingEventSchema,
+  SportingEventType,
+  AthleteCategoryTemplateSchema,
+  AthleteCategoryTemplateType
+} from '@/lib/types';
 import SportingEventForm from '@/components/sportingEventForm';
 import { FormBox } from '@/components/formBox';
 import z from 'zod';
@@ -14,26 +19,27 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   loader: async ({ params }) => {
     const resSpEvent: {
       status: number;
-      data: SportingEventType;
-      message?: string;
+      body: {
+        data: SportingEventType,
+        message?: Record<string, string>
+      };
     } = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
     const resCatTemplates: {
       status: number;
-      data: AthleteCategoryTemplateType[];
-      message?: string;
-    } = await getAuthenticatedThrow('/api/sportingEventTypes');
-    if (resSpEvent.data) {
-      console.log(resSpEvent.data);
-      resSpEvent.data = SportingEventSchema.parse(resSpEvent.data);
+      body: {
+        data: AthleteCategoryTemplateType[]
+        message?: Record<string, string>
+      };
+    } = await getAuthenticatedThrow('/api/athleteCategoryTemplates');
+    if (resSpEvent.status === 200 && resSpEvent.body.data) {
+      resSpEvent.body.data = SportingEventSchema.parse(resSpEvent.body.data);
     }
-    console.log(resCatTemplates);
-    if (resCatTemplates.data) {
-      console.log(resCatTemplates.data);
-      resCatTemplates.data = z.array(AthleteCategoryTemplateSchema).parse(resCatTemplates.data);
+    if (resCatTemplates.status === 200 && resCatTemplates.body.data) {
+      resCatTemplates.body.data = z.array(AthleteCategoryTemplateSchema).parse(resCatTemplates.body.data);
     }
     return {
       resSpEvent,
-      resCatTemplates,
+      resCatTemplates
     };
   },
   staleTime: 1000 * 60 * 5,
@@ -48,16 +54,19 @@ function RouteComponent() {
       error={
         (resSpEvent.status !== 200 || resCatTemplates.status !== 200)
         ? "Error al cargar los datos del evento."
-          + (resSpEvent.message ? ` ${resSpEvent.message || ''}` : '')
-          + (resCatTemplates.message ? ` ${resCatTemplates.message || ''}` : '')
+          + (resSpEvent.body.message ? ` ${resSpEvent.body.message || ''}` : '')
+          + (resCatTemplates.body.message ? ` ${resCatTemplates.body.message || ''}` : '')
         : null}
       title="Editar Evento Deportivo"
       description="Actualiza la información del evento deportivo."
       returnText="Volver al Evento"
       returnPath="/sportingEvents/$eventId"
-      returnParams={{ eventId: resSpEvent.data.id?.toString() }}
+      returnParams={{ eventId: resSpEvent.body.data.id?.toString() }}
     >
-      <SportingEventForm data={resSpEvent.data} catTemplates={resCatTemplates.data} />
+      <SportingEventForm
+        data={resSpEvent.body.data}
+        catTemplates={resCatTemplates.body.data}
+        />
     </FormBox>
   );
 }

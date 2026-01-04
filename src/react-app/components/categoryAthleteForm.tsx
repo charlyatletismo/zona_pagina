@@ -68,7 +68,7 @@ export const CategoryAthleteForm = ({athCat, feeCats}: {athCat: AthleteCategory 
         `/api/categories/athlete${athCat ? `/${athCat.id}` : '/create'}`,
         value,
         navigate)
-      alert(res.status !== 200 ? `Error al guardar la categoría de atleta: ${res.data.error}` : 'Categoría de atleta guardada con éxito');
+      alert(res.status !== 200 ? `Error al guardar la categoría de atleta: ${res.body.message}` : 'Categoría de atleta guardada con éxito');
       if (res.status === 200) {
         navigate({ to: '/categories', reloadDocument: true });
       }

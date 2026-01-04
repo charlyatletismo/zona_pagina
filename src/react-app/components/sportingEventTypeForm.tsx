@@ -47,7 +47,7 @@ export const SportingEventTypeForm = ({ spType }: { spType: SportingEventTypeEnu
         `/api/sportingEventTypes${spType ? `/${spType.id}` : '/create'}`,
         value,
         navigate)
-      alert(res.status !== 200 ? `Error al guardar el tipo de evento: ${res.data.error}` : 'Tipo de evento guardado con éxito');
+      alert(res.status !== 200 ? `Error al guardar el tipo de evento: ${res.body.message}` : 'Tipo de evento guardado con éxito');
       if (res.status === 200) {
         navigate({ to: '/categories', reloadDocument: true });
       }

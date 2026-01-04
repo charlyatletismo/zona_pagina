@@ -5,7 +5,10 @@ import { clearUserInfo } from './utils';
 
 export const getSportingEvents: () => Promise<{
   status: number,
-  data: SportingEventApiResponseType
+  body: {
+    data: SportingEventApiResponseType,
+    message?: Record<string, string>
+  }
 }> = async () => {
   return getAuthenticated('/api/sportingEvents')
 };
@@ -23,7 +26,13 @@ export const getAuthenticatedThrow = async (path: string) => {
 }
 
 
-export const getAuthenticated = async (path: string, navigate: any = () => {}) => {
+export const getAuthenticated = async (path: string, navigate: any = () => {}): Promise<{
+  status: number,
+  body: {
+    data: any,
+    message?: Record<string, string>
+  }
+}> => {
   const options: Record<string, any> = {method: "GET"}
   if (localStorage.getItem('JWT_TOKEN')) {
     options['headers'] = {"Authorization": `Bearer ${localStorage.getItem('JWT_TOKEN')}`}
@@ -38,11 +47,17 @@ export const getAuthenticated = async (path: string, navigate: any = () => {}) =
     // Forbidden
     navigate({ to: '/unauthorized' });
   }
-  return {status: res.status, data: await res.json()};
+  return {status: res.status, body: await res.json()};
 }
 
 
-export const postAuthenticated = async (path: string, body?: object, navigate: any = () => {}) => {
+export const postAuthenticated = async (path: string, body?: object, navigate: any = () => {}): Promise<{
+  status: number,
+  body: {
+    data: any,
+    message?: Record<string, string>
+  }
+}> => {
   const options: Record<string, any> = {
     method: "POST",
     headers: {
@@ -65,5 +80,5 @@ export const postAuthenticated = async (path: string, body?: object, navigate: a
     // Forbidden
     navigate({ to: '/unauthorized' });
   }
-  return {status: res.status, data: await res.json()};
+  return {status: res.status, body: await res.json()};
 }

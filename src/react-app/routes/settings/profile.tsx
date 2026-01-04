@@ -12,7 +12,7 @@ export const Route = createFileRoute('/settings/profile')({
   beforeLoad: authCheck(),
   loader: async () => {
     const profileApi = await getAuthenticatedThrow('/api/settings');
-    const profile: UserProfile = profileApi.data;
+    const profile: UserProfile = profileApi.body.data;
     return { profile, status: profileApi.status};
   },
   staleTime: 0, // force reload every time

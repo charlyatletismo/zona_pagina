@@ -100,7 +100,7 @@ export const getRegistrationStatusDescription = (status: string | null) => {
 
 
 export const AthleteCategoryTemplateSchema = z.object({
-  id: z.number(),
+  id: z.number().nullable(),
   base_name: z.string(),
   male_name: z.string().nullable(),
   female_name: z.string().nullable(),
@@ -111,8 +111,8 @@ export const AthleteCategoryTemplateSchema = z.object({
 
 
 export const SportingEventCircuitSchema = z.object({
-  id: z.number(),
-  event_id: z.number(),
+  id: z.number().nullable(),
+  event_id: z.number().nullable(),
   name: z.string(),
   description: z.string().nullable(),
   distance_km: z.number(),
@@ -121,8 +121,8 @@ export const SportingEventCircuitSchema = z.object({
 
 
 export const SportingEventScheduleSchema = z.object({
-  id: z.number(),
-  event_id: z.number(),
+  id: z.number().nullable(),
+  event_id: z.number().nullable(),
   date: z.coerce.date(),
   title: z.string(),
   description: z.string().nullable(),
@@ -134,15 +134,63 @@ export const SportingEventScheduleSchema = z.object({
 
 
 export const SportingEventAthleteCategorySchema = z.object({
-  id: z.number(),
-  event_id: z.number(),
-  circuit_id: z.number(),
+  id: z.number().nullable(),
+  event_id: z.number().nullable(),
+  circuit_id: z.number().nullable(),
   name: z.string(),
   sex: z.string().max(1).nullable(),
   min_age: z.number().nullable(),
   max_age: z.number().nullable(),
   exclude_auto_qualify: z.coerce.boolean().nullable(),
 });
+
+
+export const SportingEventTypesEnumDescriptions: {[key: string]: {[key: string]: string}} = {
+  marathon: {
+    es: "Maratón",
+    en: "Marathon",
+  },
+  half_marathon: {
+    es: "Media Maratón",
+    en: "Half Marathon",
+  },
+  duathlon: {
+    es: "Duatlón",
+    en: "Duathlon",
+  },
+  triathlon: {
+    es: "Triatlón",
+    en: "Triathlon",
+  },
+  trail: {
+    es: "Trail",
+    en: "Trail",
+  },
+  cycling: {
+    es: "Ciclismo",
+    en: "Cycling",
+  },
+  swimming: {
+    es: "Natación",
+    en: "Swimming",
+  },
+  other: {
+    es: "Otro",
+    en: "Other",
+  },
+};
+
+
+export const SportingEventTypesEnum = z.enum([
+  'marathon',
+  'half_marathon',
+  'duathlon',
+  'triathlon',
+  'trail',
+  'cycling',
+  'swimming',
+  'other'
+]);
 
 
 export const SportingEventSchema = z.object({
@@ -158,15 +206,7 @@ export const SportingEventSchema = z.object({
   location_address: z.string().max(256).nullable(),
   location_lat: z.number().nullable(),
   location_long: z.number().nullable(),
-  event_type: z.enum([
-    'marathon',
-    'half_marathon',
-    'duathlon',
-    'triathlon',
-    'trail',
-    'cycling',
-    'swimming',
-    'other']),
+  event_type: SportingEventTypesEnum,
   rules: z.string().max(2048).nullable(),
   disclaimer_of_liability: z.string().max(4096).nullable(),
   award_prizes: z.string().max(1024).nullable(),

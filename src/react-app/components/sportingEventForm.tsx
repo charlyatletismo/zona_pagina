@@ -1,21 +1,29 @@
 import { useNavigate } from '@tanstack/react-router'
 import React, { useState } from 'react';
 import { Save, AlertCircle, MapPinnedIcon, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getLang } from '@/lib/utils';
 import { postAuthenticated } from '@/lib/apiCalls'
-import { SportingEventType, SportingEventTypeEnum } from '@/lib/types'
+import {
+  SportingEventType,
+  AthleteCategoryTemplateType,
+  SportingEventTypesEnum,
+  SportingEventTypesEnumDescriptions,
+  SportingEventScheduleSchema,
+  SportingEventCircuitSchema,
+} from '@/lib/types'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 
 
 const SportingEventForm = (
-    {ev, evTypes} : {
-    ev: SportingEventType | null,
-      evTypes: SportingEventTypeEnum[]}) => {
+    { data, catTemplates } : {
+    data: SportingEventType | null,
+    catTemplates: AthleteCategoryTemplateType[],
+    }) => {
   const navigate = useNavigate();
-  const apiEndpointPath = ev === null ? '/api/sportingEvents/create' : `/api/sportingEvents/update/${ev.id}`;
-  const [formData, setFormData] = useState<Partial<SportingEventType>>(ev || {});
+  const apiEndpointPath = data === null ? '/api/sportingEvents/create' : `/api/sportingEvents/update/${data.id}`;
+  const [formData, setFormData] = useState<Partial<SportingEventType>>(data || {});
   const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -34,10 +42,10 @@ const SportingEventForm = (
     // Scroll to top of the page when form is submitted
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    const res: {status: number, data: any} = await postAuthenticated(apiEndpointPath, formData, navigate);
+    const res = await postAuthenticated(apiEndpointPath, formData, navigate);
     if (res.status !== 200) {
-      setError('Error al guardar los cambios');
-      console.error('Error al guardar los cambios', res.data);
+      setError('Error al guardar los cambios' + (res.body.message ? `: ${res.body.message}` : ''));
+      console.error('Error al guardar los cambios', res.body);
       setSaving(false);
       return;
     }
@@ -45,7 +53,7 @@ const SportingEventForm = (
     setSuccess('Evento actualizado correctamente');
     setTimeout(() => {
       setSuccess('');
-      navigate({ to: `/sportingEvents/${res.data.id || ev?.id}`, reloadDocument: true });
+      navigate({ to: `/sportingEvents/${res.body.data.id || data?.id}`, reloadDocument: true });
     }, 1000);
     setSaving(false);
   };
@@ -84,7 +92,7 @@ const SportingEventForm = (
             id="date"
             name="date"
             type="datetime-local"
-            value={formData.date}
+            value={formData.date?.toISOString().slice(0, 16) || ''}
             onChange={handleChange}
             required
           />
@@ -96,16 +104,23 @@ const SportingEventForm = (
             id="event_type"
             name="event_type"
             value={formData.event_type || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, event_type: parseInt(e.target.value) }))}
+            onChange={
+              (e) => setFormData(
+                prev => (
+                  { ...prev,
+                    event_type: SportingEventTypesEnum.parse(e.target.value || "other")
+                  }
+                )
+              )}
             className={cn(
               "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             )}
             required
           >
             <option value="">Seleccionar tipo de evento</option>
-            {evTypes.map((type) => (
-              <option key={type.id} value={type.id}>
-                {type.name}
+            {SportingEventTypesEnum.options.map((type) => (
+              <option key={type} value={type}>
+                {SportingEventTypesEnumDescriptions[type][getLang()]}
               </option>
             ))}
           </select>
@@ -131,7 +146,7 @@ const SportingEventForm = (
             id="registration_start"
             name="registration_start"
             type="datetime-local"
-            value={formData.registration_start || ''}
+            value={formData.registration_start?.toISOString().slice(0, 16) || ''}
             onChange={handleChange}
           />
         </div>
@@ -142,7 +157,7 @@ const SportingEventForm = (
             id="registration_end"
             name="registration_end"
             type="datetime-local"
-            value={formData.registration_end || ''}
+            value={formData.registration_end?.toISOString().slice(0, 16) || ''}
             onChange={handleChange}
           />
         </div>
@@ -159,21 +174,21 @@ const SportingEventForm = (
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="location_text" className="text-sm font-medium text-gray-700">Ubicación (Texto)</label>
+          <label htmlFor="location" className="text-sm font-medium text-gray-700">Localidad (Texto)</label>
           <Input
-            id="location_text"
-            name="location_text"
-            value={formData.location_text || ''}
+            id="location"
+            name="location"
+            value={formData.location || ''}
             onChange={handleChange}
           />
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="location_hint" className="text-sm font-medium text-gray-700">Referencia de Ubicación</label>
+          <label htmlFor="location_address" className="text-sm font-medium text-gray-700">Dirección</label>
           <Input
-            id="location_hint"
-            name="location_hint"
-            value={formData.location_hint || ''}
+            id="location_address"
+            name="location_address"
+            value={formData.location_address || ''}
             onChange={handleChange}
           />
         </div>
@@ -270,7 +285,14 @@ const SportingEventForm = (
       <div className="text-lg font-semibold mt-6 mb-2">Cronograma del Evento</div>
       <div className="space-y-2 md:col-span-2">
         <Button variant={'outline'} type='button' onClick={
-          () => setFormData(prev => ({ ...prev, schedules: [...(prev.schedules || []), { event_id: formData.id || 0, date: '', title: '' }] }))
+          () => setFormData(
+            prev => (
+              { ...prev,
+                schedules: [
+                  ...(prev.schedules || []),
+                  SportingEventScheduleSchema.parse({ event_id: formData.id || 0, date: '', title: '' })
+                ]
+              }))
         }>{
           'Agregar nuevo hito del evento'
         }</Button>
@@ -327,24 +349,24 @@ const SportingEventForm = (
               id={`schedules.${index}.date`}
               name={`schedules.${index}.date`}
               type="datetime-local"
-              value={schedule.date || ''}
+              value={schedule.date.toISOString().slice(0,16) || ''}
               onChange={(e) => {
                 const newSchedules = [...(formData.schedules || [])];
-                newSchedules[index].date = e.target.value;
+                newSchedules[index].date = new Date(e.target.value);
                 setFormData(prev => ({ ...prev, schedules: newSchedules }));
               }}
             />
           </div>
 
           <div className="space-y-2 md:col-span-2">
-            <label htmlFor={`schedules.${index}.location_text`} className="text-sm font-medium text-gray-700">Ubicación (Texto)</label>
+            <label htmlFor={`schedules.${index}.location`} className="text-sm font-medium text-gray-700">Localidad (Texto)</label>
             <Input
-              id={`schedules.${index}.location_text`}
-              name={`schedules.${index}.location_text`}
-              value={schedule.location_text || ''}
+              id={`schedules.${index}.location`}
+              name={`schedules.${index}.location`}
+              value={schedule.location || ''}
               onChange={(e) => {
                 const newSchedules = [...(formData.schedules || [])];
-                newSchedules[index].location_text = e.target.value;
+                newSchedules[index].location = e.target.value;
                 setFormData(prev => ({ ...prev, schedules: newSchedules }));
               }}
             />
@@ -355,7 +377,14 @@ const SportingEventForm = (
       <div className="text-lg font-semibold mt-6 mb-2">Circuitos del Evento</div>
       <div className="space-y-2 md:col-span-2">
         <Button variant={'outline'} type='button' onClick={
-          () => setFormData(prev => ({ ...prev, circuits: [...(prev.circuits || []), { name: "", distance_km: 0 }] }))
+          () => setFormData(
+            prev => (
+              { ...prev,
+                circuits: [
+                  ...(prev.circuits || []),
+                  SportingEventCircuitSchema.parse({ name: "", distance_km: 0 })
+                ]
+              }))
         }>{
           'Agregar nuevo circuito'
         }</Button>

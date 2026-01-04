@@ -36,7 +36,7 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
         eq(sportingEventRegistrations.user_id, users.id)
       );
     if (activeEventsRegistrations.length === 0) {
-      return c.json({});
+      return c.json({ data: [] });
     }
     const out: Record<number, {metadata: any, registrations: any[]}> = {};
     for (const event of activeEventsRegistrations) {
@@ -64,7 +64,7 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
         full_payment_date: event.sporting_event_registrations.full_payment_date,
       });
     }
-    return c.json(out);
+    return c.json({ data: out });
   })
   .post("/:registrationId/newPayment", async (c) => {
     const userId = c.get('jwtPayload')?.id;

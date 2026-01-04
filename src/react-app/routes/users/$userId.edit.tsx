@@ -14,7 +14,7 @@ export const Route = createFileRoute('/users/$userId/edit')({
   loader: async ({ params }) => {
     console.log('Loading edit route for userId:', params.userId);
     const profileApi = await getAuthenticatedThrow(`/api/users/${params.userId}`);
-    const profile: UserProfile = profileApi.data;
+    const profile: UserProfile = profileApi.body.data;
     return { profile, status: profileApi.status};
   },
   staleTime: 0, // force reload every time

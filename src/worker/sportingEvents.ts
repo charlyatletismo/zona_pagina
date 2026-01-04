@@ -12,7 +12,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const res = await mainSportingEventsList(db);
-    return c.json(res);
+    return c.json({ data: res });
   })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
@@ -22,7 +22,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
     }
-    return c.json(res.data);
+    return c.json({ data: res.data });
   })
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);
@@ -58,7 +58,10 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
     }
-    return c.json({ message: M.SPORTING_EVENT_CREATED_SUCCESSFULLY, eventId: res.data});
+    return c.json({
+      data: res.data,
+      message: M.SPORTING_EVENT_CREATED_SUCCESSFULLY
+    });
   })
   .post("/update/:id", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

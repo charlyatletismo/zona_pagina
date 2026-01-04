@@ -29,7 +29,7 @@ export const Route = createFileRoute('/sportingEvents/registrations')({
 function RouteComponent() {
   const res = Route.useLoaderData();
   const [registrations, setRegistrations] = React.useState<SportingEventRegistrationApiResponse>(() => {
-    return res.data || {};
+    return res.body.data || {};
   });
 
   return (
@@ -61,8 +61,8 @@ function RouteComponent() {
                     <Button onClick={async () => {
                       const res = await postAuthenticated(`/api/sportingEventRegistrations/${reg.registrationId}/updatePayment`, { paid: reg.paid ? 0 : 1})
                       if (res.status === 200) {
-                        reg.paid = res.data.paid === 1;
-                        reg.paymentDate = res.data.payment_date;
+                        reg.paid = res.body.data.paid === 1;
+                        reg.paymentDate = res.body.data.payment_date;
                         setRegistrations({ ...registrations });
                       } else {
                         alert('Error updating payment status');

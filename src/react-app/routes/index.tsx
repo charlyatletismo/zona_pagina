@@ -15,7 +15,7 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const resEvents = Route.useLoaderData();
-  const events = resEvents.data
+  const events = resEvents.body.data
 
   return (
     <div>

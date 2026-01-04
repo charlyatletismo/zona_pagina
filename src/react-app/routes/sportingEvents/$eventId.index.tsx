@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { SportingEventSchema, SportingEventType, getRegistrationStatusDescription } from '@/lib/types';
-import { getLang } from '@/lib/utils';
+import { getMessage } from '@/lib/utils';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
@@ -15,11 +15,18 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
-    const { status, data, message }: {
+    const { status, body }: {
       status: number,
-      data?: SportingEventType,
-      message?: Record<string, string>} = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
-    return { status, data: SportingEventSchema.parse(data), message };
+      body?: {
+        data: SportingEventType,
+        message?: Record<string, string>
+      },
+      } = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
+    return {
+      status,
+      data: SportingEventSchema.parse(body?.data),
+      message: body?.message
+    };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -32,7 +39,7 @@ function RouteComponent() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
-        <div className='text-center text-gray-600' >{message ? message[getLang()] : 'Error desconocido'}</div>
+        <div className='text-center text-gray-600' >{getMessage(message, 'Error desconocido')}</div>
         <Button asChild variant="outline">
             <Link to="/">Volver al inicio</Link>
         </Button>
@@ -69,8 +76,11 @@ function RouteComponent() {
       navigate);
     if (res.status !== 200) {
       setError(
-        res.data.message[getLang()]
-        || 'Error al inscribirse. Por favor, intente nuevamente más tarde.');
+        getMessage(
+          res.body.message,
+          'Error al inscribirse. Por favor, intente nuevamente más tarde.'
+        )
+      );
       setTimeout(() => {
         setError('');
       }, 3000);
@@ -80,9 +90,9 @@ function RouteComponent() {
         setSuccess('');
       }, 3000);
       data.user_registration_status = {
-        registration_status: res.data.registration_status,
-        category_name: res.data.category_name,
-        circuit_id: res.data.circuit_id,
+        registration_status: res.body.data.registration_status,
+        category_name: res.body.data.category_name,
+        circuit_id: res.body.data.circuit_id,
       }
     }
     setRegistering(-1);
@@ -98,15 +108,6 @@ function RouteComponent() {
       </div>
     )
   }
-  // return (
-  //     <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-  //       <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
-  //       <Button asChild variant="outline">
-  //           <Link to="/">Volver al inicio</Link>
-  //       </Button>
-  //     </div>
-  //   )
-
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">

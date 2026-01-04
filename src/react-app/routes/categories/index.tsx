@@ -33,12 +33,12 @@ export const Route = createFileRoute('/categories/')({
     const categoriesData: {
       athleteCategories: AthleteCategory[];
       feeCategories: FeeCategory[];
-    } = resCategories.data;
+    } = resCategories.body.data;
     const sportingEventTypes = await getAuthenticatedThrow(`/api/sportingEventTypes`);
     return {
       ...categoriesData,
       status: resCategories.status,
-      spTypes: sportingEventTypes.data,
+      spTypes: sportingEventTypes.body.data,
       statusSpTypes: sportingEventTypes.status,
     };
   },
