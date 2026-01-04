@@ -73,6 +73,7 @@ export const getSpEvent = async (
       registration_status: 'not_registered',
       category_name: '',
       circuit_id: -1,
+      pending_to_pay: 0,
     }, // not registered
   };
   if (userId) {
@@ -362,6 +363,9 @@ export const registerToSpEvent = async (
     ))
     .limit(1);
 
+  const fee_amount_after_discount = feeAmount * (1 - (userData[0].discount_percentage || 0) / 100);
+  const status = fee_amount_after_discount > 0 ? "pending" : "paid";
+
   await db.insert(sportingEventRegistrations).values({
     event_id: eventId,
     user_id: userId,
@@ -372,10 +376,11 @@ export const registerToSpEvent = async (
     userData[0].discount_percentage
     ? "Descuento automático para usuario (fijado en la configuración del usuario)"
     : null,
-    fee_amount_after_discount: feeAmount * (1 - (userData[0].discount_percentage || 0) / 100),
+    fee_amount_after_discount,
     demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
     special_needs: userData[0].special_needs,
-    status: "pending",
+    status,
+    paid_percentage: fee_amount_after_discount > 0 ? 0 : 100,
     created_by: reqUserId,
     updated_by: reqUserId,
   });
@@ -383,9 +388,10 @@ export const registerToSpEvent = async (
     status: 200,
     message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY,
     data: {
-      registration_status: 'pending',
+      registration_status: status,
       category_name: categoryName,
       circuit_id: circuitId,
+      pending_to_pay: fee_amount_after_discount,
     }
   };
 }

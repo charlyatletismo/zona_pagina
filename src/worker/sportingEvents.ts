@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { authorizedOrg } from './lib/roles';
 import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
+import { getUserRegistration } from "./lib/sportingEventRegistrations";
 import { SportingEventFormData } from "./lib/types";
 import { M } from "./lib/messages";
 
@@ -43,6 +44,17 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       return c.json({ message: res.message }, res.status);
     }
     return c.json({ message: res.message, data: res.data });
+  })
+  .get("/:id/registration", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const userId: string = c.get('jwtPayload').id;
+    const res = await getUserRegistration(db, Number(id), userId);
+    console.log(res)
+    if (!res) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
+    }
+    return c.json({ data: res });
   })
   .post("/create", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

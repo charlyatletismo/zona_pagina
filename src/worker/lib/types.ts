@@ -21,7 +21,7 @@ export interface SportingEventFormData {
   updated_at?: string;
   circuits?: SportingEventCircuitFormData[];
   schedules?: SportingEventScheduleFormData[];
-  athleteCategories?: string[];
+  categories?: SportingEventAthleteCategoriesFormData[];
 }
 
 export interface SportingEventScheduleFormData {

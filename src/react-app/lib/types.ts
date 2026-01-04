@@ -231,6 +231,7 @@ export const SportingEventSchema = z.object({
     ]).nullable(),
     category_name: z.string().nullable(),
     circuit_id: z.number().nullable(),
+    pending_to_pay: z.number().nullable(),
   }).nullable(),
 });
 

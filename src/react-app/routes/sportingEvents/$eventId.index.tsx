@@ -9,6 +9,7 @@ import { getMessage } from '@/lib/utils';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
+import { ButtonPing } from '@/components/pingingButton';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/')({
@@ -24,7 +25,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
       } = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
     return {
       status,
-      data: SportingEventSchema.parse(body?.data),
+      data: body.data ? SportingEventSchema.parse(body.data) : undefined,
       message: body?.message
     };
   },
@@ -93,6 +94,7 @@ function RouteComponent() {
         registration_status: res.body.data.registration_status,
         category_name: res.body.data.category_name,
         circuit_id: res.body.data.circuit_id,
+        pending_to_pay: res.body.data.pending_to_pay,
       }
     }
     setRegistering(-1);
@@ -130,7 +132,7 @@ function RouteComponent() {
         && data.user_registration_status.registration_status !== 'not_registered'
         &&
         <div className="text-white text-center rounded-md mb-3 flex justify-center md:justify-start flex-wrap">
-          <div className='px-1 py-1 my-auto'>
+          <div className='px-1 py-2 my-auto'>
             <Badge
               className='py-1 px-2 bg-green-500 dark:bg-green-700'
             >
@@ -167,6 +169,15 @@ function RouteComponent() {
               <b>Estado</b> {getRegistrationStatusDescription(data.user_registration_status.registration_status)}
             </Badge>
           </div>
+          {(data.user_registration_status.pending_to_pay || 0) !== 0 &&
+            <div className='px-1 py-2 my-auto'>
+              <ButtonPing size='sm' padding='px-0 py-1'>
+                <Link className='px-5' to='/sportingEvents/$eventId/payment' params={{ eventId }}>
+                  Pagar ${data.user_registration_status.pending_to_pay?.toFixed(0)}
+                </Link>
+              </ButtonPing>
+            </div>
+          }
         </div>
       }
 
