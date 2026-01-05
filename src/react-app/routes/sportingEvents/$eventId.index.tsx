@@ -4,7 +4,7 @@ import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon
 import { Button } from '@/components/ui/button';
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { SportingEventSchema, SportingEventType, getRegistrationStatusDescription } from '@/lib/types';
+import { SportingEventSchema, getRegistrationStatusDescription } from '@/lib/types';
 import { getMessage } from '@/lib/utils';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
@@ -16,17 +16,23 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
-    const { status, body }: {
-      status: number,
-      body?: {
-        data: SportingEventType,
-        message?: Record<string, string>
-      },
-      } = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
+    const res = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
+    let data = null;
+    if (res.status === 200 && res.body?.data) {
+      try {
+        data = SportingEventSchema.parse(res.body.data);
+      } catch (e) {
+        // console.error('Error parsing SportingEvent data:', e);
+        res.body.message = {
+          es: 'Los datos del evento deportivo están corruptos o no son válidos.',
+          en: 'The sporting event data is corrupt or invalid.'
+        }
+      }
+    }
     return {
-      status,
-      data: body.data ? SportingEventSchema.parse(body.data) : undefined,
-      message: body?.message
+      status: res.status,
+      data: data,
+      message: res.body?.message
     };
   },
   staleTime: 1000 * 60 * 5,
