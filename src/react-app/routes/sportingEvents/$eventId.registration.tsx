@@ -96,7 +96,7 @@ function RouteComponent() {
 
       {/* Header */}
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Detalles de registro</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Detalles de Inscripción</h1>
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
           <CalendarIcon className="w-5 h-5" />
           <span>Registrado el {new Date(data.registration.registration_date).toLocaleDateString()}</span>
@@ -273,7 +273,7 @@ function RouteComponent() {
                     <span className='w-5 h-5 inline-block mr-2'></span>
                     Descuento:
                   </div>
-                  <div>${(
+                  <div>-${(
                     data.registration.fee_amount_original
                     - data.registration.fee_amount_after_discount
                     ).toFixed(0)}</div>
@@ -284,7 +284,7 @@ function RouteComponent() {
                   <span className='w-5 h-5 inline-block mr-2'></span>
                   Pagado:
                 </div>
-                <div>${data.registration.paid_amount.toFixed(0)}</div>
+                <div>-${data.registration.paid_amount.toFixed(0)}</div>
               </div>
               <div className='flex justify-between'>
                 <div>
@@ -300,7 +300,7 @@ function RouteComponent() {
             {data.registration.fee_amount_after_discount - data.registration.paid_amount > 0 && (
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
-                <div className='mb-2'>Pagar mediante transferencia al siguiente alias (apretar para copiar)</div>
+                <div className='mb-2'>Pagar mediante transferencia al siguiente alias (click para copiar)</div>
                 <Button
                   className='mb-3'
                   variant={'outline'}
