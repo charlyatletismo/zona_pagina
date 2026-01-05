@@ -118,3 +118,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+@theme {
+  --animate-outer-shine: outer-shine 4s ease-in-out infinite;
+
+  @keyframes outer-shine {
+    0%,
+    100% {
+      border-color: var(--color-gray-200);
+      background-color: var(--background);
+    }
+
+    50% {
+      border-color: var(--primary);
+      background-color: #fa4c2510;
+    }
+  }
+}
+

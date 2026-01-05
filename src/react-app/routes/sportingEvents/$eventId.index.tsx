@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
-import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check } from 'lucide-react';
+import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check, FileUserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
@@ -169,15 +169,23 @@ function RouteComponent() {
               <b>Estado</b> {getRegistrationStatusDescription(data.user_registration_status.registration_status)}
             </Badge>
           </div>
-          {(data.user_registration_status.pending_to_pay || 0) !== 0 &&
-            <div className='px-1 py-2 my-auto'>
-              <ButtonPing size='sm' padding='px-0 py-1'>
-                <Link className='px-5' to='/sportingEvents/$eventId/registration' params={{ eventId }}>
-                  Pagar ${data.user_registration_status.pending_to_pay?.toFixed(0)}
-                </Link>
-              </ButtonPing>
-            </div>
-          }
+
+          <div className='px-1 py-2 my-auto'>
+              <ButtonPing
+                size='sm'
+                padding='px-0 py-1'
+                pingType={
+                  ['pending', 'partially_paid'].includes(
+                    data.user_registration_status.registration_status || '')
+                    ? 1
+                    : 2}
+              >
+              <Link className='px-5' to='/sportingEvents/$eventId/registration' params={{ eventId }}>
+                <FileUserIcon className="inline-block w-4 h-4 mr-2" />
+                Detalles de inscripción
+              </Link>
+            </ButtonPing>
+          </div>
         </div>
       }
 
