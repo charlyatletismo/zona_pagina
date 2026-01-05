@@ -172,7 +172,7 @@ function RouteComponent() {
           {(data.user_registration_status.pending_to_pay || 0) !== 0 &&
             <div className='px-1 py-2 my-auto'>
               <ButtonPing size='sm' padding='px-0 py-1'>
-                <Link className='px-5' to='/sportingEvents/$eventId/payment' params={{ eventId }}>
+                <Link className='px-5' to='/sportingEvents/$eventId/registration' params={{ eventId }}>
                   Pagar ${data.user_registration_status.pending_to_pay?.toFixed(0)}
                 </Link>
               </ButtonPing>

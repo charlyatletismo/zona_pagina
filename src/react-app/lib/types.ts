@@ -99,6 +99,19 @@ export const getRegistrationStatusDescription = (status: string | null) => {
 }
 
 
+export const TrainingTeamSchema = z.object({
+  id: z.number().nullable(),
+  name: z.string().max(128),
+  location: z.string().max(256).nullable(),
+  coach_name: z.string().max(128).nullable(),
+  coach_user_id: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  contact_email: z.string().max(64).nullable(),
+  contact_phone: z.string().max(32).nullable(),
+  created_at: z.iso.datetime().nullable(),
+  updated_at: z.iso.datetime().nullable(),
+});
+
+
 export const AthleteCategoryTemplateSchema = z.object({
   id: z.number().nullable(),
   base_name: z.string(),
@@ -143,6 +156,17 @@ export const SportingEventAthleteCategorySchema = z.object({
   max_age: z.number().nullable(),
   exclude_auto_qualify: z.coerce.boolean().nullable(),
 });
+
+
+export const SportingEventClothingSchema = z.object({
+  id: z.number(),
+  event_id: z.number(),
+  clothing_type: z.string().max(64),
+  size: z.string().max(8),
+  available_quantity: z.number().default(0),
+  demanded_quantity: z.number().default(0),
+  reserved_quantity: z.number().default(0),
+})
 
 
 export const SportingEventTypesEnumDescriptions: {[key: string]: {[key: string]: string}} = {
@@ -254,6 +278,50 @@ export const SportingEventApiResponseSchema = z.object({
   closed: z.array(SportingEventBasicInfoSchema),
   past: z.array(SportingEventBasicInfoSchema),
 });
+
+
+const shortClothingSchema = SportingEventClothingSchema.pick({
+  id: true,
+  clothing_type: true,
+  size: true,
+  available_quantity: true,
+  demanded_quantity: true,
+  reserved_quantity: true,
+})
+
+export const SportingEventRegistrationApiResponseSchema = z.object({
+  registration: z.object({
+    id: z.number(),
+    registration_date: z.coerce.date(),
+    discount_percentage: z.number(),
+    discount_reason: z.string().nullable(),
+    fee_amount_original: z.number(),
+    fee_amount_after_discount: z.number(),
+    paid_amount: z.number(),
+    demanded_clothing_id: z.number().nullable(),
+    reserved_clothing_id: z.number().nullable(),
+    special_needs: z.string().nullable(),
+    status: z.enum([
+      "pending",
+      "partially_paid",
+      "paid",
+      "cancelled"
+    ]),
+    full_payment_date: z.date().nullable(),
+    updated_at: z.coerce.date().nullable(),
+    demanded_clothing: shortClothingSchema.nullable(),
+    reserved_clothing: shortClothingSchema.nullable(),
+  }),
+  category: SportingEventAthleteCategorySchema.pick({
+    name: true,
+    circuit_id: true,
+  }).nullable(),
+  training_team: TrainingTeamSchema.pick({
+    name: true,
+    location: true,
+  }).nullable(),
+  clothing: z.array(shortClothingSchema).nullable(),
+})
 
 
 export type UserType = z.infer<typeof UserSchema>;

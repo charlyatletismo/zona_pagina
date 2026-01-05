@@ -171,7 +171,7 @@ export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlet
 export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
   id: int().primaryKey({ autoIncrement: true }),
   event_id: int().notNull().references(() => sportingEvents.id),
-  clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tank_top" (musculosa)
+  clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tanktop" (musculosa)
   size: text({ length: 8 }).notNull(), // e.g., "XS", "S", "M", "L", "XL", "XXL"
   available_quantity: int().notNull().default(0),
   demanded_quantity: int().notNull().default(0),
@@ -189,6 +189,7 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
   registration_date: text().notNull().default(sql`CURRENT_TIMESTAMP`),
   discount_percentage: int().notNull().default(0), // for special discounts
   discount_reason: text({ length: 256 }),
+  fee_amount_original: real().notNull(), // original amount before discounts
   fee_amount_after_discount: real().notNull(), // final amount after discounts
   paid_amount: real().notNull().default(0),
   paid_percentage: real().notNull().default(0), // 0 to 100 %

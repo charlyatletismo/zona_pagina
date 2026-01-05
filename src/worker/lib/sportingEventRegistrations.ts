@@ -1,5 +1,10 @@
 import { eq, and, inArray } from 'drizzle-orm';
-import { sportingEventRegistrations, sportingEventAthleteCategories, sportingEventClothing, trainingTeams } from '../db/schema'
+import {
+  sportingEventRegistrations,
+  sportingEventAthleteCategories,
+  sportingEventClothing,
+  trainingTeams
+} from '../db/schema'
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 
 
@@ -52,13 +57,10 @@ export const getUserRegistration = async (db: DrizzleD1Database, eventId: number
     .select({
       sporting_event_registrations: {
         id: sportingEventRegistrations.id,
-        event_id: sportingEventRegistrations.event_id,
-        user_id: sportingEventRegistrations.user_id,
-        category_id: sportingEventRegistrations.category_id,
-        training_team_id: sportingEventRegistrations.training_team_id,
         registration_date: sportingEventRegistrations.registration_date,
         discount_percentage: sportingEventRegistrations.discount_percentage,
         discount_reason: sportingEventRegistrations.discount_reason,
+        fee_amount_original: sportingEventRegistrations.fee_amount_original,
         fee_amount_after_discount: sportingEventRegistrations.fee_amount_after_discount,
         paid_amount: sportingEventRegistrations.paid_amount,
         demanded_clothing_id: sportingEventRegistrations.demanded_clothing_id,
@@ -98,8 +100,8 @@ export const getUserRegistration = async (db: DrizzleD1Database, eventId: number
   const clothing = await db
     .select({
       id: sportingEventClothing.id,
-      size: sportingEventClothing.size,
       clothing_type: sportingEventClothing.clothing_type,
+      size: sportingEventClothing.size,
       available_quantity: sportingEventClothing.available_quantity,
       demanded_quantity: sportingEventClothing.demanded_quantity,
       reserved_quantity: sportingEventClothing.reserved_quantity,
@@ -111,7 +113,13 @@ export const getUserRegistration = async (db: DrizzleD1Database, eventId: number
     ]))
     .all();
   return {
-    ...registration,
-    clothingData: clothing,
+    registration: {
+      ...registration.sporting_event_registrations,
+      demanded_clothing: clothing.find(c => c.id === registration.sporting_event_registrations?.demanded_clothing_id) || null,
+      reserved_clothing: clothing.find(c => c.id === registration.sporting_event_registrations?.reserved_clothing_id) || null,
+    },
+    category: registration.sporting_event_athlete_categories || null,
+    training_team: registration.training_teams || null,
+    clothing: clothing || null,
   };
 }

@@ -376,6 +376,7 @@ export const registerToSpEvent = async (
     userData[0].discount_percentage
     ? "Descuento automático para usuario (fijado en la configuración del usuario)"
     : null,
+    fee_amount_original: feeAmount,
     fee_amount_after_discount,
     demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
     special_needs: userData[0].special_needs,
