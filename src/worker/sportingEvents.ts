@@ -50,7 +50,6 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     const { id } = c.req.param();
     const userId: string = c.get('jwtPayload').id;
     const res = await getUserRegistration(db, Number(id), userId);
-    console.log(res)
     if (!res) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
     }

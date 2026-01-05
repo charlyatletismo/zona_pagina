@@ -37,8 +37,8 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
       try {
         finalData = SportingEventRegistrationApiResponseSchema.parse(body.data);
       } catch (e) {
-        console.log(body.data);
-        console.error("Error parsing sporting event registration data:", e);
+        // console.log(body.data);
+        // console.error("Error parsing sporting event registration data:", e);
         message = {
           en: "Error parsing sporting event registration data",
           es: "Error al interpretar los datos de registro del evento deportivo"
