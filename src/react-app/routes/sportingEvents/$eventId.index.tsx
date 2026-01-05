@@ -1,8 +1,21 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
-import { CalendarIcon, MapPinIcon, InfoIcon, FileTextIcon, TrophyIcon, ImageIcon, ArrowLeft, Edit, AlertCircle, Check, FileUserIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  MapPinIcon,
+  InfoIcon,
+  FileTextIcon,
+  TrophyIcon,
+  ImageIcon,
+  ArrowLeft,
+  Edit,
+  AlertCircle,
+  Check,
+  FileUserIcon,
+  FilePlus2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ADMIN_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
+import { ADMIN_ROLE, ATHLETES_MANAGER_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { SportingEventSchema, getRegistrationStatusDescription } from '@/lib/types';
 import { getMessage } from '@/lib/utils';
@@ -54,6 +67,7 @@ function RouteComponent() {
     )
   }
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
+  const canRegisterOthers = [ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE].includes(currentRole);
   const canEdit = [ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole);
   const now = new Date();
   const openToRegister =
@@ -207,14 +221,26 @@ function RouteComponent() {
           </Link>
         </Button>
 
-        {canEdit && (
-          <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
-              <Edit className="w-4 h-4 mr-2" />
-              Editar
-            </Link>
-          </Button>
-        )}
+        <div className='flex gap-2'>
+          {canRegisterOthers && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+                <FilePlus2 className="w-4 h-4" />
+                Registrar Atletas
+              </Link>
+            </Button>
+          )}
+
+          {canEdit && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
+                <Edit className="w-4 h-4" />
+                Editar
+              </Link>
+            </Button>
+          )}
+        </div>
+
       </div>
 
       {/* Header */}
