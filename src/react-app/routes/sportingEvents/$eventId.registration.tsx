@@ -172,7 +172,7 @@ function RouteComponent() {
                 ) : (
                   <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />
                 )}
-                <b>Reservado</b>: {
+                <b>Talle Reservado</b>: {
                   data.registration.reserved_clothing_id !== 0
                   ? data.registration.reserved_clothing?.size || 'No reservado aún '
                   : 'Declinaste la indumentaria'
