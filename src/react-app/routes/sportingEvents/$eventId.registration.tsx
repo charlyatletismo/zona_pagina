@@ -21,7 +21,8 @@ import {
   PercentCircle,
   BadgeDollarSignIcon,
   Copy,
-  Check
+  Check,
+  Cpu,
 } from 'lucide-react';
 
 
@@ -203,6 +204,20 @@ function RouteComponent() {
               </div>
             </section>
           )}
+
+          {/* Chip */}
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+              <Cpu className="w-6 h-6 text-primary" />
+              Chip de Cronometraje
+            </h2>
+            <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+              No tiene asignado ningún chip de cronometraje.
+              {/* {data.registration.chip_id
+                ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
+                : 'No tiene asignado ningún chip de cronometraje.'} */}
+            </div>
+          </section>
         </div>
 
         {/* Sidebar - Right Column */}
