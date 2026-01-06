@@ -5,7 +5,13 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { MercadoPagoLogo } from '@/components/icons/mercadoPago';
 import { Button } from '@/components/ui/button';
 import { getMessage } from '@/lib/utils';
-import { SportingEventRegistrationApiResponseSchema } from '@/lib/types';
+import z from 'zod';
+import {
+  SportingEventRegistrationSchema,
+  SportingEventAthleteCategorySchema,
+  TrainingTeamSchema,
+  SportingEventClothingSchema,
+} from '@shared/types';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import {
   ArrowLeft,

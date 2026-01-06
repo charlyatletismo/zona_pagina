@@ -6,7 +6,7 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import {
   AthleteCategoryTemplateSchema,
   AthleteCategoryTemplateType
-} from '@/lib/types';
+} from '@shared/types';
 import { FormBox } from '@/components/formBox';
 import z from 'zod';
 

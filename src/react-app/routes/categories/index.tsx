@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { FeeCategory, AthleteCategory, SportingEventTypeEnum } from '@/lib/types';
+import { FeeCategory, AthleteCategory, SportingEventTypeEnum } from '@shared/types';
 import React from 'react';
 import { ArrowUp, ArrowDown, Plus, Eye, EyeOff, Edit2 } from "lucide-react"
 import {

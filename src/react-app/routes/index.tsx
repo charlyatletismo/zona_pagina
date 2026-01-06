@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
 import { getSportingEvents } from '@/lib/apiCalls'
-import { SportingEventBasicInfoType } from '@/lib/types'
+import { SportingEventBasicInfoType } from '@shared/types'
 
 
 export const Route = createFileRoute('/')({

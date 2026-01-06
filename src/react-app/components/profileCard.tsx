@@ -1,5 +1,5 @@
 import { User, Users, UserCog, Mail, Phone, MapPin, Calendar, Mars, Venus, VenusAndMars } from 'lucide-react'
-import { UserProfile } from '@/lib/types'
+import { UserProfile } from '@shared/types'
 
 
 export const Profile = ({ profile }: { profile: UserProfile }) => {

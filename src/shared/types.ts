@@ -1,7 +1,7 @@
 import z from "zod";
 
-import { ALL_ROLES } from "./roles";
-import { getLang } from "./utils";
+import { ALL_ROLES } from './roles';
+
 
 const USER_ID_MAX_LENGTH = 28;
 
@@ -69,7 +69,7 @@ export interface UserProfile {
   training_team: User["training_team"];
 }
 
-const RegistrationStatusDescriptions: {[key: string]: {[key: string]: string}} = {
+export const RegistrationStatusDescriptions: {[key: string]: {[key: string]: string}} = {
   not_registered: {
     es: "No inscripto",
     en: "Not registered",
@@ -91,12 +91,6 @@ const RegistrationStatusDescriptions: {[key: string]: {[key: string]: string}} =
     en: "Cancelled",
   },
 };
-
-export const getRegistrationStatusDescription = (status: string | null) => {
-  if (!status) return "Desconocido";
-  return RegistrationStatusDescriptions[status][getLang()]
-    || "Desconocido";
-}
 
 
 export const TrainingTeamSchema = z.object({
@@ -236,9 +230,9 @@ export const SportingEventSchema = z.object({
   award_prizes: z.string().max(1024).nullable(),
   fee_amount: z.number().nullable(),
   fee_currency: z.string().max(3).nullable(),
-  created_by: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  created_by: UserSchema.shape.id.nullable(),
   created_at: z.coerce.date().nullable(),
-  updated_by: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  updated_by: UserSchema.shape.id.nullable(),
   updated_at: z.coerce.date().nullable(),
   circuits: z.array(SportingEventCircuitSchema).nullable(),
   schedules: z.array(SportingEventScheduleSchema).nullable(),
@@ -260,6 +254,36 @@ export const SportingEventSchema = z.object({
 });
 
 
+export const SportingEventRegistrationSchema = z.object({
+  id: z.number(),
+  event_id: SportingEventSchema.shape.id,
+  user_id: UserSchema.shape.id,
+  category_id: SportingEventAthleteCategorySchema.shape.id.nullable(),
+  training_team_id: TrainingTeamSchema.shape.id.nullable(),
+  registration_date: z.coerce.date(),
+  discount_percentage: z.number(),
+  discount_reason: z.string().max(256).nullable(),
+  fee_amount_original: z.number(),
+  fee_amount_after_discount: z.number(),
+  paid_amount: z.number(),
+  paid_percentage: z.number(),
+  demanded_clothing_id: SportingEventClothingSchema.shape.id.nullable(),
+  reserved_clothing_id: SportingEventClothingSchema.shape.id.nullable(),
+  special_needs: z.string().max(512).nullable(),
+  status: z.enum([
+    "pending",
+    "partially_paid",
+    "paid",
+    "cancelled"
+  ]),
+  full_payment_date: z.coerce.date().nullable(),
+  created_at: z.coerce.date(),
+  created_by: UserSchema.shape.id,
+  updated_at: z.coerce.date(),
+  updated_by: UserSchema.shape.id,
+});
+
+
 export const SportingEventBasicInfoSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -278,50 +302,6 @@ export const SportingEventApiResponseSchema = z.object({
   closed: z.array(SportingEventBasicInfoSchema),
   past: z.array(SportingEventBasicInfoSchema),
 });
-
-
-const shortClothingSchema = SportingEventClothingSchema.pick({
-  id: true,
-  clothing_type: true,
-  size: true,
-  available_quantity: true,
-  demanded_quantity: true,
-  reserved_quantity: true,
-})
-
-export const SportingEventRegistrationApiResponseSchema = z.object({
-  registration: z.object({
-    id: z.number(),
-    registration_date: z.coerce.date(),
-    discount_percentage: z.number(),
-    discount_reason: z.string().nullable(),
-    fee_amount_original: z.number(),
-    fee_amount_after_discount: z.number(),
-    paid_amount: z.number(),
-    demanded_clothing_id: z.number().nullable(),
-    reserved_clothing_id: z.number().nullable(),
-    special_needs: z.string().nullable(),
-    status: z.enum([
-      "pending",
-      "partially_paid",
-      "paid",
-      "cancelled"
-    ]),
-    full_payment_date: z.date().nullable(),
-    updated_at: z.coerce.date().nullable(),
-    demanded_clothing: shortClothingSchema.nullable(),
-    reserved_clothing: shortClothingSchema.nullable(),
-  }),
-  category: SportingEventAthleteCategorySchema.pick({
-    name: true,
-    circuit_id: true,
-  }).nullable(),
-  training_team: TrainingTeamSchema.pick({
-    name: true,
-    location: true,
-  }).nullable(),
-  clothing: z.array(shortClothingSchema).nullable(),
-})
 
 
 export type UserType = z.infer<typeof UserSchema>;

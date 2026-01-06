@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ORGANIZER_ROLE } from '@shared/roles'
 import authCheck from '@/lib/authCheck'
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { SportingEventRegistrationApiResponse } from '@/lib/types';
+import { SportingEventRegistrationApiResponse } from '@shared/types';
 import {
   Table,
   TableBody,

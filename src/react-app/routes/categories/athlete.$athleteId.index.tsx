@@ -4,7 +4,7 @@ import { ORGANIZER_ROLE } from '@shared/roles';
 import { CategoryAthleteForm } from '@/components/categoryAthleteForm';
 import { FormBox } from '@/components/formBox';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { AthleteCategory, FeeCategory } from '@/lib/types';
+import { AthleteCategory, FeeCategory } from '@shared/types';
 
 
 export const Route = createFileRoute('/categories/athlete/$athleteId/')({

@@ -1,5 +1,5 @@
 import { redirect } from '@tanstack/react-router';
-import { SportingEventApiResponseType } from '@/lib/types';
+import { SportingEventApiResponseType } from '@shared/types';
 import { clearUserInfo } from './utils';
 
 

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from './ui/spinner';
-import { SportingEventTypeEnum } from '@/lib/types';
+import { SportingEventTypeEnum } from '@shared/types';
 import { postAuthenticated } from '@/lib/apiCalls';
 import { useNavigate } from '@tanstack/react-router';
 

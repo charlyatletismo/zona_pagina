@@ -3,7 +3,7 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import { FormBox } from '@/components/formBox';
 import { SportingEventTypeForm } from '@/components/sportingEventTypeForm';
-import { SportingEventTypeEnum } from '@/lib/types';
+import { SportingEventTypeEnum } from '@shared/types';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 
 

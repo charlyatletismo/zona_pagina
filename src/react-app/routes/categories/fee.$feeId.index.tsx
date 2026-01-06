@@ -3,7 +3,7 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import { FormBox } from '@/components/formBox';
 import { CategoryFeeForm } from '@/components/categoryFeeForm';
-import { FeeCategory } from '@/lib/types';
+import { FeeCategory } from '@shared/types';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 
 

@@ -7,7 +7,7 @@ import {
   ATHLETE_ROLE
 } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { User } from '@/lib/types';
+import { User } from '@shared/types';
 import React from 'react';
 import {
   useReactTable,

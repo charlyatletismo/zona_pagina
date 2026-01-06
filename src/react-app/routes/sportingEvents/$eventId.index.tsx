@@ -21,12 +21,20 @@ import {
   ORGANIZER_ROLE,
 } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { SportingEventSchema, getRegistrationStatusDescription } from '@/lib/types';
+import { getLang } from "@/lib/utils";
+import { SportingEventSchema, RegistrationStatusDescriptions } from '@shared/types';
 import { getMessage } from '@/lib/utils';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { ButtonPing } from '@/components/pingingButton';
+
+
+const getRegistrationStatusDescription = (status: string | null) => {
+  if (!status) return "Desconocido";
+  return RegistrationStatusDescriptions[status][getLang()]
+    || "Desconocido";
+}
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/')({

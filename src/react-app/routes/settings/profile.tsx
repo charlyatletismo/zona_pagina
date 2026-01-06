@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { Button } from '@/components/ui/button'
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserProfile } from '@/lib/types'
+import { UserProfile } from '@shared/types'
 import { ProfileForm } from '@/components/profileForm';
 import { ArrowLeft } from 'lucide-react'
 

@@ -6,7 +6,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { AlertCircle, Save } from 'lucide-react'
 import { cn, getMessage } from '@/lib/utils'
 import { postAuthenticated } from '@/lib/apiCalls'
-import { UserProfile } from '@/lib/types'
+import { UserProfile } from '@shared/types'
 
 
 interface UserProfileForm {

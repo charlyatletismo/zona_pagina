@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserProfile } from '@/lib/types'
+import { UserProfile } from '@shared/types'
 import { Profile } from '@/components/profileCard'
 
 

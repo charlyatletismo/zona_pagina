@@ -5,7 +5,7 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import {
   SportingEventSchema,
   AthleteCategoryTemplateSchema,
-} from '@/lib/types';
+} from '@shared/types';
 import SportingEventForm from '@/components/sportingEventForm';
 import { FormBox } from '@/components/formBox';
 import z from 'zod';

@@ -10,7 +10,7 @@ import {
   SportingEventTypesEnumDescriptions,
   SportingEventScheduleSchema,
   SportingEventCircuitSchema,
-} from '@/lib/types'
+} from '@shared/types'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
