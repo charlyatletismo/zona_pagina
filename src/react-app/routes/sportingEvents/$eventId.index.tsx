@@ -79,8 +79,6 @@ function RouteComponent() {
     )
   }
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
-  const canRegisterOthers = [ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE].includes(currentRole);
-  const canEdit = [ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole);
   const now = new Date();
   const openToRegister =
     data.registration_start && data.registration_end
@@ -121,7 +119,11 @@ function RouteComponent() {
       setSuccess('Inscripción exitosa!');
       setTimeout(() => {
         setSuccess('');
-      }, 3000);
+        navigate({
+          to: "/sportingEvents/$eventId/registration",
+          params: { eventId }
+        })
+      }, 1000);
       data.user_registration_status = {
         registration_status: res.body.data.registration_status,
         category_name: res.body.data.category_name,
@@ -234,7 +236,7 @@ function RouteComponent() {
         </Button>
 
         <div className='flex gap-2'>
-          {canRegisterOthers && (
+          {[ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE].includes(currentRole) && (
             <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
                 <FilePlus2 className="w-4 h-4" />
@@ -243,7 +245,7 @@ function RouteComponent() {
             </Button>
           )}
 
-          {canEdit && (
+          {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
             <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
                 <Edit className="w-4 h-4" />
