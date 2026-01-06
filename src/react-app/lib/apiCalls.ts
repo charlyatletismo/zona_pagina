@@ -3,19 +3,13 @@ import { SportingEventApiResponseType } from '@shared/types';
 import { clearUserInfo } from './utils';
 
 
-export const getSportingEvents: () => Promise<{
-  status: number,
-  body: {
-    data: SportingEventApiResponseType,
-    message?: Record<string, string>
-  }
-}> = async () => {
-  return getAuthenticated('/api/sportingEvents')
+export const getSportingEvents = async () => {
+  return getAuthenticated<SportingEventApiResponseType>('/api/sportingEvents')
 };
 
 
-export const getAuthenticatedThrow = async (path: string) => {
-  return getAuthenticated(path,
+export const getAuthenticatedThrow = async <T = any>(path: string) => {
+  return getAuthenticated<T>(path,
     ({to, reloadDocument}: {to: string, reloadDocument: boolean}) => {
       throw redirect({
         to,
@@ -26,10 +20,10 @@ export const getAuthenticatedThrow = async (path: string) => {
 }
 
 
-export const getAuthenticated = async (path: string, navigate: any = () => {}): Promise<{
+export const getAuthenticated = async <T = any>(path: string, navigate: any = () => {}): Promise<{
   status: number,
   body: {
-    data: any,
+    data: T,
     message?: Record<string, string>
   }
 }> => {
@@ -51,10 +45,10 @@ export const getAuthenticated = async (path: string, navigate: any = () => {}): 
 }
 
 
-export const postAuthenticated = async (path: string, body?: object, navigate: any = () => {}): Promise<{
+export const postAuthenticated = async <T = any>(path: string, body?: object, navigate: any = () => {}): Promise<{
   status: number,
   body: {
-    data: any,
+    data: T,
     message?: Record<string, string>
   }
 }> => {

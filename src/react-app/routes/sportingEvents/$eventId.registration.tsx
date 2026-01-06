@@ -7,11 +7,8 @@ import { Button } from '@/components/ui/button';
 import { getMessage } from '@/lib/utils';
 import z from 'zod';
 import {
-  SportingEventRegistrationSchema,
-  SportingEventAthleteCategorySchema,
-  TrainingTeamSchema,
-  SportingEventClothingSchema,
-} from '@shared/types';
+  SportingEventRegistrationApiResponseSchema
+} from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import {
   ArrowLeft,
@@ -36,45 +33,30 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
   component: RouteComponent,
   beforeLoad: authCheck(ALL_ROLES),
   loader: async ({ params }) => {
-    const { status, body } = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}/registration`);
-    let finalData = null;
-    let message = body?.message;
-    if (status === 200 && body && body.data) {
-      try {
-        finalData = SportingEventRegistrationApiResponseSchema.parse(body.data);
-      } catch (e) {
-        // console.log(body.data);
-        // console.error("Error parsing sporting event registration data:", e);
-        message = {
-          en: "Error parsing sporting event registration data",
-          es: "Error al interpretar los datos de registro del evento deportivo"
-        }
-      }
-    }
-    return {
-      status,
-      data: finalData,
-      message
-    };
+    const res = await getAuthenticatedThrow<
+      z.infer<typeof SportingEventRegistrationApiResponseSchema>
+      >(`/api/sportingEvents/${params.eventId}/registration`);
+    return { res };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const { status, data, message } = Route.useLoaderData();
+  const { res } = Route.useLoaderData();
+  const data = res.body.data;
 
-  if (status !== 200 || !data) {
+  if (res.status !== 200 || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <h2 className="text-2xl font-bold">{
-          (status === 404 || !data)
+          (res.status === 404 || !data)
           ? 'Datos no disponibles'
-          : status !== 200
+          : res.status !== 200
             ? 'Error al traer los detalles de su registro'
             : 'Error al cargar los detalles de su registro'
           }</h2>
-        <div className='text-center text-gray-600' >{getMessage(message, 'Error desconocido')}</div>
+        <div className='text-center text-gray-600' >{getMessage(res.body.message, 'Error desconocido')}</div>
         <Button asChild variant="outline">
           <Link to="..">Volver atrás</Link>
         </Button>
