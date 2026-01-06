@@ -525,7 +525,7 @@ sporting_event_clothing (
   event_id,
   clothing_type,
   size,
-  available_quantity,
+  purchased_quantity,
   demanded_quantity,
   reserved_quantity
 )
