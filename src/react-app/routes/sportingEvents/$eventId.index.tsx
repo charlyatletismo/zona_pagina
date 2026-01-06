@@ -15,7 +15,11 @@ import {
   FilePlus2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ADMIN_ROLE, ATHLETES_MANAGER_ROLE, ORGANIZER_ROLE } from '@/lib/roles';
+import {
+  ADMIN_ROLE,
+  ATHLETES_MANAGER_ROLE,
+  ORGANIZER_ROLE,
+} from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { SportingEventSchema, getRegistrationStatusDescription } from '@/lib/types';
 import { getMessage } from '@/lib/utils';

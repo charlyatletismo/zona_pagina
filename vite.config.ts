@@ -20,6 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src/react-app"),
+      "@shared": path.resolve(__dirname, "./src/shared"),
     },
   },
   server: {

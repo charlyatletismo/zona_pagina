@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { authorizedOrg } from './lib/roles';
+import { authorizedAthMan, authorizedOrg } from '@shared/roles';
 import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
 import { getUserRegistration } from "./lib/sportingEventRegistrations";

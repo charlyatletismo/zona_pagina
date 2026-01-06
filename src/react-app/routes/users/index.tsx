@@ -1,6 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
-import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from '@/lib/roles';
+import {
+  ADMIN_ROLE,
+  ORGANIZER_ROLE,
+  ATHLETES_MANAGER_ROLE,
+  ATHLETE_ROLE
+} from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { User } from '@/lib/types';
 import React from 'react';

@@ -5,7 +5,7 @@ import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { UserProfile } from '@/lib/types';
 import { Profile } from '@/components/profileCard';
-import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@/lib/roles';
+import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 
 
 export const Route = createFileRoute('/users/$userId/')({

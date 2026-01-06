@@ -6,7 +6,7 @@ import {
   sportingEventRegistrations,
   sportingEventTransactions,
   users } from './db/schema';
-import { authorizedOrg } from './lib/roles';
+import { authorizedOrg } from '@shared/roles';
 import { gte, eq } from 'drizzle-orm';
 import { M } from './lib/messages';
 

@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import * as roles from '@/lib/roles';
+import * as roles from '@shared/roles';
 import { clearUserInfo } from '@/lib/utils';
 // import { Sun, Moon } from 'lucide-react';
 // import { Code2, Laptop } from 'lucide-react';

@@ -1,5 +1,5 @@
 import { redirect, ParsedLocation } from '@tanstack/react-router';
-import { ADMIN_ROLE } from './roles';
+import { ADMIN_ROLE } from '@shared/roles';
 
 
 const authCheck = (roles: string[] = []) => {

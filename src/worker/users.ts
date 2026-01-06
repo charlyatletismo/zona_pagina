@@ -3,7 +3,12 @@ import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from './db/schema';
 import { eq, and, not, InferInsertModel } from 'drizzle-orm';
-import { ADMIN_ROLE, ATHLETES_MANAGER_ROLE, authorizedAthMan, authorizedOrg } from './lib/roles';
+import {
+  ADMIN_ROLE,
+  ATHLETES_MANAGER_ROLE,
+  authorizedAthMan,
+  authorizedOrg
+} from '@shared/roles';
 import { M } from './lib/messages';
 
 

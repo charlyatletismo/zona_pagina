@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { UserProfile } from '@/lib/types';
-import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@/lib/roles';
+import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { ProfileForm } from '@/components/profileForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';

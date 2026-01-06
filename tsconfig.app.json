@@ -26,8 +26,11 @@
     "paths": {
       "@/*": [
         "./src/react-app/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
       ]
     },
 	},
-	"include": ["src/react-app"]
+	"include": ["src/react-app", "src/shared"]
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
-import { ALL_ROLES } from '@/lib/roles';
+import { ALL_ROLES } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { MercadoPagoLogo } from '@/components/icons/mercadoPago';
 import { Button } from '@/components/ui/button';

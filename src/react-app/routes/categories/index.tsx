@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
-import { ORGANIZER_ROLE } from '@/lib/roles';
+import { ORGANIZER_ROLE } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { FeeCategory, AthleteCategory, SportingEventTypeEnum } from '@/lib/types';
 import React from 'react';

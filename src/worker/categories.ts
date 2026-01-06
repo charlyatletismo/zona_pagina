@@ -3,7 +3,7 @@ import { Env } from './index';
 import { drizzle, DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
 import { athleteCategoryTemplates } from './db/schema';
-import { authorizedOrg } from './lib/roles';
+import { authorizedOrg } from '@shared/roles';
 import { M } from './lib/messages';
 
 

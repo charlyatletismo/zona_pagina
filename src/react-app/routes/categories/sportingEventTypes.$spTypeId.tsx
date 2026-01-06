@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
-import { ORGANIZER_ROLE } from '@/lib/roles';
+import { ORGANIZER_ROLE } from '@shared/roles';
 import { FormBox } from '@/components/formBox';
 import { SportingEventTypeForm } from '@/components/sportingEventTypeForm';
 import { SportingEventTypeEnum } from '@/lib/types';
