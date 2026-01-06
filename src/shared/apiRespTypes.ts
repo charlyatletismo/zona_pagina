@@ -1,5 +1,6 @@
 import z from "zod"
 import {
+  SportingEventBasicInfoSchema,
   SportingEventRegistrationSchema,
   SportingEventClothingSchema,
   SportingEventAthleteCategorySchema,
@@ -7,11 +8,30 @@ import {
 } from './types'
 
 
+
+/////////////////////////////////////////////////////////////////
+//                     /api/sportingEvents                     //
+/////////////////////////////////////////////////////////////////
+
+
+export const SportingEventApiResponseSchema = z.object({
+  open: z.array(SportingEventBasicInfoSchema),
+  comingSoon: z.array(SportingEventBasicInfoSchema),
+  closed: z.array(SportingEventBasicInfoSchema),
+  past: z.array(SportingEventBasicInfoSchema),
+});
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//                     /api/sportingEvents/:id/registration                     //
+//////////////////////////////////////////////////////////////////////////////////
+
+
 const shortClothingSchema = SportingEventClothingSchema.pick({
   id: true,
   clothing_type: true,
   size: true,
-  available_quantity: true,
+  purchased_quantity: true,
   demanded_quantity: true,
   reserved_quantity: true,
 })

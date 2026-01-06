@@ -157,7 +157,7 @@ export const SportingEventClothingSchema = z.object({
   event_id: z.number(),
   clothing_type: z.string().max(64),
   size: z.string().max(8),
-  available_quantity: z.number().default(0),
+  purchased_quantity: z.number().default(0),
   demanded_quantity: z.number().default(0),
   reserved_quantity: z.number().default(0),
 })
@@ -254,6 +254,18 @@ export const SportingEventSchema = z.object({
 });
 
 
+export const SportingEventBasicInfoSchema = SportingEventSchema.pick({
+  id: true,
+  title: true,
+  description: true,
+  date: true,
+  registration_start: true,
+  registration_end: true,
+  location: true,
+  location_address: true,
+})
+
+
 export const SportingEventRegistrationSchema = z.object({
   id: z.number(),
   event_id: SportingEventSchema.shape.id,
@@ -284,37 +296,12 @@ export const SportingEventRegistrationSchema = z.object({
 });
 
 
-export const SportingEventBasicInfoSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  description: z.string().nullable(),
-  date: z.date(),
-  registration_start: z.date().nullable(),
-  registration_end: z.date().nullable(),
-  location: z.string().max(256).nullable(),
-  location_address: z.string().max(256).nullable(),
-});
-
-
-export const SportingEventApiResponseSchema = z.object({
-  open: z.array(SportingEventBasicInfoSchema),
-  comingSoon: z.array(SportingEventBasicInfoSchema),
-  closed: z.array(SportingEventBasicInfoSchema),
-  past: z.array(SportingEventBasicInfoSchema),
-});
-
-
-export type UserType = z.infer<typeof UserSchema>;
-
 export type SportingEventType = z.infer<typeof SportingEventSchema>;
-export type SportingEventBasicInfoType = z.infer<typeof SportingEventBasicInfoSchema>;
 export type SportingEventAthleteCategoryType = z.infer<typeof SportingEventAthleteCategorySchema>;
 export type SportingEventScheduleType = z.infer<typeof SportingEventScheduleSchema>;
 export type SportingEventCircuitType = z.infer<typeof SportingEventCircuitSchema>;
 
 export type AthleteCategoryTemplateType = z.infer<typeof AthleteCategoryTemplateSchema>;
-
-export type SportingEventApiResponseType = z.infer<typeof SportingEventApiResponseSchema>;
 
 
 export type SportingEventTypeEnum =

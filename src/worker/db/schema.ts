@@ -173,7 +173,7 @@ export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
   event_id: int().notNull().references(() => sportingEvents.id),
   clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tanktop" (musculosa)
   size: text({ length: 8 }).notNull(), // e.g., "XS", "S", "M", "L", "XL", "XXL"
-  available_quantity: int().notNull().default(0),
+  purchased_quantity: int().notNull().default(0),
   demanded_quantity: int().notNull().default(0),
   reserved_quantity: int().notNull().default(0),
 });

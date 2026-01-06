@@ -102,7 +102,7 @@ export const getUserRegistration = async (db: DrizzleD1Database, eventId: number
       id: sportingEventClothing.id,
       clothing_type: sportingEventClothing.clothing_type,
       size: sportingEventClothing.size,
-      available_quantity: sportingEventClothing.available_quantity,
+      purchased_quantity: sportingEventClothing.purchased_quantity,
       demanded_quantity: sportingEventClothing.demanded_quantity,
       reserved_quantity: sportingEventClothing.reserved_quantity,
     })

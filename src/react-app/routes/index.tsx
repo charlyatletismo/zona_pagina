@@ -1,14 +1,18 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { CalendarIcon, MapPinIcon } from 'lucide-react'
-import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
-import { getSportingEvents } from '@/lib/apiCalls'
-import { SportingEventBasicInfoType } from '@shared/types'
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { CalendarIcon, MapPinIcon } from 'lucide-react';
+import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
+import { getAuthenticated } from '@/lib/apiCalls';
+import z from 'zod';
+import { SportingEventBasicInfoSchema } from '@shared/types';
+import { SportingEventApiResponseSchema } from '@shared/apiRespTypes';
 
 
 export const Route = createFileRoute('/')({
   component: Index,
   beforeLoad: unprotectedCheck(),
-  loader: getSportingEvents,
+  loader: async () => {
+    return await getAuthenticated<z.infer<typeof SportingEventApiResponseSchema>>('/api/sportingEvents');
+  },
   staleTime: 1000 * 60 * 5,
 })
 
@@ -124,7 +128,7 @@ function Index() {
   )
 }
 
-function EventCard({ event }: { event: SportingEventBasicInfoType }) {
+function EventCard({ event }: { event: z.infer<typeof SportingEventBasicInfoSchema> }) {
   return (
     <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 group-hover:shadow-lg transition-all duration-300 flex flex-col h-full group-hover:-translate-y-1'>
       <div className='flex items-start mb-4'>

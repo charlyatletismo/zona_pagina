@@ -168,9 +168,9 @@ function RouteComponent() {
                 {data.registration.reserved_clothing_id !== 0
                   && !data.registration.reserved_clothing && (
                   <p className="inline-block ml-2 text-sm text-red-500">{
-                    ((data.registration.demanded_clothing?.available_quantity || 0)
+                    ((data.registration.demanded_clothing?.purchased_quantity || 0)
                       - (data.registration.demanded_clothing?.reserved_quantity || 0)) > 0
-                      ? `(Quedan ${(data.registration.demanded_clothing?.available_quantity || 0)
+                      ? `(Quedan ${(data.registration.demanded_clothing?.purchased_quantity || 0)
                       - (data.registration.demanded_clothing?.reserved_quantity || 0)
                       } unidades disponibles)`
                       : '(No quedan unidades disponibles)'

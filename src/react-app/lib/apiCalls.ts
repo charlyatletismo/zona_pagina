@@ -1,15 +1,10 @@
 import { redirect } from '@tanstack/react-router';
-import { SportingEventApiResponseType } from '@shared/types';
 import { clearUserInfo } from './utils';
 
 
-export const getSportingEvents = async () => {
-  return getAuthenticated<SportingEventApiResponseType>('/api/sportingEvents')
-};
-
-
 export const getAuthenticatedThrow = async <T = any>(path: string) => {
-  return getAuthenticated<T>(path,
+  return getAuthenticated<T>(
+    path,
     ({to, reloadDocument}: {to: string, reloadDocument: boolean}) => {
       throw redirect({
         to,

@@ -4,8 +4,8 @@ import { Save, AlertCircle, MapPinnedIcon, Trash2 } from 'lucide-react';
 import { cn, getLang } from '@/lib/utils';
 import { postAuthenticated } from '@/lib/apiCalls'
 import {
-  SportingEventType,
-  AthleteCategoryTemplateType,
+  SportingEventSchema,
+  AthleteCategoryTemplateSchema,
   SportingEventTypesEnum,
   SportingEventTypesEnumDescriptions,
   SportingEventScheduleSchema,
@@ -14,16 +14,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import z from 'zod';
+
+
+const PartialSportingEventSchema = SportingEventSchema.partial()
+const ArrayOfCatTemplates = z.array(AthleteCategoryTemplateSchema)
 
 
 const SportingEventForm = (
     { data, catTemplates } : {
-    data: SportingEventType | null,
-    catTemplates: AthleteCategoryTemplateType[],
+    data: z.infer<typeof SportingEventSchema> | null,
+    catTemplates: z.infer<typeof ArrayOfCatTemplates>,
     }) => {
   const navigate = useNavigate();
   const apiEndpointPath = data === null ? '/api/sportingEvents/create' : `/api/sportingEvents/update/${data.id}`;
-  const [formData, setFormData] = useState<Partial<SportingEventType>>(data || {});
+  const [formData, setFormData] = useState<z.infer<typeof PartialSportingEventSchema>>(data || {});
   const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
