@@ -1,11 +1,41 @@
 import z from "zod"
 import {
+  UserSchema,
   SportingEventBasicInfoSchema,
   SportingEventRegistrationSchema,
   SportingEventClothingSchema,
   SportingEventAthleteCategorySchema,
   TrainingTeamSchema,
 } from './types'
+
+
+///////////////////////////////////////////////////////////
+//                     /api/settings                     //
+///////////////////////////////////////////////////////////
+
+
+export const SettingsSchema = UserSchema.pick({
+  id: true,
+  name: true,
+  surname: true,
+  phone: true,
+  email: true,
+  emergency_contact_name: true,
+  emergency_contact_phone: true,
+  sex: true,
+  date_of_birth: true,
+  clothing_shirt_size: true,
+  location: true,
+  location_temp: true,
+  location_address: true,
+  special_needs: true,
+  discount_percentage: true,
+  manager_id: true,
+  training_team_id: true,
+  training_team_temp: true,
+  profile_image_url: true,
+  language: true,
+}).partial();
 
 
 

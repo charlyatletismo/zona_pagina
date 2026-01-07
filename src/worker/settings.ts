@@ -1,9 +1,12 @@
 import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
+import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { users, userUpdates } from './db/schema';
 import { eq, InferInsertModel } from 'drizzle-orm';
 import { M } from './lib/messages';
+import { SettingsSchema } from '@shared/apiRespTypes';
+
 
 
 export const settingsRoute = new Hono<{ Bindings: Env }>()
@@ -11,35 +14,21 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const userId = c.get('jwtPayload').id;
     const user = await db
-      .select({
-        id: users.id,
-        name: users.name,
-        surname: users.surname,
-        phone: users.phone,
-        email: users.email,
-        emergency_contact_name: users.emergency_contact_name,
-        emergency_contact_phone: users.emergency_contact_phone,
-        sex: users.sex,
-        date_of_birth: users.date_of_birth,
-        clothing_shirt_size: users.clothing_shirt_size,
-        location: users.location,
-        location_temp: users.location_temp,
-        location_address: users.location_address,
-        special_needs: users.special_needs,
-        discount_percentage: users.discount_percentage,
-        manager_id: users.manager_id,
-        training_team_id: users.training_team_id,
-        training_team_temp: users.training_team_temp,
-        profile_image_url: users.profile_image_url,
-        language: users.language,
-      })
+      .select(
+        SettingsSchema.keyof().options.reduce((acc, field) => {
+            acc[field] = users[field];
+            return acc;
+          },
+          {} as SelectedFields
+        )
+      )
       .from(users)
       .where(eq(users.id, userId))
       .get();
     if (!user) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
-    return c.json(user);
+    return c.json({ data: SettingsSchema.parse(user) });
   })
   .post("/", async (c) => {
     const db = drizzle(c.env.DB);

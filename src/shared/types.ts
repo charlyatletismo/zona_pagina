@@ -15,13 +15,13 @@ export const UserSchema = z.object({
   emergency_contact_name: z.string().nullable(),
   emergency_contact_phone: z.string().nullable(),
   sex: z.string().max(1).nullable(),
-  date_of_birth: z.date().nullable(),
+  date_of_birth: z.coerce.date().nullable(),
   clothing_shirt_size: z.string().max(8).nullable(),
   location: z.string().max(256).nullable(),
   location_temp: z.string().max(256).nullable(),
   location_address: z.string().max(256).nullable(),
   special_needs: z.string().max(512).nullable(),
-  discount_percentage: z.number().nullable().default(0),
+  discount_percentage: z.number().default(0),
   manual_athlete_category: z.string().max(64).nullable(),
   manager_id: z.string().max(USER_ID_MAX_LENGTH).nullable(),
   training_team_id: z.number().nullable(),
@@ -29,11 +29,12 @@ export const UserSchema = z.object({
   profile_image_url: z.string().max(512).nullable(),
   profile_image_preview_url: z.string().max(512).nullable(),
   language: z.string().max(2).nullable(),
-  temp_code: z.string().nullable(),
-  role: z.enum(ALL_ROLES).nullable(),
-  created_at: z.date().nullable(),
-  updated_at: z.date().nullable(),
+  temp_code: z.string().max(6).nullable(),
+  role: z.enum(ALL_ROLES),
+  created_at: z.date(),
+  updated_at: z.date(),
 });
+
 
 export interface User {
   id: string;
