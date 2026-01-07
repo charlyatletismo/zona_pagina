@@ -394,9 +394,30 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
           )}
         />
 
+        <form.AppField
+          name="location_address"
+          children={(field) => (
+            <div className="space-y-2">
+              <field.Label htmlFor={field.name}>Dirección</field.Label>
+              <field.Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value || ''}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={() => field.handleBlur()}
+                className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                placeholder="Calle, altura, piso, departamento, etc."
+                required
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
       {/* ******* TODO ******* */}
       {/* Imagen de perfil: NO por ahora */}
-      {/* Dirección */}
       {/* Fecha de nacimiento */}
       {/* Contacto de emergencia: Nombre */}
       {/* Contacto de emergencia: Celular */}
