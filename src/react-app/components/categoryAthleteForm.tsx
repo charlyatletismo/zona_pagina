@@ -1,39 +1,10 @@
-import { createFormHook, createFormHookContexts } from '@tanstack/react-form';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Spinner } from './ui/spinner';
 import { AthleteCategory, FeeCategory } from '@shared/types';
 import { postAuthenticated } from '@/lib/apiCalls';
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useNavigate } from '@tanstack/react-router';
-
-
-const { fieldContext, formContext } = createFormHookContexts()
-
-
-const { useAppForm } = createFormHook({
-  fieldComponents: {
-    Input,
-    Label,
-    Select,
-  },
-  formComponents: {
-    Button,
-  },
-  fieldContext,
-  formContext,
-});
+import { useAppForm } from '@/lib/genForm';
 
 
 export const CategoryAthleteForm = ({athCat, feeCats}: {athCat: AthleteCategory | null, feeCats: FeeCategory[]}) => {
@@ -131,20 +102,20 @@ export const CategoryAthleteForm = ({athCat, feeCats}: {athCat: AthleteCategory 
                   value={field.state.value.toString()}
                   onValueChange={(e: string) => field.handleChange(Number(e))}
                 >
-                  <SelectTrigger
+                  <field.SelectTrigger
                     onBlur={() => field.handleBlur()}
                     className={!field.state.meta.isValid ? 'w-full border-destructive' : 'w-full'}
                   >
-                    <SelectValue placeholder="Tarifa" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Tarifa</SelectLabel>
+                    <field.SelectValue placeholder="Tarifa" />
+                  </field.SelectTrigger>
+                  <field.SelectContent>
+                    <field.SelectGroup>
+                      <field.SelectLabel>Tarifa</field.SelectLabel>
                       {feeCats.map((fc) => (
-                        <SelectItem key={fc.id} value={fc.id.toString()}>{fc.name}</SelectItem>
+                        <field.SelectItem key={fc.id} value={fc.id.toString()}>{fc.name}</field.SelectItem>
                       ))}
-                    </SelectGroup>
-                  </SelectContent>
+                    </field.SelectGroup>
+                  </field.SelectContent>
                 </field.Select>
               </div>
 
@@ -188,17 +159,17 @@ export const CategoryAthleteForm = ({athCat, feeCats}: {athCat: AthleteCategory 
                   value={field.state.value}
                   onValueChange={(e: string) => field.handleChange(e)}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Unisex" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Sexo</SelectLabel>
-                      <SelectItem value={null}>Unisex</SelectItem>
-                      <SelectItem value="M">Masculino</SelectItem>
-                      <SelectItem value="F">Femenino</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
+                  <field.SelectTrigger className="w-full">
+                    <field.SelectValue placeholder="Unisex" />
+                  </field.SelectTrigger>
+                  <field.SelectContent>
+                    <field.SelectGroup>
+                      <field.SelectLabel>Sexo</field.SelectLabel>
+                      <field.SelectItem value={null}>Unisex</field.SelectItem>
+                      <field.SelectItem value="M">Masculino</field.SelectItem>
+                      <field.SelectItem value="F">Femenino</field.SelectItem>
+                    </field.SelectGroup>
+                  </field.SelectContent>
                 </field.Select>
               </div>
               {!field.state.meta.isValid && (
