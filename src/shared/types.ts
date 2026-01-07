@@ -4,35 +4,76 @@ import { ALL_ROLES } from './roles';
 
 
 const USER_ID_MAX_LENGTH = 28;
+const now = new Date();
+const minAgeRequired = 13;
+const maxDateOfBirth = new Date(
+  now.getFullYear() - minAgeRequired,
+  now.getMonth(),
+  now.getDate()
+);
+// FIXME: No sé si hace falta // Update maxDateOfBirth every day
+// setInterval(() => {
+//   const now = new Date();
+//   maxDateOfBirth.setFullYear(now.getFullYear() - minAgeRequired);
+//   maxDateOfBirth.setMonth(now.getMonth());
+//   maxDateOfBirth.setDate(now.getDate());
+// }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+
 
 
 export const UserSchema = z.object({
-  id: z.string().max(USER_ID_MAX_LENGTH),
-  name: z.string().nullable(),
-  surname: z.string().nullable(),
-  phone: z.string().nullable(),
-  email: z.string().nullable(),
-  emergency_contact_name: z.string().nullable(),
-  emergency_contact_phone: z.string().nullable(),
-  sex: z.string().max(1).nullable(),
-  date_of_birth: z.coerce.date().nullable(),
-  clothing_shirt_size: z.string().max(8).nullable(),
-  location: z.string().max(256).nullable(),
-  location_temp: z.string().max(256).nullable(),
-  location_address: z.string().max(256).nullable(),
-  special_needs: z.string().max(512).nullable(),
-  discount_percentage: z.number().default(0),
-  manual_athlete_category: z.string().max(64).nullable(),
-  manager_id: z.string().max(USER_ID_MAX_LENGTH).nullable(),
+  id: z.string()
+    .max(USER_ID_MAX_LENGTH, 'El ID del usuario no puede exceder los 28 caracteres'),
+  name: z.string(),
+  surname: z.string(),
+  phone: z.string(),
+  email: z.email(),
+  emergency_contact_name: z.string(),
+  emergency_contact_phone: z.string(),
+  sex: z.string()
+    .max(1, 'El sexo debe contener solo 1 caracter'),
+  date_of_birth: z.coerce.date()
+    .max(maxDateOfBirth, `Debe tener al menos ${minAgeRequired} años`),
+  clothing_shirt_size: z.string()
+    .max(8, 'El tamaño de la camiseta no existe'),
+  location: z.string()
+    .max(256, 'La ubicación no puede exceder los 256 caracteres'),
+  location_temp: z.string()
+    .max(256, 'La ubicación temporal no puede exceder los 256 caracteres')
+    .nullable(),
+  location_address: z.string()
+    .max(256, 'La dirección no puede exceder los 256 caracteres'),
+  special_needs: z.string()
+    .max(512, 'Las necesidades especiales no pueden exceder los 512 caracteres')
+    .nullable(),
+  discount_percentage: z.number()
+    .max(100, 'El porcentaje de descuento no puede exceder 100%')
+    .default(0),
+  manual_athlete_category: z.string()
+    .max(64, 'La categoría manual no puede exceder los 64 caracteres')
+    .nullable(),
+  manager_id: z.string()
+    .max(USER_ID_MAX_LENGTH, 'El ID del manager no puede exceder los 28 caracteres')
+    .nullable(),
   training_team_id: z.number().nullable(),
-  training_team_temp: z.string().max(128).nullable(),
-  profile_image_url: z.string().max(512).nullable(),
-  profile_image_preview_url: z.string().max(512).nullable(),
-  language: z.string().max(2).nullable(),
-  temp_code: z.string().max(6).nullable(),
-  role: z.enum(ALL_ROLES),
-  created_at: z.date(),
-  updated_at: z.date(),
+  training_team_temp: z.string()
+    .max(128, 'El nombre del equipo de entrenamiento temporal no puede exceder los 128 caracteres')
+    .nullable(),
+  profile_image_url: z.string()
+    .max(512, 'La URL de la imagen de perfil no puede exceder los 512 caracteres')
+    .nullable(),
+  profile_image_preview_url: z.string()
+    .max(512, 'La URL de la vista previa de la imagen de perfil no puede exceder los 512 caracteres')
+    .nullable(),
+  language: z.string()
+    .max(2, 'El código de idioma no puede exceder los 2 caracteres')
+    .default('es'),
+  temp_code: z.string()
+    .max(6, 'El código temporal no puede exceder los 6 caracteres')
+    .nullable(),
+  role: z.enum(ALL_ROLES, 'El rol del usuario no es válido'),
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
 });
 
 

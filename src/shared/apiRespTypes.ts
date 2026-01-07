@@ -35,7 +35,7 @@ export const SettingsSchema = UserSchema.pick({
   training_team_temp: true,
   profile_image_url: true,
   language: true,
-}).partial();
+});
 
 
 
@@ -82,8 +82,6 @@ export const SportingEventRegistrationApiResponseSchema = z.object({
     status: true,
     full_payment_date: true,
     updated_at: true,
-    demanded_clothing: true,
-    reserved_clothing: true,
   }).extend({
     demanded_clothing: shortClothingSchema.nullable(),
     reserved_clothing: shortClothingSchema.nullable(),

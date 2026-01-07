@@ -3,10 +3,9 @@ import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { users, userUpdates } from './db/schema';
-import { eq, InferInsertModel } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { M } from './lib/messages';
 import { SettingsSchema } from '@shared/apiRespTypes';
-
 
 
 export const settingsRoute = new Hono<{ Bindings: Env }>()
@@ -28,32 +27,14 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     if (!user) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
-    return c.json({ data: SettingsSchema.parse(user) });
+    return c.json({ data: user });
   })
   .post("/", async (c) => {
     const db = drizzle(c.env.DB);
     const userId: string = c.get('jwtPayload').id;
     const body = await c.req.json();
 
-    const updates: Partial<InferInsertModel<typeof users>> = {
-      name: body.name,
-      surname: body.surname,
-      phone: body.phone,
-      email: body.email,
-      emergency_contact_name: body.emergency_contact_name,
-      emergency_contact_phone: body.emergency_contact_phone,
-      sex: body.sex,
-      date_of_birth: body.date_of_birth,
-      clothing_shirt_size: body.clothing_shirt_size,
-      location: body.location,
-      location_temp: body.location_temp,
-      location_address: body.location_address,
-      training_team_id: body.training_team_id,
-      training_team_temp: body.training_team_temp,
-      profile_image_url: body.profile_image_url,
-      profile_image_preview_url: body.profile_image_preview_url,
-      language: body.language,
-    };
+    const updates = SettingsSchema.omit({ id: true }).parse(body);
 
     const userBeforeUpdate = await db
       .select({phone: users.phone, email: users.email})
@@ -64,7 +45,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     if (!userBeforeUpdate) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
-    if (updates.phone && updates.phone !== userBeforeUpdate.phone) {
+    if (updates.phone !== userBeforeUpdate.phone) {
       await db.insert(userUpdates).values({
         user_id: userId,
         field_name: 'phone',
@@ -73,7 +54,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
         updated_by: userId,
       }).run();
     }
-    if (updates.email && updates.email !== userBeforeUpdate.email) {
+    if (updates.email !== userBeforeUpdate.email) {
       await db.insert(userUpdates).values({
         user_id: userId,
         field_name: 'email',
@@ -86,6 +67,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     await db.update(users)
       .set({
         ...updates,
+        date_of_birth: updates.date_of_birth ? updates.date_of_birth.toISOString() : null,
         updated_at: new Date().toISOString(),
       })
       .where(eq(users.id, userId))
