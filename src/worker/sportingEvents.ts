@@ -4,7 +4,11 @@ import { drizzle } from 'drizzle-orm/d1';
 import { authorizedAthMan, authorizedOrg } from '@shared/roles';
 import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
-import { getUserRegistration } from "./lib/sportingEventRegistrations";
+import {
+  getUserRegistration,
+  getManagedUsersRegistrations,
+  getAllUsersRegistrations
+} from "./lib/sportingEventRegistrations";
 import { SportingEventFormData } from "./lib/types";
 import { M } from "./lib/messages";
 
@@ -53,6 +57,25 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     if (!res) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
     }
+    return c.json({ data: res });
+  })
+  .get("/:id/allRegistrations", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const res = await getAllUsersRegistrations(db, Number(id));
+    return c.json({ data: res });
+  })
+  .get("/:id/managedRegistrations", async (c) => {
+    if (!authorizedAthMan(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const userId: string = c.get('jwtPayload').id;
+    const res = await getManagedUsersRegistrations(db, Number(id), userId);
     return c.json({ data: res });
   })
   .post("/create", async (c) => {

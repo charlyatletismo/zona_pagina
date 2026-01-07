@@ -3,7 +3,8 @@ import {
   sportingEventRegistrations,
   sportingEventAthleteCategories,
   sportingEventClothing,
-  trainingTeams
+  trainingTeams,
+  users
 } from '../db/schema'
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 
@@ -122,4 +123,67 @@ export const getUserRegistration = async (db: DrizzleD1Database, eventId: number
     training_team: registration.training_teams || null,
     clothing: clothing || null,
   };
+}
+
+
+export const getManagedUsersRegistrations = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  managerId: string
+) => {
+  // Only for admin and organizer roles
+  const registrations = await db
+    .select({
+      users: {
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+        phone: users.phone,
+        email: users.email,
+        emergency_contact_phone: users.emergency_contact_phone,
+      },
+      sporting_event_registrations: {
+        id: sportingEventRegistrations.id,
+        user_id: sportingEventRegistrations.user_id,
+        category_id: sportingEventRegistrations.category_id,
+        registration_date: sportingEventRegistrations.registration_date,
+        discount_percentage: sportingEventRegistrations.discount_percentage,
+        discount_reason: sportingEventRegistrations.discount_reason,
+        fee_amount_original: sportingEventRegistrations.fee_amount_original,
+        fee_amount_after_discount: sportingEventRegistrations.fee_amount_after_discount,
+        paid_amount: sportingEventRegistrations.paid_amount,
+        demanded_clothing_id: sportingEventRegistrations.demanded_clothing_id,
+        reserved_clothing_id: sportingEventRegistrations.reserved_clothing_id,
+        special_needs: sportingEventRegistrations.special_needs,
+        status: sportingEventRegistrations.status,
+        full_payment_date: sportingEventRegistrations.full_payment_date,
+        updated_at: sportingEventRegistrations.updated_at,
+      },
+      training_teams: {
+        name: trainingTeams.name,
+      }
+    })
+    .from(users)
+    .where(eq(users.manager_id, managerId))
+    .innerJoin(sportingEventRegistrations, and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      eq(sportingEventRegistrations.user_id, users.id)
+    ))
+    .leftJoin(
+      trainingTeams,
+      eq(sportingEventRegistrations.training_team_id, trainingTeams.id)
+    )
+    .all();
+  return registrations;
+}
+
+
+export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: number) => {
+  // Only for admin and organizer roles
+  const registrations = await db
+    .select()
+    .from(sportingEventRegistrations)
+    .where(eq(sportingEventRegistrations.event_id, eventId))
+    .all();
+  return registrations;
 }
