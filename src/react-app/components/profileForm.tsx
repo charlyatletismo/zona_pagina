@@ -1,17 +1,23 @@
-import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Spinner } from '@/components/ui/spinner';
-import { AlertCircle, Save, ListRestartIcon } from 'lucide-react';
-import { getMessage } from '@/lib/utils';
-import { postAuthenticated } from '@/lib/apiCalls';
-import { SettingsSchema } from '@shared/apiRespTypes';
+import { useNavigate } from '@tanstack/react-router';
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
+import { cn, getMessage } from '@/lib/utils';
+import { SettingsSchema } from '@shared/apiRespTypes';
+import { postAuthenticated } from '@/lib/apiCalls';
+import { Spinner } from '@/components/ui/spinner';
+import {
+  AlertCircle,
+  Save,
+  ListRestartIcon,
+  ChevronsUpDown,
+  Check,
+  ScanFaceIcon,
+} from 'lucide-react';
 
 
 export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<typeof SettingsSchema>, locations: string[], postUrl: string }) => {
   const navigate = useNavigate();
-  console.log("Locations in ProfileForm:", locations);
 
   const now = new Date();
   const minAgeRequired = 13;
@@ -24,6 +30,16 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  /* Combobox open/closed state */
+  const [openLocations, setOpenLocations] = useState(false);
+  const [otherLocation, setOtherLocation] = useState(false);
+
+  const lowerAndRemoveDiacritics = (s: string) => {
+    // Normalize the string to the NFD form, separating base characters from diacritics.
+    // The 'g' flag ensures global replacement (all occurrences).
+    // The 'u' flag enables Unicode property escapes like \p{Diacritic}.
+    return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  }
   const capitalize = (s: string) => {
     if (s.length === 0) return s;
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
@@ -271,47 +287,101 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
           children={(field) => (
             <div className="space-y-2">
               <field.Label htmlFor={field.name}>Localidad</field.Label>
-              <div className='flex items-center'>
-                <field.Select
-                  name={field.name}
-                  value={field.state.value || ""}
-                  onValueChange={(e: string) => field.handleChange(e)}
-                >
-                  <field.SelectTrigger className="w-full">
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Localidad</field.SelectLabel>
-                      {locations.map((location) => (
-                        <field.SelectItem key={location} value={location}>
-                          {location}
-                        </field.SelectItem>
-                      ))}
-                      <field.SelectItem key="other" value="other">
-                        Otra (especificar)
-                      </field.SelectItem>
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
-              </div>
+              <field.Popover
+                open={openLocations}
+                onOpenChange={setOpenLocations}
+              >
+                <field.PopoverTrigger asChild>
+                  <form.Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openLocations}
+                    className={`w-full justify-between ${!field.state.meta.isValid ? 'border-destructive' : ''}`}
+                  >
+                    <div className='w-full overflow-hidden text-left'>
+                      {!otherLocation
+                        ? (field.state.value || '...')
+                        : 'Otra (especificar debajo)'}
+                    </div>
+                    <ChevronsUpDown className="opacity-50" />
+                  </form.Button>
+                </field.PopoverTrigger>
+                <field.PopoverContent className="w-auto p-0">
+                  <field.Command
+                    filter={(value, search) => {
+                      if (
+                        lowerAndRemoveDiacritics(value)
+                          .includes(lowerAndRemoveDiacritics(search))) return 1
+                      return 0
+                    }}
+                  >
+                    <field.CommandInput placeholder="Buscar localidad..." lang='es' />
+                    <field.CommandList>
+                      <field.CommandEmpty
+                        className={
+                          'hover:bg-amber-100 cursor-pointer '
+                          + 'text-center text-wrap text-sm '
+                          + 'm-2 px-4 py-2 rounded '
+                          + ''
+                        }
+                        onClick={() => {
+                          field.handleChange('');
+                          setOpenLocations(false);
+                          setOtherLocation(true);
+                        }}
+                      >
+                        <div>
+                          No se encontró la localidad
+                        </div>
+                        <div>
+                          Solicitar crearla
+                        </div>
+                        <ScanFaceIcon className="inline-block mt-2 mb-1 w-4 h-4 animate-bounce" />
+                      </field.CommandEmpty>
+                      <field.CommandGroup>
+                        {locations.map((location) => (
+                          <field.CommandItem
+                            key={location}
+                            value={location}
+                            onSelect={(value) => {
+                              field.handleChange(value);
+                              field.form.setFieldValue('location_temp', '');
+                              setOpenLocations(false);
+                              setOtherLocation(false);
+                            }}
+                            className={field.state.value === location ? "bg-green-100" : ""}
+                          >
+                            {location}
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                field.state.value === location ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </field.CommandItem>
+                        ))}
+                      </field.CommandGroup>
+                    </field.CommandList>
+                  </field.Command>
+                </field.PopoverContent>
+              </field.Popover>
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* Debe indicar una</div>
               )}
-              {field.state.value === 'other' && (
+              {otherLocation && (
                 <form.AppField
                   name="location_temp"
                   children={(subField) => (
                     <div className="mt-2">
                       <subField.Input
-                        id={subField.name + "_custom"}
-                        name={subField.name + "_custom"}
+                        id={subField.name}
+                        name={subField.name}
                         placeholder="Especificar localidad"
                         value={subField.state.value || ''}
                         onChange={(e) => subField.handleChange(e.target.value)}
                         onBlur={() => subField.handleBlur()}
                         className={!subField.state.meta.isValid ? 'border-destructive' : ''}
-                        required={field.state.value === 'other'}
+                        required={otherLocation}
                       />
                       {!subField.state.meta.isValid && (
                         <div className='ml-auto text-xs text-destructive'>* Debe indicar una</div>
@@ -365,6 +435,7 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
               onClick={(event) => {
                 event.preventDefault()
                 form.reset()
+                setOtherLocation(false);
               }}
             >
               <>

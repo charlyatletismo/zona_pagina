@@ -22,7 +22,6 @@ export const Route = createFileRoute('/settings/profile')({
 
 function RouteComponent() {
   const { profileApi, locationsApi } = Route.useLoaderData();
-  console.log("Locations API data:", locationsApi);
   return (
     <FormBox
       title="Editar Perfil"
