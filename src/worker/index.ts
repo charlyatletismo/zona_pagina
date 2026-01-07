@@ -10,6 +10,7 @@ import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
 import { athleteCategoryTemplatesRoute } from "./categories";
 import { M } from "./lib/messages";
+import { locationsRoute } from "./locations";
 
 
 export interface Env {
@@ -60,6 +61,7 @@ export default {
         app.route('/api/settings', settingsRoute);
         app.route('/api/sportingEventRegistrations', sportingEventRegistrationsRoute);
         app.route('/api/users', usersRoute);
+        app.route('/api/locations', locationsRoute);
         app.route('/api/athleteCategoryTemplates', athleteCategoryTemplatesRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
