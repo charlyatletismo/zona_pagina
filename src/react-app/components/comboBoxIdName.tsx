@@ -96,6 +96,7 @@ export const ComboBoxIdName = ({
                 onClick={() => {
                   onChange("");
                   setOpen(false);
+                  onBlur();
                 }}
               >
                  <span className="text-xs text-red-900 mr-2 font-semibold">Borrar selección</span>
@@ -117,6 +118,7 @@ export const ComboBoxIdName = ({
                   onChange(valKey || '');
                   valKeySetter(searchValue);
                   setOpen(false);
+                  onBlur();
                 }}
               >
                 <div>
@@ -139,6 +141,7 @@ export const ComboBoxIdName = ({
                     onSelect={(value) => {
                       onChange(value);
                       setOpen(false);
+                      onBlur();
                     }}
                     className={value === element.id ? "bg-green-100" : ""}
                   >

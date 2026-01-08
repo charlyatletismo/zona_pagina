@@ -99,7 +99,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     } else {
       filteredUser = user;
     }
-    return c.json(filteredUser);
+    return c.json({ data: filteredUser });
   })
   .post("/:id/setRole", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload')?.role)) {

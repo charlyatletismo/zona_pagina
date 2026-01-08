@@ -3,6 +3,7 @@ import z from "zod";
 import { ALL_ROLES } from './roles';
 
 
+const USER_ID_MIN_LENGTH = 7;
 const USER_ID_MAX_LENGTH = 28;
 const now = new Date();
 const minAgeRequired = 13;
@@ -25,9 +26,12 @@ export const TEMPORARY_LOCATION_ID = 'temporary_location';
 
 export const UserSchema = z.object({
   id: z.string({error: 'Debes ingresar tu DNI'})
-    .max(USER_ID_MAX_LENGTH, 'El ID del usuario no puede exceder los 28 caracteres'),
-  name: z.string({error: 'Debes ingresar tu nombre'}),
-  surname: z.string({error: 'Debes ingresar tu apellido'}),
+    .min(USER_ID_MIN_LENGTH, `El ID del usuario debe tener al menos ${USER_ID_MIN_LENGTH} caracteres`)
+    .max(USER_ID_MAX_LENGTH, `El ID del usuario no puede exceder los ${USER_ID_MAX_LENGTH} caracteres`),
+  name: z.string({error: 'Debes ingresar tu nombre'})
+    .min(2, 'El nombre debe tener al menos 2 caracteres'),
+  surname: z.string({error: 'Debes ingresar tu apellido'})
+    .min(2, 'El apellido debe tener al menos 2 caracteres'),
   phone: z.string({error: 'Debes ingresar un número de celular válido'})
     .min(15, 'Debe tener al menos 15 dígitos')
     .max(16, 'No puede exceder los 16 dígitos'),
@@ -42,6 +46,7 @@ export const UserSchema = z.object({
     ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     {error: 'Debes indicar el tamaño de la camiseta'}),
   location: z.string()
+    .min(1, 'Debes ingresar una ubicación')
     .max(256, 'La ubicación no puede exceder los 256 caracteres'),
   location_temp: z.string()
     .max(256, 'La ubicación temporal no puede exceder los 256 caracteres')

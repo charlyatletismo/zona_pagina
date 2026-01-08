@@ -108,6 +108,9 @@ export const ProfileForm = ({
       const res = await postAuthenticated(postUrl, value, navigate);
       if (res.status !== 200) {
         setError(getMessage(res.body?.message, 'Error al actualizar el perfil'));
+        setTimeout(() => {
+          setError('');
+        }, 1500);
         return;
       }
       setSuccess('Perfil actualizado correctamente');
@@ -334,7 +337,7 @@ export const ProfileForm = ({
                 }}
               />
               {!field.state.meta.isValid && (
-                <div className='ml-auto text-xs text-destructive'>* Debe indicar una</div>
+                <div className='ml-auto text-xs text-destructive'>* Debe indicar una localidad</div>
               )}
               {field.state.value === TEMPORARY_LOCATION_ID && (
                 <form.AppField
@@ -581,7 +584,7 @@ export const ProfileForm = ({
                 name={field.name}
                 value={field.state.value?.toString() || ""}
                 onChange={(value) => {
-                  field.handleChange(Number(value));
+                  field.handleChange(value ? Number(value) : null);
                 }}
                 onBlur={field.handleBlur}
                 placeholder="Seleccionar o escribir equipo de entrenamiento"
