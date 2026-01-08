@@ -25,7 +25,7 @@ export const ProfileForm = ({
   trainingTeams,
   postUrl
 } : {
-  profile: z.infer<typeof SettingsSchema>,
+  profile: z.infer<typeof SettingsSchema> | null,
   locations: string[],
   trainingTeams: z.infer<typeof TrainingTeamsApiResponseSchema>,
   postUrl: string
@@ -39,7 +39,7 @@ export const ProfileForm = ({
     now.getMonth(),
     now.getDate()
   );
-  if (profile.date_of_birth) {
+  if (profile && profile.date_of_birth) {
     profile.date_of_birth = SettingsSchema
       .shape
       .date_of_birth
@@ -72,7 +72,7 @@ export const ProfileForm = ({
       authorizedOrg(localStorage.getItem('USER_ROLE'))
       || (
         authorizedAthMan(localStorage.getItem('USER_ROLE'))
-        && profile.special_needs
+        && profile?.special_needs
       )
     )
   );
@@ -89,7 +89,7 @@ export const ProfileForm = ({
   }
 
   const form = useAppForm({
-    defaultValues: profile,
+    defaultValues: profile || undefined,
     validators: {
       onBlur: SettingsSchema.required().extend({
         date_of_birth: z.date({
@@ -177,7 +177,7 @@ export const ProfileForm = ({
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
-                  disabled={true}
+                  disabled={!!profile}
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 />
                 {!field.state.meta.isValid && (
@@ -186,7 +186,9 @@ export const ProfileForm = ({
               </div>
             )}
           />
-          <p className="text-xs text-gray-400">El DNI no se puede cambiar. Contactar al administrador si necesita cambiarlo.</p>
+          {!!profile && ( 
+            <p className="text-xs text-gray-400">El DNI no se puede cambiar. Contactar al administrador si necesita cambiarlo.</p>
+          )}
         </div>
 
         <form.AppField
