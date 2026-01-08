@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { SettingsSchema } from '@shared/apiRespTypes';
+import { SettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
 import { FormBox } from '@/components/formBox';
@@ -14,14 +14,17 @@ export const Route = createFileRoute('/settings/profile')({
     const profileApi = await getAuthenticatedThrow<
       z.infer<typeof SettingsSchema>>('/api/settings');
     const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
-    return { profileApi, locationsApi };
+    const tteamsApi = await getAuthenticatedThrow<
+      z.infer<typeof TrainingTeamsApiResponseSchema>
+    >('/api/trainingTeams');
+    return { profileApi, locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time
 })
 
 
 function RouteComponent() {
-  const { profileApi, locationsApi } = Route.useLoaderData();
+  const { profileApi, locationsApi, tteamsApi } = Route.useLoaderData();
   return (
     <FormBox
       title="Editar Perfil"
@@ -33,12 +36,15 @@ function RouteComponent() {
         ? "Error al cargar la información del perfil. Por favor intenta recargar la página."
         : locationsApi.status !== 200
           ? "Error al cargar las ubicaciones. Por favor intenta recargar la página."
-          : null
+            : tteamsApi.status !== 200
+              ? "Error al cargar los equipos de entrenamiento. Por favor intenta recargar la página."
+              : null
       }
     >
       <ProfileForm
         profile={profileApi.body.data}
         locations={locationsApi.body.data}
+        trainingTeams={tteamsApi.body.data}
         postUrl='/api/settings'
       />
     </FormBox>
