@@ -39,6 +39,12 @@ export const ProfileForm = ({
     now.getMonth(),
     now.getDate()
   );
+  if (profile.date_of_birth) {
+    profile.date_of_birth = SettingsSchema
+      .shape
+      .date_of_birth
+      .parse(profile.date_of_birth);
+  }
   if (locations) {
     locations.sort((a, b) => {
       // const coA = a.split(", ")[2];
@@ -58,27 +64,38 @@ export const ProfileForm = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  /* Combobox open/closed state */
-  const [openLocations, setOpenLocations] = useState(false);
-  const [otherLocation, setOtherLocation] = useState(false);
+  const [openDOB, setOpenDOB] = useState(false);
 
-  const lowerAndRemoveDiacritics = (s: string) => {
-    // Normalize the string to the NFD form, separating base characters from diacritics.
-    // The 'g' flag ensures global replacement (all occurrences).
-    // The 'u' flag enables Unicode property escapes like \p{Diacritic}.
-    return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-  }
+  const specialFieldsShow = (
+    postUrl !== SETTINGS_API_PATH
+    && (
+      authorizedOrg(localStorage.getItem('USER_ROLE'))
+      || (
+        authorizedAthMan(localStorage.getItem('USER_ROLE'))
+        && profile.special_needs
+      )
+    )
+  );
+  const specialFieldsEditable = !authorizedOrg(localStorage.getItem('USER_ROLE'));
+
   const capitalize = (s: string) => {
     if (s.length === 0) return s;
-    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+    return s.split(" ")
+      .map(word =>
+        word.charAt(0).toUpperCase()
+        + word.slice(1).toLowerCase()
+      )
+      .join(" ");
   }
 
   const form = useAppForm({
     defaultValues: profile,
     validators: {
       onBlur: SettingsSchema.required().extend({
-        date_of_birth: z.date().max(
-          maxDateOfBirth, `Debe tener al menos 13 años`
+        date_of_birth: z.date({
+          error: "Debes indicar tu fecha de nacimiento"
+        }).max(
+          maxDateOfBirth, `Debes tener al menos ${minAgeRequired} años`
         ),
       })
     },
@@ -95,7 +112,7 @@ export const ProfileForm = ({
       }
       setSuccess('Perfil actualizado correctamente');
       let req = '';
-      if (postUrl === '/api/settings') {
+      if (postUrl === SETTINGS_API_PATH) {
         // only for profile settings update
         req = localStorage.getItem('REQUIRE_PROFILE_UPDATE') || '';
         localStorage.setItem('REQUIRE_PROFILE_UPDATE', '');
