@@ -1,21 +1,25 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserProfile } from '@shared/types';
+import { UserSchema } from '@shared/types';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { ProfileForm } from '@/components/profileForm';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import z from 'zod';
+import { TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { FormBox } from '@/components/formBox';
 
 
 export const Route = createFileRoute('/users/$userId/edit')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
-    console.log('Loading edit route for userId:', params.userId);
-    const profileApi = await getAuthenticatedThrow(`/api/users/${params.userId}`);
-    const profile: UserProfile = profileApi.body.data;
-    return { profile, status: profileApi.status};
+    const userApiRes = await getAuthenticatedThrow<
+      z.infer<typeof UserSchema>>(`/api/users/${params.userId}`);
+    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
+    const tteamsApi = await getAuthenticatedThrow<
+      z.infer<typeof TrainingTeamsApiResponseSchema>
+    >('/api/trainingTeams');
+    return { userApiRes, locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time
 })
@@ -23,33 +27,33 @@ export const Route = createFileRoute('/users/$userId/edit')({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  const res = Route.useLoaderData();
-  const navigate = useNavigate();
+  const { userApiRes, locationsApi, tteamsApi } = Route.useLoaderData();
 
-  if (res.status !== 200) {
+  if (userApiRes.status !== 200) {
     return <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil. Por favor intenta recargar la página.</div>;
   }
   return (
-    <div className="p-4 w-full md:max-w-2xl mx-auto">
-      <Button
-        variant="ghost"
-        className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-        onClick={() => navigate({ to: '..' })}
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Volver atrás
-      </Button>
-
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">Editar Perfil</h2>
-          <p className="text-gray-500 text-sm mt-1">
-            Ajustar perfil de usuario.
-          </p>
-        </div>
-
-        <ProfileForm profile={res.profile} postUrl={`/api/users/${userId}/update`} />
-      </div>
-    </div>
+    <FormBox
+      title="Editar Perfil"
+      description="Ajustar perfil de usuario."
+      returnText="Volver al perfil"
+      returnPath='..'
+      error={
+        userApiRes.status !== 200
+          ? "Error al cargar la información del perfil. Por favor intenta recargar la página."
+          : locationsApi.status !== 200
+            ? "Error al cargar las ubicaciones. Por favor intenta recargar la página."
+            : tteamsApi.status !== 200
+              ? "Error al cargar los equipos de entrenamiento. Por favor intenta recargar la página."
+              : null
+      }
+    >
+      <ProfileForm
+        profile={userApiRes.body.data}
+        locations={locationsApi.body.data}
+        trainingTeams={tteamsApi.body.data}
+        postUrl={`/api/users/${userId}/update`}
+      />
+    </FormBox>
   );
 }

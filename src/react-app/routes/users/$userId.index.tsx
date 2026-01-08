@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import z from 'zod';
 import { Button } from '@/components/ui/button'
 import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserProfile } from '@shared/types';
+import { UserSchema } from '@shared/types';
 import { Profile } from '@/components/profileCard';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 
@@ -12,9 +13,9 @@ export const Route = createFileRoute('/users/$userId/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
-    const profileApi = await getAuthenticatedThrow(`/api/users/${params.userId}`);
-    const profile: UserProfile = profileApi.body.data;
-    return { profile, status: profileApi.status};
+    const userApiRes = await getAuthenticatedThrow<
+      z.infer<typeof UserSchema>>(`/api/users/${params.userId}`);
+    return { userApiRes };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -22,10 +23,10 @@ export const Route = createFileRoute('/users/$userId/')({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  const res = Route.useLoaderData();
+  const { userApiRes } = Route.useLoaderData();
   const navigate = useNavigate();
 
-  if (res.status === 404 || !res.profile) {
+  if (userApiRes.status === 404 || !userApiRes.body.data) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
         <Button
@@ -42,7 +43,7 @@ function RouteComponent() {
     );
   }
 
-  if (res.status !== 200) {
+  if (userApiRes.status !== 200) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
         <Button
@@ -72,7 +73,7 @@ function RouteComponent() {
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">{res.profile.name} {res.profile.surname}</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{userApiRes.body.data.name} {userApiRes.body.data.surname}</h2>
           <Link to="/users/$userId/edit" params={{ userId }}>
             <Button variant="outline" className="flex items-center gap-2">
               <Edit className="w-4 h-4" />
@@ -81,7 +82,7 @@ function RouteComponent() {
           </Link>
         </div>
 
-        <Profile profile={res.profile} />
+        <Profile profile={userApiRes.body.data} />
       </div>
     </div>
   )
