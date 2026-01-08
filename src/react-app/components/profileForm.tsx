@@ -197,8 +197,8 @@ export const ProfileForm = ({
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
                 borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                showError={!field.state.meta.isValid}
                 required={true}
-                error={!field.state.meta.isValid ? field.state.meta.errors[0]?.message : undefined}
               />
             </div>
           )}

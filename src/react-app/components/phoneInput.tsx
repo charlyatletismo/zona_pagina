@@ -10,8 +10,8 @@ export const PhoneInput = ({
   value,
   onChange,
   onBlur,
+  showError = true,
   required = false,
-  error,
 } : {
   label: string,
   name: string,
@@ -19,8 +19,8 @@ export const PhoneInput = ({
   value: string,
   onChange: (value: string) => void,
   onBlur: () => void,
+  showError?: boolean,
   required?: boolean,
-  error?: string,
 }) => {
   const [errorCC, setErrorCC] = useState("");
   const [errorNum, setErrorNum] = useState("");
@@ -82,9 +82,8 @@ export const PhoneInput = ({
           required={required}
         />
       </div>
-      {(error || errorCC || errorNum) && (
+      {showError && (errorCC || errorNum) && (
         <div>
-          {error && <div className='ml-auto text-xs text-destructive'>* {error} </div> }
           {errorCC && <div className='ml-auto text-xs text-destructive'>* {errorCC} </div>}
           {errorNum && <div className='ml-auto text-xs text-destructive'>* {errorNum} </div>}
         </div>
