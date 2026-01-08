@@ -145,45 +145,19 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
           name="phone"
           children={(field) => (
             <div className="space-y-2">
-              <field.Label htmlFor={field.name}>Celular (con WhatsApp)</field.Label>
-              <div className="flex mb-2">
-                <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md">
-                  +
-                </span>
-                <field.Input
-                  id={field.name + "_countryCode"}
-                  name={field.name}
-                  placeholder="54"
-                  maxLength={3}
-                  value={(field.state.value || '').split("_")[0]}
-                  onChange={(e) => field.handleChange((e.target.value || '') + "_9_" + (field.state.value || '').split("_")[2])}
-                  onBlur={() => field.handleBlur()}
-                  className={!field.state.meta.isValid ? 'border-destructive w-16 rounded-none' : 'w-16 rounded-none'}
-                  required
-                />
-                <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300">
-                  9
-                </span>
-                <field.Input
-                  id={field.name + "_barePhone"}
-                  name={field.name}
-                  placeholder="celular"
-                  minLength={10}
-                  maxLength={10}
-                  value={(field.state.value || '').split("_")[2]}
-                  onChange={(e) => field.handleChange((field.state.value || '').split("_")[0] + "_9_" + (e.target.value || ''))}
-                  onBlur={() => field.handleBlur()}
-                  className={!field.state.meta.isValid ? 'border-destructive rounded-l-none' : 'rounded-l-none'}
-                  required
-                />
-              </div>
-              {!field.state.meta.isValid && (
-                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
-              )}
+              <field.PhoneInput
+                label="Celular (con WhatsApp)"
+                name={field.name}
+                value={field.state.value || ''}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                required={true}
+                error={!field.state.meta.isValid ? field.state.meta.errors[0]?.message : undefined}
+              />
             </div>
           )}
         />
-
 
         <form.AppField
           name="name"

@@ -26,6 +26,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Textarea } from '@/components/ui/textarea';
+import { PhoneInput } from '@/components/phoneInput';
+import { ComboBoxIdName } from '@/components/comboBoxIdName';
 
 
 const { fieldContext, formContext } = createFormHookContexts()
@@ -36,6 +39,9 @@ export const { useAppForm } = createFormHook({
     Input,
     Label,
     Calendar,
+    Textarea,
+    PhoneInput,
+    ComboBoxIdName,
 
     Select,
     SelectContent,
