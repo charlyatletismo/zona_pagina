@@ -24,20 +24,23 @@ export const TEMPORARY_LOCATION_ID = 'temporary_location';
 
 
 export const UserSchema = z.object({
-  id: z.string()
+  id: z.string({error: 'Debes ingresar tu DNI'})
     .max(USER_ID_MAX_LENGTH, 'El ID del usuario no puede exceder los 28 caracteres'),
-  name: z.string(),
-  surname: z.string(),
-  phone: z.string(),
-  email: z.email(),
-  emergency_contact_name: z.string(),
-  emergency_contact_phone: z.string(),
-  sex: z.string()
+  name: z.string({error: 'Debes ingresar tu nombre'}),
+  surname: z.string({error: 'Debes ingresar tu apellido'}),
+  phone: z.string({error: 'Debes ingresar un número de celular válido'})
+    .min(15, 'Debe tener al menos 15 dígitos')
+    .max(16, 'No puede exceder los 16 dígitos'),
+  email: z.email({error: 'Debes ingresar un correo electrónico válido'}),
+  emergency_contact_name: z.string({error: 'Debes indicar el nombre completo del contacto de emergencia'}),
+  emergency_contact_phone: z.string({error: 'Debes indicar el celular del contacto de emergencia'}),
+  sex: z.string({error: 'Debes indicar tu sexo'})
     .max(1, 'El sexo debe contener solo 1 caracter'),
-  date_of_birth: z.coerce.date()
+  date_of_birth: z.coerce.date({error: 'Debes indicar tu fecha de nacimiento'})
     .max(maxDateOfBirth, `Debe tener al menos ${minAgeRequired} años`),
-  clothing_shirt_size: z.string()
-    .max(8, 'El tamaño de la camiseta no existe'),
+  clothing_shirt_size: z.enum(
+    ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    {error: 'Debes indicar el tamaño de la camiseta'}),
   location: z.string()
     .max(256, 'La ubicación no puede exceder los 256 caracteres'),
   location_temp: z.string()
@@ -138,7 +141,7 @@ export const RegistrationStatusDescriptions: {[key: string]: {[key: string]: str
 
 
 export const TrainingTeamSchema = z.object({
-  id: z.number().nullable(),
+  id: z.number(),
   name: z.string().max(128),
   location: z.string().max(256).nullable(),
   coach_name: z.string().max(128).nullable(),
