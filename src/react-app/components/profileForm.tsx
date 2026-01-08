@@ -268,89 +268,30 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
           name="location"
           children={(field) => (
             <div className="space-y-2">
-              <field.Label htmlFor={field.name}>Localidad</field.Label>
-              <field.Popover
-                open={openLocations}
-                onOpenChange={setOpenLocations}
-              >
-                <field.PopoverTrigger asChild>
-                  <form.Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openLocations}
-                    className={`w-full justify-between ${!field.state.meta.isValid ? 'border-destructive' : ''}`}
-                  >
-                    <div className='w-full overflow-hidden text-left'>
-                      {!otherLocation
-                        ? (field.state.value || '...')
-                        : 'Otra (especificar debajo)'}
-                    </div>
-                    <ChevronsUpDown className="opacity-50" />
-                  </form.Button>
-                </field.PopoverTrigger>
-                <field.PopoverContent className="w-auto p-0">
-                  <field.Command
-                    filter={(value, search) => {
-                      if (
-                        lowerAndRemoveDiacritics(value)
-                          .includes(lowerAndRemoveDiacritics(search))) return 1
-                      return 0
-                    }}
-                  >
-                    <field.CommandInput placeholder="Buscar localidad..." lang='es' />
-                    <field.CommandList>
-                      <field.CommandEmpty
-                        className={
-                          'hover:bg-amber-100 cursor-pointer '
-                          + 'text-center text-wrap text-sm '
-                          + 'm-2 px-4 py-2 rounded '
-                          + ''
-                        }
-                        onClick={() => {
-                          field.handleChange('');
-                          setOpenLocations(false);
-                          setOtherLocation(true);
-                        }}
-                      >
-                        <div>
-                          No se encontró la localidad
-                        </div>
-                        <div>
-                          Solicitar crearla
-                        </div>
-                        <ScanFaceIcon className="inline-block mt-2 mb-1 w-4 h-4 animate-bounce" />
-                      </field.CommandEmpty>
-                      <field.CommandGroup>
-                        {locations.map((location) => (
-                          <field.CommandItem
-                            key={location}
-                            value={location}
-                            onSelect={(value) => {
-                              field.handleChange(value);
-                              field.form.setFieldValue('location_temp', '');
-                              setOpenLocations(false);
-                              setOtherLocation(false);
-                            }}
-                            className={field.state.value === location ? "bg-green-100" : ""}
-                          >
-                            {location}
-                            <Check
-                              className={cn(
-                                "ml-auto",
-                                field.state.value === location ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                          </field.CommandItem>
-                        ))}
-                      </field.CommandGroup>
-                    </field.CommandList>
-                  </field.Command>
-                </field.PopoverContent>
-              </field.Popover>
+              <field.ComboBoxIdName
+                data={locations.map(loc => ({id: loc, name: loc}))}
+                label="Localidad"
+                name={field.name}
+                value={field.state.value || ""}
+                onChange={(value) => {
+                  field.handleChange(value);
+                  if (value !== TEMPORARY_LOCATION_ID) {
+                    field.form.setFieldValue('location_temp', '');
+                  }
+                }}
+                onBlur={field.handleBlur}
+                placeholder="Seleccionar o escribir localidad"
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                valKey={TEMPORARY_LOCATION_ID}
+                valKeyDesc="Otra (especificar debajo)"
+                valKeySetter={(val) => {
+                  field.form.setFieldValue('location_temp', capitalize(val));
+                }}
+              />
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* Debe indicar una</div>
               )}
-              {otherLocation && (
+              {field.state.value === TEMPORARY_LOCATION_ID && (
                 <form.AppField
                   name="location_temp"
                   children={(subField) => (
@@ -360,10 +301,10 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
                         name={subField.name}
                         placeholder="Especificar localidad"
                         value={subField.state.value || ''}
-                        onChange={(e) => subField.handleChange(e.target.value)}
+                        onChange={(e) => subField.handleChange(capitalize(e.target.value))}
                         onBlur={() => subField.handleBlur()}
                         className={!subField.state.meta.isValid ? 'border-destructive' : ''}
-                        required={otherLocation}
+                        required={field.state.value === TEMPORARY_LOCATION_ID}
                       />
                       {!subField.state.meta.isValid && (
                         <div className='ml-auto text-xs text-destructive'>* Debe indicar una</div>
@@ -436,9 +377,8 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
               variant="outline"
               disabled={isPristine || isSubmitting}
               onClick={(event) => {
-                event.preventDefault()
-                form.reset()
-                setOtherLocation(false);
+                event.preventDefault();
+                form.reset();
               }}
             >
               <>
