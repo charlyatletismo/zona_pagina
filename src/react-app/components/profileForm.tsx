@@ -384,16 +384,215 @@ export const ProfileForm = ({
           )}
         />
 
-      {/* ******* TODO ******* */}
-      {/* Imagen de perfil: NO por ahora */}
-      {/* Fecha de nacimiento */}
-      {/* Contacto de emergencia: Nombre */}
-      {/* Contacto de emergencia: Celular */}
-      {/* Talle de remera */}
-      {/* Special needs */}
-      {/* Porcentaje de descuento */}
-      {/* Equipo de entrenamiento */}
-      {/* Idioma */}
+        <form.AppField
+          name="date_of_birth"
+          children={(field) => (
+            <div className="space-y-2">
+              <field.Label htmlFor={field.name}>Fecha de Nacimiento</field.Label>
+              <field.Popover
+                open={openDOB}
+                onOpenChange={(o) => {
+                  setOpenDOB(o);
+                  if (!o) {
+                    field.handleBlur();
+                  }
+                }}
+              >
+                <field.PopoverTrigger asChild>
+                  <form.Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openDOB}
+                    className={`w-full justify-between ${!field.state.meta.isValid ? 'border-destructive' : ''}`}
+                  >
+                    <div className='w-full overflow-hidden text-left'>
+                      {field.state.value?.toLocaleDateString() || '...'}
+                    </div>
+                    <ChevronDown className="opacity-50" />
+                  </form.Button>
+                </field.PopoverTrigger>
+                <field.PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                  <field.Calendar
+                    mode="single"
+                    selected={field.state.value || null}
+                    captionLayout="dropdown"
+                    onSelect={(date) => {
+                      field.handleChange(new Date(date || ''));
+                      console.log("selected dob", date);
+                      console.log("sel date as date", new Date(date || ''));
+                      setOpenDOB(false)
+                      field.handleBlur();
+                    }}
+                  />
+                </field.PopoverContent>
+              </field.Popover>
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
+        <form.AppField
+          name="clothing_shirt_size"
+          children={(field) => (
+            <div className='space-y-2'>
+              <field.Label htmlFor={field.name}>Talle de remera</field.Label>
+              <div className='flex items-center'>
+                <field.Select
+                  name={field.name}
+                  value={field.state.value || ""}
+                  onValueChange={(e: any) => {
+                    field.handleChange(e);
+                    field.handleBlur();
+                  }}
+                  onOpenChange={(o) => {
+                    if (!o) {
+                      field.handleBlur();
+                    }
+                  }}
+                >
+                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
+                    <field.SelectValue placeholder="..." />
+                  </field.SelectTrigger>
+                  <field.SelectContent>
+                    <field.SelectGroup>
+                      <field.SelectLabel>Talle de remera</field.SelectLabel>
+                      {SettingsSchema.shape.clothing_shirt_size.options.map((size) => (
+                        <field.SelectItem key={size} value={size}>{size}</field.SelectItem>
+                      ))}
+                    </field.SelectGroup>
+                  </field.SelectContent>
+                </field.Select>
+              </div>
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
+        { specialFieldsShow && (
+            <form.AppField
+              name="special_needs"
+              children={(field) => (
+                <div className="space-y-2 md:col-span-2">
+                  <field.Label htmlFor={field.name}>Necesidades especiales</field.Label>
+                  <field.Textarea
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value || ''}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={() => field.handleBlur()}
+                    className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                    placeholder="Indicar si tiene alguna necesidad especial (alergias, discapacidades, etc.)"
+                    rows={3}
+                    disabled={specialFieldsEditable}
+                  />
+                  {!field.state.meta.isValid && (
+                    <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                  )}
+                </div>
+              )}
+            />
+        )}
+
+        <form.AppField
+          name="emergency_contact_name"
+          children={(field) => (
+            <div className="space-y-2">
+              <field.Label htmlFor={field.name}>Contacto de emergencia</field.Label>
+              <field.Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value || ''}
+                onChange={(e) => field.handleChange(capitalize(e.target.value))}
+                onBlur={() => field.handleBlur()}
+                className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                placeholder="Nombre completo del contacto de emergencia"
+                required
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
+        <form.AppField
+          name="emergency_contact_phone"
+          children={(field) => (
+            <div className="space-y-2">
+              <field.PhoneInput
+                label="Celular de contacto de emergencia"
+                name={field.name}
+                value={field.state.value || ''}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                required={true}
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
+        {specialFieldsShow && (
+            <form.AppField
+              name="discount_percentage"
+              children={(field) => (
+                <div className="space-y-2 md:col-span-2">
+                  <field.Label htmlFor={field.name}>Descuento en tarifas</field.Label>
+                  <div className='relative'>
+                    <field.Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(Number(e.target.value.replace(' %', '')))}
+                      onBlur={() => field.handleBlur()}
+                      className={
+                        "w-32 "
+                        + (!field.state.meta.isValid ? 'border-destructive' : '')
+                      }
+                      placeholder="descuento en porcentaje %"
+                      disabled={specialFieldsEditable}
+                    />
+                    <div className='absolute left-24 top-1 text-gray-500'>
+                      %
+                    </div>
+                  </div>
+                  {!field.state.meta.isValid && (
+                    <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                  )}
+                </div>
+              )}
+            />
+        )}
+
+        <form.AppField
+          name="training_team_id"
+          children={(field) => (
+            <div className='space-y-2'>
+              <field.ComboBoxIdName
+                data={trainingTeams.map(team => ({id: team.id?.toString(), name: team.name}))}
+                label="Equipo de entrenamiento"
+                name={field.name}
+                value={field.state.value?.toString() || ""}
+                onChange={(value) => {
+                  field.handleChange(Number(value));
+                }}
+                onBlur={field.handleBlur}
+                placeholder="Seleccionar o escribir equipo de entrenamiento"
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* Debe indicar un equipo de entrenamiento</div>
+              )}
+            </div>
+          )}
+        />
 
       </div>
       <form.Subscribe
