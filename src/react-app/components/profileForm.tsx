@@ -235,9 +235,17 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
-                  onValueChange={(e: string) => field.handleChange(e)}
+                  onValueChange={(e: string) => {
+                    field.handleChange(e);
+                    field.handleBlur();
+                  }}
+                  onOpenChange={(o) => {
+                    if (!o) {
+                      field.handleBlur();
+                    }
+                  }}
                 >
-                  <field.SelectTrigger className="w-full">
+                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
                     <field.SelectValue placeholder="..." />
                   </field.SelectTrigger>
                   <field.SelectContent>
