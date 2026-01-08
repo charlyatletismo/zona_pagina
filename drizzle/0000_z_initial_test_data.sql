@@ -62,6 +62,14 @@ VALUES (
     'Argentina',
     NULL,
     NULL
+  ),
+  (
+    'temporary_location',
+    'Temporary Location',
+    'Temporary Province',
+    'Temporary Country',
+    NULL,
+    NULL
   );
 
 
@@ -132,7 +140,7 @@ VALUES (
     "34525736",
     "Carlos",
     "Lopez",
-    "5493400667370",
+    "54_9_3400667370",
     'carlos.emlopez@gmail.com',
     "Cecy",
     "54_9_3400123123",
@@ -154,7 +162,7 @@ VALUES (
     "00000001",
     "Ana",
     "Garcia",
-    "5493400123456",
+    "54_9_3400123456",
     'anagarcia@example.com',
     "Maria Garcia",
     "54_9_3400123450",
@@ -176,7 +184,7 @@ VALUES (
     "00000002",
     "Luis",
     "Martinez",
-    "5493400123457",
+    "54_9_3400123457",
     "luismartinez@example.com",
     "Jose Martinez",
     "54_9_3400123451",
@@ -198,7 +206,7 @@ VALUES (
     "00000003",
     "Sofia",
     "Rodriguez",
-    "5493400123458",
+    "54_9_3400123458",
     "sofiarodriguez@example.com",
     "Laura Rodriguez",
     "54_9_3400123452",
@@ -220,7 +228,7 @@ VALUES (
     "00000004",
     "Diego",
     "Fernandez",
-    "5493400123459",
+    "54_9_3400123459",
     "diegofernandez@example.com",
     "Carlos Fernandez",
     "54_9_3400123453",
