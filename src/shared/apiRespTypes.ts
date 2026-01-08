@@ -97,3 +97,21 @@ export const SportingEventRegistrationApiResponseSchema = z.object({
   }).nullable(),
   clothing: z.array(shortClothingSchema).nullable(),
 })
+
+
+
+////////////////////////////////////////////////////////////////
+//                     /api/trainingTeams                     //
+////////////////////////////////////////////////////////////////
+
+
+export const TrainingTeamsApiResponseSchemaElement = TrainingTeamSchema.pick({
+  id: true,
+  name: true,
+  location: true,
+});
+
+export const TrainingTeamsApiResponseSchema = z.array(
+  TrainingTeamsApiResponseSchemaElement
+);
+
