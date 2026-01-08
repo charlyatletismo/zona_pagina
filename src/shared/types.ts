@@ -20,6 +20,8 @@ const maxDateOfBirth = new Date(
 // }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
 
+export const TEMPORARY_LOCATION_ID = 'temporary_location';
+
 
 export const UserSchema = z.object({
   id: z.string()

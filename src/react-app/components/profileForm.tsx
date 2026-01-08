@@ -2,21 +2,34 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
-import { cn, getMessage } from '@/lib/utils';
-import { SettingsSchema } from '@shared/apiRespTypes';
+import { getMessage } from '@/lib/utils';
+import { SettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { authorizedOrg, authorizedAthMan } from '@shared/roles';
 import { postAuthenticated } from '@/lib/apiCalls';
 import { Spinner } from '@/components/ui/spinner';
 import {
   AlertCircle,
   Save,
   ListRestartIcon,
-  ChevronsUpDown,
-  Check,
-  ScanFaceIcon,
+  ChevronDown,
 } from 'lucide-react';
+import { TEMPORARY_LOCATION_ID } from '@shared/types';
 
 
-export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<typeof SettingsSchema>, locations: string[], postUrl: string }) => {
+const SETTINGS_API_PATH = '/api/settings';
+
+
+export const ProfileForm = ({
+  profile,
+  locations,
+  trainingTeams,
+  postUrl
+} : {
+  profile: z.infer<typeof SettingsSchema>,
+  locations: string[],
+  trainingTeams: z.infer<typeof TrainingTeamsApiResponseSchema>,
+  postUrl: string
+}) => {
   const navigate = useNavigate();
 
   const now = new Date();
@@ -26,6 +39,21 @@ export const ProfileForm = ({ profile, locations, postUrl }: { profile: z.infer<
     now.getMonth(),
     now.getDate()
   );
+  if (locations) {
+    locations.sort((a, b) => {
+      // const coA = a.split(", ")[2];
+      // const coB = b.split(", ")[2];
+      // if (coA !== coB) {
+      //   return coA.localeCompare(coB);
+      // }
+      const provA = a.split(", ")[1];
+      const provB = b.split(", ")[1];
+      if (provA !== provB) {
+        return provA.localeCompare(provB);
+      }
+      return a.localeCompare(b);
+    });
+  }
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
