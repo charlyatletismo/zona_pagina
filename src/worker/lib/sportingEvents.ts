@@ -396,3 +396,15 @@ export const registerToSpEvent = async (
     }
   };
 }
+
+export const delSpEvent = async (
+    db: DrizzleD1Database,
+    eventId: number): Promise<NoDataResult> => {
+  const res = await db.delete(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .run();
+  if (res.meta.changes === 0) {
+    return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
+  }
+  return { status: 200, message: M.SPORTING_EVENT_DELETED_SUCCESSFULLY };
+}

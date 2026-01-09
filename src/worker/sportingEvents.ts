@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
 import { authorizedAthMan, authorizedOrg } from '@shared/roles';
-import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent } from "./lib/sportingEvents";
+import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent, delSpEvent } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
 import {
   getUserRegistration,
@@ -113,4 +113,16 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       return c.json({ message: res.message }, res.status);
     }
     return c.json({ message: M.SPORTING_EVENT_UPDATED_SUCCESSFULLY });
+  })
+  .post("/delete/:id", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const res = await delSpEvent(db, Number(id));
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: M.SPORTING_EVENT_DELETED_SUCCESSFULLY });
   });
