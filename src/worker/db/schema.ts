@@ -18,9 +18,17 @@ export const locations = sqliteTable("locations", {
 export const trainingTeams = sqliteTable("training_teams", {
   id: int().primaryKey({ autoIncrement: true }),
   name: text({ length: 128 }).notNull(),
-  location: text({ length: 256 }).references(() => locations.id),
+  location: text({ length: 256 })
+    .references(() => locations.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   coach_name: text({ length: 128 }),
-  coach_user_id: text({ length: USER_ID_MAX_LENGTH }).references((): any => users.id),
+  coach_user_id: text({ length: USER_ID_MAX_LENGTH })
+    .references((): any => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   contact_email: text({ length: 64 }),
   contact_phone: text({ length: 32 }),
   created_at: text()
@@ -44,14 +52,26 @@ export const users = sqliteTable("users", {
   sex: text({ length: 1 }),
   date_of_birth: text(),
   clothing_shirt_size: text({ length: 8 }), // e.g., "XS", "S", "M", "L", "XL", "XXL"
-  location: text({ length: 256 }).references(() => locations.id),
+  location: text({ length: 256 })
+    .references(() => locations.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   location_temp: text({ length: 256 }), // temporary location text when not registered in the system
   location_address: text({ length: 256 }),
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   discount_percentage: int().notNull().default(0), // for special discounts
   manual_athlete_category: text({ length: 64 }), // if set, selects athlete category that matches this name or the beggining of it
-  manager_id: text({ length: USER_ID_MAX_LENGTH }).references((): any => users.id),
-  training_team_id: int().references(() => trainingTeams.id),
+  manager_id: text({ length: USER_ID_MAX_LENGTH })
+    .references((): any => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  training_team_id: int()
+    .references(() => trainingTeams.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
   profile_image_url: text({ length: 512 }),
   profile_image_preview_url: text({ length: 512 }),
@@ -82,7 +102,11 @@ export const userUpdates = sqliteTable("user_updates", {
   updated_at: text()
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updated_by: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
+  updated_by: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
 });
 
 
@@ -96,7 +120,11 @@ export const sportingEvents = sqliteTable("sporting_events", {
   date: text().notNull(), // ISO string
   registration_start: text({ length: 64 }),
   registration_end: text({ length: 64 }),
-  location: text({ length: 256 }).references(() => locations.id),
+  location: text({ length: 256 })
+    .references(() => locations.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   location_address: text({ length: 256 }),
   location_lat: real(),
   location_long: real(),
@@ -106,10 +134,20 @@ export const sportingEvents = sqliteTable("sporting_events", {
   award_prizes: text({ length: 1024 }),
   fee_amount: real(),
   fee_currency: text({ length: 3 }).default('ARS'),
-  created_by: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
+  created_by: text({ length: USER_ID_MAX_LENGTH })
+    .notNull()
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   created_at: text().notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  updated_by: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
+  updated_by: text({ length: USER_ID_MAX_LENGTH })
+    .notNull()
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   updated_at: text().notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
@@ -118,7 +156,11 @@ export const sportingEvents = sqliteTable("sporting_events", {
 // Circuits or Routes within an Event
 export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
+  event_id: int().notNull()
+    .references(() => sportingEvents.id,
+      { onDelete: 'cascade',
+        onUpdate: 'cascade' }
+      ),
   name: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
   distance_km: real().notNull(),
@@ -130,11 +172,19 @@ export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
 // It can be used for start times, award ceremonies, etc.
 export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
+  event_id: int().notNull()
+    .references(() => sportingEvents.id,
+      { onDelete: 'cascade',
+        onUpdate: 'cascade' }
+      ),
   date: text().notNull(), // ISO string
   title: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
-  location: text({ length: 256 }).references(() => locations.id),
+  location: text({ length: 256 })
+    .references(() => locations.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   location_address: text({ length: 128 }),
   location_lat: real(),
   location_long: real(),
@@ -158,8 +208,16 @@ export const athleteCategoryTemplates = sqliteTable("athlete_category_templates"
 // and distances
 export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlete_categories", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
-  circuit_id: int().notNull().references(() => sportingEventCircuits.id),
+  event_id: int().notNull()
+    .references(() => sportingEvents.id,
+      { onDelete: 'cascade',
+        onUpdate: 'cascade' }
+      ),
+  circuit_id: int().notNull()
+    .references(() => sportingEventCircuits.id,
+      { onDelete: 'cascade',
+        onUpdate: 'cascade' }
+      ),
   name: text({ length: 64 }).notNull(),
   sex: text({ length: 1 }), // 'M', 'F', or null for all
   min_age: int(),
@@ -170,7 +228,11 @@ export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlet
 
 export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
+  event_id: int().notNull()
+    .references(() => sportingEvents.id,
+      { onDelete: 'cascade',
+        onUpdate: 'cascade' }
+      ),
   clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tanktop" (musculosa)
   size: text({ length: 8 }).notNull(), // e.g., "XS", "S", "M", "L", "XL", "XXL"
   purchased_quantity: int().notNull().default(0),
@@ -182,10 +244,27 @@ export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
 // Sporting events registrations
 export const sportingEventRegistrations = sqliteTable("sporting_event_registrations", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
-  user_id: text().notNull().references(() => users.id),
-  category_id: int().references(() => sportingEventAthleteCategories.id),
-  training_team_id: int().references(() => trainingTeams.id), // after 10 people, it have 10% discount
+  event_id: int()
+    .references(() => sportingEvents.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  user_id: text({ length: USER_ID_MAX_LENGTH })
+    .notNull()
+    .references(() => users.id,
+      { onDelete: 'cascade',
+        onUpdate: 'cascade' }
+      ),
+  category_id: int()
+    .references(() => sportingEventAthleteCategories.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  training_team_id: int()
+    .references(() => trainingTeams.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ), // after 10 people, it have 10% discount
   registration_date: text().notNull().default(sql`CURRENT_TIMESTAMP`),
   discount_percentage: int().notNull().default(0), // for special discounts
   discount_reason: text({ length: 256 }),
@@ -193,15 +272,30 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
   fee_amount_after_discount: real().notNull(), // final amount after discounts
   paid_amount: real().notNull().default(0),
   paid_percentage: real().notNull().default(0), // 0 to 100 %
-  demanded_clothing_id: int().references(() => sportingEventClothing.id),
-  reserved_clothing_id: int().references(() => sportingEventClothing.id),
-  special_needs: text({ length: 512 }), // allergies, accessibility, etc.
+  demanded_clothing_id: int()
+    .references(() => sportingEventClothing.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  reserved_clothing_id: int()
+    .references(() => sportingEventClothing.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   status: text({ length: 16 }).notNull().default('pending'), // "pending", "partially_paid", "paid", "cancelled", etc.
   full_payment_date: text(),
   created_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
-  created_by: text().notNull().references(() => users.id),
+  created_by: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   updated_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
-  updated_by: text().notNull().references(() => users.id),
+  updated_by: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
 });
 
 
@@ -209,22 +303,42 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
 // Tracks all income and expenses related to events
 export const sportingEventTransactions = sqliteTable("sporting_event_transactions", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull().references(() => sportingEvents.id),
+  event_id: int()
+    .references(() => sportingEvents.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   transaction_type: text({ length: 16 }).notNull(), // "income" or "expense"
   category: text({ length: 64 }).notNull(), // "registration", "infrastructure", "prizes", "clothing", "marketing", "permits", "venue", "equipment", etc.
   amount: real().notNull(), // positive value, type determines if income or expense
   currency: text({ length: 3 }).notNull().default('ARS'), // ISO currency code (EUR, USD, etc.)
   description: text({ length: 512 }),
   transaction_date: text().notNull(), // ISO string - when the transaction occurred
-  user_id: text().references(() => users.id), // if related to a specific user (e.g., registration payment)
-  registration_id: int().references(() => sportingEventRegistrations.id), // if related to a specific registration
+  user_id: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ), // if related to a specific user (e.g., registration payment)
+  registration_id: int()
+    .references(() => sportingEventRegistrations.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ), // if related to a specific registration
   vendor_supplier: text({ length: 256 }), // company or person for expenses
   receipt_url: text({ length: 512 }), // URL to receipt/invoice document
   payment_method: text({ length: 32 }), // "cash", "bank_transfer", "card", "check", etc.
   status: text({ length: 16 }).notNull().default('completed'), // "pending", "completed", "cancelled", "refunded"
-  created_by: text().notNull().references(() => users.id),
+  created_by: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   created_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
-  updated_by: text().references(() => users.id),
+  updated_by: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   updated_at: text().default(sql`CURRENT_TIMESTAMP`),
   notes: text({ length: 1024 }), // additional notes or comments
 });
