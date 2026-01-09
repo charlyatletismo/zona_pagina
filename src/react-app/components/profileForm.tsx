@@ -555,7 +555,7 @@ export const ProfileForm = ({
                       id={field.name}
                       name={field.name}
                       value={field.state.value}
-                      onChange={(e) => field.handleChange(Number(e.target.value.replace(' %', '')))}
+                      onChange={(e) => field.handleChange(Number(e.target.value))}
                       onBlur={() => field.handleBlur()}
                       className={
                         "w-32 "
