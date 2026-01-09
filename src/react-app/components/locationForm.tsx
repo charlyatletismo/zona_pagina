@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import z from "zod";
 import { LocationSchema } from "@shared/types";
 import { useAppForm } from '@/lib/genForm';
@@ -8,6 +9,8 @@ import {
   ListRestartIcon,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { postAuthenticated } from "@/lib/apiCalls";
+import { getMessage } from "@/lib/utils";
 
 
 export const LocationForm = ({
@@ -17,8 +20,12 @@ export const LocationForm = ({
   location: z.infer<typeof LocationSchema> | null,
   dbLocations: string[]
 }) => {
+  const navigate = useNavigate();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const path = location
+    ? `/api/locations/update/${location.id}`
+    : "/api/locations/create";
 
   const ExtendedLocationSchema = LocationSchema.extend({
     id: LocationSchema.shape.id.refine(
@@ -50,17 +57,25 @@ export const LocationForm = ({
     validators: {
       onBlur: ExtendedLocationSchema,
     },
-    onSubmit: async (data) => {
-      // TODO: Handle form submission
-      console.log("Form submitted with data:", data);
-      alert("OK")
-      setSuccess("Ubicación guardada con éxito.");
+    onSubmit: async ({ value }) => {
       setError('');
-      alert("Error")
-      setError("Error al guardar la ubicación. Por favor intenta nuevamente.");
       setSuccess('');
-      alert("Done")
-      setError("")
+      // Scroll to top of the page when form is submitted
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const res = await postAuthenticated(path, value, navigate)
+      if (res.status !== 200) {
+        setError(getMessage(res.body?.message, 'Error al guardar'));
+        setTimeout(() => {
+          setError('');
+        }, 1500);
+        return;
+      }
+      setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
+      setTimeout(() => {
+        setSuccess('');
+        navigate({ to: '..', reloadDocument: true });
+      }, 1000);
     },
   });
 

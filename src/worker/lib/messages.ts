@@ -137,6 +137,10 @@ export const M = {
     [ES]: "Evento deportivo creado correctamente",
     [EN]: "Sporting event created successfully"
   },
+  SPORTING_EVENT_DELETED_SUCCESSFULLY: {
+    [ES]: "Evento deportivo eliminado correctamente",
+    [EN]: "Sporting event deleted successfully"
+  },
   SPORTING_EVENT_MISSING_REQUIRED_FIELDS: {
     [ES]: "Faltan campos obligatorios en el evento deportivo",
     [EN]: "Missing required fields in sporting event"
@@ -172,5 +176,23 @@ export const M = {
   ATHLETE_CATEGORY_TEMPLATE_ERROR_CREATING: {
     [ES]: "Error al crear la plantilla de categoría de atleta",
     [EN]: "Error creating athlete category template"
+  },
+
+  // -------------------------- LOCATIONS --------------------------
+  LOCATION_NOT_FOUND: {
+    [ES]: "Ubicación no encontrada",
+    [EN]: "Location not found"
+  },
+  LOCATION_ADDED_SUCCESSFULLY: {
+    [ES]: "Ubicación agregada correctamente",
+    [EN]: "Location added successfully"
+  },
+  LOCATION_UPDATED_SUCCESSFULLY: {
+    [ES]: "Ubicación actualizada correctamente",
+    [EN]: "Location updated successfully"
+  },
+  LOCATION_DELETED_SUCCESSFULLY: {
+    [ES]: "Ubicación eliminada correctamente",
+    [EN]: "Location deleted successfully"
   },
 }
