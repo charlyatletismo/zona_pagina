@@ -24,6 +24,29 @@ const maxDateOfBirth = new Date(
 export const TEMPORARY_LOCATION_ID = 'temporary_location';
 
 
+export const LocationSchema = z.object({
+  id: z.string()
+    .max(256, 'El ID de la ubicación no puede exceder los 256 caracteres'),
+  locality: z.string()
+    .min(1, 'La localidad no puede estar vacía')
+    .max(64, 'La localidad no puede exceder los 64 caracteres. Contacte al administrador'),
+  province: z.string()
+    .min(1, 'La provincia no puede estar vacía')
+    .max(64, 'La provincia no puede exceder los 64 caracteres. Contacte al administrador'),
+  country: z.string()
+    .min(1, 'El país no puede estar vacío')
+    .max(64, 'El país no puede exceder los 64 caracteres. Contacte al administrador'),
+  latitude: z.number("Debe ser un número")
+    .min(-90, 'La latitud debe ser mayor o igual a -90')
+    .max(90, 'La latitud debe ser menor o igual a 90')
+    .nullable(),
+  longitude: z.number("Debe ser un número")
+    .min(-180, 'La longitud debe ser mayor o igual a -180')
+    .max(180, 'La longitud debe ser menor o igual a 180')
+    .nullable(),
+});
+
+
 export const UserSchema = z.object({
   id: z.string({error: 'Debes ingresar tu DNI'})
     .min(USER_ID_MIN_LENGTH, `El ID del usuario debe tener al menos ${USER_ID_MIN_LENGTH} caracteres`)
@@ -45,7 +68,7 @@ export const UserSchema = z.object({
   clothing_shirt_size: z.enum(
     ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     {error: 'Debes indicar el tamaño de la camiseta'}),
-  location: z.string()
+  location: LocationSchema.shape.id
     .min(1, 'Debes ingresar una ubicación')
     .max(256, 'La ubicación no puede exceder los 256 caracteres'),
   location_temp: z.string()
@@ -56,7 +79,7 @@ export const UserSchema = z.object({
   special_needs: z.string()
     .max(512, 'Las necesidades especiales no pueden exceder los 512 caracteres')
     .nullable(),
-  discount_percentage: z.number()
+  discount_percentage: z.number("Debe ser un número")
     .max(100, 'El porcentaje de descuento no puede exceder 100%')
     .default(0),
   manual_athlete_category: z.string()
