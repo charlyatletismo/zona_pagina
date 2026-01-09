@@ -4,6 +4,7 @@ import { ORGANIZER_ROLE } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { FormBox } from '@/components/formBox';
 import { LocationForm } from '@/components/locationForm';
+import { getMessage } from '@/lib/utils';
 
 
 export const Route = createFileRoute('/general/locations/create')({
@@ -25,7 +26,9 @@ function RouteComponent() {
       description="Agregar una nueva ubicación a la base de datos."
       returnText="Volver a Ubicaciones"
       returnPath='..'
-      error={locationsApi.status !== 200 ? "Error al cargar las ubicaciones. Por favor intenta recargar la página." : null}
+      error={locationsApi.status !== 200
+        ? getMessage(locationsApi.body?.message, 'Error al cargar las ubicaciones.')
+        : null}
     >
       <LocationForm location={null} dbLocations={locationsApi.body.data} />
     </FormBox>

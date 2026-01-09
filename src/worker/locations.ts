@@ -27,6 +27,19 @@ export const locationsRoute = new Hono<{ Bindings: Env }>()
       .all();
     return c.json({ data: allLocs.map(loc => loc.id) });
   })
+  .get("/:id", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const loc = await db
+      .select()
+      .from(locations)
+      .where(eq(locations.id, id))
+      .get();
+    if (!loc) {
+      return c.json({ message: M.LOCATION_NOT_FOUND }, 404);
+    }
+    return c.json({ data: LocationSchema.parse(loc) });
+  })
   .post("/create", async (c) => {
     const db = drizzle(c.env.DB);
     const {
