@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react';
-import { Save, AlertCircle, MapPinnedIcon, Trash2, ListRestartIcon } from 'lucide-react';
+import { Save, AlertCircle, MapPinnedIcon, Trash2, ListRestartIcon, PlusIcon } from 'lucide-react';
 import { cn, getLang, getMessage, capitalizeStr } from '@/lib/utils';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import z from 'zod';
@@ -9,7 +9,6 @@ import {
   SportingEventSchema,
   AthleteCategoryTemplateSchema,
   SportingEventTypesEnumDescriptions,
-  SportingEventScheduleSchema,
   SportingEventCircuitSchema,
   SportingEventClothingSchema,
   CLOTHING_TYPES,
@@ -66,7 +65,7 @@ const SportingEventForm = (
   const apiEndpointPath = data
     ? `/api/sportingEvents/update/${data.id}`
     : '/api/sportingEvents/create';
-  
+
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
 
@@ -677,101 +676,173 @@ const SportingEventForm = (
 
         <hr className="my-6" />
 
-        {/* TODO: Cronograma, Circuitos y Categorías */}
-
-        <div className="text-lg font-semibold mt-6 mb-2">Cronograma del Evento</div>
-        <div className="space-y-2 md:col-span-2">
-          <Button variant={'outline'} type='button' onClick={
-            () => setFormData(
-              prev => (
-                {
-                  ...prev,
-                  schedules: [
-                    ...(prev.schedules || []),
-                    SportingEventScheduleSchema.parse({ event_id: formData.id || 0, date: '', title: '' })
-                  ]
-                }))
-          }>{
-              'Agregar nuevo hito del evento'
-            }</Button>
-        </div>
-        {formData.schedules && formData.schedules.map((schedule, index) => (
-          <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2 items-end">
-            <div className='space-y-2 md:col-span-2'>
-              <label htmlFor={`schedules.${index}`} className="text-sm font-medium text-gray-700">{`Hito ${index + 1}`}</label>
-              <div className="flex gap-2">
-                <Button variant={'destructive'} type='button' onClick={
-                  () => {
-                    const newSchedules = [...(formData.schedules || [])];
-                    newSchedules.splice(index, 1);
-                    setFormData(prev => ({ ...prev, schedules: newSchedules }));
-                  }
-                }>{
-                    <Trash2 className="w-4 h-4" />
-                  }</Button>
-                <Input
-                  id={`schedules.${index}.title`}
-                  name={`schedules.${index}.title`}
-                  value={schedule.title || ''}
-                  onChange={(e) => {
-                    const newSchedules = [...(formData.schedules || [])];
-                    newSchedules[index].title = e.target.value;
-                    setFormData(prev => ({ ...prev, schedules: newSchedules }));
+        <form.AppField
+          name="schedules"
+          mode='array'
+          children={(field) => (
+            <div className="space-y-4 md:col-span-2">
+              <div className='flex flex-col sm:flex-row justify-between mt-6 mb-2'>
+                <div className="text-lg font-semibold my-auto">Cronograma</div>
+                <form.Button
+                  variant='outline'
+                  type="button"
+                  onClick={() => {
+                    field.pushValue({
+                      id: null,
+                      title: "",
+                      description: null,
+                      location: null,
+                      event_id: formData.id || 0,
+                      location_address: null,
+                      location_lat: null,
+                      location_long: null,
+                      date: z.coerce.date().nullable().parse(field.form.state.values.date) || new Date(),
+                    })
                   }}
-                  placeholder="Título del hito"
-                />
+                >
+                  <PlusIcon className="w-4 h-4" />
+                </form.Button>
               </div>
-            </div>
+              {!field.state.value && (
+                <div className='text-sm text-gray-500 italic mt-4'>
+                  No se han agregado hitos al cronograma del evento.
+                  Haga clic en el botón de arriba para agregar un hito.
+                  </div>
+              )}
+              {field.state.value && (
+                <div className="space-y-2">
+                  {field.state.value.map((scheduleItem, index) => (
+                    <div key={index} className="p-4 border rounded-md">
+                      <div className='flex flex-row justify-between mb-5'>
+                        <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
+                        <form.Button
+                          variant='secondary'
+                          type="button"
+                          onClick={() => {
+                            if (field.state.value?.length === 1) {
+                              field.handleChange(null);
+                            } else {
+                              field.removeValue(index);
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </form.Button>
+                      </div>
+                      <div className='space-y-2 grid grid-cols-1 sm:grid-cols-2 gap-2'>
+                        <form.AppField
+                          name={`schedules[${index}].title`}
+                          children={(subField) => (
+                            <div className='space-y-2'>
+                              <subField.Label htmlFor={subField.name}>Título</subField.Label>
+                              <subField.Input
+                                id={subField.name}
+                                name={subField.name}
+                                className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                                value={subField.state.value || ""}
+                                onChange={(e) => {
+                                  subField.handleChange(e.target.value);
+                                }}
+                                onBlur={subField.handleBlur}
+                                required
+                              />
+                              {!subField.state.meta.isValid && (
+                                <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                              )}
+                            </div>
+                          )}
+                        />
 
-            <div className="space-y-2 md:col-span-2">
-              <label htmlFor={`schedules.${index}.description`} className="text-sm font-medium text-gray-700">Descripción del hito</label>
-              <textarea
-                id={`schedules.${index}.description`}
-                name={`schedules.${index}.description`}
-                rows={3}
-                className={cn(
-                  "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                )}
-                value={schedule.description || ''}
-                onChange={(e) => {
-                  const newSchedules = [...(formData.schedules || [])];
-                  newSchedules[index].description = e.target.value;
-                  setFormData(prev => ({ ...prev, schedules: newSchedules }));
-                }}
-              />
-            </div>
+                        <form.AppField
+                          name={`schedules[${index}].date`}
+                          children={(subField) => (
+                            <div className='space-y-2'>
+                              <subField.Label htmlFor={subField.name}>Fecha del hito</subField.Label>
+                              <subField.DatePicker
+                                borderColor={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                                value={subField.state.value}
+                                onChange={(d) => {
+                                  if (!d) return;
+                                  subField.handleChange(d)
+                                }}
+                                onBlur={subField.handleBlur}
+                              />
+                              {!subField.state.meta.isValid && (
+                                <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                              )}
+                            </div>
+                          )}
+                        />
 
-            <div className="space-y-2">
-              <label htmlFor={`schedules.${index}.date`} className="text-sm font-medium text-gray-700">Fecha y Hora</label>
-              <Input
-                id={`schedules.${index}.date`}
-                name={`schedules.${index}.date`}
-                type="datetime-local"
-                value={schedule.date.toISOString().slice(0, 16) || ''}
-                onChange={(e) => {
-                  const newSchedules = [...(formData.schedules || [])];
-                  newSchedules[index].date = new Date(e.target.value);
-                  setFormData(prev => ({ ...prev, schedules: newSchedules }));
-                }}
-              />
-            </div>
+                        <form.AppField
+                          name={`schedules[${index}].location`}
+                          children={(subField) => (
+                            <div className="space-y-2">
+                              <subField.ComboBoxIdName
+                                data={loadedLocations.map(loc => ({ id: loc, name: loc }))}
+                                label="Localidad"
+                                name={subField.name}
+                                value={subField.state.value || ""}
+                                onChange={(value) => {
+                                  if (value !== "new location :)") {
+                                    subField.handleChange(value);
+                                  }
+                                }}
+                                onBlur={subField.handleBlur}
+                                placeholder="Seleccionar o escribir localidad"
+                                borderColor={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                                valKey={"new location :)"}
+                                valKeyDesc="Creando nueva localidad"
+                                valKeySetter={() => {
+                                  setError('');
+                                  setSuccess('');
+                                  setNewLocation(true);
+                                  setTimeout(() => {
+                                    // Scroll to top of the page
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  }, 100);
+                                }}
+                              />
+                              {!subField.state.meta.isValid && (
+                                <div className='ml-auto text-xs text-destructive'>* Debe indicar una localidad</div>
+                              )}
+                            </div>
+                          )}
+                        />
 
-            <div className="space-y-2 md:col-span-2">
-              <label htmlFor={`schedules.${index}.location`} className="text-sm font-medium text-gray-700">Localidad (Texto)</label>
-              <Input
-                id={`schedules.${index}.location`}
-                name={`schedules.${index}.location`}
-                value={schedule.location || ''}
-                onChange={(e) => {
-                  const newSchedules = [...(formData.schedules || [])];
-                  newSchedules[index].location = e.target.value;
-                  setFormData(prev => ({ ...prev, schedules: newSchedules }));
-                }}
-              />
+                        <form.AppField
+                          name={`schedules[${index}].location_address`}
+                          children={(subField) => (
+                            <div className="space-y-2">
+                              <subField.Label htmlFor={subField.name}>Dirección</subField.Label>
+                              <subField.Input
+                                id={subField.name}
+                                name={subField.name}
+                                value={subField.state.value || ''}
+                                onChange={(e) => subField.handleChange(e.target.value || null)}
+                                onBlur={subField.handleBlur}
+                                placeholder="Calle 123, Plaza Principal, etc."
+                                className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                              />
+                              {!subField.state.meta.isValid && (
+                                <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                              )}
+                            </div>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          )}
+        />
+
         <hr className="my-6" />
+
+        {/* TODO: Circuitos y Categorías */}
+
         <div className="text-lg font-semibold mt-6 mb-2">Circuitos del Evento</div>
         <div className="space-y-2 md:col-span-2">
           <Button variant={'outline'} type='button' onClick={

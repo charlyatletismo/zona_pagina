@@ -208,12 +208,12 @@ export const SportingEventScheduleSchema = z.object({
   id: z.number().nullable(),
   event_id: z.number().nullable(),
   date: z.date(),
-  title: z.string(),
+  title: z.string().min(1, 'Debe ingresar un título para el hito'),
   description: z.string().nullable(),
-  location: z.string().max(256).nullable(),
+  location: LocationSchema.shape.id.nullable(),
   location_address: z.string().max(128).nullable(),
-  location_lat: z.number().nullable(),
-  location_long: z.number().nullable(),
+  location_lat: LocationSchema.shape.latitude.nullable(),
+  location_long: LocationSchema.shape.longitude.nullable(),
 });
 
 
