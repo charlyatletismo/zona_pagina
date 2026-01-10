@@ -10,15 +10,17 @@ import {
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { postAuthenticated } from "@/lib/apiCalls";
-import { getMessage } from "@/lib/utils";
+import { getMessage, capitalizeStr } from "@/lib/utils";
 
 
 export const LocationForm = ({
   location,
-  dbLocations
+  dbLocations,
+  onSuccess,
 } : {
   location: z.infer<typeof LocationSchema> | null,
-  dbLocations: string[]
+  dbLocations: string[],
+  onSuccess?: () => void,
 }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -32,17 +34,6 @@ export const LocationForm = ({
       (val) => !dbLocations.includes(val),
       {error: "La ubicación ya existe en la base de datos."}),
   })
-
-
-  const capitalize = (s: string) => {
-    if (s.length === 0) return s;
-    return s.split(" ")
-      .map(word =>
-        word.charAt(0).toUpperCase()
-        + word.slice(1).toLowerCase()
-      )
-      .join(" ");
-  }
 
 
   const form = useAppForm({
@@ -74,7 +65,7 @@ export const LocationForm = ({
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
       setTimeout(() => {
         setSuccess('');
-        navigate({ to: '..', reloadDocument: true });
+        onSuccess ? onSuccess() : navigate({ to: '..', reloadDocument: true });
       }, 1000);
     },
   });
@@ -144,7 +135,7 @@ export const LocationForm = ({
                 name={field.name}
                 value={field.state.value || ''}
                 onChange={(e) => {
-                  const val = capitalize(e.target.value);
+                  const val = capitalizeStr(e.target.value);
                   field.handleChange(val);
                   field.form.setFieldValue('id', [
                     val,
@@ -174,7 +165,7 @@ export const LocationForm = ({
                 name={field.name}
                 value={field.state.value || ''}
                 onChange={(e) => {
-                  const val = capitalize(e.target.value);
+                  const val = capitalizeStr(e.target.value);
                   field.handleChange(val);
                   field.form.setFieldValue('id', [
                     field.form.state.values.locality || '',
@@ -204,7 +195,7 @@ export const LocationForm = ({
                 name={field.name}
                 value={field.state.value || ''}
                 onChange={(e) => {
-                  const val = capitalize(e.target.value);
+                  const val = capitalizeStr(e.target.value);
                   field.handleChange(val);
                   field.form.setFieldValue('id', [
                     field.form.state.values.locality || '',
