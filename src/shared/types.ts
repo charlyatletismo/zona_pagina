@@ -12,6 +12,8 @@ const maxDateOfBirth = new Date(
   now.getMonth(),
   now.getDate()
 );
+export const CLOTHING_TYPES = ['tshirt', 'tanktop'] as const;
+export const SHIRT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
 // FIXME: No sé si hace falta // Update maxDateOfBirth every day
 // setInterval(() => {
 //   const now = new Date();
@@ -66,7 +68,7 @@ export const UserSchema = z.object({
   date_of_birth: z.coerce.date({error: 'Debes indicar tu fecha de nacimiento'})
     .max(maxDateOfBirth, `Debe tener al menos ${minAgeRequired} años`),
   clothing_shirt_size: z.enum(
-    ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    SHIRT_SIZES,
     {error: 'Debes indicar el tamaño de la camiseta'}),
   location: LocationSchema.shape.id
     .min(1, 'Debes ingresar una ubicación')
@@ -230,8 +232,8 @@ export const SportingEventAthleteCategorySchema = z.object({
 export const SportingEventClothingSchema = z.object({
   id: z.number(),
   event_id: z.number(),
-  clothing_type: z.string().max(64),
-  size: z.string().max(8),
+  clothing_type: z.enum(CLOTHING_TYPES, 'Tipo de prenda no válida'),
+  size: z.enum(SHIRT_SIZES, 'Talla no válida'),
   purchased_quantity: z.number().default(0),
   demanded_quantity: z.number().default(0),
   reserved_quantity: z.number().default(0),
@@ -313,6 +315,7 @@ export const SportingEventSchema = z.object({
   circuits: z.array(SportingEventCircuitSchema).nullable(),
   schedules: z.array(SportingEventScheduleSchema).nullable(),
   categories: z.array(SportingEventAthleteCategorySchema).nullable(),
+  clothing: z.array(SportingEventClothingSchema.partial()).nullable(),
   athletes_registered: z.number().nullable(),
   athletes_confirmed: z.number().nullable(),
   user_registration_status: z.object({
