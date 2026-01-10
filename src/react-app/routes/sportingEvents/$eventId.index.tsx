@@ -22,7 +22,8 @@ import {
 } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { getLang } from "@/lib/utils";
-import { SportingEventSchema, RegistrationStatusDescriptions } from '@shared/types';
+import { SportingEventSchema } from '@shared/types';
+import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';

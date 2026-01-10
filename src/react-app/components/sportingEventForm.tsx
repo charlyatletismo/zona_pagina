@@ -8,11 +8,13 @@ import { useAppForm } from '@/lib/genForm';
 import {
   SportingEventSchema,
   AthleteCategoryTemplateSchema,
-  SportingEventTypesEnumDescriptions,
   SportingEventCircuitSchema,
   SportingEventClothingSchema,
   CLOTHING_TYPES,
 } from '@shared/types'
+import {
+  SportingEventTypesEnumDescriptions,
+} from '@shared/lang';
 import { SportingEventApiResponseReadSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -600,10 +602,10 @@ const SportingEventForm = (
                       }
                       type="button"
                       onClick={() => {
-                        if (!field.state.value) {
-                          console.log('Initializing clothing array');
-                          field.handleChange([])
-                        };
+                        // if (!field.state.value) {
+                        //   console.log('Initializing clothing array');
+                        //   field.handleChange([])
+                        // };
                         if (field.state.value?.some(item => item.clothing_type === ctype)) {
                           // Remove existing clothing of this type
                           console.log('Removing clothing type:', ctype);
