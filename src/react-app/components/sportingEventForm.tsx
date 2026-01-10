@@ -587,37 +587,52 @@ const SportingEventForm = (
           mode='array'
           children={(field) => (
             <div className="space-y-4 md:col-span-2">
-              <div className="text-lg font-semibold mt-6 mb-2">Indumentaria del Evento</div>
-              <div className='flex gap-2 flex-col sm:flex-row'>
-                {CLOTHING_TYPES.map((ctype) => (
-                  <form.Button
-                    variant='outline'
-                    type="button"
-                    onClick={() => {
-                      if (!field.state.value) {
-                        console.log('Initializing clothing array');
-                        field.handleChange([])
-                      };
-                      if (field.state.value?.some(item => item.clothing_type === ctype)) {
-                        // Remove existing clothing of this type
-                        console.log('Removing clothing type:', ctype);
-                        const filteredItems = field.state.value.filter(item => item.clothing_type !== ctype);
-                        field.handleChange(filteredItems.length === 0 ? null : filteredItems);
-                        return;
+              <div className='flex flex-col sm:flex-row justify-between mt-6 mb-2'>
+                <div className="text-lg font-semibold my-auto">Indumentaria</div>
+                <div className='flex gap-2 flex-col sm:flex-row'>
+                  {CLOTHING_TYPES.map((ctype) => (
+                    <form.Button
+                      variant={
+                        field.state.value
+                          ? field.state.value?.some(item => item.clothing_type === ctype)
+                            ? 'secondary'
+                            : 'outline'
+                          : 'outline'
                       }
-                      console.log('Adding clothing type:', ctype);
-                      const newItems = genClothingItems(ctype);
-                      field.handleChange([...(field.state.value || []), ...newItems]);
-                    }}
-                  >
-                    {ctype === 'tshirt'
-                      ? 'Remeras'
-                      : ctype === 'tanktop'
-                        ? 'Musculosas'
-                        : capitalizeStr(ctype)}
-                  </form.Button>
-                ))}
+                      type="button"
+                      onClick={() => {
+                        if (!field.state.value) {
+                          console.log('Initializing clothing array');
+                          field.handleChange([])
+                        };
+                        if (field.state.value?.some(item => item.clothing_type === ctype)) {
+                          // Remove existing clothing of this type
+                          console.log('Removing clothing type:', ctype);
+                          const filteredItems = field.state.value.filter(item => item.clothing_type !== ctype);
+                          field.handleChange(filteredItems.length === 0 ? null : filteredItems);
+                          return;
+                        }
+                        console.log('Adding clothing type:', ctype);
+                        const newItems = genClothingItems(ctype);
+                        field.handleChange([...(field.state.value || []), ...newItems]);
+                      }}
+                      disabled={field.state.value ? !field.state.value?.some(item => item.clothing_type === ctype) : false}
+                    >
+                      {ctype === 'tshirt'
+                        ? 'Remeras'
+                        : ctype === 'tanktop'
+                          ? 'Musculosas'
+                          : capitalizeStr(ctype)}
+                    </form.Button>
+                  ))}
+                </div>
               </div>
+              {!field.state.value && (
+                <div className='text-sm text-gray-500 italic mt-4'>
+                  No se ha seleccionado ningún tipo de indumentaria para el evento.
+                  Haga clic en los botones de arriba para agregar tipos de indumentaria.
+                  </div>
+              )}
               {field.state.value &&
                 getClothesByType(field.state.value).map(({ key: ctype, data: items }) => (
                 <div key={ctype} className="border rounded-md p-4">
