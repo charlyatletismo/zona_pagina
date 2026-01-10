@@ -145,6 +145,10 @@ export const M = {
     [ES]: "Faltan campos obligatorios en el evento deportivo",
     [EN]: "Missing required fields in sporting event"
   },
+  SPORTING_EVENT_CIRCUIT_ID_REQUIRED: {
+    [ES]: "Se requiere el ID del circuito del evento deportivo",
+    [EN]: "Sporting event circuit ID required"
+  },
 
   // -------------------------- SPORTING EVENT REGISTRATIONS --------------------------
   SPORTING_EVENT_REGISTRATION_NOT_FOUND: {

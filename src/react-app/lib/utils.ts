@@ -42,9 +42,21 @@ export const getLang = (): string => {
 
 export const getMessage = (
   message: Record<string, string> | undefined,
-  defaultMessage: string = ''
+  defaultMessage: string = '',
+  prefix: string = ''
 ): string => {
   if (!message) return defaultMessage;
   const lang = getLang();
-  return message[lang] || message['es'] || defaultMessage;
+  return prefix + (message[lang] || message['es'] || defaultMessage);
+}
+
+
+export const capitalizeStr = (s: string) => {
+  if (s.length === 0) return s;
+  return s.split(" ")
+    .map(word =>
+      word.charAt(0).toUpperCase()
+      + word.slice(1).toLowerCase()
+    )
+    .join(" ");
 }

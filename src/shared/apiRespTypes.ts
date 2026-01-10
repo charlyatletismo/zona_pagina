@@ -1,11 +1,14 @@
 import z from "zod"
 import {
   UserSchema,
+  SportingEventSchema,
+  SportingEventScheduleSchema,
   SportingEventBasicInfoSchema,
   SportingEventRegistrationSchema,
   SportingEventClothingSchema,
   SportingEventAthleteCategorySchema,
   TrainingTeamSchema,
+  AthleteCategoryTemplateSchema,
 } from './types'
 
 
@@ -49,6 +52,20 @@ export const SportingEventApiResponseSchema = z.object({
   comingSoon: z.array(SportingEventBasicInfoSchema),
   closed: z.array(SportingEventBasicInfoSchema),
   past: z.array(SportingEventBasicInfoSchema),
+});
+
+export const SportingEventApiResponseReadSchema = SportingEventSchema.extend({
+  date: z.coerce.date(),
+  registration_start: z.coerce.date().nullable(),
+  registration_end: z.coerce.date().nullable(),
+  created_at: z.coerce.date().nullable(),
+  updated_at: z.coerce.date().nullable(),
+  schedules: z.array(SportingEventScheduleSchema.extend({
+    date: z.coerce.date(),
+  })).nullable(),
+  categories: z.array(SportingEventAthleteCategorySchema.extend({
+    exclude_auto_qualify: z.coerce.boolean().nullable(),
+  })).nullable(),
 });
 
 
@@ -115,3 +132,11 @@ export const TrainingTeamsApiResponseSchema = z.array(
   TrainingTeamsApiResponseSchemaElement
 );
 
+
+///////////////////////////////////////////////////////////////////////////
+//                     /api/athleteCategoryTemplates                     //
+///////////////////////////////////////////////////////////////////////////
+
+export const AthCatApiResponse = z.array(
+  AthleteCategoryTemplateSchema
+);

@@ -188,7 +188,7 @@ export const AthleteCategoryTemplateSchema = z.object({
   female_name: z.string().nullable(),
   min_age: z.number().nullable(),
   max_age: z.number().nullable(),
-  exclude_auto_qualify: z.coerce.boolean().nullable(),
+  exclude_auto_qualify: z.boolean().nullable(),
 });
 
 
@@ -205,7 +205,7 @@ export const SportingEventCircuitSchema = z.object({
 export const SportingEventScheduleSchema = z.object({
   id: z.number().nullable(),
   event_id: z.number().nullable(),
-  date: z.coerce.date(),
+  date: z.date(),
   title: z.string(),
   description: z.string().nullable(),
   location: z.string().max(256).nullable(),
@@ -223,7 +223,7 @@ export const SportingEventAthleteCategorySchema = z.object({
   sex: z.string().max(1).nullable(),
   min_age: z.number().nullable(),
   max_age: z.number().nullable(),
-  exclude_auto_qualify: z.coerce.boolean().nullable(),
+  exclude_auto_qualify: z.boolean().nullable(),
 });
 
 
@@ -283,22 +283,23 @@ export const SportingEventTypesEnum = z.enum([
   'cycling',
   'swimming',
   'other'
-]);
+], {error: "Debe indicar uno"});
 
 
 export const SportingEventSchema = z.object({
   id: z.number(),
-  title: z.string(),
+  title: z.string("Debe ingresar un título")
+    .min(1, "Debe ingresar un título"),
   description: z.string().nullable(),
   image_url: z.string().max(512).nullable(),
   image_preview_url: z.string().max(512).nullable(),
-  date: z.coerce.date(),
-  registration_start: z.coerce.date().nullable(),
-  registration_end: z.coerce.date().nullable(),
-  location: z.string().max(256).nullable(),
+  date: z.date("Debe ingresar una fecha"),
+  registration_start: z.date().nullable(),
+  registration_end: z.date().nullable(),
+  location: LocationSchema.shape.id.nullable(),
   location_address: z.string().max(256).nullable(),
-  location_lat: z.number().nullable(),
-  location_long: z.number().nullable(),
+  location_lat: LocationSchema.shape.latitude.nullable(),
+  location_long: LocationSchema.shape.longitude.nullable(),
   event_type: SportingEventTypesEnum,
   rules: z.string().max(2048).nullable(),
   disclaimer_of_liability: z.string().max(4096).nullable(),
@@ -306,9 +307,9 @@ export const SportingEventSchema = z.object({
   fee_amount: z.number().nullable(),
   fee_currency: z.string().max(3).nullable(),
   created_by: UserSchema.shape.id.nullable(),
-  created_at: z.coerce.date().nullable(),
+  created_at: z.date().nullable(),
   updated_by: UserSchema.shape.id.nullable(),
-  updated_at: z.coerce.date().nullable(),
+  updated_at: z.date().nullable(),
   circuits: z.array(SportingEventCircuitSchema).nullable(),
   schedules: z.array(SportingEventScheduleSchema).nullable(),
   categories: z.array(SportingEventAthleteCategorySchema).nullable(),
@@ -347,7 +348,7 @@ export const SportingEventRegistrationSchema = z.object({
   user_id: UserSchema.shape.id,
   category_id: SportingEventAthleteCategorySchema.shape.id.nullable(),
   training_team_id: TrainingTeamSchema.shape.id.nullable(),
-  registration_date: z.coerce.date(),
+  registration_date: z.date(),
   discount_percentage: z.number(),
   discount_reason: z.string().max(256).nullable(),
   fee_amount_original: z.number(),
@@ -363,10 +364,10 @@ export const SportingEventRegistrationSchema = z.object({
     "paid",
     "cancelled"
   ]),
-  full_payment_date: z.coerce.date().nullable(),
-  created_at: z.coerce.date(),
+  full_payment_date: z.date().nullable(),
+  created_at: z.date(),
   created_by: UserSchema.shape.id,
-  updated_at: z.coerce.date(),
+  updated_at: z.date(),
   updated_by: UserSchema.shape.id,
 });
 

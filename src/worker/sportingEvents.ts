@@ -35,7 +35,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     const { circuitId, userId }
       : {circuitId: number, userId: string} = await c.req.json();
     if (!circuitId) {
-      return c.json({ error: "circuitId is required" }, 400);
+      return c.json({ message: M.SPORTING_EVENT_CIRCUIT_ID_REQUIRED }, 400);
     }
     const reqUserId: string = c.get('jwtPayload')?.id;
     const res = await registerToSpEvent(
