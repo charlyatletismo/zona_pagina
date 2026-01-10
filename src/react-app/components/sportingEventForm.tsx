@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Save, AlertCircle, MapPinnedIcon, Trash2, ListRestartIcon } from 'lucide-react';
 import { cn, getLang, getMessage, capitalizeStr } from '@/lib/utils';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
@@ -11,6 +11,8 @@ import {
   SportingEventTypesEnumDescriptions,
   SportingEventScheduleSchema,
   SportingEventCircuitSchema,
+  SportingEventClothingSchema,
+  CLOTHING_TYPES,
 } from '@shared/types'
 import { SportingEventApiResponseReadSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
@@ -21,6 +23,37 @@ import { LocationForm } from './locationForm';
 
 const PartialSportingEventSchema = SportingEventSchema.partial()
 const ArrayOfCatTemplates = z.array(AthleteCategoryTemplateSchema)
+
+const genClothingItems = (
+  clothingType: z.infer<typeof SportingEventClothingSchema.shape.clothing_type>
+) => {
+  return SportingEventClothingSchema.shape.size.options.map((size) => ({
+    clothing_type: clothingType,
+    size,
+  }));
+}
+
+const PartialClothingSchema = SportingEventClothingSchema.partial();
+const getClothesByType = (
+  clothingArray: z.infer<typeof PartialClothingSchema>[] | null,
+) => {
+  if (!clothingArray) return [];
+  const clothesByType = clothingArray.reduce((acc, clothingItem, index) => {
+    if (clothingItem.clothing_type === undefined) return acc;
+    const i = acc.some((e) => e.key === clothingItem.clothing_type)
+    if (i) {
+      acc.forEach((e) => {
+        if (e.key === clothingItem.clothing_type) {
+          e.data.push({ ...clothingItem, index });
+        }
+      });
+    } else {
+      acc.push({ key: clothingItem.clothing_type, data: [{ ...clothingItem, index }] });
+    }
+    return acc;
+  }, [] as {key: string, data: any[]}[])
+  return clothesByType;
+}
 
 
 const SportingEventForm = (
@@ -72,15 +105,8 @@ const SportingEventForm = (
 
 
   const [formData, setFormData] = useState<z.infer<typeof PartialSportingEventSchema>>(data || {});
-  const [coordinatesGoogleMaps, setCoordinatesGoogleMaps] = useState('');
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
 
   return (
     <div>
@@ -239,6 +265,31 @@ const SportingEventForm = (
                   placeholder="Descripción del evento (opcional)"
                   rows={3}
                 />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+
+          <form.AppField
+            name="fee_amount"
+            children={(field) => (
+              <div className='space-y-2 md:col-span-2 mx-auto max-w-2xl'>
+                <field.Label htmlFor={field.name}>Costo de Inscripción</field.Label>
+                <div className='relative'>
+                  <field.Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value || ''}
+                    onChange={(e) => field.handleChange(e.target.value ? parseFloat(e.target.value) : null)}
+                    onBlur={field.handleBlur}
+                    className={!field.state.meta.isValid ? 'border-destructive' : 'pl-5'}
+                  />
+                  <div className='absolute left-2 top-1 text-gray-500'>
+                    $
+                  </div>
+                </div>
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}
@@ -463,6 +514,28 @@ const SportingEventForm = (
           </div>
 
           <form.AppField
+            name="disclaimer_of_liability"
+            children={(field) => (
+              <div className="space-y-2 md:col-span-2">
+                <field.Label htmlFor={field.name}>Descargo de responsabilidad</field.Label>
+                <field.Textarea
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value || ''}
+                  onChange={(e) => field.handleChange(e.target.value || null)}
+                  onBlur={field.handleBlur}
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  placeholder="Descargo de responsabilidad (opcional)"
+                  rows={3}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+
+          <form.AppField
             name="rules"
             children={(field) => (
               <div className="space-y-2 md:col-span-2">
@@ -475,7 +548,7 @@ const SportingEventForm = (
                   onBlur={field.handleBlur}
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
                   placeholder="Reglamento del evento (opcional)"
-                  rows={6}
+                  rows={3}
                 />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
@@ -497,7 +570,7 @@ const SportingEventForm = (
                   onBlur={field.handleBlur}
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
                   placeholder="Premios del evento (opcional)"
-                  rows={5}
+                  rows={3}
                 />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
@@ -506,6 +579,86 @@ const SportingEventForm = (
             )}
           />
         </div>
+
+        <hr className="my-6" />
+
+        <form.AppField
+          name="clothing"
+          mode='array'
+          children={(field) => (
+            <div className="space-y-4 md:col-span-2">
+              <div className="text-lg font-semibold mt-6 mb-2">Indumentaria del Evento</div>
+              <div className='flex gap-2 flex-col sm:flex-row'>
+                {CLOTHING_TYPES.map((ctype) => (
+                  <form.Button
+                    variant='outline'
+                    type="button"
+                    onClick={() => {
+                      if (!field.state.value) {
+                        console.log('Initializing clothing array');
+                        field.handleChange([])
+                      };
+                      if (field.state.value?.some(item => item.clothing_type === ctype)) {
+                        // Remove existing clothing of this type
+                        console.log('Removing clothing type:', ctype);
+                        const filteredItems = field.state.value.filter(item => item.clothing_type !== ctype);
+                        field.handleChange(filteredItems.length === 0 ? null : filteredItems);
+                        return;
+                      }
+                      console.log('Adding clothing type:', ctype);
+                      const newItems = genClothingItems(ctype);
+                      field.handleChange([...(field.state.value || []), ...newItems]);
+                    }}
+                  >
+                    {ctype === 'tshirt'
+                      ? 'Remeras'
+                      : ctype === 'tanktop'
+                        ? 'Musculosas'
+                        : capitalizeStr(ctype)}
+                  </form.Button>
+                ))}
+              </div>
+              {field.state.value &&
+                getClothesByType(field.state.value).map(({ key: ctype, data: items }) => (
+                <div key={ctype} className="border rounded-md p-4">
+                  <div className="text-md font-semibold mb-2">
+                    {ctype === 'tshirt'
+                      ? 'Remeras'
+                      : ctype === 'tanktop'
+                        ? 'Musculosas'
+                        : capitalizeStr(ctype)}
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                    {items.map((clothingItem, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="text-sm font-medium">{clothingItem.size}</div>
+                        <div className="flex items-center gap-2">
+                          <div className='flex flex-col'>
+                            <form.AppField
+                              name={`clothing[${clothingItem.index}].purchased_quantity`}
+                              children={(subField) => (
+                                <subField.Input
+                                  id={subField.name}
+                                  name={subField.name}
+                                  className="w-20 rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                  value={subField.state.value || ""}
+                                  onChange={(e) => {
+                                    subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
+                                  }}
+                                />
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+            </div>
+          )}
+        />
 
         <hr className="my-6" />
 
