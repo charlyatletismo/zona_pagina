@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
-import { getMessage } from '@/lib/utils';
+import { getMessage, capitalizeStr } from '@/lib/utils';
 import { SettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
 import { authorizedOrg, authorizedAthMan } from '@shared/roles';
 import { postAuthenticated } from '@/lib/apiCalls';
@@ -78,16 +78,6 @@ export const ProfileForm = ({
   );
   const specialFieldsEditable = !authorizedOrg(localStorage.getItem('USER_ROLE'));
 
-  const capitalize = (s: string) => {
-    if (s.length === 0) return s;
-    return s.split(" ")
-      .map(word =>
-        word.charAt(0).toUpperCase()
-        + word.slice(1).toLowerCase()
-      )
-      .join(" ");
-  }
-
   const form = useAppForm({
     defaultValues: profile || undefined,
     validators: {
@@ -113,7 +103,7 @@ export const ProfileForm = ({
         }, 1500);
         return;
       }
-      setSuccess('Perfil actualizado correctamente');
+      setSuccess(getMessage(res.body?.message, 'Perfil actualizado correctamente'));
       let req = '';
       if (postUrl === SETTINGS_API_PATH) {
         // only for profile settings update
@@ -218,7 +208,7 @@ export const ProfileForm = ({
                 id={field.name}
                 name={field.name}
                 value={field.state.value || ''}
-                onChange={(e) => field.handleChange(capitalize(e.target.value))}
+                onChange={(e) => field.handleChange(capitalizeStr(e.target.value))}
                 onBlur={() => field.handleBlur()}
                 className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 placeholder="Tu nombre"
@@ -240,7 +230,7 @@ export const ProfileForm = ({
                 id={field.name}
                 name={field.name}
                 value={field.state.value || ''}
-                onChange={(e) => field.handleChange(capitalize(e.target.value))}
+                onChange={(e) => field.handleChange(capitalizeStr(e.target.value))}
                 onBlur={() => field.handleBlur()}
                 className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 placeholder="Tu apellido"
@@ -335,7 +325,7 @@ export const ProfileForm = ({
                 valKey={TEMPORARY_LOCATION_ID}
                 valKeyDesc="Otra (especificar debajo)"
                 valKeySetter={(val) => {
-                  field.form.setFieldValue('location_temp', capitalize(val));
+                  field.form.setFieldValue('location_temp', capitalizeStr(val));
                 }}
               />
               {!field.state.meta.isValid && (
@@ -351,7 +341,7 @@ export const ProfileForm = ({
                         name={subField.name}
                         placeholder="Especificar localidad"
                         value={subField.state.value || ''}
-                        onChange={(e) => subField.handleChange(capitalize(e.target.value))}
+                        onChange={(e) => subField.handleChange(capitalizeStr(e.target.value))}
                         onBlur={() => subField.handleBlur()}
                         className={!subField.state.meta.isValid ? 'border-destructive' : ''}
                         required={field.state.value === TEMPORARY_LOCATION_ID}
@@ -511,7 +501,7 @@ export const ProfileForm = ({
                 id={field.name}
                 name={field.name}
                 value={field.state.value || ''}
-                onChange={(e) => field.handleChange(capitalize(e.target.value))}
+                onChange={(e) => field.handleChange(capitalizeStr(e.target.value))}
                 onBlur={() => field.handleBlur()}
                 className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 placeholder="Nombre completo del contacto de emergencia"
