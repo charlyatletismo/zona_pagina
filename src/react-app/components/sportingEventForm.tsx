@@ -1,14 +1,13 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react';
 import { Save, AlertCircle, MapPinnedIcon, Trash2, ListRestartIcon, PlusIcon } from 'lucide-react';
-import { cn, getLang, getMessage, capitalizeStr } from '@/lib/utils';
+import { getLang, getMessage, capitalizeStr } from '@/lib/utils';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
 import {
   SportingEventSchema,
   AthleteCategoryTemplateSchema,
-  SportingEventCircuitSchema,
   SportingEventClothingSchema,
   CLOTHING_TYPES,
 } from '@shared/types'
@@ -17,26 +16,12 @@ import {
 } from '@shared/lang';
 import { SportingEventApiResponseReadSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { LocationForm } from './locationForm';
 
 
-const PartialSportingEventSchema = SportingEventSchema.partial()
-const ArrayOfCatTemplates = z.array(AthleteCategoryTemplateSchema)
-
-const genClothingItems = (
-  clothingType: z.infer<typeof SportingEventClothingSchema.shape.clothing_type>
-) => {
-  return SportingEventClothingSchema.shape.size.options.map((size) => ({
-    clothing_type: clothingType,
-    size,
-  }));
-}
-
-const PartialClothingSchema = SportingEventClothingSchema.partial();
 const getClothesByType = (
-  clothingArray: z.infer<typeof PartialClothingSchema>[] | null,
+  clothingArray: z.infer<typeof SportingEventClothingSchema>[] | null,
 ) => {
   if (!clothingArray) return [];
   const clothesByType = clothingArray.reduce((acc, clothingItem, index) => {
@@ -57,6 +42,8 @@ const getClothesByType = (
 }
 
 
+const ArrayOfCatTemplates = z.array(AthleteCategoryTemplateSchema)
+
 const SportingEventForm = (
     { data, catTemplates, locations } : {
     data: z.infer<typeof SportingEventSchema> | null,
@@ -71,14 +58,15 @@ const SportingEventForm = (
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
 
+
   const form = useAppForm({
     defaultValues: data
       ? SportingEventApiResponseReadSchema.parse(data || {})
-      : SportingEventSchema.keyof().options.reduce((acc, field) => {
-          acc[field] = null;
-          return acc;
-        },
-        {} as Record<string, null>),
+      : {
+        title: '',
+        date: null,
+        event_type: null,
+      },
     validators: {
       onBlur: SportingEventSchema,
     },
@@ -104,8 +92,6 @@ const SportingEventForm = (
     }
   });
 
-
-  const [formData, setFormData] = useState<z.infer<typeof PartialSportingEventSchema>>(data || {});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -614,7 +600,12 @@ const SportingEventForm = (
                           return;
                         }
                         console.log('Adding clothing type:', ctype);
-                        const newItems = genClothingItems(ctype);
+                        const newItems = SportingEventClothingSchema.shape
+                          .size.options.map((size) => ({
+                            clothing_type: ctype,
+                            size,
+                          })
+                        );
                         field.handleChange([...(field.state.value || []), ...newItems]);
                       }}
                       disabled={field.state.value ? !field.state.value?.some(item => item.clothing_type === ctype) : false}
@@ -690,15 +681,8 @@ const SportingEventForm = (
                   type="button"
                   onClick={() => {
                     field.pushValue({
-                      id: null,
-                      title: "",
-                      description: null,
-                      location: null,
-                      event_id: formData.id || 0,
-                      location_address: null,
-                      location_lat: null,
-                      location_long: null,
-                      date: z.coerce.date().nullable().parse(field.form.state.values.date) || new Date(),
+                      title: '',
+                      date: field.form.state.values.date || new Date(),
                     })
                   }}
                 >
@@ -843,109 +827,156 @@ const SportingEventForm = (
 
         <hr className="my-6" />
 
-        {/* TODO: Circuitos y Categorías */}
-
-        <div className="text-lg font-semibold mt-6 mb-2">Circuitos del Evento</div>
-        <div className="space-y-2 md:col-span-2">
-          <Button variant={'outline'} type='button' onClick={
-            () => setFormData(
-              prev => (
-                {
-                  ...prev,
-                  circuits: [
-                    ...(prev.circuits || []),
-                    SportingEventCircuitSchema.parse({ name: "", distance_km: 0 })
-                  ]
-                }))
-          }>{
-              'Agregar nuevo circuito'
-            }</Button>
-        </div>
-        {formData.circuits && formData.circuits.map((circuit, index) => (
-          <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-2 items-end">
-            <div className='space-y-2 md:col-span-2'>
-              <label htmlFor={`circuits.${index}`} className="text-sm font-medium text-gray-700">{`Circuito ${index + 1}`}</label>
-              <div className="flex gap-2">
-                <Button variant={'destructive'} type='button' onClick={
-                  () => {
-                    const newCircuits = [...(formData.circuits || [])];
-                    newCircuits.splice(index, 1);
-                    setFormData(prev => ({ ...prev, circuits: newCircuits }));
-                  }
-                }>{
-                    <Trash2 className="w-4 h-4" />
-                  }</Button>
-                <Input
-                  id={`circuits.${index}.name`}
-                  name={`circuits.${index}.name`}
-                  value={circuit.name || ''}
-                  onChange={(e) => {
-                    const newCircuits = [...(formData.circuits || [])];
-                    newCircuits[index].name = e.target.value;
-                    setFormData(prev => ({ ...prev, circuits: newCircuits }));
+        <form.AppField
+          name="circuits"
+          mode='array'
+          children={(field) => (
+            <div className="space-y-4 md:col-span-2">
+              <div className='flex flex-col sm:flex-row justify-between mt-6 mb-2'>
+                <div className="text-lg font-semibold my-auto">Circuitos del Evento</div>
+                <form.Button
+                  variant='outline'
+                  type="button"
+                  onClick={() => {
+                    field.pushValue({
+                      name: "",
+                      distance_km: 0,
+                    })
                   }}
-                  placeholder="Nombre del circuito"
-                />
+                >
+                  <PlusIcon className="w-4 h-4" />
+                </form.Button>
               </div>
-            </div>
-            <div className='space-y-2 md:col-span-2'>
-              <label htmlFor={`circuits.${index}.description`} className="text-sm font-medium text-gray-700">Descripción del Circuito</label>
-              <textarea
-                id={`circuits.${index}.description`}
-                name={`circuits.${index}.description`}
-                rows={3}
-                className={cn(
-                  "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                )}
-                value={circuit.description || ''}
-                onChange={(e) => {
-                  const newCircuits = [...(formData.circuits || [])];
-                  newCircuits[index].description = e.target.value;
-                  setFormData(prev => ({ ...prev, circuits: newCircuits }));
-                }}
-              />
-            </div>
+              {!field.state.value && (
+                <div className='text-sm text-gray-500 italic mt-4'>
+                  No se han agregado circuitos al evento.
+                  Haga clic en el botón de arriba para agregar un circuito.
+                </div>
+              )}
+              {field.state.value && field.state.value.map((circuit, index) => (
+                <div key={index} className="p-4 border rounded-md">
+                  <div className='flex flex-row justify-between mb-5'>
+                    <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
+                    <form.Button
+                      variant='secondary'
+                      type="button"
+                      onClick={() => {
+                        if (field.state.value?.length === 1) {
+                          field.handleChange(null);
+                        } else {
+                          field.removeValue(index);
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </form.Button>
+                  </div>
+                  <div className='space-y-4 grid grid-cols-1 md:grid-cols-2 gap-2'>
+                    <form.AppField
+                      name={`circuits[${index}].name`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Nombre del Circuito</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value);
+                            }}
+                            required
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
 
-            <div className="space-y-2">
-              <label htmlFor={`circuits.${index}.distance_km`} className="text-sm font-medium text-gray-700">Distancia (en kilómetros)</label>
-              <Input
-                id={`circuits.${index}.distance_km`}
-                name={`circuits.${index}.distance_km`}
-                type="number"
-                step="any"
-                value={circuit.distance_km || ''}
-                onChange={(e) => {
-                  const newCircuits = [...(formData.circuits || [])];
-                  newCircuits[index].distance_km = parseFloat(e.target.value);
-                  setFormData(prev => ({ ...prev, circuits: newCircuits }));
-                }}
-              />
-            </div>
+                    <form.AppField
+                      name={`circuits[${index}].distance_km`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Distancia (en kilómetros)</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
+                            }}
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
 
-            <div className="space-y-2 md:col-span-2">
-              <label htmlFor={`circuits.${index}.map_url`} className="text-sm font-medium text-gray-700">URL del Mapa</label>
-              <div className="flex gap-2">
-                <Input
-                  id={`circuits.${index}.map_url`}
-                  name={`circuits.${index}.map_url`}
-                  value={circuit.map_url || ''}
-                  onChange={(e) => {
-                    const newCircuits = [...(formData.circuits || [])];
-                    newCircuits[index].map_url = e.target.value;
-                    setFormData(prev => ({ ...prev, circuits: newCircuits }));
-                  }}
-                  placeholder="https://www.google.com/maps/d/..."
-                />
-                <Button variant="secondary" className="w-[25%]" asChild>
-                  <a href="https://www.google.com/mymaps" target="_blank" rel="noopener noreferrer">
-                    <MapPinnedIcon className="w-4 h-4 mr-2" />
-                    Ir a My Maps
-                  </a>
-                </Button>
-              </div>
+
+                    <form.AppField
+                      name={`circuits[${index}].map_url`}
+                      children={(subField) => (
+                        <div className='space-y-2 md:col-span-2'>
+                          <subField.Label htmlFor={subField.name}>URL al circuito</subField.Label>
+                          <div className='flex gap-2'>
+                            <subField.Input
+                              id={subField.name}
+                              name={subField.name}
+                              className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                              value={subField.state.value || ""}
+                              onBlur={subField.handleBlur}
+                              onChange={(e) => {
+                                subField.handleChange(e.target.value);
+                              }}
+                              placeholder="https://www.google.com/maps/d/..."
+                            />
+                            <form.Button variant="secondary" className="w-[25%]" asChild>
+                              <a href="https://www.google.com/mymaps" target="_blank" rel="noopener noreferrer">
+                                <MapPinnedIcon className="w-4 h-4 mr-2" />
+                                Ir a My Maps
+                              </a>
+                            </form.Button>
+                          </div>
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
+          )}
+        />
+
+        {/* TODO: Categorías */}
+
+        <hr className="my-6" />
+
+        <form.Subscribe
+          selector={(state) => state.errors}
+          children={(errors) => (
+            <>
+              {Object.keys(errors).length > 0 && (
+                <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200" role="alert">
+                  <span className="font-medium">Por favor corrija los siguientes errores antes de continuar:</span>
+                  <ul className="mt-2 list-disc list-inside">
+                    {errors.map((error, index) => (
+                      <li key={index}>{JSON.stringify(error)}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
+          )}
+        />
+
         <hr className="my-6" />
 
         <form.Subscribe
