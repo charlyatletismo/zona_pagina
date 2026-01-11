@@ -12,7 +12,7 @@ export const DatePicker = ({
   onBlur,
 }: {
   borderColor?: string,
-  value: Date | null,
+  value: Date | null | undefined,
   onChange: (value: Date | null | undefined) => void,
   onBlur: () => void,
 }) => {

@@ -15,9 +15,15 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
-    const resSpEvent = await getAuthenticatedThrow<z.infer<typeof SportingEventSchema>>(`/api/sportingEvents/${params.eventId}`);
-    const resCatTemplates = await getAuthenticatedThrow<z.infer<typeof AthCatApiResponse>>('/api/athleteCategoryTemplates');
-    const resLocations = await getAuthenticatedThrow<string[]>('/api/locations');
+    const resSpEvent = await getAuthenticatedThrow<
+      z.infer<typeof SportingEventSchema>
+      >(`/api/sportingEvents/${params.eventId}`);
+    const resCatTemplates = await getAuthenticatedThrow<
+      z.infer<typeof AthCatApiResponse>
+      >('/api/athleteCategoryTemplates');
+    const resLocations = await getAuthenticatedThrow<
+      string[]
+      >('/api/locations');
     return { resSpEvent, resCatTemplates, resLocations };
   },
   staleTime: 1000 * 60 * 5,
@@ -30,11 +36,9 @@ function RouteComponent() {
   return (
     <FormBox
       error={
-        (resSpEvent.status !== 200 || resCatTemplates.status !== 200
+        (resSpEvent.status !== 200
+          || resCatTemplates.status !== 200
           || resLocations.status !== 200
-          || !resSpEvent.body?.data
-          || !resCatTemplates.body?.data
-          || !resLocations.body?.data
         )
         ? "Error al cargar los datos del evento. "
           + getMessage(resSpEvent.body.message, "", " ")
@@ -45,7 +49,7 @@ function RouteComponent() {
       description="Actualiza la información del evento deportivo."
       returnText="Volver al Evento"
       returnPath="/sportingEvents/$eventId"
-      returnParams={{ eventId: resSpEvent.body?.data?.id.toString() }}
+      returnParams={{ eventId: resSpEvent.body?.data?.id?.toString() }}
     >
       <SportingEventForm
         data={resSpEvent.body?.data}

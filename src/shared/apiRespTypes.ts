@@ -56,16 +56,16 @@ export const SportingEventApiResponseSchema = z.object({
 
 export const SportingEventApiResponseReadSchema = SportingEventSchema.extend({
   date: z.coerce.date(),
-  registration_start: z.coerce.date().nullable(),
-  registration_end: z.coerce.date().nullable(),
-  created_at: z.coerce.date().nullable(),
-  updated_at: z.coerce.date().nullable(),
+  registration_start: z.coerce.date().nullable().optional(),
+  registration_end: z.coerce.date().nullable().optional(),
+  created_at: z.coerce.date().nullable().optional(),
+  updated_at: z.coerce.date().nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
     date: z.coerce.date(),
-  })).nullable(),
+  })).nullable().optional(),
   categories: z.array(SportingEventAthleteCategorySchema.extend({
-    exclude_auto_qualify: z.coerce.boolean().nullable(),
-  })).nullable(),
+    exclude_auto_qualify: z.coerce.boolean().default(false).optional(),
+  })).nullable().optional(),
 });
 
 

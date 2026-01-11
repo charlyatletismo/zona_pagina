@@ -149,6 +149,23 @@ export const M = {
     [ES]: "Se requiere el ID del circuito del evento deportivo",
     [EN]: "Sporting event circuit ID required"
   },
+  SPORTING_EVENT_CIRCUIT_INVALID_DATA: {
+    [ES]: "Los datos del circuito del evento deportivo no son válidos",
+    [EN]: "Invalid sporting event circuit data"
+  },
+  SPORTING_EVENT_SCHEDULE_INVALID_DATA: {
+    [ES]: "Los datos del cronograma del evento deportivo no son válidos",
+    [EN]: "Invalid sporting event schedule data"
+  },
+  SPORTING_EVENT_CLOTHING_INVALID_DATA: {
+    [ES]: "La ropa del evento deportivo no es válida",
+    [EN]: "Invalid sporting event clothing data"
+  },
+  SPORTING_EVENT_ATHLETE_CATEGORY_INVALID_DATA: {
+    [ES]: "Los datos de la categoría de atleta del evento deportivo no son válidos",
+    [EN]: "Invalid sporting event athlete category data"
+  },
+
 
   // -------------------------- SPORTING EVENT REGISTRATIONS --------------------------
   SPORTING_EVENT_REGISTRATION_NOT_FOUND: {

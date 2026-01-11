@@ -23,12 +23,14 @@ import {
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { getLang } from "@/lib/utils";
 import { SportingEventSchema } from '@shared/types';
+import { SportingEventApiResponseReadSchema } from '@shared/apiRespTypes';
 import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { ButtonPing } from '@/components/pingingButton';
+import z from 'zod';
 
 
 const getRegistrationStatusDescription = (status: string | null) => {
@@ -42,24 +44,15 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
-    const res = await getAuthenticatedThrow(`/api/sportingEvents/${params.eventId}`);
-    let data = null;
-    if (res.status === 200 && res.body?.data) {
-      try {
-        data = SportingEventSchema.parse(res.body.data);
-      } catch (e) {
-        // console.error('Error parsing SportingEvent data:', e);
-        res.body.message = {
-          es: 'Los datos del evento deportivo están corruptos o no son válidos.',
-          en: 'The sporting event data is corrupt or invalid.'
-        }
-      }
-    }
+    const res = await getAuthenticatedThrow<
+      z.infer<typeof SportingEventSchema
+      >>(`/api/sportingEvents/${params.eventId}`);
     return {
-      status: res.status,
-      data: data,
-      message: res.body?.message
-    };
+      res,
+      data: res.body
+        ? SportingEventApiResponseReadSchema.parse(res.body?.data)
+        : null
+      };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -67,12 +60,12 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
 
 function RouteComponent() {
   const { eventId } = Route.useParams();
-  const {data, status, message} = Route.useLoaderData();
-  if (status !== 200 || !data) {
+  const { res, data } = Route.useLoaderData();
+  if (res.status !== 200 || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
-        <div className='text-center text-gray-600' >{getMessage(message, 'Error desconocido')}</div>
+        <div className='text-center text-gray-600' >{getMessage(res.body?.message, 'Error desconocido')}</div>
         <Button asChild variant="outline">
             <Link to="/">Volver al inicio</Link>
         </Button>
@@ -201,7 +194,7 @@ function RouteComponent() {
                 }[data.user_registration_status.registration_status || '']
               }
             >
-              <b>Estado</b> {getRegistrationStatusDescription(data.user_registration_status.registration_status)}
+              <b>Estado</b> {getRegistrationStatusDescription(data.user_registration_status?.registration_status || null)}
             </Badge>
           </div>
 
@@ -333,7 +326,7 @@ function RouteComponent() {
                   {data.schedules.map((schedule) => (
                     <div key={schedule.id} className="mb-2 border-l-4 border-primary pl-4">
                         <h3 className="text-lg font-medium mb-1">{schedule.title}</h3>
-                        <div className="text-sm text-gray-500 mb-2">{new Date(schedule.date).toLocaleString()}</div>
+                        <div className="text-sm text-gray-500 mb-2">{schedule.date?.toLocaleString()}</div>
                         {schedule.description && (
                           <p className="text-gray-600 whitespace-pre-wrap">{schedule.description}</p>
                         )}
