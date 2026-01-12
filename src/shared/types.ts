@@ -28,6 +28,7 @@ export const TEMPORARY_LOCATION_ID = 'temporary_location';
 
 export const LocationSchema = z.object({
   id: z.string()
+    .min(1, 'El ID de la ubicación no puede estar vacío')
     .max(256, 'El ID de la ubicación no puede exceder los 256 caracteres'),
   locality: z.string()
     .min(1, 'La localidad no puede estar vacía')
@@ -41,11 +42,11 @@ export const LocationSchema = z.object({
   latitude: z.number("Debe ser un número")
     .min(-90, 'La latitud debe ser mayor o igual a -90')
     .max(90, 'La latitud debe ser menor o igual a 90')
-    .nullable(),
+    .nullable().optional(),
   longitude: z.number("Debe ser un número")
     .min(-180, 'La longitud debe ser mayor o igual a -180')
     .max(180, 'La longitud debe ser menor o igual a 180')
-    .nullable(),
+    .nullable().optional(),
 });
 
 
@@ -61,11 +62,17 @@ export const UserSchema = z.object({
     .min(15, 'Debe tener al menos 15 dígitos')
     .max(16, 'No puede exceder los 16 dígitos'),
   email: z.email({error: 'Debes ingresar un correo electrónico válido'}),
-  emergency_contact_name: z.string({error: 'Debes indicar el nombre completo del contacto de emergencia'}),
-  emergency_contact_phone: z.string({error: 'Debes indicar el celular del contacto de emergencia'}),
+  emergency_contact_name: z.string({error: 'Debes indicar el nombre completo del contacto de emergencia'})
+    .min(1, 'Debes indicar el nombre completo del contacto de emergencia')
+    .max(128, 'El nombre del contacto de emergencia no puede exceder los 128 caracteres'),
+  emergency_contact_phone: z.string({error: 'Debes ingresar un número de celular válido'})
+    .min(15, 'Debe tener al menos 15 dígitos')
+    .max(16, 'No puede exceder los 16 dígitos'),
   sex: z.string({error: 'Debes indicar tu sexo'})
+    .min(1, 'Debes indicar tu sexo')
     .max(1, 'El sexo debe contener solo 1 caracter'),
-  date_of_birth: z.coerce.date({error: 'Debes indicar tu fecha de nacimiento'})
+  date_of_birth: z.date({error: 'Debes indicar tu fecha de nacimiento'})
+    .min(new Date(1900, 0, 1), 'Tu edad es muy avanzada')
     .max(maxDateOfBirth, `Debe tener al menos ${minAgeRequired} años`),
   clothing_shirt_size: z.enum(
     SHIRT_SIZES,
@@ -75,64 +82,73 @@ export const UserSchema = z.object({
     .max(256, 'La ubicación no puede exceder los 256 caracteres'),
   location_temp: z.string()
     .max(256, 'La ubicación temporal no puede exceder los 256 caracteres')
-    .nullable(),
-  location_address: z.string()
+    .nullable().optional(),
+  location_address: z.string({error: 'Debes ingresar una dirección'})
+    .min(1, 'Debes ingresar una dirección')
     .max(256, 'La dirección no puede exceder los 256 caracteres'),
   special_needs: z.string()
+    .min(1, 'Si no posee necesidades especiales, por favor dejarlo vacío')
     .max(512, 'Las necesidades especiales no pueden exceder los 512 caracteres')
-    .nullable(),
-  discount_percentage: z.number("Debe ser un número")
+    .nullable().optional(),
+  discount_percentage: z.number({error: "Debe ser un número"})
+    .min(0, 'El porcentaje de descuento no puede ser negativo')
     .max(100, 'El porcentaje de descuento no puede exceder 100%')
-    .default(0),
+    .prefault(0),
   manual_athlete_category: z.string()
     .max(64, 'La categoría manual no puede exceder los 64 caracteres')
-    .nullable(),
+    .nullable().optional(),
   manager_id: z.string()
     .max(USER_ID_MAX_LENGTH, 'El ID del manager no puede exceder los 28 caracteres')
-    .nullable(),
-  training_team_id: z.number().nullable(),
+    .nullable().optional(),
+  training_team_id: z.number()
+    .nullable().optional(),
   training_team_temp: z.string()
     .max(128, 'El nombre del equipo de entrenamiento temporal no puede exceder los 128 caracteres')
-    .nullable(),
+    .nullable().optional(),
   profile_image_url: z.string()
     .max(512, 'La URL de la imagen de perfil no puede exceder los 512 caracteres')
-    .nullable(),
+    .nullable().optional(),
   profile_image_preview_url: z.string()
     .max(512, 'La URL de la vista previa de la imagen de perfil no puede exceder los 512 caracteres')
-    .nullable(),
+    .nullable().optional(),
   language: z.string()
     .max(2, 'El código de idioma no puede exceder los 2 caracteres')
-    .default('es'),
+    .default('es').optional(),
   temp_code: z.string()
-    .max(6, 'El código temporal no puede exceder los 6 caracteres')
-    .nullable(),
-  role: z.enum(ALL_ROLES, 'El rol del usuario no es válido'),
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+    .min(6, 'El código temporal debe tener 6 caracteres')
+    .max(6, 'El código temporal debe tener 6 caracteres')
+    .nullable().optional(),
+  role: z.enum(ALL_ROLES, 'El rol del usuario no es válido').optional(),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional(),
 });
 
 
 export const TrainingTeamSchema = z.object({
-  id: z.number(),
-  name: z.string().max(128),
-  location: z.string().max(256).nullable(),
-  coach_name: z.string().max(128).nullable(),
-  coach_user_id: z.string().max(USER_ID_MAX_LENGTH).nullable(),
-  contact_email: z.string().max(64).nullable(),
-  contact_phone: z.string().max(32).nullable(),
-  created_at: z.iso.datetime().nullable(),
-  updated_at: z.iso.datetime().nullable(),
+  id: z.number().optional(),
+  name: z.string()
+    .min(1, 'Debe ingresar un nombre')
+    .max(128, 'El nombre no puede exceder los 128 caracteres'),
+  location: z.string().max(256).nullable().optional(),
+  coach_name: z.string().max(128).nullable().optional(),
+  coach_user_id: z.string().max(USER_ID_MAX_LENGTH).nullable().optional(),
+  contact_email: z.string().max(64).nullable().optional(),
+  contact_phone: z.string().max(32).nullable().optional(),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional(),
 });
 
 
 export const AthleteCategoryTemplateSchema = z.object({
-  id: z.number().nullable(),
-  base_name: z.string(),
-  male_name: z.string().nullable(),
-  female_name: z.string().nullable(),
-  min_age: z.number().nullable(),
-  max_age: z.number().nullable(),
-  exclude_auto_qualify: z.boolean().nullable(),
+  id: z.number().optional(),
+  base_name: z.string()
+    .min(1, 'Debe ingresar un nombre base para la categoría')
+    .max(64, 'El nombre base no puede exceder los 64 caracteres'),
+  male_name: z.string().nullable().optional(),
+  female_name: z.string().nullable().optional(),
+  min_age: z.number().nullable().optional(),
+  max_age: z.number().nullable().optional(),
+  exclude_auto_qualify: z.boolean().nullable().optional(),
 });
 
 
@@ -155,9 +171,11 @@ export const SportingEventScheduleSchema = z.object({
   title: z.string().min(1, 'Debe ingresar un título para el hito'),
   description: z.string().nullable().optional(),
   location: LocationSchema.shape.id.nullable().optional(),
-  location_address: z.string().max(128).nullable().optional(),
-  location_lat: LocationSchema.shape.latitude.nullable().optional(),
-  location_long: LocationSchema.shape.longitude.nullable().optional(),
+  location_address: z.string()
+    .max(256, 'La dirección no puede exceder los 256 caracteres')
+    .nullable().optional(),
+  location_lat: LocationSchema.shape.latitude,
+  location_long: LocationSchema.shape.longitude,
 });
 
 
@@ -211,9 +229,11 @@ export const SportingEventSchema = z.object({
   registration_start: z.date().nullable().optional(),
   registration_end: z.date().nullable().optional(),
   location: LocationSchema.shape.id.nullable().optional(),
-  location_address: z.string().max(256).nullable().optional(),
-  location_lat: LocationSchema.shape.latitude.nullable().optional(),
-  location_long: LocationSchema.shape.longitude.nullable().optional(),
+  location_address: z.string()
+    .max(256, 'La dirección no puede exceder los 256 caracteres')
+    .nullable().optional(),
+  location_lat: LocationSchema.shape.latitude,
+  location_long: LocationSchema.shape.longitude,
   event_type: SportingEventTypesEnum,
   rules: z.string().max(2048).nullable().optional(),
   disclaimer_of_liability: z.string().max(4096).nullable().optional(),

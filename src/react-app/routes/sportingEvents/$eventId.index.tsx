@@ -23,7 +23,7 @@ import {
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { getLang } from "@/lib/utils";
 import { SportingEventSchema } from '@shared/types';
-import { SportingEventApiResponseReadSchema } from '@shared/apiRespTypes';
+import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
 import React from 'react';
@@ -49,10 +49,8 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
       >>(`/api/sportingEvents/${params.eventId}`);
     return {
       res,
-      data: res.body
-        ? SportingEventApiResponseReadSchema.parse(res.body?.data)
-        : null
-      };
+      data: ARSportingEventSchema.parse(res.body?.data)
+    };
   },
   staleTime: 1000 * 60 * 5,
 })

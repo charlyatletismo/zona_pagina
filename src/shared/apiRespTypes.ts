@@ -47,14 +47,14 @@ export const SettingsSchema = UserSchema.pick({
 /////////////////////////////////////////////////////////////////
 
 
-export const SportingEventApiResponseSchema = z.object({
+export const ARAllSportingEventSchema = z.object({
   open: z.array(SportingEventBasicInfoSchema),
   comingSoon: z.array(SportingEventBasicInfoSchema),
   closed: z.array(SportingEventBasicInfoSchema),
   past: z.array(SportingEventBasicInfoSchema),
 });
 
-export const SportingEventApiResponseReadSchema = SportingEventSchema.extend({
+export const ARSportingEventSchema = SportingEventSchema.extend({
   date: z.coerce.date(),
   registration_start: z.coerce.date().nullable().optional(),
   registration_end: z.coerce.date().nullable().optional(),
@@ -66,7 +66,7 @@ export const SportingEventApiResponseReadSchema = SportingEventSchema.extend({
   categories: z.array(SportingEventAthleteCategorySchema.extend({
     exclude_auto_qualify: z.coerce.boolean().default(false).optional(),
   })).nullable().optional(),
-});
+}).nullable();
 
 
 //////////////////////////////////////////////////////////////////////////////////

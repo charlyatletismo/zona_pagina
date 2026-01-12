@@ -3,15 +3,14 @@ import { CalendarIcon, MapPinIcon } from 'lucide-react';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
 import { getAuthenticated } from '@/lib/apiCalls';
 import z from 'zod';
-import { SportingEventBasicInfoSchema } from '@shared/types';
-import { SportingEventApiResponseSchema } from '@shared/apiRespTypes';
+import { SportingEventBasicInfoSchema, ARAllSportingEventSchema } from '@shared/apiRespTypes';
 
 
 export const Route = createFileRoute('/')({
   component: Index,
   beforeLoad: unprotectedCheck(),
   loader: async () => {
-    return await getAuthenticated<z.infer<typeof SportingEventApiResponseSchema>>('/api/sportingEvents');
+    return await getAuthenticated<z.infer<typeof ARAllSportingEventSchema>>('/api/sportingEvents');
   },
   staleTime: 1000 * 60 * 5,
 })
