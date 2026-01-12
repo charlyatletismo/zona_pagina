@@ -70,7 +70,7 @@ function RouteComponent() {
           // verify code
           fetch('/api/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ "phone": `${countryCode}9${phone}`, "code": code }),
+            body: JSON.stringify({ "phone": `${countryCode}_9_${phone}`, "code": code }),
             headers: {
               'Content-Type': 'application/json'
             }
@@ -91,7 +91,7 @@ function RouteComponent() {
           // register user
           fetch('/api/auth/register', {
             method: 'POST',
-            body: JSON.stringify({ "phone": `${countryCode}9${phone}`, "user_id": userId }),
+            body: JSON.stringify({ "phone": `${countryCode}_9_${phone}`, "user_id": userId }),
             headers: {
               'Content-Type': 'application/json'
             }
@@ -113,7 +113,7 @@ function RouteComponent() {
         // send code
         fetch('/api/auth/sendCode', {
           method: 'POST',
-          body: JSON.stringify({ "phone": `${countryCode}9${phone}` }),
+          body: JSON.stringify({ "phone": `${countryCode}_9_${phone}` }),
           headers: {
             'Content-Type': 'application/json'
           }
