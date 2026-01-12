@@ -5,13 +5,17 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { FormBox } from '@/components/formBox';
 import { LocationForm } from '@/components/locationForm';
 import { getMessage } from '@/lib/utils';
+import z from 'zod';
 
 
 export const Route = createFileRoute('/general/locations/create')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async () => {
-    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
+    const locationsApi = await getAuthenticatedThrow<
+      string[]
+      >('/api/locations',
+        z.array(z.string()));
     return { locationsApi };
   },
   staleTime: 0, // force reload every time

@@ -5,8 +5,8 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { FormBox } from '@/components/formBox';
 import { getMessage } from '@/lib/utils';
 import SportingEventForm from '@/components/sportingEventForm';
+import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import z from 'zod';
-import { SportingEventSchema } from '@shared/types';
 import { AthCatApiResponse } from '@shared/apiRespTypes';
 
 
@@ -16,14 +16,14 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
     const resSpEvent = await getAuthenticatedThrow<
-      z.infer<typeof SportingEventSchema>
-      >(`/api/sportingEvents/${params.eventId}`);
+      z.infer<typeof ARSportingEventSchema>
+      >(`/api/sportingEvents/${params.eventId}`, ARSportingEventSchema);
     const resCatTemplates = await getAuthenticatedThrow<
       z.infer<typeof AthCatApiResponse>
       >('/api/athleteCategoryTemplates');
     const resLocations = await getAuthenticatedThrow<
       string[]
-      >('/api/locations');
+      >('/api/locations', z.array(z.string()));
     return { resSpEvent, resCatTemplates, resLocations };
   },
   staleTime: 1000 * 60 * 5,

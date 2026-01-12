@@ -14,7 +14,7 @@ import {
 import {
   SportingEventTypesEnumDescriptions,
 } from '@shared/lang';
-import { SportingEventApiResponseReadSchema } from '@shared/apiRespTypes';
+import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { LocationForm } from './locationForm';
@@ -46,7 +46,7 @@ const ArrayOfCatTemplates = z.array(AthleteCategoryTemplateSchema)
 
 const SportingEventForm = (
     { data, catTemplates, locations } : {
-    data: z.infer<typeof SportingEventSchema> | null,
+    data: z.infer<typeof ARSportingEventSchema> | null,
     catTemplates: z.infer<typeof ArrayOfCatTemplates>,
     locations: string[],
     }) => {
@@ -58,19 +58,16 @@ const SportingEventForm = (
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
 
-
   const form = useAppForm({
-    defaultValues: data
-      ? SportingEventApiResponseReadSchema.parse(data || {})
-      : {
-        title: '',
-        date: null,
-        event_type: null,
-      },
+    defaultValues: data,
     validators: {
       onBlur: SportingEventSchema,
     },
     onSubmit: async ({ value }) => {
+      if (!value) {
+        setError('Por favor, ingrese algún dato antes de enviar el formulario.')
+        return;
+      }
       setError('');
       setSuccess('');
       // Scroll to top of the page when form is submitted
@@ -115,7 +112,7 @@ const SportingEventForm = (
             dbLocations={locations}
             location={null}
             onSuccess={async () => {
-              const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
+              const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations', z.array(z.string()));
               setLoadedLocations(locationsApi.body?.data || []);
               setNewLocation(false);
             }}
@@ -682,7 +679,7 @@ const SportingEventForm = (
                   onClick={() => {
                     field.pushValue({
                       title: '',
-                      date: field.form.state.values.date || new Date(),
+                      date: field.form.state.values?.date || new Date(),
                     })
                   }}
                 >
@@ -957,25 +954,28 @@ const SportingEventForm = (
 
         {/* TODO: Categorías */}
 
-        <hr className="my-6" />
-
-        <form.Subscribe
-          selector={(state) => state.errors}
-          children={(errors) => (
-            <>
-              {Object.keys(errors).length > 0 && (
-                <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200" role="alert">
-                  <span className="font-medium">Por favor corrija los siguientes errores antes de continuar:</span>
-                  <ul className="mt-2 list-disc list-inside">
-                    {errors.map((error, index) => (
-                      <li key={index}>{JSON.stringify(error)}</li>
-                    ))}
-                  </ul>
-                </div>
+        {localStorage.getItem('ADMIN_MODE') === 'active' && (
+          <div>
+            <hr className="my-6" />
+            <form.Subscribe
+              selector={(state) => state.errors}
+              children={(errors) => (
+                <>
+                  {Object.keys(errors).length > 0 && (
+                    <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200" role="alert">
+                      <span className="font-medium">Por favor corrija los siguientes errores antes de continuar:</span>
+                      <ul className="mt-2 list-disc list-inside">
+                        {errors.map((error, index) => (
+                          <li key={index}>{JSON.stringify(error)}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
               )}
-            </>
-          )}
-        />
+            />
+          </div>
+        )}
 
         <hr className="my-6" />
 

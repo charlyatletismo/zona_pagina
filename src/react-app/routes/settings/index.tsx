@@ -3,31 +3,33 @@ import { Button } from '@/components/ui/button'
 import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserProfile } from '@shared/types'
 import { Profile } from '@/components/profileCard'
+import z from 'zod';
+import { SettingsSchema } from '@shared/apiRespTypes';
 
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
   beforeLoad: authCheck(),
   loader: async () => {
-    const profileApi = await getAuthenticatedThrow('/api/settings');
-    const profile: UserProfile = profileApi.body.data;
-    return { profile, status: profileApi.status};
+    const res = await getAuthenticatedThrow<
+      z.infer<typeof SettingsSchema>
+      >('/api/settings', SettingsSchema);
+    return { res };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const res = Route.useLoaderData();
+  const { res } = Route.useLoaderData();
   const navigate = useNavigate();
 
-  if (!res.profile) {
+  if (!res.body?.data) {
     return <div className="p-8 text-center">No se encontró información del perfil</div>;
   }
 
-  if (res.status === 404 || !res.profile) {
+  if (res.status === 404 || !res.body?.data) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
         <Button
@@ -74,7 +76,7 @@ function RouteComponent() {
           </Link>
         </div>
 
-        <Profile profile={res.profile} />
+        <Profile profile={res.body?.data} />
       </div>
     </div>
   )

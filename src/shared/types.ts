@@ -265,18 +265,6 @@ export const SportingEventSchema = z.object({
 });
 
 
-export const SportingEventBasicInfoSchema = SportingEventSchema.pick({
-  id: true,
-  title: true,
-  description: true,
-  date: true,
-  registration_start: true,
-  registration_end: true,
-  location: true,
-  location_address: true,
-})
-
-
 export const SportingEventRegistrationSchema = z.object({
   id: z.number(),
   event_id: SportingEventSchema.shape.id,

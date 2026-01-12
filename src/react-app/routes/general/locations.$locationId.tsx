@@ -13,8 +13,14 @@ export const Route = createFileRoute('/general/locations/$locationId')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
-    const locApi = await getAuthenticatedThrow<z.infer<typeof LocationSchema>>(`/api/locations/${params.locationId}`);
-    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
+    const locApi = await getAuthenticatedThrow<
+      z.infer<typeof LocationSchema>
+      >(`/api/locations/${params.locationId}`,
+        LocationSchema);
+    const locationsApi = await getAuthenticatedThrow<
+      string[]
+      >('/api/locations',
+        z.array(z.string()));
     return { locApi, locationsApi };
   },
   staleTime: 0, // force reload every time

@@ -1,21 +1,23 @@
 import { redirect } from '@tanstack/react-router';
 import { clearUserInfo } from './utils';
+import z from 'zod';
 
 
-export const getAuthenticatedThrow = async <T = any>(path: string) => {
+export const getAuthenticatedThrow = async <T = any>(path: string, schema?: z.ZodSchema<T>) => {
   return getAuthenticated<T>(
     path,
+    schema,
     ({to, reloadDocument}: {to: string, reloadDocument: boolean}) => {
       throw redirect({
         to,
         reloadDocument,
       });
-    }
+    },
   );
 }
 
 
-export const getAuthenticated = async <T = any>(path: string, navigate: any = () => {}): Promise<{
+export const getAuthenticated = async <T = any>(path: string, schema?: z.ZodSchema<T>, navigate: any = () => {}): Promise<{
   status: number,
   body: {
     data: T,
@@ -36,7 +38,11 @@ export const getAuthenticated = async <T = any>(path: string, navigate: any = ()
     // Forbidden
     navigate({ to: '/unauthorized' });
   }
-  return {status: res.status, body: await res.json()};
+  const body = await res.json();
+  if (schema) {
+    body.data = schema.nullable().optional().safeParse(body.data);
+  }
+  return {status: res.status, body};
 }
 
 

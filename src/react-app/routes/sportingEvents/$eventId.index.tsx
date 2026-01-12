@@ -22,7 +22,6 @@ import {
 } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { getLang } from "@/lib/utils";
-import { SportingEventSchema } from '@shared/types';
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
@@ -45,12 +44,9 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
   beforeLoad: unprotectedCheck(),
   loader: async ({ params }) => {
     const res = await getAuthenticatedThrow<
-      z.infer<typeof SportingEventSchema
-      >>(`/api/sportingEvents/${params.eventId}`);
-    return {
-      res,
-      data: ARSportingEventSchema.parse(res.body?.data)
-    };
+      z.infer<typeof ARSportingEventSchema
+      >>(`/api/sportingEvents/${params.eventId}`, ARSportingEventSchema);
+    return { res };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -58,7 +54,8 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
 
 function RouteComponent() {
   const { eventId } = Route.useParams();
-  const { res, data } = Route.useLoaderData();
+  const { res } = Route.useLoaderData();
+  const data = res.body?.data || null;
   if (res.status !== 200 || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">

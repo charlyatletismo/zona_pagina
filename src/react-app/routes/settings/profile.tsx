@@ -12,11 +12,14 @@ export const Route = createFileRoute('/settings/profile')({
   beforeLoad: authCheck(),
   loader: async () => {
     const profileApi = await getAuthenticatedThrow<
-      z.infer<typeof SettingsSchema>>('/api/settings');
-    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
+      z.infer<typeof SettingsSchema>
+      >('/api/settings', SettingsSchema);
+    const locationsApi = await getAuthenticatedThrow<
+      string[]
+      >('/api/locations', z.array(z.string()));
     const tteamsApi = await getAuthenticatedThrow<
       z.infer<typeof TrainingTeamsApiResponseSchema>
-    >('/api/trainingTeams');
+      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
     return { profileApi, locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time

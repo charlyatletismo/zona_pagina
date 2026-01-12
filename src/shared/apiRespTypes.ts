@@ -3,13 +3,17 @@ import {
   UserSchema,
   SportingEventSchema,
   SportingEventScheduleSchema,
-  SportingEventBasicInfoSchema,
   SportingEventRegistrationSchema,
   SportingEventClothingSchema,
   SportingEventAthleteCategorySchema,
   TrainingTeamSchema,
   AthleteCategoryTemplateSchema,
-} from './types'
+} from './types';
+
+
+// Edge schemas
+// =================
+// Prefix AR: API Response
 
 
 ///////////////////////////////////////////////////////////
@@ -38,6 +42,8 @@ export const SettingsSchema = UserSchema.pick({
   training_team_temp: true,
   profile_image_url: true,
   language: true,
+}).extend({
+  date_of_birth: z.coerce.date().nullable().optional(),
 });
 
 
@@ -46,6 +52,23 @@ export const SettingsSchema = UserSchema.pick({
 //                     /api/sportingEvents                     //
 /////////////////////////////////////////////////////////////////
 
+
+export const SportingEventBasicInfoSchema = SportingEventSchema.pick({
+  id: true,
+  title: true,
+  description: true,
+  date: true,
+  registration_start: true,
+  registration_end: true,
+  location: true,
+  location_address: true,
+}).required({
+  id: true,
+}).extend({
+  date: z.coerce.date<string>(),
+  registration_start: z.coerce.date<string>().nullable().optional(),
+  registration_end: z.coerce.date<string>().nullable().optional(),
+})
 
 export const ARAllSportingEventSchema = z.object({
   open: z.array(SportingEventBasicInfoSchema),
