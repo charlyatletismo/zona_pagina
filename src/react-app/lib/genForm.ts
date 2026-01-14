@@ -30,6 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { PhoneInput } from '@/components/phoneInput';
 import { ComboBoxIdName } from '@/components/comboBoxIdName';
 import { DatePicker } from '@/components/datePicker';
+import { DateTimePicker } from '@/components/datetimePicker';
 
 
 const { fieldContext, formContext } = createFormHookContexts()
@@ -44,6 +45,7 @@ export const { useAppForm } = createFormHook({
     PhoneInput,
     ComboBoxIdName,
     DatePicker,
+    DateTimePicker,
 
     Select,
     SelectContent,

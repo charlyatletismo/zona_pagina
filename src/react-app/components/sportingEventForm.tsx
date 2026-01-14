@@ -286,38 +286,12 @@ const SportingEventForm = (
             children={(field) => (
               <div className='space-y-2'>
                 <field.Label htmlFor={field.name}>Inicio de Inscripciones</field.Label>
-                <field.DatePicker
+                <field.DateTimePicker
+                  name={field.name}
                   borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
                   value={field.state.value}
-                  onChange={(d) => {
-                    if (d && field.state.value) {
-                      d = new Date(
-                        d.toDateString()
-                        + " "
-                        + field.state.value?.toTimeString().slice(0, 5)
-                      )
-                    };
-                    field.handleChange(d || null);
-                  }}
-                  onBlur={() => field.handleBlur()}
-                />
-                <field.Input
-                  id={field.name + "_time"}
-                  name={field.name + "_time"}
-                  type="time"
-                  value={field.state.value ? field.state.value.toTimeString().slice(0, 5) : ''}
-                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
-                  onBlur={() => field.handleBlur()}
-                  onChange={(e) => {
-                    if (field.state.value) {
-                      field.handleChange(
-                        new Date(
-                          field.state.value.toDateString()
-                          + ' '
-                          + e.target.value)
-                      );
-                    }
-                  }}
+                  onChange={field.handleChange}
+                  onBlur={field.handleBlur}
                 />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
@@ -331,38 +305,12 @@ const SportingEventForm = (
             children={(field) => (
               <div className='space-y-2'>
                 <field.Label htmlFor={field.name}>Fin de Inscripciones</field.Label>
-                <field.DatePicker
+                <field.DateTimePicker
+                  name={field.name}
                   borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
                   value={field.state.value}
-                  onChange={(d) => {
-                    if (d && field.state.value) {
-                      d = new Date(
-                        d.toDateString()
-                        + " "
-                        + field.state.value?.toTimeString().slice(0, 5)
-                      )
-                    };
-                    field.handleChange(d || null);
-                  }}
-                  onBlur={() => field.handleBlur()}
-                />
-                <field.Input
-                  id={field.name + "_time"}
-                  name={field.name + "_time"}
-                  type="time"
-                  value={field.state.value ? field.state.value.toTimeString().slice(0, 5) : ''}
-                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
-                  onBlur={() => field.handleBlur()}
-                  onChange={(e) => {
-                    if (field.state.value) {
-                      field.handleChange(
-                        new Date(
-                          field.state.value.toDateString()
-                          + ' '
-                          + e.target.value)
-                      );
-                    }
-                  }}
+                  onChange={field.handleChange}
+                  onBlur={field.handleBlur}
                 />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
@@ -564,7 +512,6 @@ const SportingEventForm = (
           />
         </div>
 
-        <hr className="my-6" />
 
         <form.AppField
           name="clothing"
@@ -664,7 +611,6 @@ const SportingEventForm = (
           )}
         />
 
-        <hr className="my-6" />
 
         <form.AppField
           name="schedules"
@@ -694,7 +640,7 @@ const SportingEventForm = (
               )}
               {field.state.value && (
                 <div className="space-y-2">
-                  {field.state.value.map((scheduleItem, index) => (
+                  {field.state.value.map((_, index) => (
                     <div key={index} className="p-4 border rounded-md">
                       <div className='flex flex-row justify-between mb-5'>
                         <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
@@ -740,14 +686,12 @@ const SportingEventForm = (
                           name={`schedules[${index}].date`}
                           children={(subField) => (
                             <div className='space-y-2'>
-                              <subField.Label htmlFor={subField.name}>Fecha del hito</subField.Label>
-                              <subField.DatePicker
+                              <subField.Label htmlFor={subField.name}>Fecha y hora del hito</subField.Label>
+                              <field.DateTimePicker
+                                name={subField.name}
                                 borderColor={!subField.state.meta.isValid ? 'border-destructive' : ''}
                                 value={subField.state.value}
-                                onChange={(d) => {
-                                  if (!d) return;
-                                  subField.handleChange(d)
-                                }}
+                                onChange={subField.handleChange}
                                 onBlur={subField.handleBlur}
                               />
                               {!subField.state.meta.isValid && (
@@ -822,7 +766,6 @@ const SportingEventForm = (
           )}
         />
 
-        <hr className="my-6" />
 
         <form.AppField
           name="circuits"
@@ -850,7 +793,7 @@ const SportingEventForm = (
                   Haga clic en el botón de arriba para agregar un circuito.
                 </div>
               )}
-              {field.state.value && field.state.value.map((circuit, index) => (
+              {field.state.value && field.state.value.map((_, index) => (
                 <div key={index} className="p-4 border rounded-md">
                   <div className='flex flex-row justify-between mb-5'>
                     <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
@@ -914,7 +857,6 @@ const SportingEventForm = (
                       )}
                     />
 
-
                     <form.AppField
                       name={`circuits[${index}].map_url`}
                       children={(subField) => (
@@ -961,7 +903,7 @@ const SportingEventForm = (
               selector={(state) => state.errors}
               children={(errors) => (
                 <>
-                  {Object.keys(errors).length > 0 && (
+                  {Object.keys(errors).length > 0 ? (
                     <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200" role="alert">
                       <span className="font-medium">Por favor corrija los siguientes errores antes de continuar:</span>
                       <ul className="mt-2 list-disc list-inside">
@@ -969,6 +911,10 @@ const SportingEventForm = (
                           <li key={index}>{JSON.stringify(error)}</li>
                         ))}
                       </ul>
+                    </div>
+                  ): (
+                    <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg border border-green-200" role="alert">
+                      No hay errores de validación en el formulario.
                     </div>
                   )}
                 </>

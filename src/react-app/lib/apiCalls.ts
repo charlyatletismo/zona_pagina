@@ -17,7 +17,11 @@ export const getAuthenticatedThrow = async <T = any>(path: string, schema?: z.Zo
 }
 
 
-export const getAuthenticated = async <T = any>(path: string, schema?: z.ZodSchema<T>, navigate: any = () => {}): Promise<{
+export const getAuthenticated = async <T = any>(
+  path: string,
+  schema?: z.ZodSchema<T>,
+  navigate: any = () => {}
+): Promise<{
   status: number,
   body: {
     data: T,
@@ -40,7 +44,7 @@ export const getAuthenticated = async <T = any>(path: string, schema?: z.ZodSche
   }
   const body = await res.json();
   if (schema) {
-    body.data = schema.nullable().optional().safeParse(body.data);
+    body.data = schema.nullable().optional().parse(body.data);
   }
   return {status: res.status, body};
 }
