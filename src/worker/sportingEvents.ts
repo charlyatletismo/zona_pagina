@@ -9,7 +9,7 @@ import {
   getManagedUsersRegistrations,
   getAllUsersRegistrations
 } from "./lib/sportingEventRegistrations";
-import { SportingEventFormData } from "./lib/types";
+import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";
 
 
@@ -84,11 +84,11 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     }
     const userId: string = c.get('jwtPayload').id;
     const db = drizzle(c.env.DB);
-    const eventData: SportingEventFormData = await c.req.json();
-    if (!eventData.title || !eventData.date || !eventData.event_type) {
+    const eventData = ARSportingEventSchema.omit({id: true}).safeParse(await c.req.json());
+    if (!eventData.success) {
       return c.json({ message: M.SPORTING_EVENT_MISSING_REQUIRED_FIELDS }, 400);
     }
-    const res = await addSpEvent(db, eventData, userId);
+    const res = await addSpEvent(db, eventData.data, userId);
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
     }
@@ -104,11 +104,11 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     const userId: string = c.get('jwtPayload').id;
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const eventData: Partial<SportingEventFormData> = await c.req.json();
-    if (!eventData.title || !eventData.date || !eventData.event_type) {
+    const eventData = ARSportingEventSchema.safeParse(await c.req.json());
+    if (!eventData.success) {
       return c.json({ message: M.SPORTING_EVENT_MISSING_REQUIRED_FIELDS }, 400);
     }
-    const res = await updateSpEvent(db, Number(id), eventData, userId);
+    const res = await updateSpEvent(db, Number(id), eventData.data, userId);
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
     }

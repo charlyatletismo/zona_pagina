@@ -11,7 +11,6 @@ import {
   sportingEventClothing
 } from '../db/schema'
 import { userRegisteredInEvent } from './sportingEventRegistrations';
-import { SportingEventFormData } from './types';
 import { M, appendToMessage } from './messages';
 import z from 'zod';
 import {
