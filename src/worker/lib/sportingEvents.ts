@@ -16,6 +16,7 @@ import { M, appendToMessage } from './messages';
 import z from 'zod';
 import {
   SportingEventSchema,
+  SportingEventDbSchema,
   SportingEventClothingSchema,
   SportingEventCircuitSchema,
   SportingEventScheduleSchema,
@@ -99,13 +100,18 @@ export const getSpEvent = async (
   };
 }
 
+interface ReadSpEventResult extends DataResult {
+  data?: z.infer<typeof SportingEventDbSchema>;
+  schedules?: z.infer<typeof SportingEventScheduleSchema>[] | null;
+  clothing?: z.infer<typeof SportingEventClothingSchema>[] | null;
+  circuits?: z.infer<typeof SportingEventCircuitSchema>[] | null;
+  categories?: z.infer<typeof SportingEventAthleteCategorySchema>[] | null;
+}
 
-export const addSpEvent = async (
-  db: DrizzleD1Database,
-  eventData: z.infer<typeof ARSportingEventSchema>,
-  userId: string
-): Promise<DataResult> => {
-  // main event data validation
+const readSpEvent = (
+  eventData: z.infer<typeof ARSportingEventSchema>
+): ReadSpEventResult => {
+// main event data validation
   const ev = ARSportingEventSchema.omit({id: true}).parse(eventData);
 
   // circuits validation
@@ -160,34 +166,71 @@ export const addSpEvent = async (
     }
   }
 
-  // // TODO: categories validation
-  // let categories = null;
-  // if (ev.categories && ev.categories.length > 0) {
-  //   try {
-  //     categories = ev.categories.map(item =>
-  //       SportingEventAthleteCategorySchema.omit({id: true}).parse(item)
-  //     );
-  //   } catch (error) {
-  //     // Handle parsing error if needed
-  //     console.log("Error parsing sporting event athlete category data:", error)
-  //     return {
-  //       status: 400,
-  //       message: M.SPORTING_EVENT_ATHLETE_CATEGORY_INVALID_DATA,
-  //     };
-  //   }
-  // }
+  let categories = null;
+  if (ev.categories && ev.categories.length > 0) {
+    try {
+      categories = ev.categories.map(item =>
+        SportingEventAthleteCategorySchema.omit({id: true}).parse(item)
+      );
+    } catch (error) {
+      // Handle parsing error if needed
+      console.log("Error parsing sporting event athlete category data:", error)
+      return {
+        status: 400,
+        message: M.SPORTING_EVENT_ATHLETE_CATEGORY_INVALID_DATA,
+      };
+    }
+  }
 
-  const data = {
-    ...ev,
-    date: ev.date.toISOString(),
-    registration_start: ev.registration_start?.toISOString() || null,
-    registration_end: ev.registration_end?.toISOString() || null,
+  const data = SportingEventDbSchema.parse(ev);
+
+  return {
+    status: 200,
+    data,
+    schedules,
+    clothing,
+    circuits,
+    categories,
+  }
+}
+
+
+export const addSpEvent = async (
+  db: DrizzleD1Database,
+  eventData: z.infer<typeof ARSportingEventSchema>,
+  userId: string
+): Promise<DataResult> => {
+
+  const {
+    status,
+    message,
+    data,
+    schedules,
+    clothing,
+    circuits,
+    categories
+  } = readSpEvent(eventData);
+
+  if (status !== 200 || !data) {
+    return {
+      status: 400,
+      message: message || {
+        "es": "Error al leer los datos del evento deportivo",
+        "en": "Error reading sporting event data",
+      }
+    };
+  }
+
+  const result = await db.insert(sportingEvents).values({
+    ...data,
+    date: data.date.toISOString(),
+    registration_start: data.registration_start?.toISOString() || null,
+    registration_end: data.registration_end?.toISOString() || null,
     created_by: userId,
     updated_by: userId,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  };
-  const result = await db.insert(sportingEvents).values(data).returning();
+  }).returning();
 
   if (circuits && circuits.length > 0) {
     await db.insert(sportingEventCircuits).values(
@@ -226,10 +269,32 @@ export const addSpEvent = async (
 }
 
 
-export const crudArray = async (
-    eventId: number,
-    array: any[],
-    dbArray: any[]) => {
+export const crudArray = async <T = any>(
+  eventId: number,
+  array: any[] | null | undefined,
+  dbArray: any[] | null | undefined
+): Promise<{
+  insert: T[];
+  update: T[];
+  delete: number[];
+}> => {
+  if (!array) {
+    return {
+      insert: [],
+      update: [],
+      delete: dbArray?.map(e => e.id) || [],
+    }
+  }
+  if (!dbArray) {
+    return {
+      insert: array.map(element => ({
+        event_id: eventId,
+        ...element,
+      })),
+      update: [],
+      delete: [],
+    }
+  }
   const arrayMap = new Map<number, any>();
   const newElements = [];
   const delElements = [];
@@ -266,21 +331,45 @@ export const crudArray = async (
 export const updateSpEvent = async (
     db: DrizzleD1Database,
     eventId: number,
-    eventData: Partial<SportingEventFormData>,
+    eventData: z.infer<typeof ARSportingEventSchema>,
     userId: string): Promise<NoDataResult> => {
-  const circuits = eventData.circuits || [];
-  const schedules = eventData.schedules || [];
-  delete eventData.circuits;
-  delete eventData.schedules;
-  delete eventData.created_by;
-  delete eventData.created_at;
-  const data = {
-    ...eventData,
-    updated_by: userId,
-    updated_at: new Date().toISOString(),
+
+  const {
+    status,
+    message,
+    data,
+    schedules,
+    clothing,
+    circuits,
+    categories
+  } = readSpEvent(eventData);
+
+  if (status !== 200 || !data) {
+    return {
+      status: 400,
+      message: message || {
+        "es": "Error al leer los datos del evento deportivo",
+        "en": "Error reading sporting event data",
+      }
+    };
   }
+
+  const finalData = SportingEventDbSchema.omit({
+    id: true,
+    created_at: true,
+    created_by: true,
+    updated_at: true,
+    updated_by: true,
+  }).parse(data)
   const res = await db.update(sportingEvents)
-    .set(data)
+    .set({
+      ...finalData,
+      date: finalData.date.toISOString(),
+      registration_start: finalData.registration_start?.toISOString() || null,
+      registration_end: finalData.registration_end?.toISOString() || null,
+      updated_by: userId,
+      updated_at: new Date().toISOString(),
+    })
     .where(eq(sportingEvents.id, eventId))
     .run();
   if (res.meta.changes === 0) {
@@ -293,10 +382,11 @@ export const updateSpEvent = async (
     .select()
     .from(sportingEventCircuits)
     .where(eq(sportingEventCircuits.event_id, eventId));
-  const resCircuits = await crudArray(eventId, circuits, dbCircuits);
+  const resCircuits = await crudArray<z.infer<typeof SportingEventCircuitSchema>>(eventId, circuits, dbCircuits);
+  const finalCircuitSchema = z.array(SportingEventCircuitSchema.omit({id: true}).required());
   // Insert new circuits
   if (resCircuits.insert.length > 0) {
-    await db.insert(sportingEventCircuits).values(resCircuits.insert);
+    await db.insert(sportingEventCircuits).values(finalCircuitSchema.parse(resCircuits.insert));
   }
   // Update existing circuits
   for (const circuit of resCircuits.update) {
@@ -307,7 +397,7 @@ export const updateSpEvent = async (
         distance_km: circuit.distance_km,
         map_url: circuit.map_url,
       })
-      .where(eq(sportingEventCircuits.id, circuit.id))
+      .where(eq(sportingEventCircuits.id, circuit.id!))
       .run();
   }
   // Delete removed circuits
@@ -323,16 +413,23 @@ export const updateSpEvent = async (
     .select()
     .from(sportingEventSchedules)
     .where(eq(sportingEventSchedules.event_id, eventId));
-  const resSchedules = await crudArray(eventId, schedules, dbSchedules);
+  const resSchedules = await crudArray<z.infer<typeof SportingEventScheduleSchema>>(eventId, schedules, dbSchedules);
+  const finalScheduleSchema = z.array(SportingEventScheduleSchema.omit({id: true}).required());
   // Insert new schedules
   if (resSchedules.insert.length > 0) {
-    await db.insert(sportingEventSchedules).values(resSchedules.insert);
+    const tempSchedules = finalScheduleSchema.parse(resSchedules.insert);
+    await db.insert(sportingEventSchedules).values(tempSchedules.map(
+      schedule => ({
+        ...schedule,
+        date: schedule.date.toISOString(),
+      })
+    ));
   }
   // Update existing schedules
   for (const schedule of resSchedules.update) {
     await db.update(sportingEventSchedules)
       .set({
-        date: schedule.date,
+        date: schedule.date?.toISOString(),
         title: schedule.title,
         description: schedule.description,
         location: schedule.location,
@@ -340,7 +437,7 @@ export const updateSpEvent = async (
         location_lat: schedule.location_lat,
         location_long: schedule.location_long,
       })
-      .where(eq(sportingEventSchedules.id, schedule.id))
+      .where(eq(sportingEventSchedules.id, schedule.id!))
       .run();
   }
   // Delete removed schedules
@@ -349,6 +446,33 @@ export const updateSpEvent = async (
       .where(inArray(sportingEventSchedules.id, resSchedules.delete))
       .run();
   }
+
+  const dbClothing = await db
+    .select()
+    .from(sportingEventClothing)
+    .where(eq(sportingEventClothing.event_id, eventId));
+    const resClothing = await crudArray<z.infer<typeof SportingEventClothingSchema>>(eventId, clothing, dbClothing);
+    const finalClothingSchema = z.array(SportingEventClothingSchema.omit({id: true}).required());
+  // Insert new clothing
+  if (resClothing.insert.length > 0) {
+    await db.insert(sportingEventClothing).values(finalClothingSchema.parse(resClothing.insert));
+  }
+  // Update existing clothing
+  for (const cloth of resClothing.update) {
+    await db.update(sportingEventClothing)
+      .set(cloth)
+      .where(eq(sportingEventClothing.id, cloth.id!))
+      .run();
+  }
+  // Delete removed clothing
+  if (resClothing.delete.length > 0) {
+    await db.delete(sportingEventClothing)
+      .where(inArray(sportingEventClothing.id, resClothing.delete))
+      .run();
+  }
+
+  // TODO categories
+
   return { status: 200, message: M.SPORTING_EVENT_UPDATED_SUCCESSFULLY };
 }
 
