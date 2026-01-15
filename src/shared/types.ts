@@ -186,10 +186,10 @@ export const SportingEventAthleteCategorySchema = z.object({
   name: z.string().min(1, 'Debe ingresar un nombre para la categoría'),
   sex: z.string().max(1).nullable().optional(),
   min_age: z.number()
-    .min(1, 'Debe ingresar una edad de al menos 1 año')
+    .min(1, 'Debe ingresar una edad mínima')
     .max(200, 'La edad no puede exceder los 200 años'),
   max_age: z.number()
-    .min(1, 'Debe ingresar una edad de al menos 1 año')
+    .min(1, 'Debe ingresar una edad máxima')
     .max(200, 'La edad no puede exceder los 200 años'),
   exclude_auto_qualify: z.boolean().default(false).optional(),
 });
@@ -262,6 +262,17 @@ export const SportingEventSchema = z.object({
     circuit_id: z.number().nullable().optional(),
     pending_to_pay: z.number().nullable().optional(),
   }).nullable().optional(),
+});
+
+
+export const SportingEventDbSchema = SportingEventSchema.omit({
+  circuits: true,
+  schedules: true,
+  categories: true,
+  clothing: true,
+  athletes_registered: true,
+  athletes_confirmed: true,
+  user_registration_status: true,
 });
 
 

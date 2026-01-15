@@ -89,7 +89,7 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   categories: z.array(SportingEventAthleteCategorySchema.extend({
     exclude_auto_qualify: z.coerce.boolean().default(false).optional(),
   })).nullable().optional(),
-}).nullable();
+});
 
 
 //////////////////////////////////////////////////////////////////////////////////
