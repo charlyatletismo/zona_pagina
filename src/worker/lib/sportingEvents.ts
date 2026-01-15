@@ -59,14 +59,19 @@ export const getSpEvent = async (
     .select()
     .from(sportingEventRegistrations)
     .where(eq(sportingEventRegistrations.event_id, eventId));
+  const clothing = await db
+    .select()
+    .from(sportingEventClothing)
+    .where(eq(sportingEventClothing.event_id, eventId));
   const athletesConfirmed = athletesRegistered.filter(
     ar => ar.status === 'paid' || ar.status === 'partially_paid');
   // console.log(event);
   const ev = {
     ...event[0],
-    circuits,
-    schedules,
-    categories: athleteCategories,
+    circuits: circuits.length > 0 ? circuits : null,
+    schedules: schedules.length > 0 ? schedules : null,
+    categories: athleteCategories.length > 0 ? athleteCategories : null,
+    clothing: clothing.length > 0 ? clothing : null,
     athletes_registered: athletesRegistered.length,
     athletes_confirmed: athletesConfirmed.length,
     user_registration_status: {
