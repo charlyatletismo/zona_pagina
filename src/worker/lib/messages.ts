@@ -107,6 +107,14 @@ export const M = {
     [ES]: "Perfil de usuario actualizado correctamente",
     [EN]: "User profile updated successfully"
   },
+  USER_CREATED_SUCCESSFULLY: {
+    [ES]: "Usuario creado correctamente",
+    [EN]: "User created successfully"
+  },
+  USER_INVALID_DATA: {
+    [ES]: "Datos de usuario inválidos",
+    [EN]: "Invalid user data"
+  },
 
   // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {

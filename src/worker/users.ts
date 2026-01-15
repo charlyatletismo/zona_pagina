@@ -9,6 +9,8 @@ import {
   authorizedAthMan,
   authorizedOrg
 } from '@shared/roles';
+import { ATHLETE_ROLE } from '@shared/roles';
+import { ARUserSchema } from '@shared/apiRespTypes';
 import { M } from './lib/messages';
 
 
@@ -54,6 +56,26 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       return c.json({ message: M.USERS_UNAVAILABLE }, 404);
     }
     return c.json(allUsers);
+  })
+  .post("/create", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const newUserData = ARUserSchema.safeParse(await c.req.json());
+    if (!newUserData.success) {
+      return c.json({ message: M.USER_INVALID_DATA }, 400);
+    }
+    const db = drizzle(c.env.DB);
+    const res = await db.insert(users).values({
+      ...newUserData.data,
+      date_of_birth: newUserData.data.date_of_birth.toISOString(),
+      role: authorizedOrg(c.get('jwtPayload')?.role)
+        ? (newUserData.data.role || ATHLETE_ROLE)
+        : ATHLETE_ROLE,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }).returning().get();
+    return c.json({ message: M.USER_CREATED_SUCCESSFULLY, data: res });
   })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);

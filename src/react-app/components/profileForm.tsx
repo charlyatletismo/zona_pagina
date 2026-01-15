@@ -151,6 +151,8 @@ export const ProfileForm = ({
                   name={field.name}
                   value={field.state.value}
                   disabled={!!profile}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 />
                 {!field.state.meta.isValid && (
