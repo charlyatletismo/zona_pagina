@@ -13,6 +13,15 @@ import {
 import { userRegisteredInEvent } from './sportingEventRegistrations';
 import { SportingEventFormData } from './types';
 import { M, appendToMessage } from './messages';
+import z from 'zod';
+import {
+  SportingEventSchema,
+  SportingEventClothingSchema,
+  SportingEventCircuitSchema,
+  SportingEventScheduleSchema,
+  SportingEventAthleteCategorySchema
+} from '@shared/types';
+import { ARSportingEventSchema } from '@shared/apiRespTypes';
 
 
 interface DataResult {
@@ -92,31 +101,124 @@ export const getSpEvent = async (
 
 
 export const addSpEvent = async (
-    db: DrizzleD1Database,
-    eventData: SportingEventFormData,
-    userId: string): Promise<DataResult> => {
-  const circuits = eventData.circuits || [];
-  const schedules = eventData.schedules || [];
-  delete eventData.circuits;
-  delete eventData.schedules;
+  db: DrizzleD1Database,
+  eventData: z.infer<typeof ARSportingEventSchema>,
+  userId: string
+): Promise<DataResult> => {
+  // main event data validation
+  const ev = ARSportingEventSchema.omit({id: true}).parse(eventData);
+
+  // circuits validation
+  let circuits = null;
+  if (ev.circuits && ev.circuits.length > 0) {
+    try {
+      circuits = ev.circuits.map(item =>
+        SportingEventCircuitSchema.omit({id: true}).parse(item)
+      );
+    } catch (error) {
+      // Handle parsing error if needed
+      console.log("Error parsing sporting event circuit data:", error)
+      return {
+        status: 400,
+        message: M.SPORTING_EVENT_CIRCUIT_INVALID_DATA,
+      };
+    }
+  }
+
+  // schedules validation
+  let schedules = null;
+  if (ev.schedules && ev.schedules.length > 0) {
+    try {
+      schedules = ev.schedules.map(item =>
+        SportingEventScheduleSchema.omit({id: true}).parse(item)
+      );
+    } catch (error) {
+      // Handle parsing error if needed
+      console.log("Error parsing sporting event schedule data:", error)
+      return {
+        status: 400,
+        message: M.SPORTING_EVENT_SCHEDULE_INVALID_DATA,
+      };
+    }
+  }
+
+  // clothing validation
+  let clothing = null;
+  console.log("clothing", ev.clothing)
+  if (ev.clothing && ev.clothing.length > 0) {
+    try {
+      clothing = ev.clothing.map(item =>
+        SportingEventClothingSchema.omit({id: true}).parse(item)
+      );
+    } catch (error) {
+      // Handle parsing error if needed
+      console.log("Error parsing sporting event clothing data:", error)
+      return {
+        status: 400,
+        message: M.SPORTING_EVENT_CLOTHING_INVALID_DATA,
+      };
+    }
+  }
+
+  // // TODO: categories validation
+  // let categories = null;
+  // if (ev.categories && ev.categories.length > 0) {
+  //   try {
+  //     categories = ev.categories.map(item =>
+  //       SportingEventAthleteCategorySchema.omit({id: true}).parse(item)
+  //     );
+  //   } catch (error) {
+  //     // Handle parsing error if needed
+  //     console.log("Error parsing sporting event athlete category data:", error)
+  //     return {
+  //       status: 400,
+  //       message: M.SPORTING_EVENT_ATHLETE_CATEGORY_INVALID_DATA,
+  //     };
+  //   }
+  // }
+
   const data = {
-    ...eventData,
+    ...ev,
+    date: ev.date.toISOString(),
+    registration_start: ev.registration_start?.toISOString() || null,
+    registration_end: ev.registration_end?.toISOString() || null,
     created_by: userId,
-    updated_by: userId
-  }
+    updated_by: userId,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
   const result = await db.insert(sportingEvents).values(data).returning();
+
   if (circuits && circuits.length > 0) {
-    circuits.forEach(circuit => {
-      circuit.event_id = result[0].id;
-    });
-    await db.insert(sportingEventCircuits).values(circuits);
+    await db.insert(sportingEventCircuits).values(
+      circuits.map(circuit => ({
+        ...circuit,
+        event_id: result[0].id,
+      }))
+    );
   }
+
   if (schedules && schedules.length > 0) {
-    schedules.forEach(schedule => {
-      schedule.event_id = result[0].id;
-    });
-    await db.insert(sportingEventSchedules).values(schedules);
+    await db.insert(sportingEventSchedules).values(
+      schedules.map(schedule => ({
+        ...schedule,
+        event_id: result[0].id,
+        date: schedule.date.toISOString()
+      }))
+    );
   }
+
+  if (clothing && clothing.length > 0) {
+    await db.insert(sportingEventClothing).values(
+      clothing.map(cloth => ({
+        ...cloth,
+        event_id: result[0].id,
+      }))
+    );
+  }
+
+  // TODO categories
+
   return {
     status: 200,
     data: result[0].id,
