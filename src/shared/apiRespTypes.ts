@@ -42,10 +42,11 @@ export const SettingsSchema = UserSchema.pick({
   training_team_temp: true,
   profile_image_url: true,
   language: true,
-}).extend({
-  date_of_birth: z.coerce.date().nullable().optional(),
 });
 
+export const ARSettingsSchema = SettingsSchema.extend({
+  date_of_birth: z.coerce.date()
+});
 
 
 /////////////////////////////////////////////////////////////////

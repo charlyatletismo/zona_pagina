@@ -3,7 +3,11 @@ import { useNavigate } from '@tanstack/react-router';
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
 import { getMessage, capitalizeStr } from '@/lib/utils';
-import { SettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import {
+  SettingsSchema,
+  ARSettingsSchema,
+  TrainingTeamsApiResponseSchema
+} from '@shared/apiRespTypes';
 import { authorizedOrg, authorizedAthMan } from '@shared/roles';
 import { postAuthenticated } from '@/lib/apiCalls';
 import { Spinner } from '@/components/ui/spinner';
@@ -11,12 +15,12 @@ import {
   AlertCircle,
   Save,
   ListRestartIcon,
-  ChevronDown,
 } from 'lucide-react';
 import { TEMPORARY_LOCATION_ID } from '@shared/types';
 
 
 const SETTINGS_API_PATH = '/api/settings';
+const PartialSettingsSchema = ARSettingsSchema.partial();
 
 
 export const ProfileForm = ({
@@ -25,26 +29,13 @@ export const ProfileForm = ({
   trainingTeams,
   postUrl
 } : {
-  profile: z.infer<typeof SettingsSchema> | null,
+  profile: z.infer<typeof PartialSettingsSchema> | null,
   locations: string[],
   trainingTeams: z.infer<typeof TrainingTeamsApiResponseSchema>,
   postUrl: string
 }) => {
   const navigate = useNavigate();
 
-  const now = new Date();
-  const minAgeRequired = 13;
-  const maxDateOfBirth = new Date(
-    now.getFullYear() - minAgeRequired,
-    now.getMonth(),
-    now.getDate()
-  );
-  if (profile && profile.date_of_birth) {
-    profile.date_of_birth = SettingsSchema
-      .shape
-      .date_of_birth
-      .parse(profile.date_of_birth);
-  }
   if (locations) {
     locations.sort((a, b) => {
       // const coA = a.split(", ")[2];
@@ -64,8 +55,6 @@ export const ProfileForm = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const [openDOB, setOpenDOB] = useState(false);
-
   const specialFieldsShow = (
     postUrl !== SETTINGS_API_PATH
     && (
@@ -81,13 +70,7 @@ export const ProfileForm = ({
   const form = useAppForm({
     defaultValues: profile || undefined,
     validators: {
-      onBlur: SettingsSchema.required().extend({
-        date_of_birth: z.date({
-          error: "Debes indicar tu fecha de nacimiento"
-        }).max(
-          maxDateOfBirth, `Debes tener al menos ${minAgeRequired} años`
-        ),
-      })
+      onBlur: SettingsSchema,
     },
     onSubmit: async ({ value }) => {
       setError('');
@@ -384,43 +367,16 @@ export const ProfileForm = ({
           children={(field) => (
             <div className="space-y-2">
               <field.Label htmlFor={field.name}>Fecha de Nacimiento</field.Label>
-              <field.Popover
-                open={openDOB}
-                onOpenChange={(o) => {
-                  setOpenDOB(o);
-                  if (!o) {
-                    field.handleBlur();
+              <field.DatePicker
+                value={field.state.value || null}
+                onChange={(date) => {
+                  if (date) {
+                    field.handleChange(date);
                   }
                 }}
-              >
-                <field.PopoverTrigger asChild>
-                  <form.Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openDOB}
-                    className={`w-full justify-between ${!field.state.meta.isValid ? 'border-destructive' : ''}`}
-                  >
-                    <div className='w-full overflow-hidden text-left'>
-                      {field.state.value?.toLocaleDateString() || '...'}
-                    </div>
-                    <ChevronDown className="opacity-50" />
-                  </form.Button>
-                </field.PopoverTrigger>
-                <field.PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                  <field.Calendar
-                    mode="single"
-                    selected={field.state.value || null}
-                    captionLayout="dropdown"
-                    onSelect={(date) => {
-                      field.handleChange(new Date(date || ''));
-                      console.log("selected dob", date);
-                      console.log("sel date as date", new Date(date || ''));
-                      setOpenDOB(false)
-                      field.handleBlur();
-                    }}
-                  />
-                </field.PopoverContent>
-              </field.Popover>
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                onBlur={field.handleBlur}
+              />
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
               )}
@@ -477,7 +433,7 @@ export const ProfileForm = ({
                     id={field.name}
                     name={field.name}
                     value={field.state.value || ''}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => field.handleChange(e.target.value || null)}
                     onBlur={() => field.handleBlur()}
                     className={!field.state.meta.isValid ? 'border-destructive' : ''}
                     placeholder="Indicar si tiene alguna necesidad especial (alergias, discapacidades, etc.)"
@@ -571,7 +527,11 @@ export const ProfileForm = ({
           children={(field) => (
             <div className='space-y-2'>
               <field.ComboBoxIdName
-                data={trainingTeams.map(team => ({id: team.id?.toString(), name: team.name}))}
+                data={trainingTeams.map(
+                  team => ({
+                    id: team.id!.toString(),
+                    name: team.name
+                  }))}
                 label="Equipo de entrenamiento"
                 name={field.name}
                 value={field.state.value?.toString() || ""}

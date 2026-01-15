@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserSchema } from '@shared/types';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
+import { UserSchema } from '@shared/types';
 import { TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
 import { FormBox } from '@/components/formBox';
 
@@ -29,9 +29,6 @@ function RouteComponent() {
   const { userId } = Route.useParams();
   const { userApiRes, locationsApi, tteamsApi } = Route.useLoaderData();
 
-  if (userApiRes.status !== 200) {
-    return <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil. Por favor intenta recargar la página.</div>;
-  }
   return (
     <FormBox
       title="Editar Perfil"

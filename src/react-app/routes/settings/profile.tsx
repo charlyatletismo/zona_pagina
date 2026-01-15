@@ -1,10 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { SettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { ARSettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
 import { FormBox } from '@/components/formBox';
+
+
+const PartialSettingsSchema = ARSettingsSchema.partial();
 
 
 export const Route = createFileRoute('/settings/profile')({
@@ -12,8 +15,8 @@ export const Route = createFileRoute('/settings/profile')({
   beforeLoad: authCheck(),
   loader: async () => {
     const profileApi = await getAuthenticatedThrow<
-      z.infer<typeof SettingsSchema>
-      >('/api/settings', SettingsSchema);
+      z.infer<typeof PartialSettingsSchema>
+      >('/api/settings', PartialSettingsSchema);
     const locationsApi = await getAuthenticatedThrow<
       string[]
       >('/api/locations', z.array(z.string()));

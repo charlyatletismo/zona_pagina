@@ -5,7 +5,7 @@ import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { Profile } from '@/components/profileCard'
 import z from 'zod';
-import { SettingsSchema } from '@shared/apiRespTypes';
+import { ARSettingsSchema } from '@shared/apiRespTypes';
 
 
 export const Route = createFileRoute('/settings/')({
@@ -13,8 +13,8 @@ export const Route = createFileRoute('/settings/')({
   beforeLoad: authCheck(),
   loader: async () => {
     const res = await getAuthenticatedThrow<
-      z.infer<typeof SettingsSchema>
-      >('/api/settings', SettingsSchema);
+      z.infer<typeof ARSettingsSchema>
+      >('/api/settings', ARSettingsSchema);
     return { res };
   },
   staleTime: 1000 * 60 * 5,
