@@ -139,19 +139,6 @@ export const TrainingTeamSchema = z.object({
 });
 
 
-export const AthleteCategoryTemplateSchema = z.object({
-  id: z.number().optional(),
-  base_name: z.string()
-    .min(1, 'Debe ingresar un nombre base para la categoría')
-    .max(64, 'El nombre base no puede exceder los 64 caracteres'),
-  male_name: z.string().nullable().optional(),
-  female_name: z.string().nullable().optional(),
-  min_age: z.number().nullable().optional(),
-  max_age: z.number().nullable().optional(),
-  exclude_auto_qualify: z.boolean().nullable().optional(),
-});
-
-
 export const SportingEventCircuitSchema = z.object({
   id: z.number().optional(),
   event_id: z.number().optional(),

@@ -490,20 +490,6 @@ VALUES
 
 
 INSERT INTO
-athlete_category_templates (
-  id,
-  base_name,
-  male_name,
-  female_name,
-  unisex_name,
-  min_age,
-  max_age)
-VALUES
-  (1, 'Juveniles', 'Masculino', 'Femenino', NULL, NULL, NULL),
-  (2, 'Senior', 'Masculino', 'Femenino', NULL, NULL, NULL);
-
-
-INSERT INTO
 sporting_event_athlete_categories (
   id,
   event_id,

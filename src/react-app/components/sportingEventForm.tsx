@@ -7,7 +7,6 @@ import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
 import {
   SportingEventSchema,
-  AthleteCategoryTemplateSchema,
   SportingEventClothingSchema,
   CLOTHING_TYPES,
 } from '@shared/types'
@@ -42,12 +41,9 @@ const getClothesByType = (
 }
 
 
-const ArrayOfCatTemplates = z.array(AthleteCategoryTemplateSchema)
-
 const SportingEventForm = (
-    { data, catTemplates, locations } : {
+    { data, locations } : {
     data: z.infer<typeof ARSportingEventSchema> | null,
-    catTemplates: z.infer<typeof ArrayOfCatTemplates>,
     locations: string[],
     }) => {
   const navigate = useNavigate();

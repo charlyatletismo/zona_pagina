@@ -191,19 +191,6 @@ export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
 });
 
 
-// Templates for Athlete Categories (e.g., Adult, Junior, Senior, Wheelchair, etc.)
-export const athleteCategoryTemplates = sqliteTable("athlete_category_templates", {
-  id: int().primaryKey({ autoIncrement: true }),
-  base_name: text({ length: 64 }).notNull(),
-  male_name: text({ length: 64 }).default("Masculino"),
-  female_name: text({ length: 64 }).default("Femenino"),
-  unisex_name: text({ length: 64 }),
-  min_age: int(),
-  max_age: int(),
-  exclude_auto_qualify: int().notNull().default(0), // if 1, athletes won't be auto-assigned to this category
-});
-
-
 // Details about which athlete categories can register for an event, along with fees
 // and distances
 export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlete_categories", {

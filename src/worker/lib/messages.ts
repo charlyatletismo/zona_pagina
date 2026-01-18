@@ -193,20 +193,6 @@ export const M = {
     [EN]: "Sporting event registration payment successful"
   },
 
-  // -------------------------- ATHLETE CATEGORY TEMPLATES --------------------------
-  ATHLETE_CATEGORY_TEMPLATE_NOT_FOUND: {
-    [ES]: "Plantilla de categoría de atleta no encontrada",
-    [EN]: "Athlete category template not found"
-  },
-  ATHLETE_CATEGORY_TEMPLATE_REQUIRED_BASE_NAME_MISSING: {
-    [ES]: "El nombre base es obligatorio en la plantilla de categoría de atleta",
-    [EN]: "Base name is required in athlete category template"
-  },
-  ATHLETE_CATEGORY_TEMPLATE_ERROR_CREATING: {
-    [ES]: "Error al crear la plantilla de categoría de atleta",
-    [EN]: "Error creating athlete category template"
-  },
-
   // -------------------------- LOCATIONS --------------------------
   LOCATION_NOT_FOUND: {
     [ES]: "Ubicación no encontrada",

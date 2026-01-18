@@ -7,7 +7,6 @@ import { getMessage } from '@/lib/utils';
 import SportingEventForm from '@/components/sportingEventForm';
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import z from 'zod';
-import { AthCatApiResponse } from '@shared/apiRespTypes';
 
 
 
@@ -18,13 +17,10 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
     const resSpEvent = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventSchema>
       >(`/api/sportingEvents/${params.eventId}`, ARSportingEventSchema);
-    const resCatTemplates = await getAuthenticatedThrow<
-      z.infer<typeof AthCatApiResponse>
-      >('/api/athleteCategoryTemplates');
     const resLocations = await getAuthenticatedThrow<
       string[]
       >('/api/locations', z.array(z.string()));
-    return { resSpEvent, resCatTemplates, resLocations };
+    return { resSpEvent, resLocations };
   },
   staleTime: 1000 * 60 * 5,
   gcTime: 0 // force reload every time
@@ -32,17 +28,15 @@ export const Route = createFileRoute('/sportingEvents/$eventId/edit')({
 
 
 function RouteComponent() {
-  const { resSpEvent, resCatTemplates, resLocations } = Route.useLoaderData();
+  const { resSpEvent, resLocations } = Route.useLoaderData();
   return (
     <FormBox
       error={
         (resSpEvent.status !== 200
-          || resCatTemplates.status !== 200
           || resLocations.status !== 200
         )
         ? "Error al cargar los datos del evento. "
           + getMessage(resSpEvent.body.message, "", " ")
-          + getMessage(resCatTemplates.body.message, "", " ")
           + getMessage(resLocations.body.message, "", " ")
         : null}
       title="Editar Evento Deportivo"
@@ -53,7 +47,6 @@ function RouteComponent() {
     >
       <SportingEventForm
         data={resSpEvent.body?.data}
-        catTemplates={resCatTemplates.body?.data || []}
         locations={resLocations.body?.data || []}
         />
     </FormBox>

@@ -8,7 +8,6 @@ import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
 import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
-import { athleteCategoryTemplatesRoute } from "./categories";
 import { M } from "./lib/messages";
 import { locationsRoute } from "./locations";
 import { trainingTeamsRoute } from "./trainingTeams";
@@ -64,7 +63,6 @@ export default {
         app.route('/api/users', usersRoute);
         app.route('/api/locations', locationsRoute);
         app.route('/api/trainingTeams', trainingTeamsRoute);
-        app.route('/api/athleteCategoryTemplates', athleteCategoryTemplatesRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {

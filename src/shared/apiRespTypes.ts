@@ -7,7 +7,6 @@ import {
   SportingEventClothingSchema,
   SportingEventAthleteCategorySchema,
   TrainingTeamSchema,
-  AthleteCategoryTemplateSchema,
 } from './types';
 
 
@@ -164,13 +163,4 @@ export const TrainingTeamsApiResponseSchemaElement = TrainingTeamSchema.pick({
 
 export const TrainingTeamsApiResponseSchema = z.array(
   TrainingTeamsApiResponseSchemaElement
-);
-
-
-///////////////////////////////////////////////////////////////////////////
-//                     /api/athleteCategoryTemplates                     //
-///////////////////////////////////////////////////////////////////////////
-
-export const AthCatApiResponse = z.array(
-  AthleteCategoryTemplateSchema
 );
