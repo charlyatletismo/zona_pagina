@@ -7,7 +7,7 @@ import {
   ATHLETE_ROLE
 } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { User } from '@shared/types';
+import { ARUserSchema } from '@shared/apiRespTypes'
 import React from 'react';
 import {
   useReactTable,
@@ -32,14 +32,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ChevronRight, BookUser } from 'lucide-react';
+import z from 'zod';
+
+
+const ARUserSchemaPartialArray = ARUserSchema.partial().array();
 
 export const Route = createFileRoute('/users/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
-    const usersApi = await getAuthenticatedThrow('/api/users');
-    const users: User[] = usersApi.body.data;
-    return { users, usersStatus: usersApi.status};
+    const usersApi = await getAuthenticatedThrow<
+      z.infer<typeof ARUserSchemaPartialArray>
+      >('/api/users', ARUserSchemaPartialArray);
+    return { usersApi };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -53,16 +58,16 @@ const getRoleWeight = (role: string | undefined) => {
 }
 
 function RouteComponent() {
-  const { users, usersStatus } = Route.useLoaderData();
-  if (usersStatus !== 200) {
+  const { usersApi } = Route.useLoaderData();
+  if (usersApi.status !== 200) {
     return (
       <div className="text-red-600 p-3 rounded-md flex items-center text-sm my-4 mx-auto">
         Error al cargar los usuarios. Por favor, refresque la página.
       </div>
     );
   }
-  const [data, setData] = React.useState<User[]>(() => {
-    return [...(users || [])].sort((a, b) => getRoleWeight(a.role) - getRoleWeight(b.role));
+  const [data, setData] = React.useState<z.infer<typeof ARUserSchemaPartialArray>>(() => {
+    return [...(usersApi.body.data || [])].sort((a, b) => getRoleWeight(a.role) - getRoleWeight(b.role));
   });
   const navigate = useNavigate();
 
@@ -80,7 +85,7 @@ function RouteComponent() {
     }
   };
 
-  const columnHelper = createColumnHelper<User>()
+  const columnHelper = createColumnHelper<z.infer<typeof ARUserSchema>>()
 
   const columns = React.useMemo(
     () => [

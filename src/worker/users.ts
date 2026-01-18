@@ -55,7 +55,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     if (!allUsers) {
       return c.json({ message: M.USERS_UNAVAILABLE }, 404);
     }
-    return c.json(allUsers);
+    return c.json({ data: allUsers });
   })
   .post("/create", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload')?.role)) {
