@@ -57,6 +57,7 @@ const SportingEventForm = (
 
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
+  const [newCat, setNewCat] = useState(false);
 
   const form = useAppForm({
     defaultValues: data,
@@ -895,6 +896,153 @@ const SportingEventForm = (
         />
 
         {/* TODO: Categorías */}
+        <form.AppField
+          name="categories"
+          mode='array'
+          children={(field) => (
+            <div className="space-y-4 md:col-span-2">
+              <div className='flex flex-col sm:flex-row justify-between mt-6 mb-2'>
+                <div className="text-lg font-semibold my-auto">Categorías del Evento</div>
+                <form.Button
+                  variant='outline'
+                  type="button"
+                  onClick={() => {
+                    if (
+                        !field.form.state.values?.circuits
+                        || field.form.state.values.circuits.length === 0) {
+                      setError('Debe agregar al menos un circuito antes de agregar categorías.');
+                      setTimeout(() => {
+                        setError('');
+                      }, 2000);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      return;
+                    }
+                    if (field.form.state.values?.circuits.some(c => c.id === undefined)) {
+                      setError('Debe guardar el evento antes de agregar categorías a circuitos nuevos.');
+                      setTimeout(() => {
+                        setError('');
+                      }, 2000);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                      return;
+                    }
+                    setNewCat(true);
+                  }}
+                >
+                  <PlusIcon className="w-4 h-4" />
+                </form.Button>
+              </div>
+              {newCat && (
+                <div className='text-sm text-gray-500 italic mt-4'>
+                  Al agregar una categoría, se crean categorías para todos los circuitos existentes.
+                  Edite el nombre y las edades mínimas/máximas según corresponda.
+                </div>
+              )}
+              {!field.state.value && (
+                <div className='text-sm text-gray-500 italic mt-4'>
+                  No se han agregado categorías al evento.
+                  Haga clic en el botón de arriba para agregar una categoría.
+                </div>
+              )}
+              {/* Categories implementation would go here */}
+              {field.state.value && field.state.value.map((_, index) => (
+                <div key={index} className="p-4 border rounded-md">
+                  <div className='flex flex-row justify-between mb-5'>
+                    <div className='flex flex-row gap-2'>
+                      <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
+                      <div className="text-sm font-medium my-auto">
+                        Circuito: {
+                          field.form.state.values?.circuits?.find(c => c.id === field.state.value?.[index]?.circuit_id)?.name || 'N/A'
+                        }
+                      </div>
+                    </div>
+                    <form.Button
+                      variant='secondary'
+                      type="button"
+                      onClick={() => {
+                        if (field.state.value?.length === 1) {
+                          field.handleChange(null);
+                        } else {
+                          field.removeValue(index);
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </form.Button>
+                  </div>
+                  <div className='space-y-4 grid grid-cols-1 md:grid-cols-2 gap-2'>
+                    <form.AppField
+                      name={`categories[${index}].name`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Nombre de la categoría</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value);
+                            }}
+                            required
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
+
+                    <form.AppField
+                      name={`categories[${index}].min_age`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Edad mínima</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
+                            }}
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
+
+                    <form.AppField
+                      name={`categories[${index}].max_age`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Edad máxima</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
+                            }}
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
+
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        />
 
         {localStorage.getItem('ADMIN_MODE') === 'active' && (
           <div>
