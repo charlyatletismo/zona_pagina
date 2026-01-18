@@ -1,8 +1,20 @@
-import { User, Users, UserCog, Mail, Phone, MapPin, Calendar, Mars, Venus, VenusAndMars } from 'lucide-react'
-import { UserProfile } from '@shared/types'
+import z from 'zod';
+import { UserSchema } from '@shared/types';
+import {
+  User,
+  Users,
+  UserCog,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Mars,
+  Venus,
+  VenusAndMars
+} from 'lucide-react';
 
 
-export const Profile = ({ profile }: { profile: UserProfile }) => {
+export const Profile = ({ profile }: { profile: z.infer<typeof UserSchema> }) => {
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-4">
@@ -49,7 +61,7 @@ export const Profile = ({ profile }: { profile: UserProfile }) => {
           <Calendar className="w-5 h-5 text-gray-500 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Fecha de Nacimiento</p>
-            <p className="font-medium">{profile.date_of_birth || 'No especificada'}</p>
+            <p className="font-medium">{profile.date_of_birth.getDate() || 'No especificada'}</p>
           </div>
         </div>
 
@@ -58,7 +70,7 @@ export const Profile = ({ profile }: { profile: UserProfile }) => {
           <div>
             <p className="text-sm text-gray-500">Ubicación</p>
             <p className="font-medium">
-              {[profile.city, profile.country].filter(Boolean).join(', ') || 'No especificada'}
+              {profile.location || 'No especificada'}
             </p>
           </div>
         </div>
@@ -67,7 +79,7 @@ export const Profile = ({ profile }: { profile: UserProfile }) => {
           <Users className="w-5 h-5 text-gray-500 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Equipo de Entrenamiento</p>
-            <p className="font-medium">{profile.training_team || 'No especificado'}</p>
+            <p className="font-medium">{profile.training_team_id || 'No especificado'}</p>
           </div>
         </div>
 
