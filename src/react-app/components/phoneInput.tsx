@@ -49,7 +49,7 @@ export const PhoneInput = ({
             } else {
               setErrorCC("");
             };
-            onChange((e.target.value || '') + "_9_" + (value || '').split("_")[2])
+            onChange((e.target.value || '') + "_9_" + ((value || '').split("_")[2] || ''))
           }}
           onBlur={onBlur}
           className={"w-16 rounded-none border-x-0 " + (borderColor || '')}
@@ -75,7 +75,7 @@ export const PhoneInput = ({
             } else {
               setErrorNum("");
             };
-            onChange((value || '').split("_")[0] + "_9_" + (e.target.value || ''))
+            onChange(((value || '').split("_")[0] || '') + "_9_" + (e.target.value || ''))
           }}
           onBlur={onBlur}
           className={"rounded-l-none border-l-0 " + (borderColor || "border-gray-300")}
