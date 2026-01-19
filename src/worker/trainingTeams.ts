@@ -3,7 +3,12 @@ import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { trainingTeams } from './db/schema';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
-import { TrainingTeamsApiResponseSchemaElement } from "@shared/apiRespTypes";
+import {
+  TrainingTeamsApiResponseSchemaElement,
+  ARTrainingTeamSchema
+} from "@shared/apiRespTypes";
+import { M } from './lib/messages';
+import { eq } from 'drizzle-orm';
 
 
 export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
@@ -21,4 +26,29 @@ export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
       .from(trainingTeams)
       .all();
     return c.json({ data });
+  })
+  .post("/create", async (c) => {
+    const db = drizzle(c.env.DB);
+    const tteam = ARTrainingTeamSchema.omit({id: true}).parse(await c.req.json());
+    await db
+      .insert(trainingTeams)
+      .values(tteam)
+      .run();
+    return c.json({ message: M.TRAINING_TEAM_CREATED_SUCCESSFULLY });
+  })
+  .post("/update/:id", async (c) => {
+    const db = drizzle(c.env.DB);
+    const tteam = ARTrainingTeamSchema.omit({id: true}).parse(await c.req.json());
+    const id = c.req.param("id");
+    await db
+      .update(trainingTeams)
+      .set({
+        ...tteam,
+        updated_at: new Date().toISOString(),
+      })
+      .where(
+        eq(trainingTeams.id, Number(id))
+      )
+      .run();
+    return c.json({ message: M.TRAINING_TEAM_UPDATED_SUCCESSFULLY });
   });

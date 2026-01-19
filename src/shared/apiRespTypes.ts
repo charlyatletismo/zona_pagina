@@ -155,6 +155,11 @@ export const SportingEventRegistrationApiResponseSchema = z.object({
 ////////////////////////////////////////////////////////////////
 
 
+export const ARTrainingTeamSchema = TrainingTeamSchema.omit({
+  created_at: true,
+  updated_at: true,
+});
+
 export const TrainingTeamsApiResponseSchemaElement = TrainingTeamSchema.pick({
   id: true,
   name: true,

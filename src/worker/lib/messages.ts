@@ -210,4 +210,14 @@ export const M = {
     [ES]: "Ubicación eliminada correctamente",
     [EN]: "Location deleted successfully"
   },
+
+  // -------------------------- TRAINING TEAMS --------------------------
+  TRAINING_TEAM_CREATED_SUCCESSFULLY: {
+    [ES]: "Equipo de entrenamiento creado correctamente",
+    [EN]: "Training team created successfully"
+  },
+  TRAINING_TEAM_UPDATED_SUCCESSFULLY: {
+    [ES]: "Equipo de entrenamiento actualizado correctamente",
+    [EN]: "Training team updated successfully"
+  },
 }
