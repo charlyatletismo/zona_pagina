@@ -61,7 +61,7 @@ export const Profile = ({ profile }: { profile: z.infer<typeof UserSchema> }) =>
           <Calendar className="w-5 h-5 text-gray-500 mt-1" />
           <div>
             <p className="text-sm text-gray-500">Fecha de Nacimiento</p>
-            <p className="font-medium">{profile.date_of_birth.getDate() || 'No especificada'}</p>
+            <p className="font-medium">{profile.date_of_birth.toISOString().split('T')[0] || 'No especificada'}</p>
           </div>
         </div>
 

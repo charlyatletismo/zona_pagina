@@ -4,7 +4,7 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
-import { UserSchema } from '@shared/types';
+import { ARUserSchema } from '@shared/apiRespTypes';
 import { TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
 import { FormBox } from '@/components/formBox';
 
@@ -14,11 +14,11 @@ export const Route = createFileRoute('/users/$userId/edit')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
     const userApiRes = await getAuthenticatedThrow<
-      z.infer<typeof UserSchema>>(`/api/users/${params.userId}`);
-    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
+      z.infer<typeof ARUserSchema>>(`/api/users/${params.userId}`, ARUserSchema);
+    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations', z.array(z.string()));
     const tteamsApi = await getAuthenticatedThrow<
       z.infer<typeof TrainingTeamsApiResponseSchema>
-    >('/api/trainingTeams');
+      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
     return { userApiRes, locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time

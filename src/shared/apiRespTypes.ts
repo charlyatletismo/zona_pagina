@@ -55,6 +55,8 @@ export const ARSettingsSchema = SettingsSchema.extend({
 
 export const ARUserSchema = UserSchema.extend({
   date_of_birth: z.coerce.date(),
+  created_at: z.coerce.date().optional(),
+  updated_at: z.coerce.date().optional(),
 })
 
 export const ARUserMinSchema = UserSchema.pick({

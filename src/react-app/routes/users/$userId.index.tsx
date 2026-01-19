@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { UserSchema } from '@shared/types';
+import { ARUserSchema } from '@shared/apiRespTypes';
 import { Profile } from '@/components/profileCard';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 
@@ -14,7 +14,8 @@ export const Route = createFileRoute('/users/$userId/')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
     const userApiRes = await getAuthenticatedThrow<
-      z.infer<typeof UserSchema>>(`/api/users/${params.userId}`);
+      z.infer<typeof ARUserSchema>
+      >(`/api/users/${params.userId}`, ARUserSchema);
     return { userApiRes };
   },
   staleTime: 1000 * 60 * 5,
