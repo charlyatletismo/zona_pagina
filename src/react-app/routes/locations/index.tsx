@@ -3,7 +3,7 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 
 
-export const Route = createFileRoute('/general/locations/')({
+export const Route = createFileRoute('/locations/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
 })

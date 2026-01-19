@@ -9,7 +9,7 @@ import { LocationForm } from '@/components/locationForm';
 import { getMessage } from '@/lib/utils';
 
 
-export const Route = createFileRoute('/general/locations/$locationId')({
+export const Route = createFileRoute('/locations/$locationId')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {

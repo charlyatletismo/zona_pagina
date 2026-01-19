@@ -8,7 +8,7 @@ import { getMessage } from '@/lib/utils';
 import z from 'zod';
 
 
-export const Route = createFileRoute('/general/locations/create')({
+export const Route = createFileRoute('/locations/create')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async () => {
