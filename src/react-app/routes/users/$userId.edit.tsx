@@ -14,8 +14,11 @@ export const Route = createFileRoute('/users/$userId/edit')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
     const userApiRes = await getAuthenticatedThrow<
-      z.infer<typeof ARUserSchema>>(`/api/users/${params.userId}`, ARUserSchema);
-    const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations', z.array(z.string()));
+      z.infer<typeof ARUserSchema>
+      >(`/api/users/${params.userId}`, ARUserSchema);
+    const locationsApi = await getAuthenticatedThrow<
+      string[]
+      >('/api/locations', z.array(z.string()));
     const tteamsApi = await getAuthenticatedThrow<
       z.infer<typeof TrainingTeamsApiResponseSchema>
       >('/api/trainingTeams', TrainingTeamsApiResponseSchema);

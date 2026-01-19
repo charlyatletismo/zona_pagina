@@ -15,7 +15,7 @@ export const Route = createFileRoute('/users/create')({
     const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
     const tteamsApi = await getAuthenticatedThrow<
       z.infer<typeof TrainingTeamsApiResponseSchema>
-    >('/api/trainingTeams');
+      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
     return { locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time
