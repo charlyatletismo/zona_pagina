@@ -77,6 +77,20 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     }).returning().get();
     return c.json({ message: M.USER_CREATED_SUCCESSFULLY, data: res });
   })
+  .get("/exists/:id", async (c) => {
+    const db = drizzle(c.env.DB);
+    const userId = c.req.param("id");
+    const user = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .get();
+    return c.json({ data: user });
+  })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const userId = c.req.param("id");

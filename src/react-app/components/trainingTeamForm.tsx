@@ -1,9 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import z from "zod";
-import { TrainingTeamSchema } from "@shared/types";
 import {
   ARTrainingTeamSchema,
   TrainingTeamsApiResponseSchemaElement,
+  ARUserMinSchema,
 } from "@shared/apiRespTypes";
 import { useAppForm } from '@/lib/genForm';
 import { useState } from "react";
@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Save,
   ListRestartIcon,
+  XCircle
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
@@ -35,6 +36,7 @@ export const TrainingTeamForm = ({
   const [success, setSuccess] = useState('');
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(dbLocations);
+  const [userAutoFill, setUserAutoFill] = useState<string>("");
   const path = trainingTeam
     ? `/api/trainingTeams/update/${trainingTeam.id}`
     : "/api/trainingTeams/create";
@@ -51,6 +53,24 @@ export const TrainingTeamForm = ({
     },
     validators: {
       onBlur: ExtendedTrainingTeamSchema,
+      onSubmitAsync: async ({ value }) => {
+        if (value.coach_user_id) {
+          const res = await getAuthenticatedThrow<
+            z.infer<typeof ARUserMinSchema>
+          >(`/api/users/exists/${value.coach_user_id}`, ARUserMinSchema);
+          if (!res.body?.data) {
+            return {
+              form: 'Invalid data',
+              fields: {
+                coach_user_id: {
+                  message: "El ID de entrenador indicado no corresponde a ningún usuario. Corregirlo o dejar vacío."
+                },
+              }
+            };
+          }
+        }
+        return null;
+      }
     },
     onSubmit: async ({ value }) => {
       setError('');
@@ -139,7 +159,7 @@ export const TrainingTeamForm = ({
           <form.AppField
             name="name"
             children={(field) => (
-              <div className="space-y-2 col-span-2">
+              <div className="space-y-2">
                 <field.Label htmlFor={field.name}>Nombre del equipo</field.Label>
                 <field.Input
                   id={field.name}
@@ -194,8 +214,123 @@ export const TrainingTeamForm = ({
             )}
           />
 
-          {/* TODO: coach_name, coach_user_id, contact_email, contact_phone */}
+          <form.AppField
+            name="coach_user_id"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>DNI del entrenador</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value || ''}
+                  onChange={(e) => {
+                    setUserAutoFill("");
+                    field.handleChange(e.target.value)
+                  }}
+                  onBlur={async (e) => {
+                    field.handleBlur();
+                    const val = e.target.value;
+                    if (!val || val.length < 8) return;
+                    setUserAutoFill("loading");
+                    const res = await getAuthenticatedThrow<
+                      z.infer<typeof ARUserMinSchema>
+                    >(`/api/users/exists/${val}`, ARUserMinSchema);
+                    if (res.body?.data) {
+                      setUserAutoFill("found");
+                      form.setFieldValue(
+                        'coach_name',
+                        capitalizeStr(`${res.body.data.name} ${res.body.data.surname}`));
+                    } else {
+                      setUserAutoFill("not found");
+                    }
+                    setTimeout(() => { setUserAutoFill(""); }, 1500);
+                  }}
+                  placeholder="DNI (solo si tiene cuenta)"
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+                {userAutoFill === 'loading'
+                ? <Spinner className="mr-2 h-4 w-4" />
+                : userAutoFill === 'not found'
+                  ? (
+                    <div className="flex gap-1">
+                      <XCircle className="w-4 h-4 text-destructive my-auto" />
+                      <span className="text-destructive text-sm my-auto">
+                        Usuario no encontrado
+                      </span>
+                    </div>
+                  )
+                  : userAutoFill === 'found'
+                    ? (
+                      <div className="flex gap-2">
+                        <span className="text-sm text-green-600">
+                          Usuario encontrado y nombre autocompletado
+                        </span>
+                      </div>
+                    )
+                    : null
+                }
+              </div>
+            )}
+          />
 
+          <form.AppField
+            name="coach_name"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>Nombre del entrenador</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value || ''}
+                  onChange={(e) => field.handleChange(capitalizeStr(e.target.value))}
+                  onBlur={field.handleBlur}
+                  placeholder="Nombre del entrenador"
+                />
+              </div>
+            )}
+          />
+
+          <form.AppField
+            name="contact_email"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>Email de contacto del equipo</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  type="email"
+                  value={field.state.value || ''}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  placeholder="team@example.com"
+                />
+              </div>
+            )}
+          />
+
+          <form.AppField
+            name="contact_phone"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.PhoneInput
+                  label="Teléfono de contacto del equipo"
+                  name={field.name}
+                  value={field.state.value || ''}
+                  onChange={field.handleChange}
+                  onBlur={field.handleBlur}
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  showError={field.state.meta.isTouched}
+                  required={true}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
 
         </div>
         <form.Subscribe
