@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react';
 import { Save, AlertCircle, MapPinnedIcon, Trash2, ListRestartIcon, PlusIcon } from 'lucide-react';
 import { getLang, getMessage, capitalizeStr } from '@/lib/utils';
-import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
 import {
@@ -61,15 +61,17 @@ const SportingEventForm = (
       onBlur: SportingEventSchema,
     },
     onSubmit: async ({ value }) => {
-      if (!value) {
-        setError('Por favor, ingrese algún dato antes de enviar el formulario.')
-        return;
-      }
       setError('');
       setSuccess('');
       // Scroll to top of the page when form is submitted
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
+      if (!value) {
+        setError('Por favor, ingrese algún dato antes de enviar el formulario.')
+        setTimeout(() => {
+          setError('');
+        }, 1500);
+        return;
+      }
       const res = await postAuthenticated(apiEndpointPath, value, navigate);
       if (res.status !== 200) {
         setError(getMessage(res.body?.message, 'Error al guardar los cambios'));
@@ -106,7 +108,7 @@ const SportingEventForm = (
             </Button>
           </div>
           <LocationForm
-            dbLocations={locations}
+            dbLocations={loadedLocations}
             location={null}
             onSuccess={async () => {
               const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations', z.array(z.string()));
