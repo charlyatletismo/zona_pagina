@@ -188,7 +188,7 @@ function EventCard({ event }: { event: z.infer<typeof SportingEventBasicInfoSche
   return (
     <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-300 flex flex-col h-full group-hover:animate-tremor'>
       <div className='flex gap-4 items-start mb-4'>
-        <div className="p-2.5 rounded-lg bg-gray-50 text-gray-500 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+        <div className="p-2.5 rounded-lg bg-primary/10 text-gray-500 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
           <CalendarIcon className='h-6 w-6' />
         </div>
         <div>
