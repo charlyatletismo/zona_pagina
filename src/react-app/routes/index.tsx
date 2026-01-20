@@ -1,5 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { CalendarIcon, MapPinIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  MapPinIcon,
+  PlusIcon,
+  FileUserIcon,
+} from 'lucide-react';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
 import { getAuthenticated } from '@/lib/apiCalls';
 import z from 'zod';
@@ -7,6 +12,7 @@ import {
   SportingEventBasicInfoSchema,
   ARAllSportingEventSchema
 } from '@shared/apiRespTypes';
+import { Button } from '@/components/ui/button';
 
 
 export const Route = createFileRoute('/')({
@@ -43,12 +49,45 @@ function Index() {
             </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Descubre y participa en las mejores carreras y eventos deportivos.
+            {localStorage.getItem('USER_ROLE') === 'organizer'
+              ? 'Gestiona y crea eventos deportivos para tu organización de manera fácil y eficiente.'
+              : localStorage.getItem('USER_ROLE') !== 'admin'
+                ? 'Descubre y participa en las mejores carreras y eventos deportivos.'
+                : 'Modo administrador activo.'}
           </p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 pb-16 space-y-16">
+        {localStorage.getItem('USER_ROLE') === 'organizer' && (
+          <div className="flex flex-wrap gap-2 mb-8 w-full border-2 rounded-lg p-2">
+            {/* <div className='my-auto relative p-px rounded-lg overflow-hidden'>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-full h-[500%] bg-radial-[at_15%_75%] from-pink-500 via-blue-400 to-indigo-900 to-75% animate-[spin_3s_linear_infinite]" />
+              <div className='bg-primary/50 text-white px-3 py-1 rounded-[7px] text-sm font-medium relative z-10'>
+                Modo organizador
+              </div>
+            </div> */}
+            <div className='my-auto px-3 py-1 bg-gray-600 rounded-lg text-sm text-white animate-badge-color-cycle repeat-1'>
+              Modo organizador
+            </div>
+            <Button variant="outline">
+              <PlusIcon className="w-4 h-4" />
+              <Link
+                to="/sportingEvents/create"
+              >
+                Crear Nuevo Evento Deportivo
+              </Link>
+            </Button>
+            <Button variant="outline">
+              <FileUserIcon className="w-4 h-4" />
+              <Link
+                to="/sportingEvents/registrations"
+              >
+                Gestionar Inscripciones
+              </Link>
+            </Button>
+          </div>
+        )}
         {events.open.length > 0 && (
           <section>
             <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
