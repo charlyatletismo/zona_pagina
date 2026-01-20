@@ -1,60 +1,166 @@
+const ES = 'es';
+const EN = 'en';
 
 
 export const RegistrationStatusDescriptions: {[key: string]: {[key: string]: string}} = {
   not_registered: {
-    es: "No inscripto",
-    en: "Not registered",
+    [ES]: "No inscripto",
+    [EN]: "Not registered",
   },
   pending: {
-    es: "Pendiente de pago",
-    en: "Pending payment",
+    [ES]: "Pendiente de pago",
+    [EN]: "Pending payment",
   },
   partially_paid: {
-    es: "Parcialmente pagado",
-    en: "Partially paid",
+    [ES]: "Parcialmente pagado",
+    [EN]: "Partially paid",
   },
   paid: {
-    es: "Pagado",
-    en: "Paid",
+    [ES]: "Pagado",
+    [EN]: "Paid",
   },
   cancelled: {
-    es: "Cancelado",
-    en: "Cancelled",
+    [ES]: "Cancelado",
+    [EN]: "Cancelled",
   },
 };
 
 
 export const SportingEventTypesEnumDescriptions: {[key: string]: {[key: string]: string}} = {
   marathon: {
-    es: "Maratón",
-    en: "Marathon",
+    [ES]: "Maratón",
+    [EN]: "Marathon",
   },
   half_marathon: {
-    es: "Media Maratón",
-    en: "Half Marathon",
+    [ES]: "Media Maratón",
+    [EN]: "Half Marathon",
   },
   duathlon: {
-    es: "Duatlón",
-    en: "Duathlon",
+    [ES]: "Duatlón",
+    [EN]: "Duathlon",
   },
   triathlon: {
-    es: "Triatlón",
-    en: "Triathlon",
+    [ES]: "Triatlón",
+    [EN]: "Triathlon",
   },
   trail: {
-    es: "Trail",
-    en: "Trail",
+    [ES]: "Trail",
+    [EN]: "Trail",
   },
   cycling: {
-    es: "Ciclismo",
-    en: "Cycling",
+    [ES]: "Ciclismo",
+    [EN]: "Cycling",
   },
   swimming: {
-    es: "Natación",
-    en: "Swimming",
+    [ES]: "Natación",
+    [EN]: "Swimming",
   },
   other: {
-    es: "Otro",
-    en: "Other",
+    [ES]: "Otro",
+    [EN]: "Other",
+  },
+};
+
+
+export const TransactionPaymentMethodDesc: {[key: string]: {[key: string]: string}} = {
+  cash: {
+    [ES]: "Efectivo",
+    [EN]: "Cash",
+  },
+  bank_transfer: {
+    [ES]: "Transferencia bancaria",
+    [EN]: "Bank transfer",
+  },
+  mercado_pago_payment: {
+    [ES]: "Pago vía Mercado Pago",
+    [EN]: "Payment via Mercado Pago",
+  },
+  other: {
+    [ES]: "Otro",
+    [EN]: "Other",
+  },
+};
+
+
+export const TransactionStatusDesc: {[key: string]: {[key: string]: string}} = {
+  pending: {
+    [ES]: "Pendiente",
+    [EN]: "Pending",
+  },
+  completed: {
+    [ES]: "Completado",
+    [EN]: "Completed",
+  },
+  cancelled: {
+    [ES]: "Cancelado",
+    [EN]: "Cancelled",
+  },
+  failed: {
+    [ES]: "Fallido",
+    [EN]: "Failed",
+  }
+};
+
+
+export const TransactionTypeDesc: {[key: string]: {[key: string]: string}} = {
+  inflow: {
+    [ES]: "Ingreso",
+    [EN]: "Inflow",
+  },
+  outflow: {
+    [ES]: "Egreso",
+    [EN]: "Outflow",
+  },
+};
+
+
+export const TransactionCategoryDesc: {[key: string]: {[key: string]: string}} = {
+  registration_payment: {
+    [ES]: "Pago de inscripción",
+    [EN]: "Registration payment",
+  },
+  registration_refund: {
+    [ES]: "Reembolso de inscripción",
+    [EN]: "Registration refund",
+  },
+  infrastructure: {
+    [ES]: "Infraestructura",
+    [EN]: "Infrastructure",
+  },
+  marketing: {
+    [ES]: "Marketing",
+    [EN]: "Marketing",
+  },
+  prizes: {
+    [ES]: "Premios",
+    [EN]: "Prizes",
+  },
+  clothing: {
+    [ES]: "Indumentaria",
+    [EN]: "Clothing",
+  },
+  permits: {
+    [ES]: "Permisos / Licencias",
+    [EN]: "Permits / Licenses",
+  },
+  equipment: {
+    [ES]: "Equipamiento",
+    [EN]: "Equipment",
+  },
+  sponsorship: {
+    [ES]: "Sponsorship",
+    [EN]: "Sponsorship",
+  },
+  partner_services: {
+    [ES]: "Servicios de socios",
+    [EN]: "Partner services",
+  },
+  other_inflow: {
+    [ES]: "Otro (ingreso)",
+    [EN]: "Other (inflow)",
+  },
+  other_outflow: {
+    [ES]: "Otro (egreso)",
+    [EN]: "Other (outflow)",
   },
 };

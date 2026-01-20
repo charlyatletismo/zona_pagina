@@ -7,6 +7,7 @@ import {
   SportingEventClothingSchema,
   SportingEventAthleteCategorySchema,
   TrainingTeamSchema,
+  SportingEventTransactionSchema,
 } from './types';
 
 
@@ -109,6 +110,14 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   })).nullable().optional(),
 });
 
+export const ARSportingEventMinSchema = SportingEventSchema.pick({
+  id: true,
+  title: true,
+  date: true,
+}).extend({
+  date: z.coerce.date(),
+});
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //                     /api/sportingEvents/:id/registration                     //
@@ -157,7 +166,6 @@ export const SportingEventRegistrationApiResponseSchema = z.object({
 })
 
 
-
 ////////////////////////////////////////////////////////////////
 //                     /api/trainingTeams                     //
 ////////////////////////////////////////////////////////////////
@@ -177,3 +185,14 @@ export const TrainingTeamsApiResponseSchemaElement = TrainingTeamSchema.pick({
 export const TrainingTeamsApiResponseSchema = z.array(
   TrainingTeamsApiResponseSchemaElement
 );
+
+
+///////////////////////////////////////////////////////////////
+//                     /api/transactions                     //
+///////////////////////////////////////////////////////////////
+
+export const ARSportEvTransactionSchema = SportingEventTransactionSchema.extend({
+  transaction_date: z.coerce.date(),
+  created_at: z.coerce.date().optional(),
+  updated_at: z.coerce.date().optional(),
+})

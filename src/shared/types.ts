@@ -206,7 +206,7 @@ export const SportingEventTypesEnum = z.enum([
 
 
 export const SportingEventSchema = z.object({
-  id: z.number().optional(),
+  id: z.number().min(1, "Debe indicar un ID de evento válido").optional(),
   title: z.string("Debe ingresar un título")
     .min(1, "Debe ingresar un título"),
   description: z.string().nullable().optional(),
@@ -291,6 +291,77 @@ export const SportingEventRegistrationSchema = z.object({
   updated_at: z.date(),
   updated_by: UserSchema.shape.id,
 });
+
+
+export const TRANSACTION_PAYMENT_METHODS = [
+  'cash',
+  'bank_transfer',
+  // 'mercado_pago_payment',
+  'other'
+]
+
+
+export const SportingEventTransactionSchema = z.object({
+  id: z.number().optional(),
+  event_id: SportingEventSchema.shape.id,
+  transaction_type: z.enum([
+    'inflow',
+    'outflow',
+  ], 'Debe seleccionar un tipo de transacción'),
+  category: z.enum([
+    'registration_payment',
+    'registration_refund',
+    'infrastructure',
+    'marketing',
+    'prizes',
+    'clothing',
+    'permits',
+    'equipment',
+    'sponsorship',
+    'partner_services',
+    'other_inflow',
+    'other_outflow'
+  ], 'Debe seleccionar una categoría'),
+  amount: z.number().min(0.01, 'El monto debe ser mayor o igual a $0.01'),
+  currency: z.string().max(3).default("ARS").optional(),
+  description: z.string().max(512).nullable().optional(),
+  transaction_date: z.date(),
+  user_id: UserSchema.shape.id.nullable().optional(),
+  registration_id: SportingEventRegistrationSchema.shape.id.nullable().optional(),
+  vendor_supplier: z.string().max(256).nullable().optional(),
+  receipt_url: z.string().max(512).nullable().optional(),
+  payment_method: z.enum(
+    TRANSACTION_PAYMENT_METHODS,
+    "Debe seleccionar un método de pago")
+    .optional(),
+  status: z.enum([
+    'pending',
+    'completed',
+    'failed',
+    'cancelled'
+  ], 'Debe indicar el estado de la transacción'),
+  created_by: UserSchema.shape.id.optional(),
+  created_at: z.date().optional(),
+  updated_by: UserSchema.shape.id.optional(),
+  updated_at: z.date().optional(),
+  notes: z.string().max(1024).nullable().optional(),
+});
+
+
+export const TransactionTypeByCategory: Record<string, 'inflow' | 'outflow'> = {
+  registration_payment: 'inflow',
+  registration_refund: 'outflow',
+  infrastructure: 'outflow',
+  marketing: 'outflow',
+  prizes: 'outflow',
+  clothing: 'outflow',
+  permits: 'outflow',
+  equipment: 'outflow',
+  sponsorship: 'inflow',
+  partner_services: 'outflow',
+  other_inflow: 'inflow',
+  other_outflow: 'outflow',
+};
 
 
 export type SportingEventRegistration = {

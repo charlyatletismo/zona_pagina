@@ -34,6 +34,30 @@ interface NoDataResult {
   message: Record<string, string>;
 }
 
+export const getSpEventMin = async (
+    db: DrizzleD1Database,
+    eventId: number): Promise<DataResult> => {
+  const event = await db
+    .select({
+      id: sportingEvents.id,
+      title: sportingEvents.title,
+      date: sportingEvents.date,
+    })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .limit(1)
+    .get();
+  if (!event) {
+    return {
+      status: 404,
+      message: M.SPORTING_EVENT_NOT_FOUND
+    };
+  }
+  return {
+    status: 200,
+    data: event,
+  };
+}
 
 export const getSpEvent = async (
     db: DrizzleD1Database,

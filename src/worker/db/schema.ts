@@ -295,8 +295,15 @@ export const sportingEventTransactions = sqliteTable("sporting_event_transaction
       { onDelete: 'set null',
         onUpdate: 'cascade' }
       ),
-  transaction_type: text({ length: 16 }).notNull(), // "income" or "expense"
-  category: text({ length: 64 }).notNull(), // "registration", "infrastructure", "prizes", "clothing", "marketing", "permits", "venue", "equipment", etc.
+
+  // inflow, outflow
+  transaction_type: text({ length: 16 }).notNull(),
+
+  // registration_payment, registration_refund,
+  // infrastructure, marketing, prizes, clothing,
+  // permits, equipment, sponsorship, partner_services, other
+  category: text({ length: 64 }).notNull(),
+
   amount: real().notNull(), // positive value, type determines if income or expense
   currency: text({ length: 3 }).notNull().default('ARS'), // ISO currency code (EUR, USD, etc.)
   description: text({ length: 512 }),

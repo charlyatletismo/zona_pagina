@@ -15,11 +15,13 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsersIndexRouteImport } from './routes/users/index'
+import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
 import { Route as TrainingTeamsIndexRouteImport } from './routes/trainingTeams/index'
 import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
+import { Route as TransactionsCreateRouteImport } from './routes/transactions/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
 import { Route as SportingEventsRegistrationsRouteImport } from './routes/sportingEvents/registrations'
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
@@ -66,6 +68,11 @@ const UsersIndexRoute = UsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
+  id: '/transactions/',
+  path: '/transactions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrainingTeamsIndexRoute = TrainingTeamsIndexRouteImport.update({
   id: '/trainingTeams/',
   path: '/trainingTeams/',
@@ -89,6 +96,11 @@ const LocationsIndexRoute = LocationsIndexRouteImport.update({
 const UsersCreateRoute = UsersCreateRouteImport.update({
   id: '/users/create',
   path: '/users/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsCreateRoute = TransactionsCreateRouteImport.update({
+  id: '/transactions/create',
+  path: '/transactions/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrainingTeamsCreateRoute = TrainingTeamsCreateRouteImport.update({
@@ -187,11 +199,13 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
+  '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
   '/locations': typeof LocationsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
   '/trainingTeams': typeof TrainingTeamsIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
   '/users': typeof UsersIndexRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
@@ -215,11 +229,13 @@ export interface FileRoutesByTo {
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
+  '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
   '/locations': typeof LocationsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
   '/trainingTeams': typeof TrainingTeamsIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
   '/users': typeof UsersIndexRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
@@ -244,11 +260,13 @@ export interface FileRoutesById {
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
+  '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
   '/locations/': typeof LocationsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/sportingEvents/': typeof SportingEventsIndexRoute
   '/trainingTeams/': typeof TrainingTeamsIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
   '/users/': typeof UsersIndexRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
@@ -274,11 +292,13 @@ export interface FileRouteTypes {
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
+    | '/transactions/create'
     | '/users/create'
     | '/locations'
     | '/settings'
     | '/sportingEvents'
     | '/trainingTeams'
+    | '/transactions'
     | '/users'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/registration'
@@ -302,11 +322,13 @@ export interface FileRouteTypes {
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
+    | '/transactions/create'
     | '/users/create'
     | '/locations'
     | '/settings'
     | '/sportingEvents'
     | '/trainingTeams'
+    | '/transactions'
     | '/users'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/registration'
@@ -330,11 +352,13 @@ export interface FileRouteTypes {
     | '/sportingEvents/create'
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
+    | '/transactions/create'
     | '/users/create'
     | '/locations/'
     | '/settings/'
     | '/sportingEvents/'
     | '/trainingTeams/'
+    | '/transactions/'
     | '/users/'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/registration'
@@ -359,11 +383,13 @@ export interface RootRouteChildren {
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
   SportingEventsRegistrationsRoute: typeof SportingEventsRegistrationsRoute
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
+  TransactionsCreateRoute: typeof TransactionsCreateRoute
   UsersCreateRoute: typeof UsersCreateRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SportingEventsIndexRoute: typeof SportingEventsIndexRoute
   TrainingTeamsIndexRoute: typeof TrainingTeamsIndexRoute
+  TransactionsIndexRoute: typeof TransactionsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
   SportingEventsEventIdEditRoute: typeof SportingEventsEventIdEditRoute
   SportingEventsEventIdRegistrationRoute: typeof SportingEventsEventIdRegistrationRoute
@@ -418,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/transactions/': {
+      id: '/transactions/'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trainingTeams/': {
       id: '/trainingTeams/'
       path: '/trainingTeams'
@@ -451,6 +484,13 @@ declare module '@tanstack/react-router' {
       path: '/users/create'
       fullPath: '/users/create'
       preLoaderRoute: typeof UsersCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions/create': {
+      id: '/transactions/create'
+      path: '/transactions/create'
+      fullPath: '/transactions/create'
+      preLoaderRoute: typeof TransactionsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trainingTeams/create': {
@@ -575,11 +615,13 @@ const rootRouteChildren: RootRouteChildren = {
   SportingEventsCreateRoute: SportingEventsCreateRoute,
   SportingEventsRegistrationsRoute: SportingEventsRegistrationsRoute,
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
+  TransactionsCreateRoute: TransactionsCreateRoute,
   UsersCreateRoute: UsersCreateRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SportingEventsIndexRoute: SportingEventsIndexRoute,
   TrainingTeamsIndexRoute: TrainingTeamsIndexRoute,
+  TransactionsIndexRoute: TransactionsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,
   SportingEventsEventIdEditRoute: SportingEventsEventIdEditRoute,
   SportingEventsEventIdRegistrationRoute:

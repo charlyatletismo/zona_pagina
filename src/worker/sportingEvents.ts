@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
 import { authorizedAthMan, authorizedOrg } from '@shared/roles';
-import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent, delSpEvent } from "./lib/sportingEvents";
+import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent, delSpEvent, getSpEventMin } from "./lib/sportingEvents";
 import { mainSportingEventsList } from "./lib/sportingEventList";
 import {
   getUserRegistration,
@@ -28,6 +28,12 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       return c.json({ message: res.message }, res.status);
     }
     return c.json({ data: res.data });
+  })
+  .get("/exists/:id", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const res = await getSpEventMin(db, Number(id));
+    return c.json(res, res.status);
   })
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);
