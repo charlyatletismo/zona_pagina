@@ -13,7 +13,6 @@ import {
 import {
   SportingEventTypesEnumDescriptions,
 } from '@shared/lang';
-import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { LocationForm } from './locationForm';
@@ -43,7 +42,7 @@ const getClothesByType = (
 
 const SportingEventForm = (
     { data, locations } : {
-    data: z.infer<typeof ARSportingEventSchema> | null,
+    data: z.infer<typeof SportingEventSchema> | null,
     locations: string[],
     }) => {
   const navigate = useNavigate();

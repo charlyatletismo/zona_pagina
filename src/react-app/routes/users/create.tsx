@@ -27,9 +27,9 @@ function RouteComponent() {
 
   return (
     <FormBox
-      title="Editar Perfil"
-      description="Ajustar perfil de usuario."
-      returnText="Volver al perfil"
+      title="Crear Usuario"
+      description="Añadir un nuevo usuario al sistema."
+      returnText="Volver a usuarios"
       returnPath='..'
       error={
         locationsApi.status !== 200
