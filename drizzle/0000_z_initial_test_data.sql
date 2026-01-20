@@ -401,7 +401,7 @@ VALUES
     NULL,
     'marathon',
     'Acá van las reglas del evento',
-    '1 - Una banda de plata / 2 - Algo de plata / 3 - Un ferrari',
+    '1er puesto - $99.000 / 2do puesto - $77.000 / 3er puesto - $33.000',
     0,
     'ARS',
     '42556386',
