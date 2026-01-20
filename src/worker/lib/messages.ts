@@ -193,6 +193,30 @@ export const M = {
     [EN]: "Sporting event registration payment successful"
   },
 
+
+  // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
+  SPORTING_EVENT_TRANSACTION_NOT_FOUND: {
+    [ES]: "Transacción de evento deportivo no encontrada",
+    [EN]: "Sporting event transaction not found"
+  },
+  SPORTING_EVENT_TRANSACTION_INVALID_DATA: {
+    [ES]: "Datos de transacción de evento deportivo no válidos",
+    [EN]: "Invalid sporting event transaction data"
+  },
+  SPORTING_EVENT_TRANSACTION_CREATED_SUCCESSFULLY: {
+    [ES]: "Transacción de evento deportivo creada correctamente",
+    [EN]: "Sporting event transaction created successfully"
+  },
+  SPORTING_EVENT_TRANSACTION_UPDATED_SUCCESSFULLY: {
+    [ES]: "Transacción de evento deportivo actualizada correctamente",
+    [EN]: "Sporting event transaction updated successfully"
+  },
+  SPORTING_EVENT_TRANSACTION_DELETED_SUCCESSFULLY: {
+    [ES]: "Transacción de evento deportivo eliminada correctamente",
+    [EN]: "Sporting event transaction deleted successfully"
+  },
+
+
   // -------------------------- LOCATIONS --------------------------
   LOCATION_NOT_FOUND: {
     [ES]: "Ubicación no encontrada",

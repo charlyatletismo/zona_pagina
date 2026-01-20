@@ -11,6 +11,7 @@ import { usersRoute } from "./users";
 import { M } from "./lib/messages";
 import { locationsRoute } from "./locations";
 import { trainingTeamsRoute } from "./trainingTeams";
+import { sportingEventTransactionsRoute } from "./sportingEventTransactions";
 
 
 export interface Env {
@@ -63,6 +64,7 @@ export default {
         app.route('/api/users', usersRoute);
         app.route('/api/locations', locationsRoute);
         app.route('/api/trainingTeams', trainingTeamsRoute);
+        app.route('/api/sportingEventTransactions', sportingEventTransactionsRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {

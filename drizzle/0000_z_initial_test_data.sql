@@ -551,14 +551,13 @@ sporting_event_transactions (
   created_by,
   created_at,
   updated_by,
-  updated_at,
-  notes
+  updated_at
 )
 VALUES
   (
     1,
     6,
-    'expense',
+    'outflow',
     'clothing',
     100000,
     'ARS',
@@ -573,6 +572,5 @@ VALUES
     '34525736',
     '2025-12-30T10:00:00.000Z',
     '34525736',
-    '2025-12-30T10:00:00.000Z',
-    NULL
+    '2025-12-30T10:00:00.000Z'
   );

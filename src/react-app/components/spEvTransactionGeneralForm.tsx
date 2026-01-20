@@ -23,7 +23,7 @@ export const SpEvTransactionGeneralForm = ({
         "receipt_url",
         "payment_method",
         "status",
-        "notes",
+        "description",
       ]}
       categoriesOptions={[
         'infrastructure',

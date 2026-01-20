@@ -196,3 +196,14 @@ export const ARSportEvTransactionSchema = SportingEventTransactionSchema.extend(
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
 })
+
+export const ARSportEvTransactionMinSchema = SportingEventTransactionSchema.pick({
+  id: true,
+  category: true,
+  transaction_type: true,
+  transaction_date: true,
+  payment_method: true,
+  amount: true,
+}).extend({
+  transaction_date: z.coerce.date(),
+});

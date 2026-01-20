@@ -334,5 +334,4 @@ export const sportingEventTransactions = sqliteTable("sporting_event_transaction
         onUpdate: 'cascade' }
       ),
   updated_at: text().default(sql`CURRENT_TIMESTAMP`),
-  notes: text({ length: 1024 }), // additional notes or comments
 });

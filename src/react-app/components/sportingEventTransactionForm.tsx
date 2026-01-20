@@ -48,8 +48,8 @@ export const SportingEventTransactionForm = ({
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const path = transaction
-    ? `/api/sportingEventTransactions/update/${transaction.id}`
+  const path = (transaction || {}).id
+    ? `/api/sportingEventTransactions/update/${transaction!.id}`
     : "/api/sportingEventTransactions/create";
 
   categoriesOptions = categoriesOptions || SportingEventTransactionSchema.shape.category.options;
@@ -74,7 +74,7 @@ export const SportingEventTransactionForm = ({
     defaultValues: defaults,
     validators: {
       onBlur: SportingEventTransactionSchema,
-      onSubmit: async ({ value }) => {
+      onSubmitAsync: async ({ value }) => {
         const res = await getAuthenticatedThrow<
           z.infer<typeof ARSportingEventMinSchema>
           >(`/api/sportingEvents/exists/${value.event_id}`, ARSportingEventMinSchema)
@@ -145,7 +145,7 @@ export const SportingEventTransactionForm = ({
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+
         {(!showFields || showFields.includes('event_id')) && (
           <form.AppField
             name="event_id"
@@ -450,19 +450,19 @@ export const SportingEventTransactionForm = ({
           />
         )}
 
-        {(!showFields || showFields.includes('notes')) && (
+        {(!showFields || showFields.includes('description')) && (
           <form.AppField
-            name="notes"
+            name="description"
             children={(field) => (
               <div className="space-y-2 col-span-1 md:col-span-2">
-                <field.Label htmlFor={field.name}>Notas</field.Label>
+                <field.Label htmlFor={field.name}>Descripción</field.Label>
                 <field.Textarea
                   id={field.name}
                   name={field.name}
                   value={field.state.value || ""}
                   onChange={(e) => field.handleChange(e.target.value || null)}
                   onBlur={field.handleBlur}
-                  placeholder="Notas de la transacción"
+                  placeholder="Descripción de la transacción"
                   rows={3}
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 />
@@ -474,6 +474,32 @@ export const SportingEventTransactionForm = ({
           />
         )}
 
+        {localStorage.getItem('ADMIN_MODE') === 'active' && (
+          <div className="col-span-1 md:col-span-2">
+            <hr className="my-6" />
+            <form.Subscribe
+              selector={(state) => state.errors}
+              children={(errors) => (
+                <>
+                  {Object.keys(errors).length > 0 ? (
+                    <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200" role="alert">
+                      <span className="font-medium">Por favor corrija los siguientes errores antes de continuar:</span>
+                      <ul className="mt-2 list-disc list-inside">
+                        {errors.map((error, index) => (
+                          <li key={index}>{JSON.stringify(error)}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg border border-green-200" role="alert">
+                      No hay errores de validación en el formulario.
+                    </div>
+                  )}
+                </>
+              )}
+            />
+          </div>
+        )}
 
       </div>
       <form.Subscribe

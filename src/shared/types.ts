@@ -344,7 +344,6 @@ export const SportingEventTransactionSchema = z.object({
   created_at: z.date().optional(),
   updated_by: UserSchema.shape.id.optional(),
   updated_at: z.date().optional(),
-  notes: z.string().max(1024).nullable().optional(),
 });
 
 
