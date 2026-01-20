@@ -20,6 +20,8 @@ import {
   AlertCircle,
   Save,
   ListRestartIcon,
+  BanknoteArrowUpIcon,
+  BanknoteArrowDownIcon,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { postAuthenticated, getAuthenticatedThrow } from "@/lib/apiCalls";
@@ -29,15 +31,18 @@ import { getMessage, getLang } from "@/lib/utils";
 const FieldsSchema = z.enum(
   SportingEventTransactionSchema.keyof().options
 );
+const SportingEventTransactionSchemaPartial = SportingEventTransactionSchema.partial();
 
 
 export const SportingEventTransactionForm = ({
   transaction,
   showFields,
+  categoriesOptions,
   onSuccess,
 }: {
-  transaction: z.infer<typeof SportingEventTransactionSchema> | null,
+  transaction: z.infer<typeof SportingEventTransactionSchemaPartial> | null,
   showFields?: z.infer<typeof FieldsSchema>[],
+  categoriesOptions?: string[],
   onSuccess?: () => void,
 }) => {
   const navigate = useNavigate();
@@ -47,19 +52,26 @@ export const SportingEventTransactionForm = ({
     ? `/api/sportingEventTransactions/update/${transaction.id}`
     : "/api/sportingEventTransactions/create";
 
+  categoriesOptions = categoriesOptions || SportingEventTransactionSchema.shape.category.options;
+  const defaults: Record<string, any> = {
+    event_id: 0,
+    transaction_type: '',
+    category: '',
+    amount: 0,
+    currency: 'ARS',
+    description: null,
+    transaction_date: new Date(),
+    payment_method: "bank_transfer",
+    status: "completed",
+  }
+  Object.entries(transaction || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      defaults[key] = value;
+    }
+  });
 
   const form = useAppForm({
-    defaultValues: transaction || {
-      event_id: 0,
-      transaction_type: '',
-      category: '',
-      amount: 0,
-      currency: 'ARS',
-      description: null,
-      transaction_date: new Date(),
-      payment_method: "bank_transfer",
-      status: "completed",
-    },
+    defaultValues: defaults,
     validators: {
       onBlur: SportingEventTransactionSchema,
       onSubmit: async ({ value }) => {
@@ -190,7 +202,21 @@ export const SportingEventTransactionForm = ({
             name="category"
             children={(field) => (
               <div className="space-y-2">
-                <field.Label htmlFor={field.name}>Categoría</field.Label>
+                <field.Label htmlFor={field.name} className="flex justify-between">
+                  Categoría
+                  {field.state.value
+                    ? TransactionTypeByCategory[field.state.value] === 'inflow'
+                      ? <div className="flex items-center bg-green-600 text-sm text-white px-2 rounded-lg">
+                        <BanknoteArrowUpIcon className="w-4 h-4 mr-1" />
+                        Ingreso
+                      </div>
+                      : <div className="flex items-center bg-red-600 text-sm text-white px-2 rounded-lg">
+                        <BanknoteArrowDownIcon className="w-4 h-4 mr-1" />
+                        Egreso
+                      </div>
+                    : null
+                  }
+                </field.Label>
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
@@ -213,7 +239,7 @@ export const SportingEventTransactionForm = ({
                   <field.SelectContent>
                     <field.SelectGroup>
                       <field.SelectLabel>Categoría</field.SelectLabel>
-                      {SportingEventTransactionSchema.shape.category.options.map((evtype) => (
+                      {categoriesOptions.map((evtype) => (
                         <field.SelectItem key={evtype} value={evtype}>{TransactionCategoryDesc[evtype][getLang()]}</field.SelectItem>
                       ))}
                     </field.SelectGroup>
@@ -385,7 +411,7 @@ export const SportingEventTransactionForm = ({
             name="vendor_supplier"
             children={(field) => (
               <div className="space-y-2">
-                <field.Label htmlFor={field.name}>Nombre del proveedor</field.Label>
+                <field.Label htmlFor={field.name}>Nombre del proveedor/sponsor</field.Label>
                 <field.Input
                   id={field.name}
                   name={field.name}
