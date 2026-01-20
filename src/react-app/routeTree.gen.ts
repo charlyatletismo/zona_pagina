@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ManageRouteImport } from './routes/manage'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,6 +21,7 @@ import { Route as TrainingTeamsIndexRouteImport } from './routes/trainingTeams/i
 import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
+import { Route as UsersManagersRouteImport } from './routes/users/managers'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as TransactionsCreateRouteImport } from './routes/transactions/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
@@ -28,6 +30,7 @@ import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvent
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as LocationsCreateRouteImport } from './routes/locations/create'
+import { Route as LocationsCheckTemporaryRouteImport } from './routes/locations/checkTemporary'
 import { Route as LocationsLocationIdRouteImport } from './routes/locations/$locationId'
 import { Route as AthleteStatsRouteImport } from './routes/athlete/stats'
 import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
@@ -47,6 +50,11 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManageRoute = ManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -94,6 +102,11 @@ const LocationsIndexRoute = LocationsIndexRouteImport.update({
   path: '/locations/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsersManagersRoute = UsersManagersRouteImport.update({
+  id: '/users/managers',
+  path: '/users/managers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersCreateRoute = UsersCreateRouteImport.update({
   id: '/users/create',
   path: '/users/create',
@@ -133,6 +146,11 @@ const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
 const LocationsCreateRoute = LocationsCreateRouteImport.update({
   id: '/locations/create',
   path: '/locations/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationsCheckTemporaryRoute = LocationsCheckTemporaryRouteImport.update({
+  id: '/locations/checkTemporary',
+  path: '/locations/checkTemporary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocationsLocationIdRoute = LocationsLocationIdRouteImport.update({
@@ -196,10 +214,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
+  '/manage': typeof ManageRoute
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
   '/locations/$locationId': typeof LocationsLocationIdRoute
+  '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
   '/locations/create': typeof LocationsCreateRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -208,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
+  '/users/managers': typeof UsersManagersRoute
   '/locations': typeof LocationsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
@@ -227,10 +248,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
+  '/manage': typeof ManageRoute
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
   '/locations/$locationId': typeof LocationsLocationIdRoute
+  '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
   '/locations/create': typeof LocationsCreateRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -239,6 +262,7 @@ export interface FileRoutesByTo {
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
+  '/users/managers': typeof UsersManagersRoute
   '/locations': typeof LocationsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
@@ -259,10 +283,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof LoginRoute
+  '/manage': typeof ManageRoute
   '/services': typeof ServicesRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/athlete/stats': typeof AthleteStatsRoute
   '/locations/$locationId': typeof LocationsLocationIdRoute
+  '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
   '/locations/create': typeof LocationsCreateRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -271,6 +297,7 @@ export interface FileRoutesById {
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
+  '/users/managers': typeof UsersManagersRoute
   '/locations/': typeof LocationsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/sportingEvents/': typeof SportingEventsIndexRoute
@@ -292,10 +319,12 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/login'
+    | '/manage'
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
     | '/locations/$locationId'
+    | '/locations/checkTemporary'
     | '/locations/create'
     | '/settings/notifications'
     | '/settings/profile'
@@ -304,6 +333,7 @@ export interface FileRouteTypes {
     | '/trainingTeams/create'
     | '/transactions/create'
     | '/users/create'
+    | '/users/managers'
     | '/locations'
     | '/settings'
     | '/sportingEvents'
@@ -323,10 +353,12 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/login'
+    | '/manage'
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
     | '/locations/$locationId'
+    | '/locations/checkTemporary'
     | '/locations/create'
     | '/settings/notifications'
     | '/settings/profile'
@@ -335,6 +367,7 @@ export interface FileRouteTypes {
     | '/trainingTeams/create'
     | '/transactions/create'
     | '/users/create'
+    | '/users/managers'
     | '/locations'
     | '/settings'
     | '/sportingEvents'
@@ -354,10 +387,12 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/login'
+    | '/manage'
     | '/services'
     | '/unauthorized'
     | '/athlete/stats'
     | '/locations/$locationId'
+    | '/locations/checkTemporary'
     | '/locations/create'
     | '/settings/notifications'
     | '/settings/profile'
@@ -366,6 +401,7 @@ export interface FileRouteTypes {
     | '/trainingTeams/create'
     | '/transactions/create'
     | '/users/create'
+    | '/users/managers'
     | '/locations/'
     | '/settings/'
     | '/sportingEvents/'
@@ -386,10 +422,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   LoginRoute: typeof LoginRoute
+  ManageRoute: typeof ManageRoute
   ServicesRoute: typeof ServicesRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   AthleteStatsRoute: typeof AthleteStatsRoute
   LocationsLocationIdRoute: typeof LocationsLocationIdRoute
+  LocationsCheckTemporaryRoute: typeof LocationsCheckTemporaryRoute
   LocationsCreateRoute: typeof LocationsCreateRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
@@ -398,6 +436,7 @@ export interface RootRouteChildren {
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
   TransactionsCreateRoute: typeof TransactionsCreateRoute
   UsersCreateRoute: typeof UsersCreateRoute
+  UsersManagersRoute: typeof UsersManagersRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SportingEventsIndexRoute: typeof SportingEventsIndexRoute
@@ -428,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manage': {
+      id: '/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof ManageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -493,6 +539,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/users/managers': {
+      id: '/users/managers'
+      path: '/users/managers'
+      fullPath: '/users/managers'
+      preLoaderRoute: typeof UsersManagersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/users/create': {
       id: '/users/create'
       path: '/users/create'
@@ -547,6 +600,13 @@ declare module '@tanstack/react-router' {
       path: '/locations/create'
       fullPath: '/locations/create'
       preLoaderRoute: typeof LocationsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/locations/checkTemporary': {
+      id: '/locations/checkTemporary'
+      path: '/locations/checkTemporary'
+      fullPath: '/locations/checkTemporary'
+      preLoaderRoute: typeof LocationsCheckTemporaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/locations/$locationId': {
@@ -626,10 +686,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   LoginRoute: LoginRoute,
+  ManageRoute: ManageRoute,
   ServicesRoute: ServicesRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   AthleteStatsRoute: AthleteStatsRoute,
   LocationsLocationIdRoute: LocationsLocationIdRoute,
+  LocationsCheckTemporaryRoute: LocationsCheckTemporaryRoute,
   LocationsCreateRoute: LocationsCreateRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
@@ -638,6 +700,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
   TransactionsCreateRoute: TransactionsCreateRoute,
   UsersCreateRoute: UsersCreateRoute,
+  UsersManagersRoute: UsersManagersRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SportingEventsIndexRoute: SportingEventsIndexRoute,

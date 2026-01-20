@@ -2,8 +2,11 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   CalendarIcon,
   MapPinIcon,
-  PlusIcon,
+  CalendarPlus,
   FileUserIcon,
+  UsersRoundIcon,
+  UserCog2,
+  UserCircle2,
 } from 'lucide-react';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
 import { getAuthenticated } from '@/lib/apiCalls';
@@ -31,6 +34,28 @@ export const Route = createFileRoute('/')({
 function Index() {
   const { res } = Route.useLoaderData();
   const events = res.body.data
+  const sections = [
+    {
+      title: "Inscripciones Abiertas",
+      color: "bg-green-500",
+      items: events.open,
+    },
+    {
+      title: "Próximamente",
+      color: "bg-blue-500",
+      items: events.comingSoon,
+    },
+    {
+      title: "Inscripciones Cerradas",
+      color: "bg-orange-500",
+      items: events.closed,
+    },
+    {
+      title: "Eventos Pasados",
+      color: "bg-gray-500",
+      items: events.past,
+    }
+  ];
 
   return (
     <div>
@@ -60,7 +85,7 @@ function Index() {
 
       <div className="container mx-auto px-4 pb-16 space-y-16">
         {localStorage.getItem('USER_ROLE') === 'organizer' && (
-          <div className="flex flex-wrap gap-2 mb-8 w-full border-2 rounded-lg p-2">
+          <div className="flex flex-wrap gap-2 mb-8 w-full border-b-2 pb-5">
             {/* <div className='my-auto relative p-px rounded-lg overflow-hidden'>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-full h-[500%] bg-radial-[at_15%_75%] from-pink-500 via-blue-400 to-indigo-900 to-75% animate-[spin_3s_linear_infinite]" />
               <div className='bg-primary/50 text-white px-3 py-1 rounded-[7px] text-sm font-medium relative z-10'>
@@ -68,14 +93,14 @@ function Index() {
               </div>
             </div> */}
             <div className='my-auto px-3 py-1 bg-gray-600 rounded-lg text-sm text-white animate-badge-color-cycle repeat-1'>
-              Modo organizador
+              Atajos
             </div>
             <Button variant="outline">
-              <PlusIcon className="w-4 h-4" />
+              <CalendarPlus className="w-4 h-4" />
               <Link
                 to="/sportingEvents/create"
               >
-                Crear Nuevo Evento Deportivo
+                Nuevo Evento Deportivo
               </Link>
             </Button>
             <Button variant="outline">
@@ -83,73 +108,60 @@ function Index() {
               <Link
                 to="/sportingEvents/registrations"
               >
-                Gestionar Inscripciones
+                Inscripciones
+              </Link>
+            </Button>
+            <Button variant="outline">
+              <MapPinIcon className="w-4 h-4" />
+              <Link
+                to="/locations"
+              >
+                Ubicaciones
+              </Link>
+            </Button>
+            <Button variant="outline">
+              <UsersRoundIcon className="w-4 h-4" />
+              <Link
+                to="/trainingTeams"
+              >
+                Equipos de Entrenamiento
+              </Link>
+            </Button>
+            <Button variant="outline">
+              <UserCog2 className="w-4 h-4" />
+              <Link
+                to="/users/managers"
+              >
+                Managers
+              </Link>
+            </Button>
+            <Button variant="outline">
+              <UserCircle2 className="w-4 h-4" />
+              <Link
+                to="/users"
+              >
+                Usuarios
               </Link>
             </Button>
           </div>
         )}
-        {events.open.length > 0 && (
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-              <span className="w-2 h-8 bg-green-500 rounded-full mr-3"></span>
-              Inscripciones Abiertas
-            </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {events.open.map(event => (
-                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
-                  <EventCard event={event} />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
 
-        {events.comingSoon.length > 0 && (
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-              <span className="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>
-              Próximamente
-            </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {events.comingSoon.map(event => (
-                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
-                  <EventCard event={event} />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {events.closed.length > 0 && (
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-              <span className="w-2 h-8 bg-orange-500 rounded-full mr-3"></span>
-              Inscripciones Cerradas
-            </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {events.closed.map(event => (
-                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
-                  <EventCard event={event} />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {events.past.length > 0 && (
-          <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
-              <span className="w-2 h-8 bg-gray-500 rounded-full mr-3"></span>
-              Eventos Pasados
-            </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {events.past.map(event => (
-                <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
-                  <EventCard event={event} />
-                </Link>
-              ))}
-            </div>
-          </section>
+        {sections.map((section) => (
+          section.items.length > 0 && (
+            <section key={section.title}>
+              <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+                <span className={`w-2 h-8 ${section.color} rounded-full mr-3`}></span>
+                {section.title}
+              </h2>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                {section.items.map((event) => (
+                  <Link key={event.id} to="/sportingEvents/$eventId" params={{ eventId: event.id.toString() }} className="block h-full group">
+                    <EventCard event={event} />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ))
         )}
 
         {events.open.length === 0 && events.comingSoon.length === 0 && events.closed.length === 0 && events.past.length === 0 && (
@@ -174,15 +186,15 @@ function Index() {
 
 function EventCard({ event }: { event: z.infer<typeof SportingEventBasicInfoSchema> }) {
   return (
-    <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 group-hover:shadow-lg transition-all duration-300 flex flex-col h-full group-hover:-translate-y-1'>
-      <div className='flex items-start mb-4'>
-        <div className="bg-primary/10 p-3 rounded-lg mr-4 group-hover:bg-primary/20 transition-colors">
-          <CalendarIcon className='h-6 w-6 text-primary' />
+    <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-300 flex flex-col h-full group-hover:animate-tremor'>
+      <div className='flex gap-4 items-start mb-4'>
+        <div className="p-2.5 rounded-lg bg-gray-50 text-gray-500 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+          <CalendarIcon className='h-6 w-6' />
         </div>
         <div>
-          <h3 className='text-xl font-bold text-gray-900 leading-tight mb-1 group-hover:text-primary transition-colors'>{event.title}</h3>
+          <h3 className='text-xl font-bold text-gray-900 leading-tight mb-1'>{event.title}</h3>
           <p className="text-sm font-medium text-primary">
-            {new Date(event.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            {event.date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
       </div>
