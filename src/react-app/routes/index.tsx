@@ -1,11 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   CalendarIcon,
-  MapPinIcon,
   CalendarPlus,
   FileUserIcon,
-  UsersRoundIcon,
-  UserCog2,
   UserCircle2,
 } from 'lucide-react';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
@@ -95,49 +92,19 @@ function Index() {
             </div>
             <Button variant="outline">
               <CalendarPlus className="w-4 h-4" />
-              <Link
-                to="/sportingEvents/create"
-              >
+              <Link to="/sportingEvents/create">
                 Nuevo Evento Deportivo
               </Link>
             </Button>
             <Button variant="outline">
               <FileUserIcon className="w-4 h-4" />
-              <Link
-                to="/sportingEvents/registrations"
-              >
+              <Link to="/sportingEvents/registrations">
                 Inscripciones
               </Link>
             </Button>
             <Button variant="outline">
-              <MapPinIcon className="w-4 h-4" />
-              <Link
-                to="/locations"
-              >
-                Ubicaciones
-              </Link>
-            </Button>
-            <Button variant="outline">
-              <UsersRoundIcon className="w-4 h-4" />
-              <Link
-                to="/trainingTeams"
-              >
-                Equipos de Entrenamiento
-              </Link>
-            </Button>
-            <Button variant="outline">
-              <UserCog2 className="w-4 h-4" />
-              <Link
-                to="/users/managers"
-              >
-                Managers
-              </Link>
-            </Button>
-            <Button variant="outline">
               <UserCircle2 className="w-4 h-4" />
-              <Link
-                to="/users"
-              >
+              <Link to="/users">
                 Usuarios
               </Link>
             </Button>
