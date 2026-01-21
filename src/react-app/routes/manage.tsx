@@ -4,11 +4,11 @@ import { ORGANIZER_ROLE } from '@shared/roles';
 import {
   CalendarPlus,
   ClipboardList,
-  FileText,
-  History,
-  Tag,
-  Download,
-  Upload,
+  // FileText,
+  // History,
+  // Tag,
+  // Download,
+  // Upload,
   Users,
   UserCog,
   CreditCard,
@@ -33,11 +33,10 @@ function RouteComponent() {
       items: [
         { to: "/sportingEvents/create", icon: CalendarPlus, label: "Crear Nuevo Evento", description: "Configurar un nuevo evento deportivo." },
         { to: "/sportingEvents/registrations", icon: ClipboardList, label: "Inscripciones", description: "Gestionar inscripciones de usuarios." },
-        { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros." },
-        { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
-        { to: "/sportingEvents/assignChipNumbers", icon: Tag, label: "Asignar Chips", description: "Asignar números de chip a los inscriptos." },
-        { to: "/sportingEvents/downloadRufus", icon: Download, label: "Datos para Rufus", description: "Descargar inscripciones consolidadas." },
-        { to: "/sportingEvents/uploadResults", icon: Upload, label: "Subir Resultados", description: "Cargar los resultados del evento finalizado." },
+        // { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
+        // { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
+        // { to: "/sportingEvents/downloadRufus", icon: Download, label: "Datos para Rufus", description: "Descargar inscripciones consolidadas." },
+        // { to: "/sportingEvents/uploadResults", icon: Upload, label: "Subir Resultados", description: "Cargar los resultados del evento finalizado." },
       ]
     },
     {
@@ -45,7 +44,7 @@ function RouteComponent() {
       icon: Users,
       items: [
         { to: "/users", icon: Users, label: "Usuarios", description: "Administrar base de datos de usuarios." },
-        { to: "/users/managers", icon: UserCog, label: "Managers", description: "Gestionar permisos y roles de managers." },
+        { to: "/users/managers", icon: UserCog, label: "Managers", description: "Gestionar managers y qué usuarios administran." },
         { to: "/users/changeId", icon: CreditCard, label: "Cambiar DNI", description: "Corrección de DNI para usuarios." },
       ]
     },
