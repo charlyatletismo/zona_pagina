@@ -13,7 +13,8 @@ import {
   Check,
   FileUserIcon,
   FilePlus2,
-  DollarSignIcon,
+  BadgeDollarSign,
+  CircleDollarSignIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -228,8 +229,17 @@ function RouteComponent() {
         <div className='flex gap-2'>
           {currentRole === ORGANIZER_ROLE && (
             <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
+                <CircleDollarSignIcon className="w-4 h-4" />
+                Balance financiero
+              </Link>
+            </Button>
+          )}
+
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
-                <DollarSignIcon className="w-4 h-4" />
+                <BadgeDollarSign className="w-4 h-4" />
                 Nueva transacción
               </Link>
             </Button>
