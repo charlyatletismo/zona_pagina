@@ -4,7 +4,6 @@ import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
 import { getMessage, capitalizeStr } from '@/lib/utils';
 import {
-  SettingsSchema,
   ARSettingsSchema,
   TrainingTeamsApiResponseSchema
 } from '@shared/apiRespTypes';
@@ -16,11 +15,10 @@ import {
   Save,
   ListRestartIcon,
 } from 'lucide-react';
-import { TEMPORARY_LOCATION_ID } from '@shared/types';
+import { UserSchema, TEMPORARY_LOCATION_ID } from '@shared/types';
 
 
 const SETTINGS_API_PATH = '/api/settings';
-const PartialSettingsSchema = ARSettingsSchema.partial();
 
 
 export const ProfileForm = ({
@@ -29,7 +27,7 @@ export const ProfileForm = ({
   trainingTeams,
   postUrl
 } : {
-  profile: z.infer<typeof PartialSettingsSchema> | null,
+  profile: z.infer<typeof ARSettingsSchema> | null,
   locations: string[],
   trainingTeams: z.infer<typeof TrainingTeamsApiResponseSchema>,
   postUrl: string
@@ -68,9 +66,17 @@ export const ProfileForm = ({
   const specialFieldsEditable = !authorizedOrg(localStorage.getItem('USER_ROLE'));
 
   const form = useAppForm({
-    defaultValues: profile || undefined,
+    defaultValues: profile || {
+      id: '',
+      name: '',
+      surname: '',
+      phone: '',
+      email: '',
+      emergency_contact_name: '',
+      emergency_contact_phone: '',
+    },
     validators: {
-      onBlur: SettingsSchema,
+      onBlur: UserSchema,
     },
     onSubmit: async ({ value }) => {
       setError('');
@@ -411,7 +417,7 @@ export const ProfileForm = ({
                   <field.SelectContent>
                     <field.SelectGroup>
                       <field.SelectLabel>Talle de remera</field.SelectLabel>
-                      {SettingsSchema.shape.clothing_shirt_size.options.map((size) => (
+                      {UserSchema.shape.clothing_shirt_size.options.map((size) => (
                         <field.SelectItem key={size} value={size}>{size}</field.SelectItem>
                       ))}
                     </field.SelectGroup>

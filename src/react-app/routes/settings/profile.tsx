@@ -7,16 +7,13 @@ import z from 'zod';
 import { FormBox } from '@/components/formBox';
 
 
-const PartialSettingsSchema = ARSettingsSchema.partial();
-
-
 export const Route = createFileRoute('/settings/profile')({
   component: RouteComponent,
   beforeLoad: authCheck(),
   loader: async () => {
     const profileApi = await getAuthenticatedThrow<
-      z.infer<typeof PartialSettingsSchema>
-      >('/api/settings', PartialSettingsSchema);
+      z.infer<typeof ARSettingsSchema>
+      >('/api/settings', ARSettingsSchema);
     const locationsApi = await getAuthenticatedThrow<
       string[]
       >('/api/locations', z.array(z.string()));

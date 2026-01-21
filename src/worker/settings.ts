@@ -5,7 +5,7 @@ import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { users, userUpdates } from './db/schema';
 import { eq } from 'drizzle-orm';
 import { M } from './lib/messages';
-import { SettingsSchema } from '@shared/apiRespTypes';
+import { ARSettingsSchema } from '@shared/apiRespTypes';
 
 
 export const settingsRoute = new Hono<{ Bindings: Env }>()
@@ -14,7 +14,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     const userId = c.get('jwtPayload').id;
     const user = await db
       .select(
-        SettingsSchema.keyof().options.reduce((acc, field) => {
+        ARSettingsSchema.keyof().options.reduce((acc, field) => {
             acc[field] = users[field];
             return acc;
           },
@@ -34,7 +34,10 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     const userId: string = c.get('jwtPayload').id;
     const body = await c.req.json();
 
-    const updates = SettingsSchema.omit({ id: true }).parse(body);
+    const updates = ARSettingsSchema.omit({ id: true }).safeParse(body);
+    if (!updates.success) {
+      return c.json({ message: M.USER_INVALID_DATA }, 400);
+    }
 
     const userBeforeUpdate = await db
       .select({phone: users.phone, email: users.email})
@@ -45,21 +48,21 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     if (!userBeforeUpdate) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
-    if (updates.phone !== userBeforeUpdate.phone) {
+    if (updates.data.phone !== userBeforeUpdate.phone) {
       await db.insert(userUpdates).values({
         user_id: userId,
         field_name: 'phone',
         old_value: userBeforeUpdate.phone,
-        new_value: updates.phone,
+        new_value: updates.data.phone,
         updated_by: userId,
       }).run();
     }
-    if (updates.email !== userBeforeUpdate.email) {
+    if (updates.data.email !== userBeforeUpdate.email) {
       await db.insert(userUpdates).values({
         user_id: userId,
         field_name: 'email',
         old_value: userBeforeUpdate.email,
-        new_value: updates.email,
+        new_value: updates.data.email,
         updated_by: userId,
       }).run();
     }
@@ -67,7 +70,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
     await db.update(users)
       .set({
         ...updates,
-        date_of_birth: updates.date_of_birth ? updates.date_of_birth.toISOString() : null,
+        date_of_birth: updates.data.date_of_birth ? updates.data.date_of_birth.toISOString() : null,
         updated_at: new Date().toISOString(),
       })
       .where(eq(users.id, userId))

@@ -42,10 +42,22 @@ export const SettingsSchema = UserSchema.pick({
   training_team_temp: true,
   profile_image_url: true,
   language: true,
+}).extend({
+  name: UserSchema.shape.name.nullable(),
+  surname: UserSchema.shape.surname.nullable(),
+  phone: UserSchema.shape.phone.nullable(),
+  email: UserSchema.shape.email.nullable(),
+  emergency_contact_name: UserSchema.shape.emergency_contact_name.nullable(),
+  emergency_contact_phone: UserSchema.shape.emergency_contact_phone.nullable(),
+  sex: UserSchema.shape.sex.nullable(),
+  date_of_birth: UserSchema.shape.date_of_birth.nullable(),
+  clothing_shirt_size: UserSchema.shape.clothing_shirt_size.nullable(),
+  location: UserSchema.shape.location.nullable(),
+  location_address: UserSchema.shape.location_address.nullable(),
 });
 
 export const ARSettingsSchema = SettingsSchema.extend({
-  date_of_birth: z.coerce.date()
+  date_of_birth: z.coerce.date().nullable()
 });
 
 
