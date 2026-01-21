@@ -505,12 +505,12 @@ VALUES
   (2, 6, 3, '10K Juveniles Femenino', 'F', 16, 19, 0),
   (3, 6, 3, '10K Senior Masculino', 'M', 20, 39, 0),
   (4, 6, 3, '10K Senior Femenino', 'F', 20, 39, 0),
-  (5, 6, 3, '10K Inclusiva Unisex', NULL, NULL, NULL, 1),
+  (5, 6, 3, '10K Inclusiva Unisex', NULL, 1, 99, 1),
   (6, 6, 4, '3K Juveniles Masculino', 'M', 16, 19, 0),
   (7, 6, 4, '3K Juveniles Femenino', 'F', 16, 19, 0),
   (8, 6, 4, '3K Senior Masculino', 'M', 20, 39, 0),
   (9, 6, 4, '3K Senior Femenino', 'F', 20, 39, 0),
-  (10, 6, 4, '3K Inclusiva Unisex', NULL, NULL, NULL, 1);
+  (10, 6, 4, '3K Inclusiva Unisex', NULL, 1, 99, 1);
 
 
 INSERT INTO
