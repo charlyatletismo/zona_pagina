@@ -73,7 +73,7 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
     }
     const db = drizzle(c.env.DB);
     const registrationId = Number(c.req.param('registrationId'));
-    const { amount, transaction_date, receipt_url, payment_method, status, notes } = await c.req.json();
+    const { amount, transaction_date, receipt_url, payment_method, status } = await c.req.json();
     if (!amount || !transaction_date || !receipt_url || !payment_method || !status) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_MISSING_REQUIRED_FIELDS }, 400);
     }
@@ -85,6 +85,9 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
       .get();
     if (!registration) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
+    }
+    if (registration.event_id === null) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_MISSING_EVENT_ID }, 400);
     }
     const spEvent = await db
       .select()
@@ -111,7 +114,6 @@ export const sportingEventRegistrationsRoute = new Hono<{ Bindings: Env }>()
       status,
       created_by: userId,
       updated_by: userId,
-      notes,
     }).run();
 
     const totalPaid = (registration.paid_amount || 0) + amount;

@@ -14,7 +14,6 @@ import { userRegisteredInEvent } from './sportingEventRegistrations';
 import { M, appendToMessage } from './messages';
 import z from 'zod';
 import {
-  SportingEventSchema,
   SportingEventDbSchema,
   SportingEventClothingSchema,
   SportingEventCircuitSchema,
@@ -231,7 +230,7 @@ export const addSpEvent = async (
     schedules,
     clothing,
     circuits,
-    categories
+    // categories
   } = readSpEvent(eventData);
 
   if (status !== 200 || !data) {
@@ -364,7 +363,7 @@ export const updateSpEvent = async (
     schedules,
     clothing,
     circuits,
-    categories
+    // categories
   } = readSpEvent(eventData);
 
   if (status !== 200 || !data) {
@@ -633,7 +632,6 @@ export const registerToSpEvent = async (
     fee_amount_original: feeAmount,
     fee_amount_after_discount,
     demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
-    special_needs: userData[0].special_needs,
     status,
     paid_percentage: fee_amount_after_discount > 0 ? 0 : 100,
     created_by: reqUserId,

@@ -35,7 +35,11 @@ import { ChevronRight, BookUser } from 'lucide-react';
 import z from 'zod';
 
 
-const ARUserSchemaPartialArray = ARUserSchema.partial().array();
+const ARUserSchemaPartial = ARUserSchema.partial().required({
+  id: true,
+});
+const ARUserSchemaPartialArray = ARUserSchemaPartial.array();
+
 
 export const Route = createFileRoute('/users/')({
   component: RouteComponent,
@@ -85,25 +89,25 @@ function RouteComponent() {
     }
   };
 
-  const columnHelper = createColumnHelper<z.infer<typeof ARUserSchema>>()
+  const columnHelper = createColumnHelper<z.infer<typeof ARUserSchemaPartial>>()
 
   const columns = React.useMemo(
     () => [
       columnHelper.accessor('name', {
         header: 'Nombre',
-        cell: info => <span className="font-medium">{info.getValue()}</span>,
+        cell: info => <span className="font-medium">{info.getValue() || "N/A"}</span>,
       }),
       columnHelper.accessor('surname', {
         header: 'Apellido',
-        cell: info => info.getValue(),
+        cell: info => info.getValue() || "N/A",
       }),
       columnHelper.accessor('phone', {
         header: 'Teléfono',
-        cell: info => <span className="text-gray-500">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-500">{info.getValue() || "N/A"}</span>,
       }),
       columnHelper.accessor('email', {
         header: 'Email',
-        cell: info => <span className="text-gray-500">{info.getValue()}</span>,
+        cell: info => <span className="text-gray-500">{info.getValue() || "N/A"}</span>,
       }),
       columnHelper.accessor('role', {
         // TODO: Hide role when is not admin or organizer

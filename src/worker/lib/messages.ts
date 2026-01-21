@@ -177,20 +177,24 @@ export const M = {
 
   // -------------------------- SPORTING EVENT REGISTRATIONS --------------------------
   SPORTING_EVENT_REGISTRATION_NOT_FOUND: {
-    [ES]: "Registro de evento deportivo no encontrado",
+    [ES]: "Inscripción al evento deportivo no encontrada",
     [EN]: "Sporting event registration not found"
   },
   SPORTING_EVENT_REGISTRATION_PAYMENT_MISSING_REQUIRED_FIELDS: {
-    [ES]: "Faltan campos obligatorios en el pago del registro del evento deportivo",
+    [ES]: "Faltan campos obligatorios en el pago de la inscripción del evento deportivo",
     [EN]: "Missing required fields in sporting event registration payment"
   },
   SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY: {
-    [ES]: "Registro del evento deportivo creado con éxito",
+    [ES]: "Inscripción del evento deportivo creada con éxito",
     [EN]: "Sporting event registration created successfully"
   },
   SPORTING_EVENT_REGISTRATION_PAYMENT_SUCCESSFUL: {
-    [ES]: "Pago del registro del evento deportivo realizado con éxito",
+    [ES]: "Pago de la inscripción del evento deportivo realizado con éxito",
     [EN]: "Sporting event registration payment successful"
+  },
+  SPORTING_EVENT_REGISTRATION_MISSING_EVENT_ID: {
+    [ES]: "La inscripción del evento deportivo no tiene un evento existente asociado",
+    [EN]: "Sporting event registration does not have an associated existing event"
   },
 
 
