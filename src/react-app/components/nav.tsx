@@ -15,7 +15,12 @@ import { clearUserInfo } from '@/lib/utils';
 // import { Code2, Laptop } from 'lucide-react';
 
 
-const navClass = 'bg-transparent text-gray-600 hover:text-primary hover:bg-primary/5 [&.active]:text-primary [&.active]:bg-primary/10 font-medium transition-colors';
+const navClass = (
+  'bg-transparent text-gray-600 '
+  + 'hover:text-gray-700 hover:bg-primary/20 '
+  + '[&.active]:text-white [&.active]:bg-primary/60 '
+  + 'font-medium transition-colors '
+);
 
 const LINK_HOME = { to: '/', label: 'Inicio' };
 const LINK_SERVICES = { to: '/services', label: 'Servicios' };
@@ -63,21 +68,6 @@ export const Navigation = () => {
           </NavigationMenuItem>
         ))}
 
-        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && (
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <a onClick={() => {
-                // switch to next role
-                const all_roles = [roles.ADMIN_ROLE, roles.ORGANIZER_ROLE, roles.ATHLETES_MANAGER_ROLE, roles.ATHLETE_ROLE];
-                const i = all_roles.indexOf(localStorage.getItem('USER_ROLE') || '');
-                const nextRole = all_roles[(i + 1) % all_roles.length];
-                localStorage.setItem('USER_ROLE', nextRole);
-                window.location.reload();
-              }} className={navClass}>Rol: {localStorage.getItem('USER_ROLE')}</a>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        )}
-
         {/* <NavigationMenuItem>
               <button onClick={toggleTheme} className={navClass + " px-3 py-2 rounded-md flex items-center cursor-pointer"}>
                 {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -88,7 +78,7 @@ export const Navigation = () => {
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
               <Link to="/settings" className={navClass}>
-                <Settings className='my-auto' size={16} />
+                <Settings className='my-auto [&.active]:text-white' size={16} />
               </Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
@@ -100,7 +90,7 @@ export const Navigation = () => {
               <a onClick={() => {
                 clearUserInfo();
                 window.location.href = '/';
-              }} className={navClass}>
+              }} className={navClass + " cursor-pointer"}>
                 <LogOut size={16} />
                 {/* <div className='flex items-center gap-1'>
                       Cerrar sesión
@@ -108,7 +98,7 @@ export const Navigation = () => {
               </a>
             ) : (
               <Link to="/login" className={navClass}>
-                <LogIn size={16} />
+                <LogIn className='[&.active]:text-white' size={16} />
                 {/* <div className='flex items-center gap-1'>
                       Iniciar sesión
                     </div> */}
@@ -116,6 +106,21 @@ export const Navigation = () => {
             )}
           </NavigationMenuLink>
         </NavigationMenuItem>
+
+        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && (
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+              <a onClick={() => {
+                // switch to next role
+                const all_roles = [roles.ADMIN_ROLE, roles.ORGANIZER_ROLE, roles.ATHLETES_MANAGER_ROLE, roles.ATHLETE_ROLE];
+                const i = all_roles.indexOf(localStorage.getItem('USER_ROLE') || '');
+                const nextRole = all_roles[(i + 1) % all_roles.length];
+                localStorage.setItem('USER_ROLE', nextRole);
+                window.location.reload();
+              }} className="bg-primary/70 text-white cursor-pointer hover:animate-tremor hover:bg-primary hover:text-white">Rol: {localStorage.getItem('USER_ROLE')}</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   )
