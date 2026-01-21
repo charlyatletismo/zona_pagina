@@ -226,7 +226,18 @@ function RouteComponent() {
           </Link>
         </Button>
 
-        <div className='flex gap-2'>
+        {currentRole === ATHLETES_MANAGER_ROLE && (
+          <Button asChild variant="default">
+            <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+              <FilePlus2 className="w-4 h-4" />
+              Registrar Atletas
+            </Link>
+          </Button>
+        )}
+      </div>
+
+      {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
+        <div className='flex flex-wrap gap-2 justify-center mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200'>
           {currentRole === ORGANIZER_ROLE && (
             <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
@@ -263,8 +274,7 @@ function RouteComponent() {
             </Button>
           )}
         </div>
-
-      </div>
+      )}
 
       {/* Header */}
       <div className="mb-8 text-center">
