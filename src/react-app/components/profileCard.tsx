@@ -17,7 +17,7 @@ import {
   VenusAndMars
 } from 'lucide-react';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 const trainingTeamsData: {
@@ -86,7 +86,7 @@ const GridCell = ({
 );
 
 
-export const Profile = ({
+export const ProfileCard = ({
   profile,
 } : {
   profile: z.infer<typeof ARUserSchema>,

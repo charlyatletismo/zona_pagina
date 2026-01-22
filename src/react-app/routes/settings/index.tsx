@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { Profile } from '@/components/profileCard'
+import { ProfileCard } from '@/components/profileCard'
 import z from 'zod';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
 
@@ -76,7 +76,7 @@ function RouteComponent() {
           </Link>
         </div>
 
-        <Profile profile={res.body?.data} />
+        <ProfileCard profile={res.body?.data} />
       </div>
     </div>
   )

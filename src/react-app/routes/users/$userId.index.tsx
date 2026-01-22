@@ -5,7 +5,7 @@ import { Edit, ArrowLeft } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { ARUserSchema } from '@shared/apiRespTypes';
-import { Profile } from '@/components/profileCard';
+import { ProfileCard } from '@/components/profileCard';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 
 
@@ -83,7 +83,7 @@ function RouteComponent() {
           </Link>
         </div>
 
-        <Profile profile={userApiRes.body.data} />
+        <ProfileCard profile={userApiRes.body.data} />
       </div>
     </div>
   )
