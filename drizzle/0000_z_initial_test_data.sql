@@ -402,7 +402,7 @@ VALUES
     'marathon',
     'Acá van las reglas del evento',
     '1er puesto - $99.000 / 2do puesto - $77.000 / 3er puesto - $33.000',
-    0,
+    33000,
     'ARS',
     '42556386',
     '2025-12-25T18:00:38.954Z',
