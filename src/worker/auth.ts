@@ -91,6 +91,8 @@ export const authRoute = new Hono<{ Bindings: Env }>()
         phone: user.phone,
         role: user.role,
         name: user.name,
+        surname: user.surname,
+        manager_id: user.manager_id
       },
       c.env.JWT_SECRET, "HS256"
     );

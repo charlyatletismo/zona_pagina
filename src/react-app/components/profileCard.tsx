@@ -1,5 +1,9 @@
 import z from 'zod';
-import { ARSettingsSchema } from '@shared/apiRespTypes';
+import {
+  ARUserSchema,
+  ARUserMinSchema,
+  TrainingTeamsApiResponseSchemaElement,
+} from '@shared/apiRespTypes';
 import {
   User,
   Users,
@@ -12,86 +16,182 @@ import {
   Venus,
   VenusAndMars
 } from 'lucide-react';
+import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import { use, useEffect, useState } from 'react';
 
 
-export const Profile = ({ profile }: { profile: z.infer<typeof ARSettingsSchema> }) => {
+const trainingTeamsData: {
+  data: z.infer<typeof TrainingTeamsApiResponseSchemaElement>[],
+  expire: number,
+} = {
+  data: [],
+  expire: Date.now() - 1000,
+};
+
+const updateTrainingTeamsData = async (updateVar: CallableFunction) => {
+  if (trainingTeamsData.expire > Date.now()) {
+    return;
+  }
+  const tTeamApiRes = await getAuthenticatedThrow<
+    z.infer<typeof TrainingTeamsApiResponseSchemaElement>[]
+    >('/api/trainingTeams', z.array(TrainingTeamsApiResponseSchemaElement));
+  trainingTeamsData.data = tTeamApiRes.body.data;
+  trainingTeamsData.expire = Date.now() + 1000 * 60 * 5;
+  updateVar(trainingTeamsData.data);
+};
+
+const managersData: {
+  data: z.infer<typeof ARUserMinSchema>[],
+  expire: number,
+} = {
+  data: [],
+  expire: Date.now() - 1000,
+};
+
+const updateManagersData = async (updateVar: CallableFunction) => {
+  if (managersData.expire > Date.now()) {
+    return;
+  }
+  const managersApiRes = await getAuthenticatedThrow<
+    z.infer<typeof ARUserMinSchema>[]
+    >('/api/users/managers', z.array(ARUserMinSchema));
+  managersData.data = managersApiRes.body.data;
+  managersData.expire = Date.now() + 1000 * 60 * 5;
+  updateVar(managersData.data);
+};
+
+
+const GridCell = ({
+  icon: Icon,
+  label,
+  value,
+  link,
+} : {
+  icon: React.ComponentType<any>,
+  label: string,
+  value: string | null | undefined,
+  link?: string | null,
+}) => (
+  <div className="flex items-start gap-3">
+    <Icon className="w-5 h-5 text-gray-500 mt-1" />
+    <div>
+      <p className="text-sm text-gray-500">{label}</p>
+      {
+        link
+        ? <a href={link} className='font-medium underline text-primary/70 hover:text-primary' target='_blank'>{value || 'No especificado'}</a>
+        : <p className="font-medium">{value || 'No especificado'}</p>
+      }
+    </div>
+  </div>
+);
+
+
+export const Profile = ({
+  profile,
+} : {
+  profile: z.infer<typeof ARUserSchema>,
+}) => {
+  const [managers, setManagers] = useState(managersData.data);
+  const [trainingTeams, setTrainingTeams] = useState(trainingTeamsData.data);
+  const [manager, setManager] = useState(
+    profile.manager_id
+    ? managers.find(manager => manager.id === profile.manager_id)
+    : null);
+
+  useEffect(() => {
+    updateManagersData(setManagers);
+    updateTrainingTeamsData(setTrainingTeams);
+  }, []);
+  useEffect(() => {
+    setManager(
+      profile.manager_id
+        ? managers.find(manager => manager.id === profile.manager_id)
+        : null);
+  }, [managers]);
+
+
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-4">
-        <div className="flex items-start gap-3">
-          <User className="w-5 h-5 text-gray-500 mt-1" />
-          <div>
-            <p className="text-sm text-gray-500">Nombre Completo</p>
-            <p className="font-medium">{profile.name} {profile.surname}</p>
-          </div>
-        </div>
+        <GridCell
+          icon={User}
+          label="Nombre Completo"
+          value={`${profile.name || ''} ${profile.surname || ''}`.trim()}
+        />
+        <GridCell
+          icon={Mail}
+          label="Email"
+          value={profile.email}
+          link={
+            profile.email
+            ? "mailto:" + profile.email
+            : null
+          }
+        />
+        <GridCell
+          icon={Phone}
+          label="Celular"
+          value={
+            profile.phone
+            ? "+" + profile.phone.split("_").join(" ")
+            : null
+          }
+          link={
+            profile.phone
+            ? `https://wa.me/${profile.phone.split("_").join("")}`
+            : null
+          }
+        />
+        <GridCell
+          icon={
+            profile.sex === 'M'
+            ? Mars
+            : profile.sex === 'F'
+              ? Venus
+              : VenusAndMars
+          }
+          label='Sexo'
+          value={
+            profile.sex === 'M'
+            ? 'Hombre'
+            : profile.sex === 'F'
+              ? 'Mujer'
+              : 'No especificado'
+          }
+        />
 
-        <div className="flex items-start gap-3">
-          <Mail className="w-5 h-5 text-gray-500 mt-1" />
-          <div>
-            <p className="text-sm text-gray-500">Email</p>
-            <p className="font-medium">{profile.email || 'No especificado'}</p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <Phone className="w-5 h-5 text-gray-500 mt-1" />
-          <div>
-            <p className="text-sm text-gray-500">Teléfono</p>
-            <p className="font-medium">{profile.phone}</p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          {profile.sex === 'M' ? <Mars className="w-5 h-5 text-gray-500 mt-1" /> :
-            profile.sex === 'F' ? <Venus className="w-5 h-5 text-gray-500 mt-1" /> :
-              <VenusAndMars className="w-5 h-5 text-gray-500 mt-1" />}
-          <div>
-            <p className="text-sm text-gray-500">Sexo</p>
-            <p className="font-medium">{
-              profile.sex === 'M' ? 'Hombre' :
-                profile.sex === 'F' ? 'Mujer' :
-                  'No especificado'}</p>
-          </div>
-        </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-start gap-3">
-          <Calendar className="w-5 h-5 text-gray-500 mt-1" />
-          <div>
-            <p className="text-sm text-gray-500">Fecha de Nacimiento</p>
-            <p className="font-medium">{profile.date_of_birth?.toISOString().split('T')[0] || 'No especificada'}</p>
-          </div>
-        </div>
+        <GridCell
+          icon={Calendar}
+          label="Fecha de Nacimiento"
+          value={profile.date_of_birth?.toISOString().split('T')[0] || 'No especificada'}
+        />
+        <GridCell
+          icon={MapPin}
+          label="Dirección"
+          value={profile.location_address + ", " + profile.location}
+          link={
+            (profile.location_address && profile.location)
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.location_address + ", " + profile.location)}`
+            : null
+          }
+        />
+        <GridCell
+          icon={Users}
+          label="Equipo de Entrenamiento"
+          value={trainingTeams.find(team => team.id === profile.training_team_id)?.name || 'No especificado'}
+        />
 
-        <div className="flex items-start gap-3">
-          <MapPin className="w-5 h-5 text-gray-500 mt-1" />
-          <div>
-            <p className="text-sm text-gray-500">Ubicación</p>
-            <p className="font-medium">
-              {profile.location || 'No especificada'}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <Users className="w-5 h-5 text-gray-500 mt-1" />
-          <div>
-            <p className="text-sm text-gray-500">Equipo de Entrenamiento</p>
-            <p className="font-medium">{profile.training_team_id || 'No especificado'}</p>
-          </div>
-        </div>
-
-        {profile.manager_id && (
-          <div className="flex items-start gap-3">
-            <UserCog className="w-5 h-5 text-gray-500 mt-1" />
-            <div>
-              <p className="text-sm text-gray-500">ID del Manager</p>
-              <p className="font-medium">{profile.manager_id || '-'}</p>
-            </div>
-          </div>)
-        }
+        {manager && (
+          <GridCell
+            icon={UserCog}
+            label="Manager"
+            value={`${manager.name || ''} ${manager.surname || ''}`.trim()}
+            link={`/users/${manager.id}`}
+          />
+        )}
       </div>
     </div>
   )

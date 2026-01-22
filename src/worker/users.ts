@@ -77,6 +77,47 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     }).returning().get();
     return c.json({ message: M.USER_CREATED_SUCCESSFULLY, data: res });
   })
+  .get("/managers", async (c) => {
+    const db = drizzle(c.env.DB);
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      if (c.get('jwtPayload').role !== ATHLETES_MANAGER_ROLE) {
+        // return self
+        return c.json({ data: [{
+          id: c.get('jwtPayload').id,
+          name: c.get('jwtPayload').name,
+          surname: c.get('jwtPayload').surname
+        }] })
+      }
+      if (!c.get('jwtPayload').manager_id) {
+        return c.json({ data: [] });
+      }
+      const manager = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          surname: users.surname,
+        })
+        .from(users)
+        .where(eq(users.id, c.get('jwtPayload').manager_id))
+        .get();
+      if (!manager) {
+        return c.json({ data: [] });
+      }
+      return c.json({ data: [manager] });
+    }
+    const managers = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+        phone: users.phone,
+        email: users.email,
+      })
+      .from(users)
+      .where(eq(users.role, ATHLETES_MANAGER_ROLE))
+      .all();
+    return c.json({ data: managers });
+  })
   .get("/exists/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const userId = c.req.param("id");
