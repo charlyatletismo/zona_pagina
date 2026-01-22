@@ -240,6 +240,7 @@ export const SportingEventSchema = z.object({
   user_registration_status: z.object({
     registration_status: z.enum([
       'not_registered',
+      'pending_category_set',
       'pending',
       'partially_paid',
       'paid',

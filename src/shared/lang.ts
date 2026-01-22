@@ -11,6 +11,10 @@ export const RegistrationStatusDescriptions: {[key: string]: {[key: string]: str
     [ES]: "Pendiente de pago",
     [EN]: "Pending payment",
   },
+  pending_category_set: {
+    [ES]: "Pendiente de asignación de categoría",
+    [EN]: "Pending category set",
+  },
   partially_paid: {
     [ES]: "Parcialmente pagado",
     [EN]: "Partially paid",

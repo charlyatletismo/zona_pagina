@@ -187,6 +187,7 @@ function RouteComponent() {
                   'cancelled': 'bg-red-500 dark:bg-red-600',
                   'pending': 'bg-yellow-500 dark:bg-yellow-600',
                   'partially_paid': 'bg-orange-500 dark:bg-orange-600',
+                  'pending_category_set': 'bg-purple-500 dark:bg-purple-600',
                   '': 'bg-gray-500 dark:bg-gray-600',
                 }[data.user_registration_status.registration_status || '']
               }
