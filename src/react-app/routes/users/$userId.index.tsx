@@ -1,12 +1,20 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import z from 'zod';
 import { Button } from '@/components/ui/button'
-import { Edit, ArrowLeft } from 'lucide-react'
+import { Edit, ArrowLeft, CogIcon } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
-import { getAuthenticatedThrow } from '@/lib/apiCalls'
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import { ARUserSchema } from '@shared/apiRespTypes';
 import { ProfileCard } from '@/components/profileCard';
-import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
+import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from '@shared/roles';
+import { getMessage } from '@/lib/utils';
+import { RolDescriptions } from '@shared/lang';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 export const Route = createFileRoute('/users/$userId/')({
@@ -60,6 +68,34 @@ function RouteComponent() {
     );
   }
 
+  const currentRole = userApiRes.body.data.role;
+
+  // Don't allow changing roles when not admin or organizer,
+  // Don't allow changing admin roles or self (simplified)
+  const canEdit = (
+    localStorage.getItem("USER_ROLE") === ORGANIZER_ROLE
+    || localStorage.getItem("USER_ROLE") === ADMIN_ROLE)
+    && currentRole && currentRole !== ADMIN_ROLE
+    && localStorage.getItem('USER_ID') !== userApiRes.body.data.id;
+
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    if (!confirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) return;
+
+    const res = await postAuthenticated(
+      `/api/users/${userId}/setRole`,
+      { role: newRole },
+      navigate);
+    
+    if (res.status === 200) {
+      navigate({ to: '.', reloadDocument: true }); // Reload route
+    } else {
+      alert(`Error al cambiar el rol: ${getMessage(res.body?.message, 'Error desconocido')}`);
+    }
+
+  };
+
+
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
@@ -75,12 +111,36 @@ function RouteComponent() {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">{userApiRes.body.data.name} {userApiRes.body.data.surname}</h2>
-          <Link to="/users/$userId/edit" params={{ userId }}>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Edit className="w-4 h-4" />
-              Editar
-            </Button>
-          </Link>
+
+          <div className='flex gap-2'>
+            {canEdit && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={
+                      userApiRes.body.data.role === ADMIN_ROLE ? "destructive" :
+                        userApiRes.body.data.role === ORGANIZER_ROLE ? "default" :
+                          "outline"
+                    }
+                  >
+                    <CogIcon className="h-4 w-4" />
+                    {getMessage(RolDescriptions[userApiRes.body.data.role || ''], userApiRes.body.data.role)}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="start">
+                  <DropdownMenuItem onClick={() => handleRoleChange(userApiRes.body.data.id, ATHLETE_ROLE)}>Atleta</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleRoleChange(userApiRes.body.data.id, ORGANIZER_ROLE)}>Organizador</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleRoleChange(userApiRes.body.data.id, ATHLETES_MANAGER_ROLE)}>Manager</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            <Link to="/users/$userId/edit" params={{ userId }}>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Edit className="w-4 h-4" />
+                Editar
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <ProfileCard profile={userApiRes.body.data} />

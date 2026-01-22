@@ -4,9 +4,8 @@ import {
   ADMIN_ROLE,
   ORGANIZER_ROLE,
   ATHLETES_MANAGER_ROLE,
-  ATHLETE_ROLE
 } from '@shared/roles';
-import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
+import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { ARUserSchema } from '@shared/apiRespTypes'
 import React from 'react';
 import {
@@ -25,14 +24,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronRight, BookUser } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import z from 'zod';
+import { getMessage } from '@/lib/utils';
+import { RolDescriptions } from '@shared/lang';
 
 
 const ARUserSchemaPartial = ARUserSchema.partial().required({
@@ -70,24 +65,10 @@ function RouteComponent() {
       </div>
     );
   }
-  const [data, setData] = React.useState<z.infer<typeof ARUserSchemaPartialArray>>(() => {
+  const [data, _] = React.useState<z.infer<typeof ARUserSchemaPartialArray>>(() => {
     return [...(usersApi.body.data || [])].sort((a, b) => getRoleWeight(a.role) - getRoleWeight(b.role));
   });
   const navigate = useNavigate();
-
-  const handleRoleChange = async (userId: string, newRole: string) => {
-    if (!confirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) return;
-
-    const res = await postAuthenticated(`/api/users/${userId}/setRole`, { role: newRole }, navigate);
-    if (res.status === 200) {
-      setData(prev => {
-        const newData = prev.map(u => u.id === userId ? { ...u, role: newRole } : u);
-        return newData.sort((a, b) => getRoleWeight(a.role) - getRoleWeight(b.role));
-      });
-    } else {
-      alert('Error al actualizar el rol');
-    }
-  };
 
   const columnHelper = createColumnHelper<z.infer<typeof ARUserSchemaPartial>>()
 
@@ -116,12 +97,6 @@ function RouteComponent() {
           const role = info.getValue();
           if (!role) return null;
           let className = role !== ATHLETES_MANAGER_ROLE ? "" : "bg-blue-500 text-white dark:bg-blue-600"
-          let label = {
-            [ADMIN_ROLE]: "Admin",
-            [ORGANIZER_ROLE]: "Organizador",
-            [ATHLETES_MANAGER_ROLE]: "Manager",
-            [ATHLETE_ROLE]: "Atleta",
-          }[role];
 
           return (
             <div>
@@ -130,7 +105,7 @@ function RouteComponent() {
                 role === ORGANIZER_ROLE ? "default" :
                 role === ATHLETES_MANAGER_ROLE ? "secondary" : "outline"
               } className={className}>
-                {label}
+                {getMessage(RolDescriptions[role], role)}
               </Badge>
             </div>
           );
@@ -141,15 +116,6 @@ function RouteComponent() {
         header: 'Acciones',
         cell: props => {
           const user = props.row.original;
-          const currentRole = user.role;
-
-          // Don't allow changing roles when not admin or organizer,
-          // Don't allow changing admin roles or self (simplified)
-          const canEdit = (
-            localStorage.getItem("USER_ROLE") === ORGANIZER_ROLE
-            || localStorage.getItem("USER_ROLE") === ADMIN_ROLE)
-            && currentRole && currentRole !== ADMIN_ROLE
-            && localStorage.getItem('USER_ID') !== user.id;
 
           return (
             <div className="flex items-center gap-2">
@@ -161,19 +127,6 @@ function RouteComponent() {
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
-
-              {canEdit && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="secondary"><BookUser className="h-4 w-4" /></Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="start">
-                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, ATHLETE_ROLE)}>Atleta</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, ORGANIZER_ROLE)}>Organizador</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, ATHLETES_MANAGER_ROLE)}>Manager</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
             </div>
           );
         },

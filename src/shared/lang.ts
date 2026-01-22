@@ -2,6 +2,26 @@ const ES = 'es';
 const EN = 'en';
 
 
+export const RolDescriptions: {[key: string]: {[key: string]: string}} = {
+  athlete: {
+    [ES]: "Atleta",
+    [EN]: "Athlete",
+  },
+  athletes_manager: {
+    [ES]: "Manager",
+    [EN]: "Manager",
+  },
+  organizer: {
+    [ES]: "Organizador",
+    [EN]: "Organizer",
+  },
+  admin: {
+    [ES]: "Administrador",
+    [EN]: "Admin",
+  },
+};
+
+
 export const RegistrationStatusDescriptions: {[key: string]: {[key: string]: string}} = {
   not_registered: {
     [ES]: "No inscripto",
