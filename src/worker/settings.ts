@@ -69,7 +69,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
 
     await db.update(users)
       .set({
-        ...updates,
+        ...updates.data,
         date_of_birth: updates.data.date_of_birth ? updates.data.date_of_birth.toISOString() : null,
         updated_at: new Date().toISOString(),
       })
