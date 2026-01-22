@@ -78,7 +78,6 @@ function RouteComponent() {
     && currentRole && currentRole !== ADMIN_ROLE
     && localStorage.getItem('USER_ID') !== userApiRes.body.data.id;
 
-
   const handleRoleChange = async (userId: string, newRole: string) => {
     if (!confirm(`¿Estás seguro de cambiar el rol a ${newRole}?`)) return;
 
@@ -86,16 +85,12 @@ function RouteComponent() {
       `/api/users/${userId}/setRole`,
       { role: newRole },
       navigate);
-    
     if (res.status === 200) {
       navigate({ to: '.', reloadDocument: true }); // Reload route
     } else {
       alert(`Error al cambiar el rol: ${getMessage(res.body?.message, 'Error desconocido')}`);
     }
-
   };
-
-
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
