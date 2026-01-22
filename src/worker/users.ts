@@ -68,7 +68,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const res = await db.insert(users).values({
       ...newUserData.data,
-      date_of_birth: newUserData.data.date_of_birth.toISOString(),
+      date_of_birth: newUserData.data.date_of_birth?.toISOString(),
       role: authorizedOrg(c.get('jwtPayload')?.role)
         ? (newUserData.data.role || ATHLETE_ROLE)
         : ATHLETE_ROLE,
