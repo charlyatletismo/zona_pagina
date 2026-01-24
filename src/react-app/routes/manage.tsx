@@ -4,8 +4,8 @@ import { ORGANIZER_ROLE } from '@shared/roles';
 import {
   CalendarPlus,
   ClipboardList,
-  // FileText,
-  // History,
+  FileText,
+  History,
   // Tag,
   // Download,
   // Upload,
@@ -13,10 +13,13 @@ import {
   UserCog,
   MapPin,
   MapPinned,
+  MapPinPlusIcon,
   Shirt,
+  PlusIcon,
   HelpCircle,
   Trophy,
-  Dumbbell
+  Dumbbell,
+  UserPlus2,
 } from 'lucide-react';
 
 export const Route = createFileRoute('/manage')({
@@ -32,8 +35,8 @@ function RouteComponent() {
       items: [
         { to: "/sportingEvents/create", icon: CalendarPlus, label: "Crear Nuevo Evento", description: "Configurar un nuevo evento deportivo." },
         { to: "/sportingEvents/registrations", icon: ClipboardList, label: "Inscripciones", description: "Gestionar inscripciones de usuarios." },
-        // { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
-        // { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
+        { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
+        { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
         // { to: "/sportingEvents/downloadRufus", icon: Download, label: "Datos para Rufus", description: "Descargar inscripciones consolidadas." },
         // { to: "/sportingEvents/uploadResults", icon: Upload, label: "Subir Resultados", description: "Cargar los resultados del evento finalizado." },
       ]
@@ -43,6 +46,7 @@ function RouteComponent() {
       icon: Users,
       items: [
         { to: "/users", icon: Users, label: "Usuarios", description: "Administrar base de datos de usuarios." },
+        { to: "/users/create", icon: UserPlus2, label: "Crear nuevo usuario", description: "Agregar un nuevo usuario al sistema." },
         { to: "/users/managers", icon: UserCog, label: "Managers", description: "Gestionar managers y qué usuarios administran." },
       ]
     },
@@ -51,6 +55,7 @@ function RouteComponent() {
       icon: MapPin,
       items: [
         { to: "/locations", icon: MapPin, label: "Ubicaciones", description: "Gestionar lugares y sedes." },
+        { to: "/locations/create", icon: MapPinPlusIcon, label: "Crear Ubicación", description: "Agregar una nueva ubicación." },
         { to: "/locations/checkTemporary", icon: MapPinned, label: "Ubicaciones Temporales", description: "Revisar ubicaciones creadas por usuarios." },
       ]
     },
@@ -59,6 +64,7 @@ function RouteComponent() {
       icon: Dumbbell,
       items: [
         { to: "/trainingTeams", icon: Shirt, label: "Equipos", description: "Gestionar equipos de entrenamiento." },
+        { to: "/trainingTeams/create", icon: PlusIcon, label: "Crear Equipo", description: "Agregar un nuevo equipo de entrenamiento." },
         { to: "/trainingTeams/checkTemporary", icon: HelpCircle, label: "Equipos Temporales", description: "Revisar equipos creados por usuarios." },
       ]
     }
