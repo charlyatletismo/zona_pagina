@@ -12,6 +12,7 @@ export const PhoneInput = ({
   onBlur,
   showError = true,
   required = false,
+  disabled = false,
 } : {
   label: string,
   name: string,
@@ -21,6 +22,7 @@ export const PhoneInput = ({
   onBlur: () => void,
   showError?: boolean,
   required?: boolean,
+  disabled?: boolean,
 }) => {
   const [errorCC, setErrorCC] = useState("");
   const [errorNum, setErrorNum] = useState("");
@@ -44,6 +46,7 @@ export const PhoneInput = ({
           maxLength={3}
           value={(value || '').split("_")[0] || ''}
           onChange={(e) => {
+            if (!e.target.value.match(/^\d*$/)) { return; } // only numbers
             if (e.target.value.length < 2) {
               setErrorCC("El código de país debe tener al menos 2 dígitos")
             } else {
@@ -54,6 +57,7 @@ export const PhoneInput = ({
           onBlur={onBlur}
           className={"w-16 rounded-none border-x-0 " + (borderColor || '')}
           required={required}
+          disabled={disabled}
         />
         <span className={
           "inline-flex items-center px-3 "
@@ -70,6 +74,7 @@ export const PhoneInput = ({
           maxLength={10}
           value={(value || '').split("_")[2] || ''}
           onChange={(e) => {
+            if (!e.target.value.match(/^\d*$/)) { return; } // only numbers
             if (e.target.value.length < 10) {
               setErrorNum("El número de celular debe tener 10 dígitos")
             } else {
@@ -80,6 +85,7 @@ export const PhoneInput = ({
           onBlur={onBlur}
           className={"rounded-l-none border-l-0 " + (borderColor || "border-gray-300")}
           required={required}
+          disabled={disabled}
         />
       </div>
       {showError && (errorCC || errorNum) && (

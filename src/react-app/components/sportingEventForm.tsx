@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { Save, AlertCircle, MapPinnedIcon, Trash2, ListRestartIcon, PlusIcon } from 'lucide-react';
 import { getLang, getMessage, capitalizeStr } from '@/lib/utils';

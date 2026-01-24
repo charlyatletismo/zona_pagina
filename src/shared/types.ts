@@ -52,8 +52,8 @@ export const LocationSchema = z.object({
 
 export const UserSchema = z.object({
   id: z.string({error: 'Debes ingresar tu DNI'})
-    .min(USER_ID_MIN_LENGTH, `El ID del usuario debe tener al menos ${USER_ID_MIN_LENGTH} caracteres`)
-    .max(USER_ID_MAX_LENGTH, `El ID del usuario no puede exceder los ${USER_ID_MAX_LENGTH} caracteres`),
+    .min(USER_ID_MIN_LENGTH, `El DNI debe tener al menos ${USER_ID_MIN_LENGTH} caracteres`)
+    .max(USER_ID_MAX_LENGTH, `El DNI no puede exceder los ${USER_ID_MAX_LENGTH} caracteres`),
   name: z.string({error: 'Debes ingresar tu nombre'})
     .min(2, 'El nombre debe tener al menos 2 caracteres'),
   surname: z.string({error: 'Debes ingresar tu apellido'})

@@ -186,6 +186,9 @@ export const ProfileForm = ({
                 showError={!field.state.meta.isValid}
                 required={true}
               />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
             </div>
           )}
         />
