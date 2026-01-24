@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { AlarmClockIcon, CameraIcon, PenToolIcon, Car, Accessibility, ChartArea, BikeIcon, BadgeCheckIcon } from 'lucide-react'
-import { CardGrid } from '../components/cardGrid'
-import unprotectedCheck from '@/lib/beforeLoadGenericCheck'
+import { createFileRoute } from '@tanstack/react-router';
+import { AlarmClockIcon, CameraIcon, PenToolIcon, Car, Accessibility, ChartArea, BikeIcon, BadgeCheckIcon } from 'lucide-react';
+import { CardGrid } from '../components/cardGrid';
+import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
 
 
 export const Route = createFileRoute('/services')({
@@ -14,7 +14,7 @@ function RouteComponent() {
   return <div>
     <div className="relative py-16 bg-primary/5 mb-12 overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-10 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-primary rounded-full blur-3xl"></div>
       </div>
       
       <div className="relative container mx-auto px-4 text-center">
