@@ -51,7 +51,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
           "en": "Temp code set for test user",
           "es": "Código temporal establecido para usuario de prueba"
         },
-        tempCode
+        data: { tempCode }
       });
     }
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
@@ -110,12 +110,14 @@ export const authRoute = new Hono<{ Bindings: Env }>()
       || !user.location_address
     )
     return c.json({
-      token,
-      id: user.id,
-      name: user.name,
-      role: user.role,
-      requireProfileUpdate,
-      language: user.language
+      data: {
+        token,
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        requireProfileUpdate,
+        language: user.language
+      }
     });
   })
   .post("/register", async (c) => {
