@@ -107,6 +107,10 @@ export const M = {
     [ES]: "Perfil de usuario actualizado correctamente",
     [EN]: "User profile updated successfully"
   },
+  USER_ID_UPDATED_SUCCESSFULLY: {
+    [ES]: "ID de usuario actualizado correctamente",
+    [EN]: "User ID updated successfully"
+  },
   USER_CREATED_SUCCESSFULLY: {
     [ES]: "Usuario creado correctamente",
     [EN]: "User created successfully"

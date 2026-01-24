@@ -238,4 +238,32 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       };
     }
     return c.json({ message: M.USER_PROFILE_UPDATED_SUCCESSFULLY });
+  })
+  .post("/changeId", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { newId, oldId } = await c.req.json();
+    if (!newId || !oldId) {
+      return c.json({ message: M.USER_INVALID_DATA }, 400);
+    }
+    // Check if newId already exists
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, newId))
+      .get();
+    if (existingUser) {
+      return c.json({ message: M.USER_ALREADY_EXISTS }, 400);
+    }
+    const res = await db
+      .update(users)
+      .set({ id: newId })
+      .where(eq(users.id, oldId))
+      .run();
+    if (res.meta.changes === 0) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    return c.json({ message: M.USER_ID_UPDATED_SUCCESSFULLY });
   });

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import z from 'zod';
 import { Button } from '@/components/ui/button'
-import { Edit, ArrowLeft, CogIcon } from 'lucide-react'
+import { Edit, ArrowLeft, CogIcon, IdCard } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import { ARUserSchema } from '@shared/apiRespTypes';
@@ -108,6 +108,14 @@ function RouteComponent() {
           <h2 className="text-2xl font-bold text-gray-800">{userApiRes.body.data.name} {userApiRes.body.data.surname}</h2>
 
           <div className='flex gap-2'>
+            {canEdit && (
+              <Link to="/users/$userId/changeId" params={{ userId }}>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <IdCard className="w-4 h-4" />
+                  Cambiar DNI
+                </Button>
+              </Link>
+            )}
             {canEdit && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
