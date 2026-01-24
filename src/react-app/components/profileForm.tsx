@@ -168,7 +168,7 @@ export const ProfileForm = ({
             )}
           />
           {!!profile && ( 
-            <p className="text-xs text-gray-400">El DNI no se puede cambiar. Contactar al administrador si necesita cambiarlo.</p>
+            <p className="text-xs text-gray-400">El DNI no se puede cambiar. Contactar al organizador si necesita cambiarlo.</p>
           )}
         </div>
 

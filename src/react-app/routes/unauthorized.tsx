@@ -12,7 +12,7 @@ function RouteComponent() {
         <h1 className="text-4xl font-bold tracking-tight">Acceso Restringido</h1>
         <p className="text-lg text-muted-foreground max-w-[500px]">
           Lo sentimos, no tienes los permisos necesarios para ver esta página.
-          Si crees que esto es un error, por favor contacta al administrador.
+          Si crees que esto es un error, por favor contacta al organizador.
         </p>
       </div>
 
