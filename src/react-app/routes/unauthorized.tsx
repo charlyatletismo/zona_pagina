@@ -10,7 +10,7 @@ function RouteComponent() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-4 text-center">
       <div className="space-y-2">
         <h1 className="text-4xl font-bold tracking-tight">Acceso Restringido</h1>
-        <p className="text-lg text-muted-foreground max-w-[500px]">
+        <p className="text-lg text-muted-foreground max-w-125">
           Lo sentimos, no tienes los permisos necesarios para ver esta página.
           Si crees que esto es un error, por favor contacta al organizador.
         </p>
