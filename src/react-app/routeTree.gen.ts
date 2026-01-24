@@ -23,7 +23,6 @@ import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
 import { Route as UsersManagersRouteImport } from './routes/users/managers'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
-import { Route as UsersChangeIdRouteImport } from './routes/users/changeId'
 import { Route as TransactionsCreateRouteImport } from './routes/transactions/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
 import { Route as SportingEventsRegistrationsRouteImport } from './routes/sportingEvents/registrations'
@@ -113,11 +112,6 @@ const UsersManagersRoute = UsersManagersRouteImport.update({
 const UsersCreateRoute = UsersCreateRouteImport.update({
   id: '/users/create',
   path: '/users/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UsersChangeIdRoute = UsersChangeIdRouteImport.update({
-  id: '/users/changeId',
-  path: '/users/changeId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TransactionsCreateRoute = TransactionsCreateRouteImport.update({
@@ -246,7 +240,6 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
-  '/users/changeId': typeof UsersChangeIdRoute
   '/users/create': typeof UsersCreateRoute
   '/users/managers': typeof UsersManagersRoute
   '/locations': typeof LocationsIndexRoute
@@ -283,7 +276,6 @@ export interface FileRoutesByTo {
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
-  '/users/changeId': typeof UsersChangeIdRoute
   '/users/create': typeof UsersCreateRoute
   '/users/managers': typeof UsersManagersRoute
   '/locations': typeof LocationsIndexRoute
@@ -321,7 +313,6 @@ export interface FileRoutesById {
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
-  '/users/changeId': typeof UsersChangeIdRoute
   '/users/create': typeof UsersCreateRoute
   '/users/managers': typeof UsersManagersRoute
   '/locations/': typeof LocationsIndexRoute
@@ -360,7 +351,6 @@ export interface FileRouteTypes {
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
     | '/transactions/create'
-    | '/users/changeId'
     | '/users/create'
     | '/users/managers'
     | '/locations'
@@ -397,7 +387,6 @@ export interface FileRouteTypes {
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
     | '/transactions/create'
-    | '/users/changeId'
     | '/users/create'
     | '/users/managers'
     | '/locations'
@@ -434,7 +423,6 @@ export interface FileRouteTypes {
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
     | '/transactions/create'
-    | '/users/changeId'
     | '/users/create'
     | '/users/managers'
     | '/locations/'
@@ -472,7 +460,6 @@ export interface RootRouteChildren {
   SportingEventsRegistrationsRoute: typeof SportingEventsRegistrationsRoute
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
   TransactionsCreateRoute: typeof TransactionsCreateRoute
-  UsersChangeIdRoute: typeof UsersChangeIdRoute
   UsersCreateRoute: typeof UsersCreateRoute
   UsersManagersRoute: typeof UsersManagersRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
@@ -591,13 +578,6 @@ declare module '@tanstack/react-router' {
       path: '/users/create'
       fullPath: '/users/create'
       preLoaderRoute: typeof UsersCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/users/changeId': {
-      id: '/users/changeId'
-      path: '/users/changeId'
-      fullPath: '/users/changeId'
-      preLoaderRoute: typeof UsersChangeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transactions/create': {
@@ -760,7 +740,6 @@ const rootRouteChildren: RootRouteChildren = {
   SportingEventsRegistrationsRoute: SportingEventsRegistrationsRoute,
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
   TransactionsCreateRoute: TransactionsCreateRoute,
-  UsersChangeIdRoute: UsersChangeIdRoute,
   UsersCreateRoute: UsersCreateRoute,
   UsersManagersRoute: UsersManagersRoute,
   LocationsIndexRoute: LocationsIndexRoute,

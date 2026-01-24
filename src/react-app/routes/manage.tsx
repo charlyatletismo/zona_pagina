@@ -11,7 +11,6 @@ import {
   // Upload,
   Users,
   UserCog,
-  CreditCard,
   MapPin,
   MapPinned,
   Shirt,
@@ -45,7 +44,6 @@ function RouteComponent() {
       items: [
         { to: "/users", icon: Users, label: "Usuarios", description: "Administrar base de datos de usuarios." },
         { to: "/users/managers", icon: UserCog, label: "Managers", description: "Gestionar managers y qué usuarios administran." },
-        { to: "/users/changeId", icon: CreditCard, label: "Cambiar DNI", description: "Corrección de DNI para usuarios." },
       ]
     },
     {
