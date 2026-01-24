@@ -5,6 +5,7 @@ import {
   CalendarPlus,
   ClipboardList,
   FileText,
+  ListCollapseIcon,
   History,
   // Tag,
   // Download,
@@ -35,6 +36,7 @@ function RouteComponent() {
       items: [
         { to: "/sportingEvents/create", icon: CalendarPlus, label: "Crear Nuevo Evento", description: "Configurar un nuevo evento deportivo." },
         { to: "/sportingEvents/registrations", icon: ClipboardList, label: "Inscripciones", description: "Gestionar inscripciones de usuarios." },
+        { to: "/sportingEvents/active", icon: ListCollapseIcon, label: "Eventos Activos", description: "Ver todos los eventos deportivos actuales." },
         { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
         { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
         // { to: "/sportingEvents/downloadRufus", icon: Download, label: "Datos para Rufus", description: "Descargar inscripciones consolidadas." },

@@ -1,9 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
+
 
 export const Route = createFileRoute('/unauthorized')({
   component: RouteComponent,
+  beforeLoad: unprotectedCheck(),
 })
+
 
 function RouteComponent() {
   return (

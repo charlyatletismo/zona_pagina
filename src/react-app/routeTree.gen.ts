@@ -26,7 +26,9 @@ import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as TransactionsCreateRouteImport } from './routes/transactions/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
 import { Route as SportingEventsRegistrationsRouteImport } from './routes/sportingEvents/registrations'
+import { Route as SportingEventsHistoryRouteImport } from './routes/sportingEvents/history'
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
+import { Route as SportingEventsActiveRouteImport } from './routes/sportingEvents/active'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as LocationsCreateRouteImport } from './routes/locations/create'
@@ -130,9 +132,19 @@ const SportingEventsRegistrationsRoute =
     path: '/sportingEvents/registrations',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SportingEventsHistoryRoute = SportingEventsHistoryRouteImport.update({
+  id: '/sportingEvents/history',
+  path: '/sportingEvents/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SportingEventsCreateRoute = SportingEventsCreateRouteImport.update({
   id: '/sportingEvents/create',
   path: '/sportingEvents/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsActiveRoute = SportingEventsActiveRouteImport.update({
+  id: '/sportingEvents/active',
+  path: '/sportingEvents/active',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsProfileRoute = SettingsProfileRouteImport.update({
@@ -236,7 +248,9 @@ export interface FileRoutesByFullPath {
   '/locations/create': typeof LocationsCreateRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/sportingEvents/active': typeof SportingEventsActiveRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
+  '/sportingEvents/history': typeof SportingEventsHistoryRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
@@ -272,7 +286,9 @@ export interface FileRoutesByTo {
   '/locations/create': typeof LocationsCreateRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/sportingEvents/active': typeof SportingEventsActiveRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
+  '/sportingEvents/history': typeof SportingEventsHistoryRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
@@ -309,7 +325,9 @@ export interface FileRoutesById {
   '/locations/create': typeof LocationsCreateRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/sportingEvents/active': typeof SportingEventsActiveRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
+  '/sportingEvents/history': typeof SportingEventsHistoryRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
@@ -347,7 +365,9 @@ export interface FileRouteTypes {
     | '/locations/create'
     | '/settings/notifications'
     | '/settings/profile'
+    | '/sportingEvents/active'
     | '/sportingEvents/create'
+    | '/sportingEvents/history'
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
     | '/transactions/create'
@@ -383,7 +403,9 @@ export interface FileRouteTypes {
     | '/locations/create'
     | '/settings/notifications'
     | '/settings/profile'
+    | '/sportingEvents/active'
     | '/sportingEvents/create'
+    | '/sportingEvents/history'
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
     | '/transactions/create'
@@ -419,7 +441,9 @@ export interface FileRouteTypes {
     | '/locations/create'
     | '/settings/notifications'
     | '/settings/profile'
+    | '/sportingEvents/active'
     | '/sportingEvents/create'
+    | '/sportingEvents/history'
     | '/sportingEvents/registrations'
     | '/trainingTeams/create'
     | '/transactions/create'
@@ -456,7 +480,9 @@ export interface RootRouteChildren {
   LocationsCreateRoute: typeof LocationsCreateRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
+  SportingEventsActiveRoute: typeof SportingEventsActiveRoute
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
+  SportingEventsHistoryRoute: typeof SportingEventsHistoryRoute
   SportingEventsRegistrationsRoute: typeof SportingEventsRegistrationsRoute
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
   TransactionsCreateRoute: typeof TransactionsCreateRoute
@@ -601,11 +627,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SportingEventsRegistrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sportingEvents/history': {
+      id: '/sportingEvents/history'
+      path: '/sportingEvents/history'
+      fullPath: '/sportingEvents/history'
+      preLoaderRoute: typeof SportingEventsHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sportingEvents/create': {
       id: '/sportingEvents/create'
       path: '/sportingEvents/create'
       fullPath: '/sportingEvents/create'
       preLoaderRoute: typeof SportingEventsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/active': {
+      id: '/sportingEvents/active'
+      path: '/sportingEvents/active'
+      fullPath: '/sportingEvents/active'
+      preLoaderRoute: typeof SportingEventsActiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/profile': {
@@ -736,7 +776,9 @@ const rootRouteChildren: RootRouteChildren = {
   LocationsCreateRoute: LocationsCreateRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
+  SportingEventsActiveRoute: SportingEventsActiveRoute,
   SportingEventsCreateRoute: SportingEventsCreateRoute,
+  SportingEventsHistoryRoute: SportingEventsHistoryRoute,
   SportingEventsRegistrationsRoute: SportingEventsRegistrationsRoute,
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
   TransactionsCreateRoute: TransactionsCreateRoute,

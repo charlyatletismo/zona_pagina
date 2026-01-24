@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import SportingEventForm from '@/components/sportingEventForm';
