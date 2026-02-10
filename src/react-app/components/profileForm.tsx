@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import z from 'zod';
 import { useAppForm } from '@/lib/genForm';
@@ -15,7 +15,8 @@ import {
   Save,
   ListRestartIcon,
 } from 'lucide-react';
-import { UserSchema, TEMPORARY_LOCATION_ID } from '@shared/types';
+import { UserSchema, TEMPORARY_LOCATION_ID, SHIRT_SIZES } from '@shared/types';
+import { getNonOrgManagersData, managersData } from '@/lib/queryCache';
 
 
 const SETTINGS_API_PATH = '/api/settings';
@@ -52,6 +53,19 @@ export const ProfileForm = ({
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [managers, setManagers] = useState<{id: string, name: string}[]>(
+    profile?.manager_id ? managersData.data : []
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      if (profile?.manager_id) {
+        const managers = await getNonOrgManagersData(profile.manager_id);
+        setManagers(managers);
+      }
+    }
+    fetchData();
+  }, [profile?.manager_id]);
 
   const specialFieldsShow = (
     postUrl !== SETTINGS_API_PATH
@@ -404,8 +418,8 @@ export const ProfileForm = ({
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
-                  onValueChange={(e: any) => {
-                    field.handleChange(e);
+                  onValueChange={(e) => {
+                    field.handleChange(e as typeof SHIRT_SIZES[number]);
                     field.handleBlur();
                   }}
                   onOpenChange={(o) => {
@@ -555,6 +569,39 @@ export const ProfileForm = ({
               />
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* Debe indicar un equipo de entrenamiento</div>
+              )}
+            </div>
+          )}
+        />
+
+        <form.AppField
+          name="manager_id"
+          children={(field) => (
+            <div className='space-y-2'>
+              <field.ComboBoxIdName
+                data={managers.map(
+                  manager => ({
+                    id: manager.id,
+                    name: manager.name
+                  }))}
+                label="Manager"
+                name={field.name}
+                value={field.state.value?.toString() || ""}
+                onChange={(value) => {
+                  field.handleChange(value || null);
+                }}
+                onChangeSearch={async (value) => {
+                  if (value.length > 5) {
+                    const res = await getNonOrgManagersData(value)
+                    setManagers(res);
+                  }
+                }}
+                onBlur={field.handleBlur}
+                placeholder="DNI del manager"
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
               )}
             </div>
           )}

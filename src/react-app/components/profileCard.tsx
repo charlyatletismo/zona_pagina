@@ -1,9 +1,5 @@
 import z from 'zod';
-import {
-  ARUserSchema,
-  ARUserMinSchema,
-  TrainingTeamsApiResponseSchemaElement,
-} from '@shared/apiRespTypes';
+import { ARUserSchema } from '@shared/apiRespTypes';
 import {
   User,
   Users,
@@ -21,49 +17,9 @@ import {
   AmbulanceIcon,
   IdCardIcon,
 } from 'lucide-react';
-import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { useEffect, useState } from 'react';
+import { getNonOrgManagersData, updateTrainingTeamsData } from '@/lib/queryCache';
 
-
-const trainingTeamsData: {
-  data: z.infer<typeof TrainingTeamsApiResponseSchemaElement>[],
-  expire: number,
-} = {
-  data: [],
-  expire: Date.now() - 1000,
-};
-
-const updateTrainingTeamsData = async (updateVar: CallableFunction) => {
-  if (trainingTeamsData.expire > Date.now()) {
-    return;
-  }
-  const tTeamApiRes = await getAuthenticatedThrow<
-    z.infer<typeof TrainingTeamsApiResponseSchemaElement>[]
-    >('/api/trainingTeams', z.array(TrainingTeamsApiResponseSchemaElement));
-  trainingTeamsData.data = tTeamApiRes.body.data;
-  trainingTeamsData.expire = Date.now() + 1000 * 60 * 5;
-  updateVar(trainingTeamsData.data);
-};
-
-const managersData: {
-  data: z.infer<typeof ARUserMinSchema>[],
-  expire: number,
-} = {
-  data: [],
-  expire: Date.now() - 1000,
-};
-
-const updateManagersData = async (updateVar: CallableFunction) => {
-  if (managersData.expire > Date.now()) {
-    return;
-  }
-  const managersApiRes = await getAuthenticatedThrow<
-    z.infer<typeof ARUserMinSchema>[]
-    >('/api/users/managers', z.array(ARUserMinSchema));
-  managersData.data = managersApiRes.body.data;
-  managersData.expire = Date.now() + 1000 * 60 * 5;
-  updateVar(managersData.data);
-};
 
 
 const GridCell = ({
@@ -72,7 +28,7 @@ const GridCell = ({
   value,
   link,
 } : {
-  icon: React.ComponentType<any>,
+  icon: React.ComponentType<{ className?: string }>,
   label: string,
   value: string | null | undefined,
   link?: string | null,
@@ -96,23 +52,36 @@ export const ProfileCard = ({
 } : {
   profile: z.infer<typeof ARUserSchema>,
 }) => {
-  const [managers, setManagers] = useState(managersData.data);
-  const [trainingTeams, setTrainingTeams] = useState(trainingTeamsData.data);
-  const [manager, setManager] = useState(
-    profile.manager_id
-    ? managers.find(manager => manager.id === profile.manager_id)
-    : null);
+
+  const [trainingTeams, setTrainingTeams] = useState(profile.training_team_id ? [{
+    id: profile.training_team_id,
+    name: 'Cargando...'
+  }] : []);
+  const [manager, setManager] = useState<{id: string, name: string, surname: string} | null>( profile.manager_id ? {
+    "id": profile.manager_id,
+    "name": 'Cargando...',
+    "surname": '',
+  } : null);
 
   useEffect(() => {
-    updateManagersData(setManagers);
-    updateTrainingTeamsData(setTrainingTeams);
+    async function fetchData() {
+      if (profile.manager_id) {
+        const managers = await getNonOrgManagersData(profile.manager_id);
+        const found = managers.find(manager => manager.id === profile.manager_id)
+        if (found) {
+          setManager(found);
+        } else {
+          setManager({
+            "id": profile.manager_id,
+            "name": 'Manager no encontrado',
+            "surname": '',
+          })
+        }
+      }
+      await updateTrainingTeamsData(setTrainingTeams);
+    }
+    fetchData();
   }, []);
-  useEffect(() => {
-    setManager(
-      profile.manager_id
-        ? managers.find(manager => manager.id === profile.manager_id)
-        : null);
-  }, [managers]);
 
 
   return (

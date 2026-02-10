@@ -25,6 +25,7 @@ export const ComboBoxIdName = ({
   borderColor,
   value,
   onChange,
+  onChangeSearch = () => {},
   onBlur,
   placeholder,
   valKey,
@@ -37,6 +38,7 @@ export const ComboBoxIdName = ({
   borderColor?: string,
   value: string,
   onChange: (value: string) => void,
+  onChangeSearch?: (value: string) => void,
   onBlur: () => void,
   placeholder?: string,
   valKey?: string,
@@ -105,7 +107,10 @@ export const ComboBoxIdName = ({
             }
             <CommandInput
               placeholder={placeholder || "Buscar..."}
-              onChangeCapture={(e) => setSearchValue(e.currentTarget.value)}
+              onChangeCapture={(e) => {
+                setSearchValue(e.currentTarget.value);
+                onChangeSearch(e.currentTarget.value);
+              }}
             />
             <CommandList>
               <CommandEmpty

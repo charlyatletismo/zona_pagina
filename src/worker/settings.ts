@@ -3,7 +3,7 @@ import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { users, userUpdates } from './db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, like, and } from 'drizzle-orm';
 import { M } from './lib/messages';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
 
@@ -77,4 +77,27 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
       .run();
 
     return c.json({ message: M.SETTINGS_PROFILE_UPDATED });
+  })
+  .get("/managers/search/:partialId", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { partialId } = c.req.param();
+    const res = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+      })
+      .from(users)
+      .where(
+        and(
+          eq(users.role, 'athletes_manager'),
+          like(users.id, `%${partialId}%`)
+        )
+      )
+       .limit(10)
+       .all();
+    if (!res) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    return c.json({ data: res });
   });

@@ -212,7 +212,6 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       delete updateData.role; // Prevent changing role
       delete updateData.discount_percentage; // Prevent changing discount percentage
       delete updateData.manual_athlete_category; // Prevent changing manual athlete category
-      delete updateData.manager_id; // Prevent changing manager
       const managerId = c.get('jwtPayload').id;
       const res = await db.update(users)
         .set(updateData)
