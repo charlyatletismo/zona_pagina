@@ -256,22 +256,22 @@ export interface FileRoutesByFullPath {
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
   '/users/managers': typeof UsersManagersRoute
-  '/locations': typeof LocationsIndexRoute
-  '/settings': typeof SettingsIndexRoute
-  '/sportingEvents': typeof SportingEventsIndexRoute
-  '/trainingTeams': typeof TrainingTeamsIndexRoute
-  '/transactions': typeof TransactionsIndexRoute
-  '/users': typeof UsersIndexRoute
+  '/locations/': typeof LocationsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/sportingEvents/': typeof SportingEventsIndexRoute
+  '/trainingTeams/': typeof TrainingTeamsIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
+  '/users/': typeof UsersIndexRoute
   '/sportingEvents/$eventId/balance': typeof SportingEventsEventIdBalanceRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/newTransaction': typeof SportingEventsEventIdNewTransactionRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
   '/users/$userId/changeId': typeof UsersUserIdChangeIdRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
-  '/sportingEvents/$eventId': typeof SportingEventsEventIdIndexRoute
-  '/users/$userId': typeof UsersUserIdIndexRoute
+  '/sportingEvents/$eventId/': typeof SportingEventsEventIdIndexRoute
+  '/users/$userId/': typeof UsersUserIdIndexRoute
   '/sportingEvents/$eventId/register/$athleteId': typeof SportingEventsEventIdRegisterAthleteIdRoute
-  '/sportingEvents/$eventId/register': typeof SportingEventsEventIdRegisterIndexRoute
+  '/sportingEvents/$eventId/register/': typeof SportingEventsEventIdRegisterIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -373,22 +373,22 @@ export interface FileRouteTypes {
     | '/transactions/create'
     | '/users/create'
     | '/users/managers'
-    | '/locations'
-    | '/settings'
-    | '/sportingEvents'
-    | '/trainingTeams'
-    | '/transactions'
-    | '/users'
+    | '/locations/'
+    | '/settings/'
+    | '/sportingEvents/'
+    | '/trainingTeams/'
+    | '/transactions/'
+    | '/users/'
     | '/sportingEvents/$eventId/balance'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/newTransaction'
     | '/sportingEvents/$eventId/registration'
     | '/users/$userId/changeId'
     | '/users/$userId/edit'
-    | '/sportingEvents/$eventId'
-    | '/users/$userId'
+    | '/sportingEvents/$eventId/'
+    | '/users/$userId/'
     | '/sportingEvents/$eventId/register/$athleteId'
-    | '/sportingEvents/$eventId/register'
+    | '/sportingEvents/$eventId/register/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -553,42 +553,42 @@ declare module '@tanstack/react-router' {
     '/users/': {
       id: '/users/'
       path: '/users'
-      fullPath: '/users'
+      fullPath: '/users/'
       preLoaderRoute: typeof UsersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transactions/': {
       id: '/transactions/'
       path: '/transactions'
-      fullPath: '/transactions'
+      fullPath: '/transactions/'
       preLoaderRoute: typeof TransactionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trainingTeams/': {
       id: '/trainingTeams/'
       path: '/trainingTeams'
-      fullPath: '/trainingTeams'
+      fullPath: '/trainingTeams/'
       preLoaderRoute: typeof TrainingTeamsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/': {
       id: '/sportingEvents/'
       path: '/sportingEvents'
-      fullPath: '/sportingEvents'
+      fullPath: '/sportingEvents/'
       preLoaderRoute: typeof SportingEventsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/': {
       id: '/settings/'
       path: '/settings'
-      fullPath: '/settings'
+      fullPath: '/settings/'
       preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/locations/': {
       id: '/locations/'
       path: '/locations'
-      fullPath: '/locations'
+      fullPath: '/locations/'
       preLoaderRoute: typeof LocationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -693,14 +693,14 @@ declare module '@tanstack/react-router' {
     '/users/$userId/': {
       id: '/users/$userId/'
       path: '/users/$userId'
-      fullPath: '/users/$userId'
+      fullPath: '/users/$userId/'
       preLoaderRoute: typeof UsersUserIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/$eventId/': {
       id: '/sportingEvents/$eventId/'
       path: '/sportingEvents/$eventId'
-      fullPath: '/sportingEvents/$eventId'
+      fullPath: '/sportingEvents/$eventId/'
       preLoaderRoute: typeof SportingEventsEventIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -749,7 +749,7 @@ declare module '@tanstack/react-router' {
     '/sportingEvents/$eventId/register/': {
       id: '/sportingEvents/$eventId/register/'
       path: '/sportingEvents/$eventId/register'
-      fullPath: '/sportingEvents/$eventId/register'
+      fullPath: '/sportingEvents/$eventId/register/'
       preLoaderRoute: typeof SportingEventsEventIdRegisterIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
