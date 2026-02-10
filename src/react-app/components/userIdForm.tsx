@@ -17,8 +17,10 @@ const UserIdFormSchema = ARUserSchema.pick({ 'id': true });
 
 export const UserIdForm = ({
   userId,
+  apiUrl,
 }: {
   userId: string;
+  apiUrl: string;
 }) => {
   const navigate = useNavigate();
 
@@ -36,7 +38,7 @@ export const UserIdForm = ({
       // Scroll to top of the page when form is submitted
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      const res = await postAuthenticated('/api/users/changeId', {
+      const res = await postAuthenticated(apiUrl, {
         oldId: userId,
         newId: value.id,
       }, navigate);

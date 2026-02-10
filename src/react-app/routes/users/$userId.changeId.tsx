@@ -20,7 +20,7 @@ function RouteComponent() {
       returnText="Volver al perfil"
       returnPath='..'
     >
-      <UserIdForm userId={userId} />
+      <UserIdForm userId={userId} apiUrl='/api/users/changeId' />
     </FormBox>
   );
 }
