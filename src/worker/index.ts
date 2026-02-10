@@ -38,6 +38,7 @@ export default {
         app.use('/api/*', (c, next) => {
             const jwtMiddleware = jwt({
                 secret: c.env.JWT_SECRET,
+                alg: 'HS256',
             })
             if (c.req.header('Authorization')) {
                 // console.log("Authorization header found, applying JWT middleware");

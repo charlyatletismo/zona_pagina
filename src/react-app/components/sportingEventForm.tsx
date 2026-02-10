@@ -218,7 +218,7 @@ const SportingEventForm = (
                   </field.SelectTrigger>
                   <field.SelectContent>
                     <field.SelectGroup>
-                      <field.SelectLabel>Talle de remera</field.SelectLabel>
+                      <field.SelectLabel>Tipo de Evento</field.SelectLabel>
                       {SportingEventSchema.shape.event_type.options.map((evtype) => (
                         <field.SelectItem key={evtype} value={evtype}>{SportingEventTypesEnumDescriptions[evtype][getLang()]}</field.SelectItem>
                       ))}
