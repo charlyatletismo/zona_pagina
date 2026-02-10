@@ -69,6 +69,10 @@ export const M = {
     [ES]: "Perfil actualizado correctamente",
     [EN]: "Profile updated successfully"
   },
+  SETTINGS_MANAGER_ID_TOO_SHORT: {
+    [ES]: "El ID del gestor es demasiado corto",
+    [EN]: "Manager ID is too short"
+  },
 
   // -------------------------- USERS --------------------------
   USER_NOT_FOUND: {

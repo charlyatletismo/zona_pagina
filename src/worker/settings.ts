@@ -81,6 +81,9 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
   .get("/managers/search/:partialId", async (c) => {
     const db = drizzle(c.env.DB);
     const { partialId } = c.req.param();
+    if (partialId.length < 4) {
+      return c.json({ message: M.SETTINGS_MANAGER_ID_TOO_SHORT }, 400);
+    }
     const res = await db
       .select({
         id: users.id,
@@ -96,7 +99,7 @@ export const settingsRoute = new Hono<{ Bindings: Env }>()
       )
        .limit(10)
        .all();
-    if (!res) {
+    if (!res || res.length === 0) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
     return c.json({ data: res });
