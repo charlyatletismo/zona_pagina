@@ -71,7 +71,7 @@ const SportingEventForm = (
         }, 1500);
         return;
       }
-      const res = await postAuthenticated(apiEndpointPath, value, navigate);
+      const res = await postAuthenticated<number | undefined>(apiEndpointPath, value, navigate);
       if (res.status !== 200) {
         setError(getMessage(res.body?.message, 'Error al guardar los cambios'));
         setTimeout(() => {
@@ -82,7 +82,7 @@ const SportingEventForm = (
       setSuccess(getMessage(res.body?.message, 'Cambios guardados con éxito'));
       setTimeout(() => {
         setSuccess('');
-        navigate({ to: `/sportingEvents/${res.body.data.id || data?.id}`, reloadDocument: true });
+        navigate({ to: `/sportingEvents/${res.body.data || data?.id}`, reloadDocument: true });
       }, 1000);
     }
   });
