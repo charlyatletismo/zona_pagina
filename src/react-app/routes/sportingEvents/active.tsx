@@ -121,12 +121,12 @@ function RouteComponent() {
       },
       header: () => 'Estado',
       footer: props => props.column.id,
-      enableSorting: false,
+      enableSorting: true,
       sortUndefined: 'last',
     }),
     columnHelper.accessor('title', {
       cell: info => info.getValue(),
-      header: () => <div className='min-w-50'>Título</div>,
+      header: () => 'Título',
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
@@ -140,7 +140,7 @@ function RouteComponent() {
     }),
     columnHelper.accessor('fee_amount', {
       cell: info => info.getValue() ? `$${info.getValue()}` : <div className='bg-destructive text-white rounded-full text-center p-1'>N/A</div>,
-      header: () => <div className='min-w-15'>Tarifa</div>,
+      header: () => 'Tarifa',
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
@@ -207,7 +207,12 @@ function RouteComponent() {
                       <div className={"flex items-center gap-1 "
                         + (header.column.getCanSort()
                           ? "cursor-pointer select-none hover:text-primary"
-                          : "")}
+                          : "")
+                        + (header.column.getCanSort() ?
+                            header.column.getIsSorted()
+                              ? " mr-0"
+                              : " mr-5"
+                            : " mr-0")}
                         onClick={header.column.getToggleSortingHandler()}
                         title={
                           header.column.getCanSort()
