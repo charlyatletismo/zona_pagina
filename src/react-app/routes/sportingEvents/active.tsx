@@ -37,12 +37,14 @@ import z from 'zod';
 const SpBSchema = SportingEventSchema.pick({
   id: true,
   title: true,
+  description: true,
   date: true,
   fee_amount: true,
   // fee_amount_promotional: true,
   registration_start: true,
   registration_end: true,
   location: true,
+  location_address: true,
 }).required({
   id: true,
 }).extend({
@@ -189,6 +191,7 @@ function RouteComponent() {
     state: {
       sorting
     },
+    enableSortingRemoval: false,
   })
 
   return (
@@ -262,7 +265,7 @@ function RouteComponent() {
         <div className='text-center py-10 text-gray-500'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
           No hay eventos deportivos activos.
-          </div>
+        </div>
       )}
       {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
         <pre>{JSON.stringify(sorting, null, 2)}</pre>
