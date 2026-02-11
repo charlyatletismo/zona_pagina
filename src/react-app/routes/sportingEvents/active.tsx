@@ -177,7 +177,6 @@ function RouteComponent() {
     }),
   ]
 
-
   const table = useReactTable({
     columns: defaultColumns,
     data,
@@ -188,9 +187,6 @@ function RouteComponent() {
       sorting
     },
   })
-
-  console.log("render")
-  // tableOpen.getRowModel().rows
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
