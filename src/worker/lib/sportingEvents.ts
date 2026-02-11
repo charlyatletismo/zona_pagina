@@ -172,7 +172,6 @@ const readSpEvent = (
 
   // clothing validation
   let clothing = null;
-  console.log("clothing", ev.clothing)
   if (ev.clothing && ev.clothing.length > 0) {
     try {
       clothing = ev.clothing.map(item =>
