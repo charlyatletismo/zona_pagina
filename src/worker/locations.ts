@@ -27,6 +27,15 @@ export const locationsRoute = new Hono<{ Bindings: Env }>()
       .all();
     return c.json({ data: allLocs.map(loc => loc.id) });
   })
+  .get("/all", async (c) => {
+    const db = drizzle(c.env.DB);
+    const allLocs = await db
+      .select()
+      .from(locations)
+      .where(not(eq(locations.id, TEMPORARY_LOCATION_ID)))
+      .all();
+    return c.json({ data: allLocs });
+  })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
