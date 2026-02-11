@@ -24,7 +24,7 @@ type Variables = JwtVariables
 
 
 const RGX_AUTH = /^\/api\/auth\/(sendCode|register|login)$/;
-const RGX_SP_EVENTS = /^\/api\/sportingEvents\/?\d*$/;
+const RGX_SP_EVENTS = /^\/api\/sportingEvents\/?(all)?\d*$/;
 
 
 export default {
