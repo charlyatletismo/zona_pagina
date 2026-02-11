@@ -36,8 +36,10 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
       const end = new Date(event.registration_end);
       if (now >= start && now <= end) {
         openRegistrationEvents.push(event);
-      } else {
+      } else if (now >= end) {
         closedRegistrationEvents.push(event);
+      } else {
+        comingSoonEvents.push(event);
       }
     } else {
       comingSoonEvents.push(event);
