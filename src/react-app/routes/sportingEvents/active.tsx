@@ -34,7 +34,7 @@ import {
 import z from 'zod';
 
 
-const SpBSchema2 = SportingEventSchema.pick({
+const SpBSchema = SportingEventSchema.pick({
   id: true,
   title: true,
   date: true,
@@ -58,9 +58,9 @@ export const Route = createFileRoute('/sportingEvents/active')({
       z.infer<typeof ARAllSportingEventSchema>
       >('/api/sportingEvents', ARAllSportingEventSchema);
     const data = []
-    data.push(...z.array(SpBSchema2).parse(res.body.data.open.map(e => ({...e, status: "open"}))))
-    data.push(...z.array(SpBSchema2).parse(res.body.data.comingSoon.map(e => ({...e, status: "comingSoon"}))))
-    data.push(...z.array(SpBSchema2).parse(res.body.data.closed.map(e => ({...e, status: "closed"}))))
+    data.push(...z.array(SpBSchema).parse(res.body.data.open.map(e => ({...e, status: "open"}))))
+    data.push(...z.array(SpBSchema).parse(res.body.data.comingSoon.map(e => ({...e, status: "comingSoon"}))))
+    data.push(...z.array(SpBSchema).parse(res.body.data.closed.map(e => ({...e, status: "closed"}))))
     console.log(data)
     return { data }
   },
@@ -74,7 +74,7 @@ function RouteComponent() {
     { id: 'date', desc: true },
   ]);
 
-  const columnHelper = createColumnHelper<z.infer<typeof SpBSchema2>>();
+  const columnHelper = createColumnHelper<z.infer<typeof SpBSchema>>();
 
   const defaultColumns = [
     columnHelper.display({
