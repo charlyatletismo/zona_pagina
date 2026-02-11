@@ -60,3 +60,36 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
     past: pastEvents,
   }
 }
+
+export const allSportingEventsList = async (db: DrizzleD1Database) => {
+  const SELECT_QUERY = {
+    id: sportingEvents.id,
+    title: sportingEvents.title,
+    description: sportingEvents.description,
+    date: sportingEvents.date,
+    registration_start: sportingEvents.registration_start,
+    registration_end: sportingEvents.registration_end,
+    location: sportingEvents.location,
+    location_address: sportingEvents.location_address,
+    fee_amount: sportingEvents.fee_amount,
+    // fee_amount_promotional: sportingEvents.fee_amount_promotional, // TODO: promotional fees not implemented yet
+    fee_currency: sportingEvents.fee_currency,
+  };
+  const events = []
+  while (true) {
+    const batch = await db
+      .select(SELECT_QUERY)
+      .from(sportingEvents)
+      .orderBy(desc(sportingEvents.date))
+      .limit(100)
+      .offset(events.length);
+    if (batch.length === 0) {
+      break;
+    }
+    events.push(...batch);
+    if (batch.length < 100) {
+      break;
+    }
+  }
+  return events;
+}
