@@ -139,8 +139,8 @@ function RouteComponent() {
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
-      <div className='flex justify-between'>
-        <div>
+      <div className='flex flex-col sm:flex-row sm:justify-between'>
+        <div className='mb-4 sm:mb-0'>
           <h1 className='text-2xl font-bold mb-4'>Ubicaciones</h1>
           <div className='flex gap-2 items-center mb-4 max-w-sm relative'>
             <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
@@ -151,7 +151,7 @@ function RouteComponent() {
             />
           </div>
         </div>
-        <div className='flex gap-2'>
+        <div className='flex gap-2 flex-col sm:flex-row mb-8 sm:mb-0'>
           <Button variant='outline'>
             <Link to='/locations/create' className='flex gap-2 items-center'>
               <PlusIcon className='w-4 h-4' />
