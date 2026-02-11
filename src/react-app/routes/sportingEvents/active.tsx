@@ -71,7 +71,7 @@ function RouteComponent() {
   const { data } = Route.useLoaderData();
 
   const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'date', desc: true },
+    { id: 'date', desc: false },
   ]);
 
   const columnHelper = createColumnHelper<z.infer<typeof SpBSchema>>();
@@ -136,6 +136,7 @@ function RouteComponent() {
       header: () => 'Fecha',
       footer: props => props.column.id,
       enableSorting: true,
+      sortDescFirst: false,
       sortUndefined: 'last',
     }),
     columnHelper.accessor('fee_amount', {
@@ -159,6 +160,7 @@ function RouteComponent() {
       header: () => 'Inicio de inscripciones',
       footer: props => props.column.id,
       enableSorting: true,
+      sortDescFirst: false,
       sortUndefined: 'last',
     }),
     columnHelper.accessor('registration_end', {
@@ -166,6 +168,7 @@ function RouteComponent() {
       header: () => 'Fin de inscripciones',
       footer: props => props.column.id,
       enableSorting: true,
+      sortDescFirst: false,
       sortUndefined: 'last',
     }),
     columnHelper.accessor('location', {
