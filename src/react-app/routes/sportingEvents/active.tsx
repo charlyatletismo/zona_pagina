@@ -196,7 +196,7 @@ function RouteComponent() {
     <div className='max-w-full my-2 p-5 mx-auto'>
       <h1 className='text-2xl font-bold mb-4'>Eventos deportivos activos</h1>
       {table.getRowModel().rows.length > 0 && (
-        <Table className='border-2 min-w-3xl max-w-full'>
+        <Table className='border min-w-3xl max-w-full'>
         <TableHeader>
           {table.getHeaderGroups().map(headerGroup => {
             return (
