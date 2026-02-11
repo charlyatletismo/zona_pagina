@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router';
 import { LogIn, LogOut } from 'lucide-react';
 import { Settings } from 'lucide-react';
 // import React from 'react';
@@ -28,7 +28,7 @@ const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
 const LINK_USERS = { to: '/users', label: 'Usuarios' };
 const LINK_MANAGE = { to: '/manage', label: 'Gestión' };
 // const LINK_ATHLETE_STATS = { to: '/athlete/stats', label: 'Estadísticas' };
-const LINKS_BY_ROLE: Record<string, any> = {
+const LINKS_BY_ROLE: Record<string, Array<{ to: string; label: string }>> = {
   "": [
     LINK_HOME,
     LINK_SERVICES,
@@ -60,7 +60,7 @@ export const Navigation = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex-wrap">
-        {LINKS_BY_ROLE[current_role]?.map((link: any) => (
+        {LINKS_BY_ROLE[current_role]?.map((link) => (
           <NavigationMenuItem key={link.to}>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
               <Link to={link.to} className={navClass}>{link.label}</Link>
