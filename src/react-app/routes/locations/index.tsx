@@ -153,13 +153,13 @@ function RouteComponent() {
         </div>
         <div className='flex gap-2 flex-col sm:flex-row mb-8 sm:mb-0'>
           <Button variant='outline'>
-            <Link to='/locations/create' className='flex gap-2 items-center'>
+            <Link to='/locations/create' className='flex gap-2 items-center w-full justify-center'>
               <PlusIcon className='w-4 h-4' />
               Crear Ubicación
             </Link>
           </Button>
           <Button variant='outline'>
-            <Link to='/locations/checkTemporary' className='flex gap-2 items-center'>
+            <Link to='/locations/checkTemporary' className='flex gap-2 items-center w-full justify-center'>
               <FileScanIcon className='w-4 h-4' />
               Ub. Temporales
             </Link>
