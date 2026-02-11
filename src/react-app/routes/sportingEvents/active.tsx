@@ -51,50 +51,6 @@ function RouteComponent() {
   const columnHelper = createColumnHelper<z.infer<typeof SpBSchema>>();
 
   const defaultColumns = [
-    columnHelper.accessor('status', {
-      cell: info => ({"open": "Abierto", "comingSoon": "Próximo", "closed": "Cerrado"}[info.getValue()] || info.getValue()),
-      header: () => 'Estado',
-      footer: props => props.column.id,
-    }),
-    columnHelper.accessor('title', {
-      cell: info => info.getValue(),
-      header: () => 'Título',
-      footer: props => props.column.id,
-    }),
-    columnHelper.accessor('date', {
-      cell: info => info.getValue().toLocaleDateString(),
-      header: () => 'Fecha',
-      footer: props => props.column.id,
-    }),
-    columnHelper.accessor('fee_amount', {
-      cell: info => info.getValue() ? `$${info.getValue()}` : <div className='bg-destructive text-white rounded-full text-center p-1'>N/A</div>,
-      header: () => 'Tarifa',
-      footer: props => props.column.id,
-    }),
-    columnHelper.accessor('location', {
-      cell: info => info.getValue(),
-      header: () => 'Ubicación',
-      footer: props => props.column.id,
-    }),
-    // columnHelper.accessor(
-    //   row => `${row.registration_start?.toLocaleDateString() || 'N/A'} - ${row.registration_end?.toLocaleDateString() || 'N/A'}`,
-    //   {
-    //     id: 'registration_period',
-    //     cell: info => info.getValue(),
-    //     header: () => 'Período de inscripción',
-    //     footer: props => props.column.id,
-    //   }
-    // ),
-    columnHelper.accessor('registration_start', {
-      cell: info => info.getValue()?.toLocaleDateString() || 'N/A',
-      header: () => 'Inicio de inscripciones',
-      footer: props => props.column.id,
-    }),
-    columnHelper.accessor('registration_end', {
-      cell: info => info.getValue()?.toLocaleDateString() || 'N/A',
-      header: () => 'Fin de inscripciones',
-      footer: props => props.column.id,
-    }),
     columnHelper.display({
       "id": "actions",
       cell: props => (<div className='flex gap-2'>
@@ -121,6 +77,63 @@ function RouteComponent() {
           <FileArchiveIcon className='w-4 h-4' />
         </Link> */}
       </div>),
+    }),
+    columnHelper.accessor('status', {
+      cell: info => {
+        const value = info.getValue();
+        const t = {"open": "Abierto", "comingSoon": "Próximo", "closed": "Cerrado"}[value]
+        return (<div className={
+          "text-white rounded-full text-center p-1 px-2 w-full "
+          + (value === "open"
+            ? "bg-green-500"
+            : value === "comingSoon"
+              ? "bg-blue-500"
+              : "bg-orange-500")
+        }>
+          {t}
+        </div>)
+      },
+      header: () => 'Estado',
+      footer: props => props.column.id,
+    }),
+    columnHelper.accessor('title', {
+      cell: info => info.getValue(),
+      header: () => <div className='min-w-50'>Título</div>,
+      footer: props => props.column.id,
+    }),
+    columnHelper.accessor('date', {
+      cell: info => info.getValue().toLocaleDateString(),
+      header: () => 'Fecha',
+      footer: props => props.column.id,
+    }),
+    columnHelper.accessor('fee_amount', {
+      cell: info => info.getValue() ? `$${info.getValue()}` : <div className='bg-destructive text-white rounded-full text-center p-1'>N/A</div>,
+      header: () => <div className='min-w-15'>Tarifa</div>,
+      footer: props => props.column.id,
+    }),
+    // columnHelper.accessor(
+    //   row => `${row.registration_start?.toLocaleDateString() || 'N/A'} - ${row.registration_end?.toLocaleDateString() || 'N/A'}`,
+    //   {
+    //     id: 'registration_period',
+    //     cell: info => info.getValue(),
+    //     header: () => 'Período de inscripción',
+    //     footer: props => props.column.id,
+    //   }
+    // ),
+    columnHelper.accessor('registration_start', {
+      cell: info => info.getValue()?.toLocaleDateString() || 'N/A',
+      header: () => 'Inicio de inscripciones',
+      footer: props => props.column.id,
+    }),
+    columnHelper.accessor('registration_end', {
+      cell: info => info.getValue()?.toLocaleDateString() || 'N/A',
+      header: () => 'Fin de inscripciones',
+      footer: props => props.column.id,
+    }),
+    columnHelper.accessor('location', {
+      cell: info => info.getValue(),
+      header: () => 'Ubicación',
+      footer: props => props.column.id,
     }),
   ]
 
