@@ -201,15 +201,16 @@ export const ARTrainingTeamSchema = TrainingTeamSchema.omit({
   updated_at: true,
 });
 
-export const TrainingTeamsApiResponseSchemaElement = TrainingTeamSchema.pick({
+export const ARTrainingTeamAllSchema = TrainingTeamSchema.extend({
+  created_at: z.coerce.date(),
+  updated_at: z.coerce.date(),
+})
+
+export const ARTrainingTeamIndexSchema = TrainingTeamSchema.pick({
   id: true,
   name: true,
   location: true,
 });
-
-export const TrainingTeamsApiResponseSchema = z.array(
-  TrainingTeamsApiResponseSchemaElement
-);
 
 
 ///////////////////////////////////////////////////////////////

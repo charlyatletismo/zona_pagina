@@ -5,7 +5,7 @@ import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
 import { ARUserSchema } from '@shared/apiRespTypes';
-import { TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { ARTrainingTeamIndexSchema } from '@shared/apiRespTypes';
 import { FormBox } from '@/components/formBox';
 
 
@@ -20,8 +20,8 @@ export const Route = createFileRoute('/users/$userId/edit')({
       string[]
       >('/api/locations', z.array(z.string()));
     const tteamsApi = await getAuthenticatedThrow<
-      z.infer<typeof TrainingTeamsApiResponseSchema>
-      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
+      z.infer<typeof ARTrainingTeamIndexSchema>[]
+      >('/api/trainingTeams', z.array(ARTrainingTeamIndexSchema));
     return { userApiRes, locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time

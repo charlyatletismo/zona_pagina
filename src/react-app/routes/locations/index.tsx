@@ -33,6 +33,7 @@ import {
   useReactTable,
   flexRender
 } from '@tanstack/react-table';
+import { lowerAndRemoveDiacritics } from '@/lib/utils';
 
 
 export const Route = createFileRoute('/locations/')({
@@ -48,13 +49,6 @@ export const Route = createFileRoute('/locations/')({
   staleTime: 0, // force reload every time
 })
 
-
-const lowerAndRemoveDiacritics = (s: string) => {
-  // Normalize the string to the NFD form, separating base characters from diacritics.
-  // The 'g' flag ensures global replacement (all occurrences).
-  // The 'u' flag enables Unicode property escapes like \p{Diacritic}.
-  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-}
 
 const customFilterFn = (row: any, columnId: string, filterValue: string) => {
   const cellValue: string = row.getValue(columnId);

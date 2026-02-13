@@ -4,7 +4,7 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
-import { TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { ARTrainingTeamIndexSchema } from '@shared/apiRespTypes';
 import { FormBox } from '@/components/formBox';
 
 
@@ -14,8 +14,8 @@ export const Route = createFileRoute('/users/create')({
   loader: async () => {
     const locationsApi = await getAuthenticatedThrow<string[]>('/api/locations');
     const tteamsApi = await getAuthenticatedThrow<
-      z.infer<typeof TrainingTeamsApiResponseSchema>
-      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
+      z.infer<typeof ARTrainingTeamIndexSchema>[]
+      >('/api/trainingTeams', z.array(ARTrainingTeamIndexSchema));
     return { locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time

@@ -5,7 +5,7 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { FormBox } from '@/components/formBox';
 import { TrainingTeamForm } from '@/components/trainingTeamForm';
 import { getMessage } from '@/lib/utils';
-import { TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { ARTrainingTeamIndexSchema } from '@shared/apiRespTypes';
 import z from 'zod';
 
 
@@ -15,8 +15,8 @@ export const Route = createFileRoute('/trainingTeams/create')({
   loader: async () => {
     const resLocations = await getAuthenticatedThrow<string[]>('/api/locations');
     const resTTeams = await getAuthenticatedThrow<
-      z.infer<typeof TrainingTeamsApiResponseSchema>
-      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
+      z.infer<typeof ARTrainingTeamIndexSchema>[]
+      >('/api/trainingTeams', z.array(ARTrainingTeamIndexSchema));
     return { resLocations, resTTeams };
   },
 })

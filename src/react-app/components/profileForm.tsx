@@ -5,7 +5,7 @@ import { useAppForm } from '@/lib/genForm';
 import { getMessage, capitalizeStr } from '@/lib/utils';
 import {
   ARSettingsSchema,
-  TrainingTeamsApiResponseSchema
+  ARTrainingTeamIndexSchema
 } from '@shared/apiRespTypes';
 import { authorizedOrg, authorizedAthMan } from '@shared/roles';
 import { postAuthenticated } from '@/lib/apiCalls';
@@ -30,7 +30,7 @@ export const ProfileForm = ({
 } : {
   profile: z.infer<typeof ARSettingsSchema> | null,
   locations: string[],
-  trainingTeams: z.infer<typeof TrainingTeamsApiResponseSchema>,
+  trainingTeams: z.infer<typeof ARTrainingTeamIndexSchema>[],
   postUrl: string
 }) => {
   const navigate = useNavigate();

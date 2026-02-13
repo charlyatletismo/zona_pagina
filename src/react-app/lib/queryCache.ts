@@ -1,13 +1,13 @@
 import z from 'zod';
 import {
   ARUserMinSchema,
-  TrainingTeamsApiResponseSchemaElement,
+  ARTrainingTeamIndexSchema,
 } from '@shared/apiRespTypes';
 import { getAuthenticated, getAuthenticatedThrow } from '@/lib/apiCalls';
 
 
 export const trainingTeamsData: {
-  data: z.infer<typeof TrainingTeamsApiResponseSchemaElement>[],
+  data: z.infer<typeof ARTrainingTeamIndexSchema>[],
   expire: number,
 } = {
   data: [],
@@ -21,8 +21,8 @@ export const updateTrainingTeamsData = async (updateVar: CallableFunction) => {
     return;
   }
   const tTeamApiRes = await getAuthenticatedThrow<
-    z.infer<typeof TrainingTeamsApiResponseSchemaElement>[]
-    >('/api/trainingTeams', z.array(TrainingTeamsApiResponseSchemaElement));
+    z.infer<typeof ARTrainingTeamIndexSchema>[]
+    >('/api/trainingTeams', z.array(ARTrainingTeamIndexSchema));
   trainingTeamsData.data = tTeamApiRes.body.data;
   trainingTeamsData.expire = Date.now() + 1000 * 60 * 5;
   updateVar(trainingTeamsData.data);

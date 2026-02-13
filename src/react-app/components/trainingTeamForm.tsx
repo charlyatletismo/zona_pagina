@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import z from "zod";
 import {
   ARTrainingTeamSchema,
-  TrainingTeamsApiResponseSchemaElement,
+  ARTrainingTeamIndexSchema,
   ARUserMinSchema,
 } from "@shared/apiRespTypes";
 import { useAppForm } from '@/lib/genForm';
@@ -27,7 +27,7 @@ export const TrainingTeamForm = ({
   onSuccess,
 }: {
   trainingTeam: z.infer<typeof ARTrainingTeamSchema> | null,
-  dbTrainingTeams: z.infer<typeof TrainingTeamsApiResponseSchemaElement>[],
+  dbTrainingTeams: z.infer<typeof ARTrainingTeamIndexSchema>[],
   dbLocations: string[],
   onSuccess?: () => void,
 }) => {
@@ -323,7 +323,7 @@ export const TrainingTeamForm = ({
                   onBlur={field.handleBlur}
                   borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
                   showError={field.state.meta.isTouched}
-                  required={true}
+                  required={false}
                 />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>

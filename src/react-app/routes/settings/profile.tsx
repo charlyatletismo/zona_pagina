@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
-import { ARSettingsSchema, TrainingTeamsApiResponseSchema } from '@shared/apiRespTypes';
+import { ARSettingsSchema, ARTrainingTeamIndexSchema } from '@shared/apiRespTypes';
 import { ProfileForm } from '@/components/profileForm';
 import z from 'zod';
 import { FormBox } from '@/components/formBox';
@@ -18,8 +18,8 @@ export const Route = createFileRoute('/settings/profile')({
       string[]
       >('/api/locations', z.array(z.string()));
     const tteamsApi = await getAuthenticatedThrow<
-      z.infer<typeof TrainingTeamsApiResponseSchema>
-      >('/api/trainingTeams', TrainingTeamsApiResponseSchema);
+      z.infer<typeof ARTrainingTeamIndexSchema>[]
+      >('/api/trainingTeams', z.array(ARTrainingTeamIndexSchema));
     return { profileApi, locationsApi, tteamsApi };
   },
   staleTime: 0, // force reload every time

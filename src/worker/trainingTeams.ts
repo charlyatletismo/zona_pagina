@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { trainingTeams } from './db/schema';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import {
-  TrainingTeamsApiResponseSchemaElement,
+  ARTrainingTeamIndexSchema,
   ARTrainingTeamSchema
 } from "@shared/apiRespTypes";
 import { M } from './lib/messages';
@@ -16,7 +16,7 @@ export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
     const db = drizzle(c.env.DB);
     const data = await db
       .select(
-        TrainingTeamsApiResponseSchemaElement.keyof().options.reduce((acc, field) => {
+        ARTrainingTeamIndexSchema.keyof().options.reduce((acc, field) => {
             acc[field] = trainingTeams[field];
             return acc;
           },
