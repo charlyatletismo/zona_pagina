@@ -146,12 +146,14 @@ function Index() {
           </section>
         )}
 
-        <section className='text-center py-8'>
+        <section className='text-center'>
           <Link to="/sportingEvents/history"
-            className='max-w-md mx-auto flex gap-2 items-center justify-center
+            className='max-w-md mx-auto py-5
+              flex gap-2 items-center justify-center
               text-lg font-medium text-gray-700 shadow-lg
-              border border-gray-200 p-2 rounded-lg
-              hover:animate-tremor transition-all duration-150 group'>
+              border border-gray-200 rounded-lg
+              hover:animate-tremor transition-all duration-150 group'
+          >
             <History className='h-6 w-6 p-1 group-hover:text-white bg-gray-100 group-hover:bg-primary rounded-full' />
             Ver todos los eventos
           </Link>
