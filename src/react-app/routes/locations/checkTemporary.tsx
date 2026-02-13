@@ -58,6 +58,7 @@ const customFilterFn = (row: any, columnId: string, filterValue: string) => {
   return lowerAndRemoveDiacritics(String(cellValue)).includes(lowerAndRemoveDiacritics(filterValue));
 }
 
+
 function RouteComponent() {
   const { res, resLocations } = Route.useLoaderData();
   const navigate = Route.useNavigate();
