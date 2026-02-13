@@ -33,6 +33,19 @@ export const FormBox = ({
           </Link>
         </Button>
       }
+      {!(returnText && returnPath) &&
+        <Button
+          variant="ghost"
+          className="mb-4 pl-0 hover:bg-transparent hover:text-primary cursor-pointer"
+          onClick={() => window.history.back()}
+          asChild
+        >
+          <div>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver atrás
+          </div>
+        </Button>
+      }
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
