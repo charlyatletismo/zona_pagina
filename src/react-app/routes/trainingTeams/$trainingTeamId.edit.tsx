@@ -5,7 +5,9 @@ import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { FormBox } from '@/components/formBox';
 import { TrainingTeamForm } from '@/components/trainingTeamForm';
 import { getMessage } from '@/lib/utils';
-import { ARTrainingTeamIndexSchema } from '@shared/apiRespTypes';
+import {
+  ARTrainingTeamAllSchema
+} from '@shared/apiRespTypes';
 import z from 'zod';
 
 
@@ -15,37 +17,31 @@ export const Route = createFileRoute('/trainingTeams/$trainingTeamId/edit')({
   loader: async ({ params }) => {
     const { trainingTeamId } = params;
     const res = await getAuthenticatedThrow<
-      z.infer<typeof ARTrainingTeamIndexSchema>
+      z.infer<typeof ARTrainingTeamAllSchema>
       >(`/api/trainingTeams/${trainingTeamId}`,
-        ARTrainingTeamIndexSchema);
+        ARTrainingTeamAllSchema);
     const resLocations = await getAuthenticatedThrow<string[]>('/api/locations');
-    const resTTeams = await getAuthenticatedThrow<
-      z.infer<typeof ARTrainingTeamIndexSchema>[]
-      >('/api/trainingTeams', z.array(ARTrainingTeamIndexSchema));
-    return { res, resLocations, resTTeams };
+    return { res, resLocations };
   },
 })
 
 
 function RouteComponent() {
-  const { res, resLocations, resTTeams } = Route.useLoaderData();
+  const { res, resLocations } = Route.useLoaderData();
   return (
     <FormBox
       title="Editar Equipo de Entrenamiento"
       description="Edite un equipo de entrenamiento existente para organizar a los atletas."
       error={
-        resTTeams.status !== 200
-        ? "Error al cargar los datos de los equipos de entrenamiento. "
-          + getMessage(resTTeams.body.message, "", " ")
-        : resLocations.status !== 200
-          ? "Error al cargar los datos de las localidades. "
-            + getMessage(resLocations.body.message, "", " ")
-          : null}
+        resLocations.status !== 200
+        ? "Error al cargar los datos de las localidades. "
+          + getMessage(resLocations.body.message, "", " ")
+        : null}
     >
       {/* Training Team Form Component Goes Here */}
         <TrainingTeamForm
           trainingTeam={res.body?.data || null}
-          dbTrainingTeams={resTTeams.body?.data || []}
+          dbTrainingTeams={[]}
           dbLocations={resLocations.body?.data || []}
           // onSuccess={() => {
           //   // Optional success handler
