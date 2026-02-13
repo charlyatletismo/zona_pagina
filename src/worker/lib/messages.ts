@@ -246,6 +246,10 @@ export const M = {
     [ES]: "Ubicación eliminada correctamente",
     [EN]: "Location deleted successfully"
   },
+  USER_LOCATION_UPDATED_SUCCESSFULLY: {
+    [ES]: "Ubicación del usuario actualizada correctamente",
+    [EN]: "User location updated successfully"
+  },
 
   // -------------------------- TRAINING TEAMS --------------------------
   TRAINING_TEAM_CREATED_SUCCESSFULLY: {

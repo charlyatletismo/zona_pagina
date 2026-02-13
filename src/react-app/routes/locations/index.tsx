@@ -166,7 +166,7 @@ function RouteComponent() {
           </Button>
         </div>
       </div>
-      {locationsApi.body.data.length > 0 && table.getRowModel().rows.length > 0 ? (
+      {locationsApi.body.data.length > 0 && (table.getRowModel().rows.length > 0 ? (
         <div>
         <Table className='border min-w-3xl max-w-full'>
           <TableHeader>
@@ -234,7 +234,7 @@ function RouteComponent() {
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
           No hay resultados para tu búsqueda.
         </div>
-      )}
+      ))}
       {locationsApi.body.data.length === 0 && (
         <div className='text-center py-10 text-gray-500'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />

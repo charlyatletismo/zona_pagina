@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Env } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, not } from 'drizzle-orm';
-import { locations } from './db/schema';
+import { locations, users } from './db/schema';
 import z from 'zod';
 import { TEMPORARY_LOCATION_ID, LocationSchema } from '@shared/types';
 import { authorizedOrg } from '@shared/roles';
@@ -35,6 +35,42 @@ export const locationsRoute = new Hono<{ Bindings: Env }>()
       .where(not(eq(locations.id, TEMPORARY_LOCATION_ID)))
       .all();
     return c.json({ data: allLocs });
+  })
+  .get("/temporary", async (c) => {
+    const db = drizzle(c.env.DB);
+    const tempLoc = await db
+      .select({
+        id: users.id,
+        temp: users.location_temp,
+      })
+      .from(users)
+      .where(eq(users.location, TEMPORARY_LOCATION_ID))
+      .all();
+    return c.json({ data: tempLoc });
+  })
+  .post("/updateUser", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { userId, location }: { userId: string, location: string } = await c.req.json();
+    // Check if the location exists
+    const locExists = await db
+      .select()
+      .from(locations)
+      .where(eq(locations.id, location))
+      .get();
+
+    if (!locExists) {
+      return c.json({ message: M.LOCATION_NOT_FOUND }, 404);
+    }
+
+    // Update the user's location and clear the temporary location
+    await db.update(users)
+      .set({
+        location,
+        location_temp: null,
+      })
+      .where(eq(users.id, userId));
+
+    return c.json({ message: M.USER_LOCATION_UPDATED_SUCCESSFULLY });
   })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);

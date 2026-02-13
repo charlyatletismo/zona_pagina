@@ -60,3 +60,11 @@ export const capitalizeStr = (s: string) => {
     )
     .join(" ");
 }
+
+
+export const lowerAndRemoveDiacritics = (s: string) => {
+  // Normalize the string to the NFD form, separating base characters from diacritics.
+  // The 'g' flag ensures global replacement (all occurrences).
+  // The 'u' flag enables Unicode property escapes like \p{Diacritic}.
+  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}

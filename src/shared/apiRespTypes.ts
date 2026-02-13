@@ -232,3 +232,15 @@ export const ARSportEvTransactionMinSchema = SportingEventTransactionSchema.pick
 }).extend({
   transaction_date: z.coerce.date(),
 });
+
+
+////////////////////////////////////////////////////////////
+//                     /api/locations                     //
+////////////////////////////////////////////////////////////
+
+export const ARTempLocationSchema = z.object({
+  id: UserSchema.shape.id,
+  temp: UserSchema.shape.location_temp,
+}).required({
+  temp: true,
+})
