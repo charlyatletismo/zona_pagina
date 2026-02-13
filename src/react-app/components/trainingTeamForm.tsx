@@ -189,7 +189,7 @@ export const TrainingTeamForm = ({
                   value={field.state.value || ""}
                   onChange={(value) => {
                     if (value !== "new location :)") {
-                      field.handleChange(value);
+                      field.handleChange(value || null);
                     }
                   }}
                   onBlur={field.handleBlur}
@@ -225,7 +225,7 @@ export const TrainingTeamForm = ({
                   value={field.state.value || ''}
                   onChange={(e) => {
                     setUserAutoFill("");
-                    field.handleChange(e.target.value)
+                    field.handleChange(e.target.value || null)
                   }}
                   onBlur={async (e) => {
                     field.handleBlur();
@@ -285,7 +285,7 @@ export const TrainingTeamForm = ({
                   id={field.name}
                   name={field.name}
                   value={field.state.value || ''}
-                  onChange={(e) => field.handleChange(capitalizeStr(e.target.value))}
+                  onChange={(e) => field.handleChange(capitalizeStr(e.target.value) || null)}
                   onBlur={field.handleBlur}
                   placeholder="Nombre del entrenador"
                 />
@@ -303,7 +303,7 @@ export const TrainingTeamForm = ({
                   name={field.name}
                   type="email"
                   value={field.state.value || ''}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={(e) => field.handleChange(e.target.value || null)}
                   onBlur={field.handleBlur}
                   placeholder="team@example.com"
                 />
