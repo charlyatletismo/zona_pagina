@@ -20,12 +20,12 @@ export const LocationForm = ({
 } : {
   location: z.infer<typeof LocationSchema> | null,
   dbLocations: string[],
-  onSuccess?: () => void,
+  onSuccess?: (locationId?: string) => void,
 }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const path = location
+  const path = (location && location.id)
     ? `/api/locations/update/${location.id}`
     : "/api/locations/create";
 
@@ -65,7 +65,11 @@ export const LocationForm = ({
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
       setTimeout(() => {
         setSuccess('');
-        onSuccess ? onSuccess() : navigate({ to: '..', reloadDocument: true });
+        if (onSuccess !== undefined) {
+          onSuccess(value.id);
+        } else {
+          navigate({ to: '..', reloadDocument: true });
+        }
       }, 1000);
     },
   });
