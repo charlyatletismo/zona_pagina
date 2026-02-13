@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
@@ -73,7 +73,14 @@ function RouteComponent() {
   const defaultColumns = [
     columnHelper.accessor('id', {
       header: 'DNI Usuario',
-      cell: info => info.getValue(),
+      cell: info => (
+        <Link to="/users/$userId"
+          params={{ userId: info.getValue() }}
+          className='text-primary hover:underline'
+        >
+          {info.getValue()}
+        </Link>
+      ),
       footer: props => props.column.id,
       enableSorting: true,
     }),
@@ -96,7 +103,10 @@ function RouteComponent() {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 100);
           }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
+          className='text-primary/80 hover:text-primary
+            bg-primary/10 hover:bg-primary/20
+            p-2 rounded w-fit
+            flex items-center gap-1 cursor-pointer'
           variant='outline'
         >
           <WrenchIcon className='w-4 h-4' />
