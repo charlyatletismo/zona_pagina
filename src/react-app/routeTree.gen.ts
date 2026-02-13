@@ -25,6 +25,7 @@ import { Route as UsersManagersRouteImport } from './routes/users/managers'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as TransactionsCreateRouteImport } from './routes/transactions/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
+import { Route as TrainingTeamsCheckTemporaryRouteImport } from './routes/trainingTeams/checkTemporary'
 import { Route as SportingEventsRegistrationsRouteImport } from './routes/sportingEvents/registrations'
 import { Route as SportingEventsHistoryRouteImport } from './routes/sportingEvents/history'
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
@@ -128,6 +129,12 @@ const TrainingTeamsCreateRoute = TrainingTeamsCreateRouteImport.update({
   path: '/trainingTeams/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrainingTeamsCheckTemporaryRoute =
+  TrainingTeamsCheckTemporaryRouteImport.update({
+    id: '/trainingTeams/checkTemporary',
+    path: '/trainingTeams/checkTemporary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SportingEventsRegistrationsRoute =
   SportingEventsRegistrationsRouteImport.update({
     id: '/sportingEvents/registrations',
@@ -266,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/history': typeof SportingEventsHistoryRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
+  '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
@@ -306,6 +314,7 @@ export interface FileRoutesByTo {
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/history': typeof SportingEventsHistoryRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
+  '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
@@ -347,6 +356,7 @@ export interface FileRoutesById {
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/history': typeof SportingEventsHistoryRoute
   '/sportingEvents/registrations': typeof SportingEventsRegistrationsRoute
+  '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/transactions/create': typeof TransactionsCreateRoute
   '/users/create': typeof UsersCreateRoute
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/create'
     | '/sportingEvents/history'
     | '/sportingEvents/registrations'
+    | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/transactions/create'
     | '/users/create'
@@ -429,6 +440,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/create'
     | '/sportingEvents/history'
     | '/sportingEvents/registrations'
+    | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/transactions/create'
     | '/users/create'
@@ -469,6 +481,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/create'
     | '/sportingEvents/history'
     | '/sportingEvents/registrations'
+    | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/transactions/create'
     | '/users/create'
@@ -510,6 +523,7 @@ export interface RootRouteChildren {
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
   SportingEventsHistoryRoute: typeof SportingEventsHistoryRoute
   SportingEventsRegistrationsRoute: typeof SportingEventsRegistrationsRoute
+  TrainingTeamsCheckTemporaryRoute: typeof TrainingTeamsCheckTemporaryRoute
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
   TransactionsCreateRoute: typeof TransactionsCreateRoute
   UsersCreateRoute: typeof UsersCreateRoute
@@ -646,6 +660,13 @@ declare module '@tanstack/react-router' {
       path: '/trainingTeams/create'
       fullPath: '/trainingTeams/create'
       preLoaderRoute: typeof TrainingTeamsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainingTeams/checkTemporary': {
+      id: '/trainingTeams/checkTemporary'
+      path: '/trainingTeams/checkTemporary'
+      fullPath: '/trainingTeams/checkTemporary'
+      preLoaderRoute: typeof TrainingTeamsCheckTemporaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/registrations': {
@@ -822,6 +843,7 @@ const rootRouteChildren: RootRouteChildren = {
   SportingEventsCreateRoute: SportingEventsCreateRoute,
   SportingEventsHistoryRoute: SportingEventsHistoryRoute,
   SportingEventsRegistrationsRoute: SportingEventsRegistrationsRoute,
+  TrainingTeamsCheckTemporaryRoute: TrainingTeamsCheckTemporaryRoute,
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
   TransactionsCreateRoute: TransactionsCreateRoute,
   UsersCreateRoute: UsersCreateRoute,
