@@ -260,4 +260,8 @@ export const M = {
     [ES]: "Equipo de entrenamiento actualizado correctamente",
     [EN]: "Training team updated successfully"
   },
+  TRAINING_TEAM_NOT_FOUND: {
+    [ES]: "Equipo de entrenamiento no encontrado",
+    [EN]: "Training team not found"
+  },
 }

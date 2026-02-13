@@ -9,6 +9,7 @@ import {
 } from "@shared/apiRespTypes";
 import { M } from './lib/messages';
 import { eq } from 'drizzle-orm';
+import { authorizedOrg } from '@shared/roles';
 
 
 export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
@@ -27,7 +28,39 @@ export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
       .all();
     return c.json({ data });
   })
+  .get("/all", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const data = await db
+      .select()
+      .from(trainingTeams)
+      .all();
+    return c.json({ data });
+  })
+  .get("/:id", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const id = c.req.param("id");
+    const data = await db
+      .select()
+      .from(trainingTeams)
+      .where(
+        eq(trainingTeams.id, Number(id))
+      )
+      .get();
+    if (!data) {
+      return c.json({ message: M.TRAINING_TEAM_NOT_FOUND }, 404);
+    }
+    return c.json({ data });
+  })
   .post("/create", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
     const db = drizzle(c.env.DB);
     const tteam = ARTrainingTeamSchema.omit({id: true}).parse(await c.req.json());
     await db
@@ -37,6 +70,9 @@ export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
     return c.json({ message: M.TRAINING_TEAM_CREATED_SUCCESSFULLY });
   })
   .post("/update/:id", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
     const db = drizzle(c.env.DB);
     const tteam = ARTrainingTeamSchema.omit({id: true}).parse(await c.req.json());
     const id = c.req.param("id");
