@@ -102,20 +102,34 @@ function RouteComponent() {
     columnHelper.display({
       "id": "actions",
       cell: props => (<div className='flex gap-2'>
-        <Link
-          to={`/trainingTeams/$trainingTeamId`}
-          params={{ trainingTeamId: props.row.original.id!.toString() }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
+        <Button
+          variant='outline'
+          size="icon-sm"
+          className='cursor-pointer'
+          title="Ver detalles"
         >
-          <InfoIcon className='w-4 h-4' />
-        </Link>
-        <Link
-          to={`/trainingTeams/$trainingTeamId/edit`}
-          params={{ trainingTeamId: props.row.original.id!.toString() }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
+          <Link
+            to={`/trainingTeams/$trainingTeamId`}
+            params={{ trainingTeamId: props.row.original.id!.toString() }}
+            className='w-full h-full flex items-center justify-center'
+          >
+            <InfoIcon className='w-4 h-4' />
+          </Link>
+        </Button>
+        <Button
+          variant='outline'
+          size="icon-sm"
+          className='cursor-pointer'
+          title="Ver detalles"
         >
-          <EditIcon className='w-4 h-4' />
-        </Link>
+          <Link
+            to={`/trainingTeams/$trainingTeamId/edit`}
+            params={{ trainingTeamId: props.row.original.id!.toString() }}
+            className='w-full h-full flex items-center justify-center'
+          >
+            <EditIcon className='w-4 h-4' />
+          </Link>
+        </Button>
       </div>),
     })
   ]
