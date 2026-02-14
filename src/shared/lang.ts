@@ -16,8 +16,8 @@ export const RolDescriptions: {[key: string]: {[key: string]: string}} = {
     [EN]: "Organizer",
   },
   admin: {
-    [ES]: "Administrador",
-    [EN]: "Admin",
+    [ES]: "Desarrollador",
+    [EN]: "Developer",
   },
 };
 
