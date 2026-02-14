@@ -104,11 +104,9 @@ function RouteComponent() {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 100);
           }}
-          className='text-primary/80 hover:text-primary
-            bg-primary/10 hover:bg-primary/20
-            p-2 rounded w-fit
-            flex items-center gap-1 cursor-pointer'
+          className='cursor-pointer'
           variant='outline'
+          size="icon-sm"
         >
           <WrenchIcon className='w-4 h-4' />
         </Button>

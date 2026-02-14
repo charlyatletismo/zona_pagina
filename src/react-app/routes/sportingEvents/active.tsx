@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import { getAuthenticated } from '@/lib/apiCalls';
+import { Button } from '@/components/ui/button';
 import {
   // FileArchiveIcon,
   EditIcon,
@@ -79,33 +80,6 @@ function RouteComponent() {
   const columnHelper = createColumnHelper<z.infer<typeof SpBSchema>>();
 
   const defaultColumns = [
-    columnHelper.display({
-      "id": "actions",
-      cell: props => (<div className='flex gap-2'>
-        <Link
-          to={`/sportingEvents/$eventId`}
-          params={{ eventId: props.row.original.id.toString() }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-        >
-          <Info className='w-4 h-4' />
-        </Link>
-        <Link
-          to={`/sportingEvents/$eventId/edit`}
-          params={{ eventId: props.row.original.id.toString() }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-        >
-          <EditIcon className='w-4 h-4' />
-        </Link>
-        {/* <Link
-          to={`/sportingEvents/$eventId/registrations`}
-          params={{ eventId: props.row.original.id.toString() }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-          about='Ver inscripciones al evento'
-        >
-          <FileArchiveIcon className='w-4 h-4' />
-        </Link> */}
-      </div>),
-    }),
     columnHelper.accessor('status', {
       cell: info => {
         const value = info.getValue();
@@ -179,6 +153,37 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
+    }),
+    columnHelper.display({
+      "id": "actions",
+      cell: props => (<div className='flex gap-2 w-35 justify-center'>
+        <Button variant='outline' size="icon-sm" className='cursor-pointer'>
+          <Link
+            to={`/sportingEvents/$eventId`}
+            params={{ eventId: props.row.original.id.toString() }}
+            className='w-full h-full flex items-center justify-center'
+          >
+            <Info className='w-4 h-4' />
+          </Link>
+        </Button>
+        <Button variant='outline' size="icon-sm" className='cursor-pointer'>
+          <Link
+            to={`/sportingEvents/$eventId/edit`}
+            params={{ eventId: props.row.original.id.toString() }}
+            className='w-full h-full flex items-center justify-center'
+          >
+            <EditIcon className='w-4 h-4' />
+          </Link>
+        </Button>
+        {/* <Link
+          to={`/sportingEvents/$eventId/registrations`}
+          params={{ eventId: props.row.original.id.toString() }}
+          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
+          about='Ver inscripciones al evento'
+        >
+          <FileArchiveIcon className='w-4 h-4' />
+        </Link> */}
+      </div>),
     }),
   ]
 

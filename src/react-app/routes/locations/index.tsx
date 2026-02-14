@@ -100,13 +100,15 @@ function RouteComponent() {
     columnHelper.display({
       "id": "actions",
       cell: props => (<div className='flex gap-2'>
-        <Link
-          to={`/locations/$locationId`}
-          params={{ locationId: props.row.original.id.toString() }}
-          className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-        >
-          <EditIcon className='w-4 h-4' />
-        </Link>
+        <Button variant='outline' size="icon-sm" className='cursor-pointer'>
+          <Link
+            to={`/locations/$locationId`}
+            className='w-full h-full flex items-center justify-center'
+            params={{ locationId: props.row.original.id.toString() }}
+          >
+            <EditIcon className='w-4 h-4' />
+          </Link>
+        </Button>
       </div>),
     })
   ]
