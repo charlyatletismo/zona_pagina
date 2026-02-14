@@ -111,7 +111,7 @@ function RouteComponent() {
                 Categoría
               </h2>
               <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                Por definir. Aún se te ha asignado una categoría. Se le ha solicitado al organizador que la asigne.
+                Por definir. Aún no se te ha asignado una categoría. Se le ha solicitado al organizador que la asigne.
               </div>
               {/* <p className="text-gray-600">Circuito ID: {data.category.circuit_id}</p> */}
             </section>
@@ -288,7 +288,7 @@ function RouteComponent() {
             <div className='text-center bg-white p-6 rounded-xl shadow-sm border space-y-6'>
               <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
               <div className='mb-2'>
-                Para completar tu inscripción, debes abonar el saldo pendiente. Puedes hacerlo a través de Mercado Pago o mediante transferencia bancaria.
+                Para completar tu inscripción, debés abonar el saldo pendiente.
               </div>
               <Button
                 onClick={async () => {
@@ -317,9 +317,9 @@ function RouteComponent() {
                 <MercadoPagoLogo className='size-8' />
                 Pagar con Mercado Pago
               </Button>
-              <div className='mb-2'>Se aceptan transferencias al siguiente alias (click para copiar)</div>
+              <div className='mb-2'>También se aceptan transferencias al siguiente alias (click para copiar)</div>
               <Button
-                className='mb-3'
+                className='mb-3 cursor-pointer'
                 variant={'outline'}
                 onClick={() => {
                   navigator.clipboard.writeText('mi.alias.mp');
