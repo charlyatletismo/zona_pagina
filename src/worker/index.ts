@@ -12,6 +12,7 @@ import { M } from "./lib/messages";
 import { locationsRoute } from "./locations";
 import { trainingTeamsRoute } from "./trainingTeams";
 import { sportingEventTransactionsRoute } from "./sportingEventTransactions";
+import { paymentRoute } from "./payment";
 
 
 export interface Env {
@@ -19,6 +20,7 @@ export interface Env {
     JWT_SECRET: string;
     GRAPH_API_TOKEN: string;
     GRAPH_API_PHONE_NUMBER_ID: string;
+    MERCADOPAGO_ACCESS_TOKEN: string;
 }
 type Variables = JwtVariables
 
@@ -66,6 +68,7 @@ export default {
         app.route('/api/locations', locationsRoute);
         app.route('/api/trainingTeams', trainingTeamsRoute);
         app.route('/api/sportingEventTransactions', sportingEventTransactionsRoute);
+        app.route('/api/payment', paymentRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ALL_ROLES } from '@shared/roles';
-import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { MercadoPagoLogo } from '@/components/icons/mercadoPago';
 import { Button } from '@/components/ui/button';
 import { getMessage } from '@/lib/utils';
@@ -36,14 +36,14 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
     const res = await getAuthenticatedThrow<
       z.infer<typeof SportingEventRegistrationApiResponseSchema>
       >(`/api/sportingEvents/${params.eventId}/registration`);
-    return { res };
+    return { res, eventId: params.eventId };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const { res } = Route.useLoaderData();
+  const { res, eventId } = Route.useLoaderData();
   const data = res.body.data;
 
   if (res.status !== 200 || !data) {
@@ -63,8 +63,6 @@ function RouteComponent() {
       </div>
     )
   }
-
-  const linkMp = "https://www.mercadopago.com.ar/money-out/transfer/discovery";
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -285,67 +283,85 @@ function RouteComponent() {
                     ).toFixed(0)}</div>
               </div>
             </div>
-            {data.registration.fee_amount_after_discount - data.registration.paid_amount > 0 && (
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
-                <div className='mb-2'>Pagar mediante transferencia al siguiente alias (click para copiar)</div>
-                <Button
-                  className='mb-3'
-                  variant={'outline'}
-                  onClick={() => {
-                    navigator.clipboard.writeText('mi.alias.mp');
-                    const copyIcon = document.getElementById('clipboard-copy');
-                    const copiedIcon = document.getElementById('clipboard-copied');
-                    if (copyIcon && copiedIcon) {
-                      copyIcon.style.display = 'none';
-                      copiedIcon.style.display = 'inline-block';
-                      setTimeout(() => {
-                        copyIcon.style.display = 'inline-block';
-                        copiedIcon.style.display = 'none';
-                      }, 2000);
-                    }
-                  }}
-                >
-                  <div className='border-r-2'>
-                    <div id="clipboard-copy" style={{display: 'inline-block' }}>
-                      <Copy className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                    </div>
-                    <div id="clipboard-copied" style={{display: 'none'}}>
-                      <Check className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                    </div>
-                  </div>
-                  mi.alias.mp
-                </Button>
-                <div className='mb-2'>
-                  Accesos directos a aplicaciones de pago
-                </div>
-                <Button
-                  onClick={() => {
-                    // open new tab to mercado pago transfer page
-                    window.open(linkMp, '_blank');
-                  }}
-                  variant={'outline'}
-                  className='h-auto py-0 mb-3'
-                >
-                  <MercadoPagoLogo className='size-8' />
-                </Button>
-                <div className='mb-2'>Enviar comprobante por WhatsApp</div>
-                <Button
-                  variant={'outline'}
-                  asChild
-                >
-                  <a
-                    href="https://wa.me/5493400660640?text=Hola,%20quiero%20enviar%20el%20comprobante%20de%20pago%20para%20mi%20inscripción%20al%20evento."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Whatsapp />
-                    Enviar
-                  </a>
-                </Button>
-              </div>
-              )}
           </div>
+          {data.registration.fee_amount_after_discount - data.registration.paid_amount > 0 && (
+            <div className='text-center bg-white p-6 rounded-xl shadow-sm border space-y-6'>
+              <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
+              <div className='mb-2'>
+                Para completar tu inscripción, debes abonar el saldo pendiente. Puedes hacerlo a través de Mercado Pago o mediante transferencia bancaria.
+              </div>
+              <Button
+                onClick={async () => {
+                  const res = await postAuthenticated(`/api/payment/${eventId}`);
+                  if (res.status === 200) {
+                    const mpLink = res.body.data.init_point;
+                    console.log("response", res);
+                    console.log("Redirigiendo a MercadoPago con link:", mpLink);
+                    if (mpLink) {
+                      // redirect to MP
+                      window.location.href = mpLink;
+                    } else {
+                      alert('No se recibió un link de pago válido. Por favor, intenta nuevamente o contacta al organizador.');
+                    }
+                  } else {
+                    alert(`Error al iniciar el proceso de pago: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                  }
+                }}
+                variant={'outline'}
+                className='h-auto py-2 mb-3 cursor-pointer mx-auto
+                  flex items-center gap-2
+                  bg-sky-50 hover:bg-sky-100
+                  border-sky-200 hover:border-sky-300
+                  text-sky-900 hover:text-sky-700'
+              >
+                <MercadoPagoLogo className='size-8' />
+                Pagar con Mercado Pago
+              </Button>
+              <div className='mb-2'>Se aceptan transferencias al siguiente alias (click para copiar)</div>
+              <Button
+                className='mb-3'
+                variant={'outline'}
+                onClick={() => {
+                  navigator.clipboard.writeText('mi.alias.mp');
+                  const copyIcon = document.getElementById('clipboard-copy');
+                  const copiedIcon = document.getElementById('clipboard-copied');
+                  if (copyIcon && copiedIcon) {
+                    copyIcon.style.display = 'none';
+                    copiedIcon.style.display = 'inline-block';
+                    setTimeout(() => {
+                      copyIcon.style.display = 'inline-block';
+                      copiedIcon.style.display = 'none';
+                    }, 2000);
+                  }
+                }}
+              >
+                <div className='border-r-2'>
+                  <div id="clipboard-copy" style={{display: 'inline-block' }}>
+                    <Copy className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                  </div>
+                  <div id="clipboard-copied" style={{display: 'none'}}>
+                    <Check className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                  </div>
+                </div>
+                mi.alias.mp
+              </Button>
+              <div className='mb-2'>Enviar comprobante de transferencia por WhatsApp</div>
+              <Button
+                variant={'outline'}
+                asChild
+              >
+                <a
+                  href="https://wa.me/5493400660640?text=Hola,%20quiero%20enviar%20el%20comprobante%20de%20pago%20para%20mi%20inscripción%20al%20evento."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Whatsapp />
+                  Enviar
+                </a>
+              </Button>
+            </div>
+            )}
+
         </div>
       </div>
     </div>
