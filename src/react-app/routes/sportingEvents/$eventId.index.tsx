@@ -250,6 +250,15 @@ function RouteComponent() {
 
           {currentRole === ORGANIZER_ROLE && (
             <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/allRegistrations" params={{ eventId }}>
+                <FileUserIcon className="w-4 h-4" />
+                Inscripciones
+              </Link>
+            </Button>
+          )}
+
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
                 <BadgeDollarSign className="w-4 h-4" />
                 Nueva transacción

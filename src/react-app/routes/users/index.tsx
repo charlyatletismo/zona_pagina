@@ -27,7 +27,7 @@ import {
   getFilteredRowModel,
   createColumnHelper,
   useReactTable,
-  flexRender
+  flexRender,
 } from '@tanstack/react-table';
 import { lowerAndRemoveDiacritics } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -52,23 +52,14 @@ export const Route = createFileRoute('/users/')({
 })
 
 
-
 const customFilterFn = (row: any, columnId: string, filterValue: string) => {
   const cellValue: string = row.getValue(columnId);
   return lowerAndRemoveDiacritics(String(cellValue)).includes(lowerAndRemoveDiacritics(filterValue));
 }
 
 
-
 function RouteComponent() {
   const { usersApi } = Route.useLoaderData();
-  if (usersApi.status !== 200) {
-    return (
-      <div className="text-red-600 p-3 rounded-md flex items-center text-sm my-4 mx-auto">
-        Error al cargar los usuarios. Por favor, refresque la página.
-      </div>
-    );
-  }
 
   const columnHelper = createColumnHelper<z.infer<typeof ARUserSchemaPartial>>()
 
@@ -174,7 +165,7 @@ function RouteComponent() {
 
   const table = useReactTable({
     columns: defaultColumns,
-    data: usersApi.body.data,
+    data: usersApi.body.data || [],
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -191,6 +182,14 @@ function RouteComponent() {
     },
     globalFilterFn: customFilterFn,
   })
+
+  if (usersApi.status !== 200) {
+    return (
+      <div className="text-red-600 p-3 rounded-md flex items-center text-sm my-4 mx-auto">
+        Error al cargar los usuarios. Por favor, refresque la página.
+      </div>
+    );
+  }
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
