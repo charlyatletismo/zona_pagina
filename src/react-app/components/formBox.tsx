@@ -37,7 +37,13 @@ export const FormBox = ({
         <Button
           variant="ghost"
           className="mb-4 pl-0 hover:bg-transparent hover:text-primary cursor-pointer"
-          onClick={() => window.history.back()}
+          onClick={() => {
+            if (window.history.length > 1) {
+              window.history.back()
+            } else {
+              window.location.href = '..'
+            }
+          }}
           asChild
         >
           <div>
