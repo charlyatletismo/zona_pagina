@@ -14,8 +14,11 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
     location: sportingEvents.location,
     location_address: sportingEvents.location_address,
     fee_amount: sportingEvents.fee_amount,
-    // fee_amount_promotional: sportingEvents.fee_amount_promotional, // TODO: promotional fees not implemented yet
     fee_currency: sportingEvents.fee_currency,
+    fee_payment_due_date: sportingEvents.fee_payment_due_date,
+    fee_amount_promotional: sportingEvents.fee_amount_promotional,
+    promotional_fee_end: sportingEvents.promotional_fee_end,
+    promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
   };
   const now = new Date();
   const yesterday = new Date();
@@ -72,8 +75,11 @@ export const allSportingEventsList = async (db: DrizzleD1Database) => {
     location: sportingEvents.location,
     location_address: sportingEvents.location_address,
     fee_amount: sportingEvents.fee_amount,
-    // fee_amount_promotional: sportingEvents.fee_amount_promotional, // TODO: promotional fees not implemented yet
     fee_currency: sportingEvents.fee_currency,
+    fee_payment_due_date: sportingEvents.fee_payment_due_date,
+    fee_amount_promotional: sportingEvents.fee_amount_promotional,
+    promotional_fee_end: sportingEvents.promotional_fee_end,
+    promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
   };
   const events = []
   while (true) {

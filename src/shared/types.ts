@@ -139,6 +139,18 @@ export const TrainingTeamSchema = z.object({
 });
 
 
+export const ChipSchema = z.object({
+  id: z.string().min(1, 'El ID del chip no puede estar vacío')
+    .max(12, 'El ID del chip no puede exceder los 12 caracteres'),
+  linked_bib_number: z.number()
+    .min(1, 'El número de dorsal vinculado debe ser mayor a 0')
+    .nullable().optional(),
+  enabled: z.boolean().default(true),
+  created_at: z.date().optional(),
+  updated_at: z.date().optional(),
+})
+
+
 export const SportingEventCircuitSchema = z.object({
   id: z.number().optional(),
   event_id: z.number().optional(),
@@ -166,22 +178,6 @@ export const SportingEventScheduleSchema = z.object({
 });
 
 
-export const SportingEventAthleteCategorySchema = z.object({
-  id: z.number().optional(),
-  event_id: z.number().optional(),
-  circuit_id: z.number(),
-  name: z.string().min(1, 'Debe ingresar un nombre para la categoría'),
-  sex: z.string().max(1).nullable().optional(),
-  min_age: z.number()
-    .min(1, 'Debe ingresar una edad mínima')
-    .max(200, 'La edad no puede exceder los 200 años'),
-  max_age: z.number()
-    .min(1, 'Debe ingresar una edad máxima')
-    .max(200, 'La edad no puede exceder los 200 años'),
-  exclude_auto_qualify: z.boolean().default(false).optional(),
-});
-
-
 export const SportingEventClothingSchema = z.object({
   id: z.number().optional(),
   event_id: z.number().optional(),
@@ -205,13 +201,23 @@ export const SportingEventTypesEnum = z.enum([
 ], {error: "Debe indicar uno"});
 
 
+export const SportingEventRegistrationStatusEnum = z.enum([
+  'not_registered',
+  'pending',
+  'partially_paid',
+  'paid',
+  'expired',
+  'cancelled',
+  'transferred',
+])
+
+
 export const SportingEventSchema = z.object({
   id: z.number().min(1, "Debe indicar un ID de evento válido").optional(),
   title: z.string("Debe ingresar un título")
     .min(1, "Debe ingresar un título"),
   description: z.string().nullable().optional(),
-  image_url: z.string().max(512).nullable().optional(),
-  image_preview_url: z.string().max(512).nullable().optional(),
+  photo_url: z.string().max(512).nullable().optional(),
   date: z.date("Debe ingresar una fecha"),
   registration_start: z.date().nullable().optional(),
   registration_end: z.date().nullable().optional(),
@@ -227,27 +233,26 @@ export const SportingEventSchema = z.object({
   award_prizes: z.string().max(1024).nullable().optional(),
   fee_amount: z.number().nullable().optional(),
   fee_currency: z.string().max(3).nullable().optional(),
+  fee_payment_due_date: z.date().nullable().optional(),
+  fee_amount_promotional: z.number().nullable().optional(),
+  promotional_fee_end: z.date().nullable().optional(),
+  promotional_fee_payment_due_date: z.date().nullable().optional(),
+  age_ranges: z.array(z.number()).nullable().optional(),
   created_by: UserSchema.shape.id.nullable().optional(),
   created_at: z.date().nullable().optional(),
   updated_by: UserSchema.shape.id.nullable().optional(),
   updated_at: z.date().nullable().optional(),
   circuits: z.array(SportingEventCircuitSchema).nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema).nullable().optional(),
-  categories: z.array(SportingEventAthleteCategorySchema).nullable().optional(),
   clothing: z.array(SportingEventClothingSchema).nullable().optional(),
+  gallery: z.array(z.string().max(512)).nullable().optional(),
   athletes_registered: z.number().nullable().optional(),
   athletes_confirmed: z.number().nullable().optional(),
   user_registration_status: z.object({
-    registration_status: z.enum([
-      'not_registered',
-      'pending_category_set',
-      'pending',
-      'partially_paid',
-      'paid',
-      'cancelled',
-    ]).nullable().optional(),
-    category_name: z.string().nullable().optional(),
+    registration_status: SportingEventRegistrationStatusEnum
+      .nullable().optional(),
     circuit_id: z.number().nullable().optional(),
+    age_range: z.string().nullable().optional(),
     pending_to_pay: z.number().nullable().optional(),
   }).nullable().optional(),
 });
@@ -256,37 +261,35 @@ export const SportingEventSchema = z.object({
 export const SportingEventDbSchema = SportingEventSchema.omit({
   circuits: true,
   schedules: true,
-  categories: true,
   clothing: true,
+  gallery: true,
   athletes_registered: true,
   athletes_confirmed: true,
   user_registration_status: true,
+}).extend({
+  age_ranges: z.string().max(64).nullable().optional(),
 });
 
 
 export const SportingEventRegistrationSchema = z.object({
   id: z.number(),
-  event_id: SportingEventSchema.shape.id,
   user_id: UserSchema.shape.id,
-  category_id: SportingEventAthleteCategorySchema.shape.id.nullable(),
   training_team_id: TrainingTeamSchema.shape.id.nullable(),
-  registration_date: z.date(),
+  event_id: SportingEventSchema.shape.id,
+  circuit_id: SportingEventCircuitSchema.shape.id,
+  age_at_registration: z.number(),
   discount_percentage: z.number(),
   discount_reason: z.string().max(256).nullable(),
-  fee_amount_original: z.number(),
-  fee_amount_after_discount: z.number(),
+  registration_date: z.date(),
+  promotional_fee_applied: z.boolean().default(false),
   paid_amount: z.number(),
-  paid_percentage: z.number(),
+  status: SportingEventRegistrationStatusEnum,
+  full_payment_date: z.date().nullable(),
   demanded_clothing_id: SportingEventClothingSchema.shape.id.nullable(),
   reserved_clothing_id: SportingEventClothingSchema.shape.id.nullable(),
-  special_needs: z.string().max(512).nullable(),
-  status: z.enum([
-    "pending",
-    "partially_paid",
-    "paid",
-    "cancelled"
-  ]),
-  full_payment_date: z.date().nullable(),
+  chip_id: ChipSchema.shape.id.nullable(),
+  bib_number: z.number().nullable(),
+  kit_delivered: z.boolean().default(false),
   created_at: z.date(),
   created_by: UserSchema.shape.id,
   updated_at: z.date(),
@@ -297,7 +300,7 @@ export const SportingEventRegistrationSchema = z.object({
 export const TRANSACTION_PAYMENT_METHODS = [
   'cash',
   'bank_transfer',
-  // 'mercado_pago_payment',
+  'mercadopago_payment',
   'other'
 ]
 
@@ -361,30 +364,4 @@ export const TransactionTypeByCategory: Record<string, 'inflow' | 'outflow'> = {
   partner_services: 'outflow',
   other_inflow: 'inflow',
   other_outflow: 'outflow',
-};
-
-
-export type SportingEventRegistration = {
-  id: number;
-  event_id: string;
-  user_id: string;
-  registration_date: string;
-  paid: boolean;
-  payment_date: string | null;
-}
-
-export interface SportingEventRegistrationApiResponse {
-  [eventId: string]: {
-    metadata: any;
-    registrations: {
-      registrationId: SportingEventRegistration["id"];
-      userId: SportingEventRegistration["user_id"];
-      userName: string;
-      userEmail: string;
-      userPhone: string;
-      registrationDate: SportingEventRegistration["registration_date"];
-      paid: SportingEventRegistration["paid"];
-      paymentDate: SportingEventRegistration["payment_date"];
-    }[];
-  };
 };

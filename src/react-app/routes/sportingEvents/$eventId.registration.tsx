@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { getMessage } from '@/lib/utils';
 import z from 'zod';
 import {
-  SportingEventRegistrationApiResponseSchema
+  ARSportingEventRegistrationSchema
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import {
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
   beforeLoad: authCheck(ALL_ROLES),
   loader: async ({ params }) => {
     const res = await getAuthenticatedThrow<
-      z.infer<typeof SportingEventRegistrationApiResponseSchema>
+      z.infer<typeof ARSportingEventRegistrationSchema>
       >(`/api/sportingEvents/${params.eventId}/registration`);
     return { res, eventId: params.eventId };
   },

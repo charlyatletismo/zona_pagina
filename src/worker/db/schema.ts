@@ -40,6 +40,19 @@ export const trainingTeams = sqliteTable("training_teams", {
 });
 
 
+export const chips = sqliteTable("chips", {
+  id: text({ length: 12 }).primaryKey(), // Generally with the format: CH00302, but can be any string up to 12 characters
+  linked_bib_number: int().unique().notNull(), // if the chip is linked to a bib number, it is stored here for easy reference
+  enabled: int().notNull().default(1), // 1 for enabled, 0 for disabled
+  created_at: text()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updated_at: text()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+
 // Users Table
 export const users = sqliteTable("users", {
   id: text({ length: USER_ID_MAX_LENGTH }).primaryKey(),
@@ -115,8 +128,7 @@ export const sportingEvents = sqliteTable("sporting_events", {
   id: int().primaryKey({ autoIncrement: true }),
   title: text().notNull(),
   description: text(),
-  image_url: text({ length: 512 }),
-  image_preview_url: text({ length: 512 }),
+  photo_id: text({ length: 36 }), // cloudflare image id
   date: text().notNull(), // ISO string
   registration_start: text({ length: 64 }),
   registration_end: text({ length: 64 }),
@@ -134,6 +146,15 @@ export const sportingEvents = sqliteTable("sporting_events", {
   award_prizes: text({ length: 1024 }),
   fee_amount: real(),
   fee_currency: text({ length: 3 }).default('ARS'),
+  // due date for payment
+  fee_payment_due_date: text({ length: 64 }),
+  // discounted fee for early registrations
+  fee_amount_promotional: real(),
+  // end date for registering with promotional fee
+  promotional_fee_end: text({ length: 64 }),
+  // due date for payment with promotional fee
+  promotional_fee_payment_due_date: text({ length: 64 }),
+  age_ranges: text({ length: 64 }), // e.g., "18,30,40,50+" means 18-29, 30-39, 40-49, 50 and above
   created_by: text({ length: USER_ID_MAX_LENGTH })
     .notNull()
     .references(() => users.id,
@@ -188,28 +209,10 @@ export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
   location_address: text({ length: 128 }),
   location_lat: real(),
   location_long: real(),
-});
-
-
-// Details about which athlete categories can register for an event, along with fees
-// and distances
-export const sportingEventAthleteCategories = sqliteTable("sporting_event_athlete_categories", {
-  id: int().primaryKey({ autoIncrement: true }),
-  event_id: int().notNull()
-    .references(() => sportingEvents.id,
-      { onDelete: 'cascade',
-        onUpdate: 'cascade' }
-      ),
-  circuit_id: int().notNull()
-    .references(() => sportingEventCircuits.id,
-      { onDelete: 'cascade',
-        onUpdate: 'cascade' }
-      ),
-  name: text({ length: 64 }).notNull(),
-  sex: text({ length: 1 }), // 'M', 'F', or null for all
-  min_age: int(),
-  max_age: int(),
-  exclude_auto_qualify: int().notNull().default(0), // if 1, athletes won't be auto-assigned to this category
+  // if set, sends notifications to registered users based on this template when the schedule item is upcoming
+  notification_template_id: text({ length: 64 }),
+  // ISO string - when to send notifications for this schedule item
+  notify_at: text({ length: 64 }),
 });
 
 
@@ -223,54 +226,74 @@ export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
   clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tanktop" (musculosa)
   size: text({ length: 8 }).notNull(), // e.g., "XS", "S", "M", "L", "XL", "XXL"
   purchased_quantity: int().notNull().default(0),
-  demanded_quantity: int().notNull().default(0),
-  reserved_quantity: int().notNull().default(0),
 });
 
 
 // Sporting events registrations
 export const sportingEventRegistrations = sqliteTable("sporting_event_registrations", {
   id: int().primaryKey({ autoIncrement: true }),
-  event_id: int()
-    .references(() => sportingEvents.id,
-      { onDelete: 'set null',
-        onUpdate: 'cascade' }
-      ),
   user_id: text({ length: USER_ID_MAX_LENGTH })
     .notNull()
     .references(() => users.id,
       { onDelete: 'cascade',
         onUpdate: 'cascade' }
       ),
-  category_id: int()
-    .references(() => sportingEventAthleteCategories.id,
-      { onDelete: 'set null',
-        onUpdate: 'cascade' }
-      ),
+  // after 10 people, they have the possibility of 10% discount
   training_team_id: int()
     .references(() => trainingTeams.id,
       { onDelete: 'set null',
         onUpdate: 'cascade' }
-      ), // after 10 people, it have 10% discount
-  registration_date: text().notNull().default(sql`CURRENT_TIMESTAMP`),
+      ),
+  event_id: int()
+    .references(() => sportingEvents.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  // Category = competitive circuit + age range (e.g., "Circuit A - 18-29", "Circuit B - 30-39", etc.)
+  // Category = non-competitive circuit + "general" (e.g., "Circuit C - General")
+  circuit_id: int()
+    .references(() => sportingEventCircuits.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  age_at_registration: int().notNull(),
+
   discount_percentage: int().notNull().default(0), // for special discounts
   discount_reason: text({ length: 256 }),
-  fee_amount_original: real().notNull(), // original amount before discounts
-  fee_amount_after_discount: real().notNull(), // final amount after discounts
+  registration_date: text().notNull().default(sql`CURRENT_TIMESTAMP`),
+  // if true, the promotional fee is applied to this registration
+  // only when the promotional fee is active for the event and the
+  // user registered before the promotional fee end date
+  promotional_fee_applied: int().notNull().default(0),
   paid_amount: real().notNull().default(0),
-  paid_percentage: real().notNull().default(0), // 0 to 100 %
+  // "pending", "partially_paid", "paid", "expired", "cancelled",
+  // "transferred", etc.
+  status: text({ length: 16 }).notNull().default('pending'),
+  full_payment_date: text(),
+
   demanded_clothing_id: int()
     .references(() => sportingEventClothing.id,
       { onDelete: 'set null',
         onUpdate: 'cascade' }
       ),
+
+  // After being paid, the clothing is reserved,
+  // chip id and bib number are assigned
   reserved_clothing_id: int()
     .references(() => sportingEventClothing.id,
       { onDelete: 'set null',
         onUpdate: 'cascade' }
       ),
-  status: text({ length: 16 }).notNull().default('pending'), // "pending", "partially_paid", "paid", "cancelled", etc.
-  full_payment_date: text(),
+  chip_id: text({ length: 12 })
+    .references(() => chips.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
+  bib_number: int(),
+
+  // Kit = bib + chip + clothing
+  kit_delivered: int().notNull().default(0),
+
   created_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
   created_by: text({ length: USER_ID_MAX_LENGTH })
     .references(() => users.id,

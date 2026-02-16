@@ -1,8 +1,18 @@
 import { Hono } from "hono";
 import { Env } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
-import { authorizedAthMan, authorizedOrg } from '@shared/roles';
-import { getSpEvent, addSpEvent, updateSpEvent, registerToSpEvent, delSpEvent, getSpEventMin } from "./lib/sportingEvents";
+import {
+  authorizedAthMan,
+  authorizedOrg
+} from '@shared/roles';
+import {
+  getSpEvent,
+  addSpEvent,
+  updateSpEvent,
+  registerToSpEvent,
+  delSpEvent,
+  getSpEventMin
+} from "./lib/sportingEvents";
 import {
   mainSportingEventsList,
   allSportingEventsList
@@ -50,6 +60,9 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       : {circuitId: number, userId: string} = await c.req.json();
     if (!circuitId) {
       return c.json({ message: M.SPORTING_EVENT_CIRCUIT_ID_REQUIRED }, 400);
+    }
+    if (!userId) {
+      return c.json({ message: M.SPORTING_EVENT_USER_ID_REQUIRED }, 400);
     }
     const reqUserId: string = c.get('jwtPayload')?.id;
     const res = await registerToSpEvent(

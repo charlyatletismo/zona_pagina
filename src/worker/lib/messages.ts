@@ -165,6 +165,10 @@ export const M = {
     [ES]: "Se requiere el ID del circuito del evento deportivo",
     [EN]: "Sporting event circuit ID required"
   },
+  SPORTING_EVENT_USER_ID_REQUIRED: {
+    [ES]: "Se requiere el DNI del usuario a registrarse en el evento deportivo",
+    [EN]: "User ID required to register for sporting event"
+  },
   SPORTING_EVENT_CIRCUIT_INVALID_DATA: {
     [ES]: "Los datos del circuito del evento deportivo no son válidos",
     [EN]: "Invalid sporting event circuit data"

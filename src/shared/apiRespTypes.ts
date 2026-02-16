@@ -5,9 +5,9 @@ import {
   SportingEventScheduleSchema,
   SportingEventRegistrationSchema,
   SportingEventClothingSchema,
-  SportingEventAthleteCategorySchema,
   TrainingTeamSchema,
   SportingEventTransactionSchema,
+  SportingEventCircuitSchema,
 } from './types';
 
 
@@ -100,8 +100,9 @@ export const SportingEventBasicInfoSchema = SportingEventSchema.pick({
   description: true,
   date: true,
   fee_amount: true,
-  // fee_amount_promotional: true,
   fee_currency: true,
+  fee_amount_promotional: true,
+  promotional_fee_end: true,
   registration_start: true,
   registration_end: true,
   location: true,
@@ -112,6 +113,7 @@ export const SportingEventBasicInfoSchema = SportingEventSchema.pick({
   date: z.coerce.date<string>(),
   registration_start: z.coerce.date<string>().nullable().optional(),
   registration_end: z.coerce.date<string>().nullable().optional(),
+  promotional_fee_end: z.coerce.date<string>().nullable().optional(),
 })
 
 export const ARAllSportingEventSchema = z.object({
@@ -125,13 +127,14 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   date: z.coerce.date(),
   registration_start: z.coerce.date().nullable().optional(),
   registration_end: z.coerce.date().nullable().optional(),
+  fee_payment_due_date: z.coerce.date().nullable().optional(),
+  promotional_fee_end: z.coerce.date().nullable().optional(),
+  promotional_fee_payment_due_date: z.coerce.date().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
   updated_at: z.coerce.date().nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
     date: z.coerce.date(),
-  })).nullable().optional(),
-  categories: z.array(SportingEventAthleteCategorySchema.extend({
-    exclude_auto_qualify: z.coerce.boolean().default(false).optional(),
+    notify_at: z.coerce.date().nullable(),
   })).nullable().optional(),
 });
 
@@ -159,35 +162,45 @@ const shortClothingSchema = SportingEventClothingSchema.pick({
 })
 
 
-export const SportingEventRegistrationApiResponseSchema = z.object({
+export const ARSportingEventRegistrationSchema = z.object({
   registration: SportingEventRegistrationSchema.pick({
     id: true,
-    registration_date: true,
+    age_at_registration: true,
     discount_percentage: true,
     discount_reason: true,
-    fee_amount_original: true,
-    fee_amount_after_discount: true,
+    registration_date: true,
     paid_amount: true,
-    demanded_clothing_id: true,
-    reserved_clothing_id: true,
-    special_needs: true,
     status: true,
     full_payment_date: true,
+    demanded_clothing_id: true,
+    reserved_clothing_id: true,
+    chip_id: true,
+    bib_number: true,
+    kit_delivered: true,
     updated_at: true,
   }).extend({
     demanded_clothing: shortClothingSchema.nullable(),
     reserved_clothing: shortClothingSchema.nullable(),
     updated_at: SportingEventRegistrationSchema.shape.updated_at.nullable(),
   }),
-  category: SportingEventAthleteCategorySchema.pick({
-    name: true,
-    circuit_id: true,
-  }).nullable(),
   training_team: TrainingTeamSchema.pick({
+    id: true,
     name: true,
     location: true,
   }).nullable(),
   clothing: z.array(shortClothingSchema).nullable(),
+  circuit: SportingEventCircuitSchema.pick({
+    id: true,
+    name: true,
+    distance_km: true,
+    map_url: true,
+  }),
+  sp_event: SportingEventSchema.pick({
+    id: true,
+    title: true,
+    age_ranges: true,
+  }),
+  category: z.string().nullable(),
 })
 
 
