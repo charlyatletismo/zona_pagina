@@ -2,7 +2,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ORGANIZER_ROLE } from '@shared/roles'
 import authCheck from '@/lib/authCheck'
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { SportingEventRegistrationApiResponse } from '@shared/types';
 import {
   Table,
   TableBody,
@@ -15,6 +14,34 @@ import {
 import { Button } from '@/components/ui/button';
 import { Hourglass, CheckCircle2 } from 'lucide-react';
 import React from 'react';
+
+
+type SportingEventRegistration = {
+  id: number;
+  event_id: string;
+  user_id: string;
+  registration_date: string;
+  paid: boolean;
+  payment_date: string | null;
+}
+
+interface SportingEventRegistrationApiResponse {
+  [eventId: string]: {
+    metadata: any;
+    registrations: {
+      registrationId: SportingEventRegistration["id"];
+      userId: SportingEventRegistration["user_id"];
+      userName: string;
+      userEmail: string;
+      userPhone: string;
+      registrationDate: SportingEventRegistration["registration_date"];
+      paid: SportingEventRegistration["paid"];
+      paymentDate: SportingEventRegistration["payment_date"];
+    }[];
+  };
+};
+
+
 
 export const Route = createFileRoute('/sportingEvents/registrations')({
   component: RouteComponent,

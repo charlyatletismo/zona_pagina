@@ -2,7 +2,16 @@ import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { SportingEventRegistration } from '@shared/types';
+
+
+type SportingEventRegistration = {
+  id: number;
+  event_id: string;
+  user_id: string;
+  registration_date: string;
+  paid: boolean;
+  payment_date: string | null;
+}
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/register/')({
