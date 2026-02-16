@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getNonOrgManagersData, updateTrainingTeamsData } from '@/lib/queryCache';
+import { TEMPORARY_LOCATION_ID } from '@shared/types';
 
 
 
@@ -62,6 +63,13 @@ export const ProfileCard = ({
     "name": 'Cargando...',
     "surname": '',
   } : null);
+  let location_full = null;
+  if (profile.location_address && profile.location) {
+    location_full = profile.location_address + ", " + (
+      profile.location === TEMPORARY_LOCATION_ID
+        ? profile.location_temp
+        : profile.location);
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -151,10 +159,10 @@ export const ProfileCard = ({
       <GridCell
         icon={MapPin}
         label="Dirección"
-        value={profile.location_address + ", " + profile.location}
+        value={location_full}
         link={
-          (profile.location_address && profile.location)
-            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.location_address + ", " + profile.location)}`
+          location_full
+            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location_full)}`
             : null
         }
       />
