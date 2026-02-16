@@ -3,7 +3,6 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import {
   CalendarPlus,
-  ClipboardList,
   FileText,
   ListCollapseIcon,
   History,
@@ -35,7 +34,6 @@ function RouteComponent() {
       icon: Trophy,
       items: [
         { to: "/sportingEvents/create", icon: CalendarPlus, label: "Crear Nuevo Evento", description: "Configurar un nuevo evento deportivo." },
-        { to: "/sportingEvents/registrations", icon: ClipboardList, label: "Inscripciones", description: "Gestionar inscripciones de usuarios." },
         { to: "/sportingEvents/active", icon: ListCollapseIcon, label: "Eventos Activos", description: "Ver todos los eventos deportivos actuales." },
         { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
         { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
