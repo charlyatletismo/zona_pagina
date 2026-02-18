@@ -77,8 +77,8 @@ export const ARUserSchema = UserSchema.extend({
   clothing_shirt_size: UserSchema.shape.clothing_shirt_size.nullable(),
   location: UserSchema.shape.location.nullable(),
   location_address: UserSchema.shape.location_address.nullable(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  created_at: z.coerce.date<string>().optional(),
+  updated_at: z.coerce.date<string>().optional(),
 })
 
 export const ARUserMinSchema = UserSchema.pick({
@@ -123,17 +123,17 @@ export const ARAllSportingEventSchema = z.object({
 });
 
 export const ARSportingEventSchema = SportingEventSchema.extend({
-  date: z.coerce.date(),
-  registration_start: z.coerce.date().nullable().optional(),
-  registration_end: z.coerce.date().nullable().optional(),
-  fee_payment_due_date: z.coerce.date().nullable().optional(),
-  promotional_fee_end: z.coerce.date().nullable().optional(),
-  promotional_fee_payment_due_date: z.coerce.date().nullable().optional(),
-  created_at: z.coerce.date().nullable().optional(),
-  updated_at: z.coerce.date().nullable().optional(),
+  date: z.coerce.date<string>(),
+  registration_start: z.coerce.date<string>().nullable().optional(),
+  registration_end: z.coerce.date<string>().nullable().optional(),
+  fee_payment_due_date: z.coerce.date<string>().nullable().optional(),
+  promotional_fee_end: z.coerce.date<string>().nullable().optional(),
+  promotional_fee_payment_due_date: z.coerce.date<string>().nullable().optional(),
+  created_at: z.coerce.date<string>().nullable().optional(),
+  updated_at: z.coerce.date<string>().nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
-    date: z.coerce.date(),
-    notify_at: z.coerce.date().nullable(),
+    date: z.coerce.date<string>(),
+    notify_at: z.coerce.date<string>().nullable(),
   })).nullable().optional(),
 });
 
@@ -142,7 +142,7 @@ export const ARSportingEventMinSchema = SportingEventSchema.pick({
   title: true,
   date: true,
 }).extend({
-  date: z.coerce.date(),
+  date: z.coerce.date<string>(),
 });
 
 
@@ -207,8 +207,8 @@ export const ARTrainingTeamSchema = TrainingTeamSchema.omit({
 });
 
 export const ARTrainingTeamAllSchema = TrainingTeamSchema.extend({
-  created_at: z.coerce.date(),
-  updated_at: z.coerce.date(),
+  created_at: z.coerce.date<string>(),
+  updated_at: z.coerce.date<string>(),
 })
 
 export const ARTrainingTeamIndexSchema = TrainingTeamSchema.pick({
@@ -223,9 +223,9 @@ export const ARTrainingTeamIndexSchema = TrainingTeamSchema.pick({
 ///////////////////////////////////////////////////////////////
 
 export const ARSportEvTransactionSchema = SportingEventTransactionSchema.extend({
-  transaction_date: z.coerce.date(),
-  created_at: z.coerce.date().optional(),
-  updated_at: z.coerce.date().optional(),
+  transaction_date: z.coerce.date<string>(),
+  created_at: z.coerce.date<string>().optional(),
+  updated_at: z.coerce.date<string>().optional(),
 })
 
 export const ARSportEvTransactionMinSchema = SportingEventTransactionSchema.pick({
@@ -236,7 +236,7 @@ export const ARSportEvTransactionMinSchema = SportingEventTransactionSchema.pick
   payment_method: true,
   amount: true,
 }).extend({
-  transaction_date: z.coerce.date(),
+  transaction_date: z.coerce.date<string>(),
 });
 
 
