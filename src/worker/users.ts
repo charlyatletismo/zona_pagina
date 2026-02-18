@@ -143,38 +143,21 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     if (!user) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
-    let filteredUser: any;
     if (c.get('jwtPayload').role === ATHLETES_MANAGER_ROLE) {
       const managerId = c.get('jwtPayload').id;
       if (user.manager_id !== managerId) {
         return c.json({ message: M.UNAUTHORIZED }, 403);
       }
-      filteredUser = {
-        id: user.id,
-        name: user.name,
-        surname: user.surname,
-        phone: user.phone,
-        email: user.email,
-        emergency_contact_name: user.emergency_contact_name,
-        emergency_contact_phone: user.emergency_contact_phone,
-        sex: user.sex,
-        date_of_birth: user.date_of_birth,
-        clothing_shirt_size: user.clothing_shirt_size,
-        location: user.location,
-        location_temp: user.location_temp,
-        location_address: user.location_address,
-        special_needs: user.special_needs,
-        discount_percentage: user.discount_percentage,
-        manager_id: user.manager_id,
-        training_team_id: user.training_team_id,
-        training_team_temp: user.training_team_temp,
-        profile_photo_id: user.profile_photo_id,
-        language: user.language,
-      }
-    } else {
-      filteredUser = user;
+      return c.json({
+        data: ARUserSchema.omit({
+          temp_code: true,
+          role: true,
+          created_at: true,
+          updated_at: true,
+        }).parse(user)
+      });
     }
-    return c.json({ data: filteredUser });
+    return c.json({ data: ARUserSchema.parse(user) });
   })
   .post("/:id/setRole", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload')?.role)) {
