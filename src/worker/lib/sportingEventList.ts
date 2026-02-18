@@ -1,25 +1,20 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
+import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { lt, gte, desc } from 'drizzle-orm';
-import { sportingEvents } from '../db/schema'
+import { sportingEvents } from '../db/schema';
+import { SportingEventBasicInfoSchema } from '@shared/apiRespTypes';
+import z from 'zod';
 
 
 export const mainSportingEventsList = async (db: DrizzleD1Database) => {
-  const SELECT_QUERY = {
-    id: sportingEvents.id,
-    title: sportingEvents.title,
-    description: sportingEvents.description,
-    date: sportingEvents.date,
-    registration_start: sportingEvents.registration_start,
-    registration_end: sportingEvents.registration_end,
-    location: sportingEvents.location,
-    location_address: sportingEvents.location_address,
-    fee_amount: sportingEvents.fee_amount,
-    fee_currency: sportingEvents.fee_currency,
-    fee_payment_due_date: sportingEvents.fee_payment_due_date,
-    fee_amount_promotional: sportingEvents.fee_amount_promotional,
-    promotional_fee_end: sportingEvents.promotional_fee_end,
-    promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
-  };
+  const SELECT_QUERY = SportingEventBasicInfoSchema
+    .keyof().options
+    .reduce((acc, field) => {
+        acc[field] = sportingEvents[field];
+        return acc;
+      },
+      {} as SelectedFields
+    )
   const now = new Date();
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -33,13 +28,13 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
   const openRegistrationEvents = [];
   const closedRegistrationEvents = [];
 
-  for (const event of activeEvents) {
+  const activeEventsParsed = z.array(SportingEventBasicInfoSchema)
+    .parse(activeEvents);
+  for (const event of activeEventsParsed) {
     if (event.registration_start && event.registration_end) {
-      const start = new Date(event.registration_start);
-      const end = new Date(event.registration_end);
-      if (now >= start && now <= end) {
+      if (now >= event.registration_start && now <= event.registration_end) {
         openRegistrationEvents.push(event);
-      } else if (now >= end) {
+      } else if (now >= event.registration_end) {
         closedRegistrationEvents.push(event);
       } else {
         comingSoonEvents.push(event);
@@ -55,32 +50,26 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
     .where(lt(sportingEvents.date, yesterday.toISOString()))
     .orderBy(desc(sportingEvents.date))
     .limit(5);
+  const pastEventsParsed = z.array(SportingEventBasicInfoSchema)
+    .parse(pastEvents);
 
   return {
     comingSoon: comingSoonEvents,
     open: openRegistrationEvents,
     closed: closedRegistrationEvents,
-    past: pastEvents,
+    past: pastEventsParsed,
   }
 }
 
 export const allSportingEventsList = async (db: DrizzleD1Database) => {
-  const SELECT_QUERY = {
-    id: sportingEvents.id,
-    title: sportingEvents.title,
-    description: sportingEvents.description,
-    date: sportingEvents.date,
-    registration_start: sportingEvents.registration_start,
-    registration_end: sportingEvents.registration_end,
-    location: sportingEvents.location,
-    location_address: sportingEvents.location_address,
-    fee_amount: sportingEvents.fee_amount,
-    fee_currency: sportingEvents.fee_currency,
-    fee_payment_due_date: sportingEvents.fee_payment_due_date,
-    fee_amount_promotional: sportingEvents.fee_amount_promotional,
-    promotional_fee_end: sportingEvents.promotional_fee_end,
-    promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
-  };
+  const SELECT_QUERY = SportingEventBasicInfoSchema
+    .keyof().options
+    .reduce((acc, field) => {
+        acc[field] = sportingEvents[field];
+        return acc;
+      },
+      {} as SelectedFields
+    )
   const events = []
   while (true) {
     const batch = await db

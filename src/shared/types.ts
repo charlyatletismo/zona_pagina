@@ -184,8 +184,6 @@ export const SportingEventClothingSchema = z.object({
   clothing_type: z.enum(CLOTHING_TYPES, 'Tipo de prenda no válida'),
   size: z.enum(SHIRT_SIZES, 'Talla no válida'),
   purchased_quantity: z.number().default(0).optional(),
-  demanded_quantity: z.number().default(0).optional(),
-  reserved_quantity: z.number().default(0).optional(),
 })
 
 
@@ -238,6 +236,7 @@ export const SportingEventSchema = z.object({
   promotional_fee_end: z.date().nullable().optional(),
   promotional_fee_payment_due_date: z.date().nullable().optional(),
   age_ranges: z.array(z.number()).nullable().optional(),
+  results_url: z.string().max(512).nullable().optional(),
   created_by: UserSchema.shape.id.nullable().optional(),
   created_at: z.date().nullable().optional(),
   updated_by: UserSchema.shape.id.nullable().optional(),

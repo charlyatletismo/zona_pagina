@@ -20,7 +20,9 @@ import {
 import {
   getUserRegistration,
   getManagedUsersRegistrations,
-  getAllUsersRegistrations
+  getAllUsersRegistrations,
+  getUserRegistrationWithEvent,
+  setRegistrationAsPaid,
 } from "./lib/sportingEventRegistrations";
 import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";
@@ -104,6 +106,70 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     const userId: string = c.get('jwtPayload').id;
     const res = await getManagedUsersRegistrations(db, Number(id), userId);
     return c.json({ data: res });
+  })
+  .post("/:id/pay", async (c) => {
+    const db = drizzle(c.env.DB);
+    const userId = c.get('jwtPayload').id;
+    const { id } = c.req.param();
+    const data = await getUserRegistrationWithEvent(db, Number(id), userId);
+    if (!data || !data.registration) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 403);
+    }
+    if (data.registration.status === 'paid') {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ALREADY_PAID }, 400);
+    }
+    if ((data.payment?.pending_to_pay || 0) <= 0) {
+      // update registration status to paid (this MUST NEVER happen)
+      console.error(`Registration ${data.registration.id} for event `
+        + `${id} has no pending amount to pay but is not marked `
+        + `as paid. Marking as paid to avoid blocking the user.`);
+      setRegistrationAsPaid(db, data.registration.id, userId);
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ALREADY_PAID }, 400);
+    }
+    // console.log("Using MercadoPago access token:", c.env.MERCADOPAGO_ACCESS_TOKEN);
+    if (!c.env.MERCADOPAGO_ACCESS_TOKEN) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_PROCESSING_ERROR }, 500);
+    }
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${c.env.MERCADOPAGO_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            id: `event_${id}_user_${userId}`,
+            title: data.event.title,
+            quantity: 1,
+            unit_price: data.payment?.pending_to_pay || 0,
+          }
+        ],
+        // back_urls: {
+        //   success: `http://localhost:5173/sportingEvents/${id}/registration`,
+        //   failure: `http://localhost:5173/sportingEvents/${id}/registration`,
+        //   pending: `http://localhost:5173/sportingEvents/${id}/registration`
+        // },
+        // auto_return: "approved",
+      })
+    });
+    if (!response.ok) {
+      console.error(`HTTP ${response.status}: ${await response.text()}`);
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_PROCESSING_ERROR }, 500);
+    }
+    // console.log("MercadoPago preference creation response:", res);
+    // console.log("MercadoPago preference creation error:", err);
+
+    const res: {
+      id: string | null,
+      init_point: string | null,
+    } = await response.json();
+    return c.json({
+      data: {
+        init_point: res.init_point,
+        preference_id: res.id,
+      }
+    });
   })
   .post("/create", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

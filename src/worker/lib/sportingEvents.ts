@@ -7,18 +7,16 @@ import {
   sportingEventCircuits,
   sportingEventSchedules,
   sportingEventRegistrations,
-  sportingEventAthleteCategories,
   sportingEventClothing
 } from '../db/schema'
 import { userRegisteredInEvent } from './sportingEventRegistrations';
-import { M, appendToMessage } from './messages';
+import { M } from './messages';
 import z from 'zod';
 import {
   SportingEventDbSchema,
   SportingEventClothingSchema,
   SportingEventCircuitSchema,
   SportingEventScheduleSchema,
-  SportingEventAthleteCategorySchema
 } from '@shared/types';
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 
@@ -82,11 +80,6 @@ export const getSpEvent = async (
     .from(sportingEventSchedules)
     .where(eq(sportingEventSchedules.event_id, eventId))
     .orderBy(asc(sportingEventSchedules.date));
-  const athleteCategories = await db
-    .select()
-    .from(sportingEventAthleteCategories)
-    .where(eq(sportingEventAthleteCategories.event_id, eventId))
-    .orderBy(asc(sportingEventAthleteCategories.circuit_id), asc(sportingEventAthleteCategories.name));
   const athletesRegistered = await db
     .select()
     .from(sportingEventRegistrations)
@@ -102,19 +95,17 @@ export const getSpEvent = async (
     ...event[0],
     circuits: circuits.length > 0 ? circuits : null,
     schedules: schedules.length > 0 ? schedules : null,
-    categories: athleteCategories.length > 0 ? athleteCategories : null,
     clothing: clothing.length > 0 ? clothing : null,
     athletes_registered: athletesRegistered.length,
     athletes_confirmed: athletesConfirmed.length,
     user_registration_status: {
       registration_status: 'not_registered',
-      category_name: '',
       circuit_id: -1,
       pending_to_pay: 0,
     }, // not registered
   };
   if (userId) {
-    ev.user_registration_status = await userRegisteredInEvent(db, eventId, userId);
+    ev.user_registration_status = await userRegisteredInEvent(db, eventId, userId, event[0]);
   }
   return {
     status: 200,
@@ -127,7 +118,6 @@ interface ReadSpEventResult extends DataResult {
   schedules?: z.infer<typeof SportingEventScheduleSchema>[] | null;
   clothing?: z.infer<typeof SportingEventClothingSchema>[] | null;
   circuits?: z.infer<typeof SportingEventCircuitSchema>[] | null;
-  categories?: z.infer<typeof SportingEventAthleteCategorySchema>[] | null;
 }
 
 const readSpEvent = (
@@ -187,22 +177,6 @@ const readSpEvent = (
     }
   }
 
-  let categories = null;
-  if (ev.categories && ev.categories.length > 0) {
-    try {
-      categories = ev.categories.map(item =>
-        SportingEventAthleteCategorySchema.omit({id: true}).parse(item)
-      );
-    } catch (error) {
-      // Handle parsing error if needed
-      console.log("Error parsing sporting event athlete category data:", error)
-      return {
-        status: 400,
-        message: M.SPORTING_EVENT_ATHLETE_CATEGORY_INVALID_DATA,
-      };
-    }
-  }
-
   const data = SportingEventDbSchema.parse(ev);
 
   return {
@@ -211,7 +185,6 @@ const readSpEvent = (
     schedules,
     clothing,
     circuits,
-    categories,
   }
 }
 
@@ -247,6 +220,9 @@ export const addSpEvent = async (
     date: data.date.toISOString(),
     registration_start: data.registration_start?.toISOString() || null,
     registration_end: data.registration_end?.toISOString() || null,
+    fee_payment_due_date: data.fee_payment_due_date?.toISOString() || null,
+    promotional_fee_end: data.promotional_fee_end?.toISOString() || null,
+    promotional_fee_payment_due_date: data.promotional_fee_payment_due_date?.toISOString() || null,
     created_by: userId,
     updated_by: userId,
     created_at: new Date().toISOString(),
@@ -290,7 +266,7 @@ export const addSpEvent = async (
 }
 
 
-export const crudArray = async <T = any>(
+export const crudArray = async <T = unknown>(
   eventId: number,
   array: any[] | null | undefined,
   dbArray: any[] | null | undefined
@@ -388,6 +364,9 @@ export const updateSpEvent = async (
       date: finalData.date.toISOString(),
       registration_start: finalData.registration_start?.toISOString() || null,
       registration_end: finalData.registration_end?.toISOString() || null,
+      fee_payment_due_date: finalData.fee_payment_due_date?.toISOString() || null,
+      promotional_fee_end: finalData.promotional_fee_end?.toISOString() || null,
+      promotional_fee_payment_due_date: finalData.promotional_fee_payment_due_date?.toISOString() || null,
       updated_by: userId,
       updated_at: new Date().toISOString(),
     })
@@ -511,7 +490,23 @@ export const registerToSpEvent = async (
   if (spEvent.length === 0) {
     return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
-  const feeAmount = spEvent[0].fee_amount;
+  if (spEvent[0].registration_start
+    && new Date(spEvent[0].registration_start) > new Date()
+  ) {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_NOT_STARTED };
+  }
+  if (spEvent[0].registration_end
+    && new Date(spEvent[0].registration_end) < new Date()
+  ) {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_ENDED };
+  }
+  let feeAmount = spEvent[0].fee_amount;
+  if (spEvent[0].fee_amount_promotional
+    && spEvent[0].promotional_fee_end
+    && new Date(spEvent[0].promotional_fee_end) > new Date()
+  ) {
+    feeAmount = spEvent[0].fee_amount_promotional;
+  }
   if (feeAmount === null || feeAmount === undefined) {
     return { status: 400, message: M.SPORTING_EVENT_FEE_NOT_SET};
   }
@@ -533,7 +528,6 @@ export const registerToSpEvent = async (
       clothing_shirt_size: users.clothing_shirt_size,
       special_needs: users.special_needs,
       discount_percentage: users.discount_percentage,
-      manual_athlete_category: users.manual_athlete_category,
       training_team_id: users.training_team_id,
     })
     .from(users)
@@ -542,69 +536,27 @@ export const registerToSpEvent = async (
   if (userData.length === 0) {
     return { status: 404, message: M.USER_NOT_FOUND };
   }
-  // determine athlete category
-  const athleteCategories = await db
-    .select()
-    .from(sportingEventAthleteCategories)
-    .where(and(
-      eq(sportingEventAthleteCategories.event_id, eventId),
-      eq(sportingEventAthleteCategories.circuit_id, circuitId)
-    ));
-  let categoryId: number | null = null;
-  let categoryName: string | null = null;
-  if (userData[0].manual_athlete_category) {
-    // find category by name
-    const matchingCategories = athleteCategories
-      .filter(cat =>
-        cat.name.toLowerCase()
-          .startsWith(
-            userData[0].manual_athlete_category!
-              .toLowerCase())
-    );
-    if (matchingCategories.length === 0) {
-      categoryId = null; // organizer will have to set it manually
-      categoryName = null;
-    } else {
-      categoryId = matchingCategories[0].id;
-      categoryName = matchingCategories[0].name;
-    }
-  } else {
-    // try to find category based on age
-    if (!userData[0].date_of_birth) {
-      return { status: 400, message: M.USER_DATE_OF_BIRTH_NOT_SET };
-    }
-    const birthDate = new Date(userData[0].date_of_birth);
-    const today = new Date();
-    let age = today.getTime() - birthDate.getTime();
-    age /= 1000 * 60 * 60 * 24;
-    age = Math.floor(age / 365.25);
-    const qualifiedCategories = athleteCategories.filter(cat => {
-      if (cat.exclude_auto_qualify) {
-        return false;
-      }
-      const minAgeOk = (cat.min_age === null || age >= cat.min_age);
-      const maxAgeOk = (cat.max_age === null || age <= cat.max_age);
-      const sexOk = (cat.sex === null || userData[0].sex === cat.sex);
-      return minAgeOk && maxAgeOk && sexOk;
-    });
-    if (qualifiedCategories.length === 0) {
-      return { status: 400, message: M.SPORTING_EVENT_USER_UNQUALIFIED_FOR_ANY_CATEGORY };
-    } else if (qualifiedCategories.length > 1) {
-      return {
-        status: 400,
-        message: appendToMessage(
-          M.SPORTING_EVENT_USER_QUALIFIES_FOR_MULTIPLE_CATEGORIES_$APPEND,
-          qualifiedCategories.map(cat => cat.name).join(', ')
-        )
-      };
-    }
-    categoryId = qualifiedCategories[0].id;
-    categoryName = qualifiedCategories[0].name;
-  }
 
   if (!userData[0].clothing_shirt_size) {
     return { status: 400, message: M.USER_SHIRT_SIZE_NOT_SET };
   }
+  if (!userData[0].date_of_birth) {
+    return { status: 400, message: M.USER_DATE_OF_BIRTH_NOT_SET };
+  }
+  const calculateAge = (dateOfBirth: Date): number => {
+    const today = new Date();
+    const yearsDiff = today.getFullYear() - dateOfBirth.getFullYear();
+    if (
+      today.getMonth() < dateOfBirth.getMonth() ||
+      (
+        today.getMonth() === dateOfBirth.getMonth()
+        && today.getDate() < dateOfBirth.getDate()
+      )
+    ) {
+      return yearsDiff - 1;
+    }
+    return yearsDiff;
+  };
 
   const userClothing = await db
     .select()
@@ -615,24 +567,35 @@ export const registerToSpEvent = async (
     ))
     .limit(1);
 
-  const fee_amount_after_discount = feeAmount * (1 - (userData[0].discount_percentage || 0) / 100);
-  const status = fee_amount_after_discount > 0 ? "pending" : "paid";
+  const feeAmountAfterDiscount = feeAmount * (1 - (userData[0].discount_percentage || 0) / 100);
+  const status = feeAmountAfterDiscount > 0 ? "pending" : "paid";
+
+  const promotional = (
+      spEvent[0].fee_amount_promotional
+      && spEvent[0].promotional_fee_end
+    )
+    ? (new Date(spEvent[0].promotional_fee_end) > new Date())
+    : false;
 
   await db.insert(sportingEventRegistrations).values({
-    event_id: eventId,
     user_id: userId,
-    category_id: categoryId,
     training_team_id: userData[0].training_team_id,
+    event_id: eventId,
+    circuit_id: circuitId,
+    age_at_registration: calculateAge(new Date(userData[0].date_of_birth)),
     discount_percentage: userData[0].discount_percentage || 0,
     discount_reason:
-    userData[0].discount_percentage
-    ? "Descuento automático para usuario (fijado en la configuración del usuario)"
-    : null,
-    fee_amount_original: feeAmount,
-    fee_amount_after_discount,
-    demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
+      userData[0].discount_percentage
+      ? "Descuento automático para usuario (fijado en la configuración del usuario)"
+      : null,
+    // registration_date default to now in the database
+    promotional_fee_applied: promotional ? 1 : 0,
+    // paid_amount default to zero in the database
     status,
-    paid_percentage: fee_amount_after_discount > 0 ? 0 : 100,
+    full_payment_date: status === "paid" ? new Date().toISOString() : null,
+    demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
+    // reserved_clothing_id default to null in the database
+    // chip_id default to null in the database
     created_by: reqUserId,
     updated_by: reqUserId,
   });
@@ -641,9 +604,8 @@ export const registerToSpEvent = async (
     message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY,
     data: {
       registration_status: status,
-      category_name: categoryName,
       circuit_id: circuitId,
-      pending_to_pay: fee_amount_after_discount,
+      pending_to_pay: feeAmountAfterDiscount,
     }
   };
 }

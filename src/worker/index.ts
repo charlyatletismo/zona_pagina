@@ -6,13 +6,12 @@ import type { JwtVariables } from 'hono/jwt'
 import { authRoute } from "./auth";
 import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
-import { sportingEventRegistrationsRoute } from "./sportingEventRegistrations";
 import { usersRoute } from "./users";
 import { M } from "./lib/messages";
 import { locationsRoute } from "./locations";
 import { trainingTeamsRoute } from "./trainingTeams";
 import { sportingEventTransactionsRoute } from "./sportingEventTransactions";
-import { paymentRoute } from "./payment";
+import { webhookMercadoPagoRoute } from "./webhookMercadoPago";
 
 
 export interface Env {
@@ -27,6 +26,7 @@ type Variables = JwtVariables
 
 const RGX_AUTH = /^\/api\/auth\/(sendCode|register|login)$/;
 const RGX_SP_EVENTS = /^\/api\/sportingEvents\/?(all)?\d*$/;
+const RGX_WEBHOOKS = /^\/api\/webhook\/.*$/;
 
 
 export default {
@@ -46,12 +46,16 @@ export default {
                 // console.log("Authorization header found, applying JWT middleware");
                 return jwtMiddleware(c, next);
             }
+            if (RGX_WEBHOOKS.test(c.req.path)) {
+                // console.log("Skipping JWT auth for webhooks");
+                return next();
+            }
             if (RGX_AUTH.test(c.req.path) && c.req.method === 'POST') {
-                // console.log("Skipping auth for login");
+                // console.log("Skipping JWT auth for login");
                 return next();
             }
             if (RGX_SP_EVENTS.test(c.req.path) && c.req.method === 'GET') {
-                // console.log("Skipping auth for public events");
+                // console.log("Skipping JWT auth for public events");
                 return next();
             }
             return jwtMiddleware(c, next);
@@ -63,12 +67,11 @@ export default {
         app.route('/api/auth', authRoute);
         app.route('/api/sportingEvents', sportingEventsRoute);
         app.route('/api/settings', settingsRoute);
-        app.route('/api/sportingEventRegistrations', sportingEventRegistrationsRoute);
         app.route('/api/users', usersRoute);
         app.route('/api/locations', locationsRoute);
         app.route('/api/trainingTeams', trainingTeamsRoute);
         app.route('/api/sportingEventTransactions', sportingEventTransactionsRoute);
-        app.route('/api/payment', paymentRoute);
+        app.route('/api/webhook/mercadoPago', webhookMercadoPagoRoute);
 
         app.notFound((c) => c.json({ message: 'Not Found' }, 404));
         app.onError((err, c) => {

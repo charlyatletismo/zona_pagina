@@ -7,7 +7,6 @@ import {
   SportingEventClothingSchema,
   TrainingTeamSchema,
   SportingEventTransactionSchema,
-  SportingEventCircuitSchema,
 } from './types';
 
 
@@ -152,55 +151,48 @@ export const ARSportingEventMinSchema = SportingEventSchema.pick({
 //////////////////////////////////////////////////////////////////////////////////
 
 
-const shortClothingSchema = SportingEventClothingSchema.pick({
-  id: true,
-  clothing_type: true,
-  size: true,
-  purchased_quantity: true,
-  demanded_quantity: true,
-  reserved_quantity: true,
+export const SpClothingMinSchema = SportingEventClothingSchema.omit({
+  event_id: true,
 })
 
 
 export const ARSportingEventRegistrationSchema = z.object({
-  registration: SportingEventRegistrationSchema.pick({
-    id: true,
-    age_at_registration: true,
-    discount_percentage: true,
-    discount_reason: true,
-    registration_date: true,
-    paid_amount: true,
-    status: true,
-    full_payment_date: true,
-    demanded_clothing_id: true,
-    reserved_clothing_id: true,
-    chip_id: true,
-    bib_number: true,
-    kit_delivered: true,
-    updated_at: true,
+  registration: SportingEventRegistrationSchema.omit({
+    created_by: true,
+    created_at: true,
+    updated_by: true,
   }).extend({
-    demanded_clothing: shortClothingSchema.nullable(),
-    reserved_clothing: shortClothingSchema.nullable(),
     updated_at: SportingEventRegistrationSchema.shape.updated_at.nullable(),
   }),
-  training_team: TrainingTeamSchema.pick({
-    id: true,
-    name: true,
-    location: true,
-  }).nullable(),
-  clothing: z.array(shortClothingSchema).nullable(),
-  circuit: SportingEventCircuitSchema.pick({
-    id: true,
-    name: true,
-    distance_km: true,
-    map_url: true,
-  }),
-  sp_event: SportingEventSchema.pick({
-    id: true,
-    title: true,
-    age_ranges: true,
+  demanded_clothing: SpClothingMinSchema.nullable(),
+  reserved_clothing: SpClothingMinSchema.nullable(),
+  // circuit: SportingEventCircuitSchema.pick({
+  //   id: true,
+  //   name: true,
+  //   distance_km: true,
+  //   map_url: true,
+  // }),
+  // sp_event: SportingEventSchema.pick({
+  //   id: true,
+  //   title: true,
+  //   age_ranges: true,
+  // }),
+  payment: z.object({
+    fee_amount: SportingEventSchema.shape.fee_amount,
+    fee_currency: SportingEventSchema.shape.fee_currency,
+    fee_payment_due_date: SportingEventSchema.shape.fee_payment_due_date,
+    fee_amount_promotional: SportingEventSchema.shape.fee_amount_promotional,
+    promotional_fee_payment_due_date: SportingEventSchema.shape.promotional_fee_payment_due_date,
+    paid_amount: z.number(),
+    discount_amount: z.number(),
+    pending_to_pay: z.number(),
   }),
   category: z.string().nullable(),
+})
+
+
+export const ARManagedSportingEventRegistrationSchema = ARSportingEventRegistrationSchema.extend({
+  user: ARUserMinSchema,
 })
 
 

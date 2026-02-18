@@ -208,7 +208,22 @@ export const M = {
     [ES]: "La inscripción del evento deportivo no tiene un evento existente asociado",
     [EN]: "Sporting event registration does not have an associated existing event"
   },
-
+  SPORTING_EVENT_REGISTRATION_ALREADY_PAID: {
+    [ES]: "La inscripción del evento deportivo ya ha sido pagada",
+    [EN]: "Sporting event registration has already been paid"
+  },
+  SPORTING_EVENT_REGISTRATION_NOT_STARTED: {
+    [ES]: "La inscripción al evento deportivo aún no ha comenzado",
+    [EN]: "Sporting event registration has not started yet"
+  },
+  SPORTING_EVENT_REGISTRATION_ENDED: {
+    [ES]: "La inscripción al evento deportivo ha finalizado",
+    [EN]: "Sporting event registration has ended"
+  },
+  SPORTING_EVENT_REGISTRATION_PAYMENT_PROCESSING_ERROR: {
+    [ES]: "Error al procesar el pago de la inscripción del evento deportivo",
+    [EN]: "Error processing sporting event registration payment"
+  },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {
