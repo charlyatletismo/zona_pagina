@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {
   CalendarIcon,
-  CalendarPlus,
-  FileUserIcon,
-  UserCircle2,
   History,
 } from 'lucide-react';
 import unprotectedCheck from '@/lib/beforeLoadGenericCheck';
@@ -11,7 +8,6 @@ import { getAuthenticated } from '@/lib/apiCalls';
 import z from 'zod';
 import { ARAllSportingEventSchema } from '@shared/apiRespTypes';
 import { SportingEventCard } from '@/components/sportingEventCard';
-import { Button } from '@/components/ui/button';
 
 
 export const Route = createFileRoute('/')({
