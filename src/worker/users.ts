@@ -165,12 +165,10 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
         location_address: user.location_address,
         special_needs: user.special_needs,
         discount_percentage: user.discount_percentage,
-        manual_athlete_category: user.manual_athlete_category,
         manager_id: user.manager_id,
         training_team_id: user.training_team_id,
         training_team_temp: user.training_team_temp,
-        profile_image_url: user.profile_image_url,
-        profile_image_preview_url: user.profile_image_preview_url,
+        profile_photo_id: user.profile_photo_id,
         language: user.language,
       }
     } else {
@@ -211,7 +209,6 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
       // Athletes Manager can only update their own athletes
       delete updateData.role; // Prevent changing role
       delete updateData.discount_percentage; // Prevent changing discount percentage
-      delete updateData.manual_athlete_category; // Prevent changing manual athlete category
       const managerId = c.get('jwtPayload').id;
       const res = await db.update(users)
         .set(updateData)

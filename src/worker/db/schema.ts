@@ -74,7 +74,6 @@ export const users = sqliteTable("users", {
   location_address: text({ length: 256 }),
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
   discount_percentage: int().notNull().default(0), // for special discounts
-  manual_athlete_category: text({ length: 64 }), // if set, selects athlete category that matches this name or the beggining of it
   manager_id: text({ length: USER_ID_MAX_LENGTH })
     .references((): any => users.id,
       { onDelete: 'set null',
@@ -86,8 +85,13 @@ export const users = sqliteTable("users", {
         onUpdate: 'cascade' }
       ),
   training_team_temp: text({ length: 128 }), // temporary training team name when not registered in the system
-  profile_image_url: text({ length: 512 }),
-  profile_image_preview_url: text({ length: 512 }),
+  profile_photo_id: text({ length: 512 }), // cloudflare image id for profile picture
+  // Banned users can log in but cannot register for events or be part of training teams, etc.
+  // This allows us to keep their data and history in the system without affecting statistics
+  // and records, and also allows them to reactivate their account if the ban is temporary.
+  banned: int().notNull().default(0),
+  ban_reason: text({ length: 512 }),
+
   language: text({ length: 2 }).notNull().default('es'), // 'es', 'en', etc.
   temp_code: text({ length: 6 }),
   role: text().notNull(), // admin, organizer, athletes_manager, athlete
@@ -173,6 +177,24 @@ export const sportingEvents = sqliteTable("sporting_events", {
   updated_at: text().notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
+
+
+// export const sportingEventGallery = sqliteTable("sporting_event_gallery", {
+//   id: int().primaryKey({ autoIncrement: true }),
+//   event_id: int().notNull()
+//     .references(() => sportingEvents.id,
+//       { onDelete: 'cascade',
+//         onUpdate: 'cascade' }
+//       ),
+//   photo_id: text({ length: 36 }), // cloudflare image id
+//   caption: text({ length: 256 }),
+//   uploaded_by: text({ length: USER_ID_MAX_LENGTH })
+//     .references(() => users.id,
+//       { onDelete: 'set null',
+//         onUpdate: 'cascade' }
+//       ),
+//   uploaded_at: text().notNull().default(sql`CURRENT_TIMESTAMP`),
+// });
 
 
 // Circuits or Routes within an Event

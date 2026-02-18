@@ -94,9 +94,6 @@ export const UserSchema = z.object({
     .min(0, 'El porcentaje de descuento no puede ser negativo')
     .max(100, 'El porcentaje de descuento no puede exceder 100%')
     .prefault(0),
-  manual_athlete_category: z.string()
-    .max(64, 'La categoría manual no puede exceder los 64 caracteres')
-    .nullable().optional(),
   manager_id: z.string()
     .max(USER_ID_MAX_LENGTH, 'El ID del manager no puede exceder los 28 caracteres')
     .nullable().optional(),
@@ -105,11 +102,8 @@ export const UserSchema = z.object({
   training_team_temp: z.string()
     .max(128, 'El nombre del equipo de entrenamiento temporal no puede exceder los 128 caracteres')
     .nullable().optional(),
-  profile_image_url: z.string()
-    .max(512, 'La URL de la imagen de perfil no puede exceder los 512 caracteres')
-    .nullable().optional(),
-  profile_image_preview_url: z.string()
-    .max(512, 'La URL de la vista previa de la imagen de perfil no puede exceder los 512 caracteres')
+  profile_photo_id: z.string()
+    .max(512, 'El ID de la imagen de perfil no puede exceder los 512 caracteres')
     .nullable().optional(),
   language: z.string()
     .max(2, 'El código de idioma no puede exceder los 2 caracteres')

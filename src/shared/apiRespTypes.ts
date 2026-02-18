@@ -39,7 +39,7 @@ export const SettingsSchema = UserSchema.pick({
   manager_id: true,
   training_team_id: true,
   training_team_temp: true,
-  profile_image_url: true,
+  profile_photo_id: true,
   language: true,
 }).extend({
   name: UserSchema.shape.name.nullable(),
