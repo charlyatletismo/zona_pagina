@@ -36,7 +36,7 @@ export const sendCodeViaWhatsappTemplate = async (env: Env, phone: string, code:
       }
     }
     let response : any;
-    await fetch(`https://graph.facebook.com/v21.0/${env.GRAPH_API_PHONE_NUMBER_ID}/messages`, {
+    await fetch(`https://graph.facebook.com/v24.0/${env.GRAPH_API_PHONE_NUMBER_ID}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
