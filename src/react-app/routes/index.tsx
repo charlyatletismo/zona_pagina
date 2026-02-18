@@ -80,38 +80,6 @@ function Index() {
       </div>
 
       <div className="container mx-auto px-4 pb-16 space-y-16">
-        {localStorage.getItem('USER_ROLE') === 'organizer' && (
-          <div className="flex flex-wrap gap-2 mb-8 w-full border-b-2 pb-5">
-            {/* <div className='my-auto relative p-px rounded-lg overflow-hidden'>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-full h-[500%] bg-radial-[at_15%_75%] from-pink-500 via-blue-400 to-indigo-900 to-75% animate-[spin_3s_linear_infinite]" />
-              <div className='bg-primary/50 text-white px-3 py-1 rounded-[7px] text-sm font-medium relative z-10'>
-                Modo organizador
-              </div>
-            </div> */}
-            <div className='my-auto px-3 py-1 bg-gray-600 rounded-lg text-sm text-white animate-badge-color-cycle repeat-1'>
-              Atajos
-            </div>
-            <Button variant="outline">
-              <CalendarPlus className="w-4 h-4" />
-              <Link to="/sportingEvents/create">
-                Nuevo Evento Deportivo
-              </Link>
-            </Button>
-            <Button variant="outline">
-              <FileUserIcon className="w-4 h-4" />
-              <Link to="/sportingEvents/registrations">
-                Inscripciones
-              </Link>
-            </Button>
-            <Button variant="outline">
-              <UserCircle2 className="w-4 h-4" />
-              <Link to="/users">
-                Usuarios
-              </Link>
-            </Button>
-          </div>
-        )}
-
         {sections.map((section) => (
           section.items.length > 0 && (
             <section key={section.title}>
@@ -146,18 +114,20 @@ function Index() {
           </section>
         )}
 
-        <section className='text-center'>
-          <Link to="/sportingEvents/history"
-            className='max-w-md mx-auto py-5
-              flex gap-2 items-center justify-center
-              text-lg font-medium text-gray-700 shadow-lg
-              border border-gray-200 rounded-lg
-              hover:animate-tremor transition-all duration-150 group'
-          >
-            <History className='h-6 w-6 p-1 group-hover:text-white bg-gray-100 group-hover:bg-primary rounded-full' />
-            Ver todos los eventos
-          </Link>
-        </section>
+        {(events.open.length || events.comingSoon.length || events.closed.length || events.past.length) ? (
+          <section className='text-center'>
+            <Link to="/sportingEvents/history"
+              className='max-w-md mx-auto py-5
+                flex gap-2 items-center justify-center
+                text-lg font-medium text-gray-700 shadow-lg
+                border border-gray-200 rounded-lg
+                hover:animate-tremor transition-all duration-150 group'
+            >
+              <History className='h-6 w-6 p-1 group-hover:text-white bg-gray-100 group-hover:bg-primary rounded-full' />
+              Ver todos los eventos
+            </Link>
+          </section>
+        ) : null}
       </div>
     </div>
   )
