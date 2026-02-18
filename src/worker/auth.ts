@@ -15,7 +15,7 @@ const genCode = () => {
 
 export const authRoute = new Hono<{ Bindings: Env }>()
   .post("/sendCode", async (c) => {
-    const { phone } = await c.req.json();
+    const { phone }: { phone: string } = await c.req.json();
     if (!phone) {
       return c.json({ message: M.AUTH_PHONE_REQUIRED }, 400);
     }
@@ -62,7 +62,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
     return c.json({ message: M.AUTH_CODE_SENT });
   })
   .post("/login", async (c) => {
-    const { phone, code } = await c.req.json();
+    const { phone, code }: { phone: string, code: string } = await c.req.json();
     if (!phone || !code) {
       return c.json({ message: M.AUTH_PHONE_REQUIRED }, 400);
     }
@@ -121,7 +121,7 @@ export const authRoute = new Hono<{ Bindings: Env }>()
     });
   })
   .post("/register", async (c) => {
-    const { user_id, phone } = await c.req.json();
+    const { user_id, phone }: { user_id: string, phone: string } = await c.req.json();
     if (!phone) {
       return c.json({ message: M.AUTH_PHONE_REQUIRED }, 400);
     }
