@@ -142,16 +142,66 @@ function RouteComponent() {
     <div className="container mx-auto px-4 py-8 max-w-5xl">
 
       {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
-              <AlertCircle className="w-4 h-4" />
-              {error}
-          </div>
+        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
+          <AlertCircle className="w-4 h-4" />
+          {error}
+        </div>
       )}
 
       {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm mb-3">
-              {success}
-          </div>
+        <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm mb-3">
+          {success}
+        </div>
+      )}
+
+
+      {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
+        <div className='flex flex-wrap gap-2 justify-center mb-6 p-4 border-b'>
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
+                <CircleDollarSignIcon className="w-4 h-4" />
+                Balance financiero
+              </Link>
+            </Button>
+          )}
+
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/allRegistrations" params={{ eventId }}>
+                <FileUserIcon className="w-4 h-4" />
+                Inscripciones
+              </Link>
+            </Button>
+          )}
+
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
+                <BadgeDollarSign className="w-4 h-4" />
+                Nueva transacción
+              </Link>
+            </Button>
+          )}
+
+          {[ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE].includes(currentRole) && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+                <FilePlus2 className="w-4 h-4" />
+                Registrar Atletas
+              </Link>
+            </Button>
+          )}
+
+          {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
+                <Edit className="w-4 h-4" />
+                Editar
+              </Link>
+            </Button>
+          )}
+        </div>
       )}
 
       {
@@ -232,55 +282,6 @@ function RouteComponent() {
           </Button>
         )}
       </div>
-
-      {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
-        <div className='flex flex-wrap gap-2 justify-center mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200'>
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
-                <CircleDollarSignIcon className="w-4 h-4" />
-                Balance financiero
-              </Link>
-            </Button>
-          )}
-
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/allRegistrations" params={{ eventId }}>
-                <FileUserIcon className="w-4 h-4" />
-                Inscripciones
-              </Link>
-            </Button>
-          )}
-
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
-                <BadgeDollarSign className="w-4 h-4" />
-                Nueva transacción
-              </Link>
-            </Button>
-          )}
-
-          {[ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE].includes(currentRole) && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
-                <FilePlus2 className="w-4 h-4" />
-                Registrar Atletas
-              </Link>
-            </Button>
-          )}
-
-          {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
-                <Edit className="w-4 h-4" />
-                Editar
-              </Link>
-            </Button>
-          )}
-        </div>
-      )}
 
       {/* Header */}
       <div className="mb-8 text-center">
