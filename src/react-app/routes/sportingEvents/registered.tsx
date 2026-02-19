@@ -42,13 +42,13 @@ const SpBSchema = SportingEventBasicInfoSchema.extend({
 })
 
 
-export const Route = createFileRoute('/sportingEvents/history')({
+export const Route = createFileRoute('/sportingEvents/registered')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async () => {
     const res = await getAuthenticated<
       z.infer<typeof SportingEventBasicInfoSchema>[]
-      >('/api/sportingEvents/all', z.array(SportingEventBasicInfoSchema));
+      >('/api/sportingEvents/myEvents', z.array(SportingEventBasicInfoSchema));
     const now = new Date();
     if (!res.body.data) {
       return { data: [] }
@@ -233,7 +233,7 @@ function RouteComponent() {
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
-      <h1 className='text-2xl font-bold mb-4'>Todos los eventos deportivos</h1>
+      <h1 className='text-2xl font-bold mb-4'>Mis eventos deportivos</h1>
       {data.length > 0 && (<div className='flex gap-2 items-center mb-4 max-w-sm relative'>
         <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
         <Input

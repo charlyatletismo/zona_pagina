@@ -1,7 +1,7 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
-import { lt, gte, desc } from 'drizzle-orm';
-import { sportingEvents } from '../db/schema';
+import { lt, gte, desc, eq, inArray } from 'drizzle-orm';
+import { sportingEvents, sportingEventRegistrations } from '../db/schema';
 import { SportingEventBasicInfoSchema } from '@shared/apiRespTypes';
 import z from 'zod';
 
@@ -87,4 +87,45 @@ export const allSportingEventsList = async (db: DrizzleD1Database) => {
     }
   }
   return events;
+}
+
+export const getUserRegisteredSpEvents = async (db: DrizzleD1Database, userId: string) => {
+  const SELECT_QUERY = SportingEventBasicInfoSchema
+    .keyof().options
+    .reduce((acc, field) => {
+        acc[field] = sportingEvents[field];
+        return acc;
+      },
+      {} as SelectedFields
+    )
+  const events = []
+  let offsetRegs = 0;
+  while (true) {
+    const registrations = await db
+      .select({
+        event_id: sportingEventRegistrations.event_id,
+      })
+      .from(sportingEventRegistrations)
+      .where(eq(sportingEventRegistrations.user_id, userId))
+      .limit(100)
+      .offset(offsetRegs)
+      .all();
+    const batch = await db
+      .select(SELECT_QUERY)
+      .from(sportingEvents)
+      .where(inArray(
+        sportingEvents.id,
+        registrations.map(r => r.event_id)
+      ));
+    events.push(...batch);
+    if (registrations.length < 100) {
+      break;
+    }
+    offsetRegs += 100;
+  }
+  return events.sort(
+    (a, b) =>
+      new Date(b.date as string).getTime()
+      - new Date(a.date as string).getTime()
+  );
 }

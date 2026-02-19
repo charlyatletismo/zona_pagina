@@ -68,3 +68,8 @@ export const lowerAndRemoveDiacritics = (s: string) => {
   // The 'u' flag enables Unicode property escapes like \p{Diacritic}.
   return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 }
+
+export const customFilterFn = (row: any, columnId: string, filterValue: string) => {
+  const cellValue: string = row.getValue(columnId);
+  return lowerAndRemoveDiacritics(String(cellValue)).includes(lowerAndRemoveDiacritics(filterValue));
+}
