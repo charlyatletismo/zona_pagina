@@ -154,6 +154,7 @@ export const SportingEventCircuitSchema = z.object({
     .min(0.01, 'Debe ingresar una distancia')
     .max(1000, 'La distancia no puede exceder los 1000 km'),
   map_url: z.string().max(512).nullable().optional(),
+  competitive: z.boolean().optional(),
 });
 
 
@@ -169,6 +170,8 @@ export const SportingEventScheduleSchema = z.object({
     .nullable().optional(),
   location_lat: LocationSchema.shape.latitude,
   location_long: LocationSchema.shape.longitude,
+  notification_template_id: z.string().max(64).nullable().optional(),
+  notify_at: z.date().nullable().optional(),
 });
 
 
@@ -209,7 +212,7 @@ export const SportingEventSchema = z.object({
   title: z.string("Debe ingresar un título")
     .min(1, "Debe ingresar un título"),
   description: z.string().nullable().optional(),
-  photo_url: z.string().max(512).nullable().optional(),
+  photo_id: z.string().max(512).nullable().optional(),
   date: z.date("Debe ingresar una fecha"),
   registration_start: z.date().nullable().optional(),
   registration_end: z.date().nullable().optional(),
@@ -229,7 +232,7 @@ export const SportingEventSchema = z.object({
   fee_amount_promotional: z.number().nullable().optional(),
   promotional_fee_end: z.date().nullable().optional(),
   promotional_fee_payment_due_date: z.date().nullable().optional(),
-  age_ranges: z.array(z.number()).nullable().optional(),
+  age_ranges: z.string().max(64).nullable().optional(),
   results_url: z.string().max(512).nullable().optional(),
   created_by: UserSchema.shape.id.nullable().optional(),
   created_at: z.date().nullable().optional(),
@@ -259,8 +262,6 @@ export const SportingEventDbSchema = SportingEventSchema.omit({
   athletes_registered: true,
   athletes_confirmed: true,
   user_registration_status: true,
-}).extend({
-  age_ranges: z.string().max(64).nullable().optional(),
 });
 
 

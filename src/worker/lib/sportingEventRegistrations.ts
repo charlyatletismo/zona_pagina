@@ -7,8 +7,9 @@ import {
 import {
   sportingEvents,
   sportingEventRegistrations,
+  sportingEventCircuits,
   sportingEventClothing,
-  users
+  users,
 } from '../db/schema'
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { DrizzleD1Database } from 'drizzle-orm/d1';
@@ -107,38 +108,83 @@ const buildUserRegistration = (
     fee_amount_promotional: number | null,
     promotional_fee_payment_due_date: string | null,
   },
-  clothing: z.infer<typeof SpClothingMinSchema>[]
+  clothing: z.infer<typeof SpClothingMinSchema>[],
+  circuit_km: number | null,
+  demandedClothingRemaining?: number,
 ) => {
-  let pending_to_pay = 0;
+  let current_fee_amount = event.fee_amount || 0;
+  let current_fee_is_promotional = false;
   if (registration.status === 'pending' || registration.status === 'partially_paid') {
     if (registration.promotional_fee_applied && event.promotional_fee_payment_due_date && new Date() < new Date(event.promotional_fee_payment_due_date)) {
-      pending_to_pay = event.fee_amount_promotional! - (registration.paid_amount as number);
-    } else {
-      pending_to_pay = (event.fee_amount || 0) - (registration.paid_amount as number);
+      current_fee_amount = event.fee_amount_promotional!;
+      current_fee_is_promotional = true;
     }
   }
   const discount_amount =
     registration.discount_percentage
-    ? Math.round((event.fee_amount || 0) * ((registration.discount_percentage as number) / 100))
+    ? Math.round(current_fee_amount * ((registration.discount_percentage as number) / 100))
     : 0;
-  if (discount_amount > 0) {
-    pending_to_pay = Math.max(0, pending_to_pay - discount_amount);
+  let pending_to_pay = 0;
+  if (registration.status === 'pending' || registration.status === 'partially_paid') {
+    pending_to_pay = current_fee_amount - discount_amount - (registration.paid_amount as number);
+    if (pending_to_pay < 0) {
+      pending_to_pay = 0;
+    }
+  }
+
+  const dem = clothing.find(c => c.id === registration.demanded_clothing_id)
+  const demanded_clothing = dem ? {
+    id: dem.id,
+    clothing_type: dem.clothing_type,
+    size: dem.size,
+    remaining_quantity: demandedClothingRemaining || 0
+  } : null;
+  const resv = clothing.find(c => c.id === registration.reserved_clothing_id)
+  const reserved_clothing = resv ? {
+    id: resv.id,
+    clothing_type: resv.clothing_type,
+    size: resv.size,
+  } : null;
+
+  const a_ranges = event.age_ranges
+    ? event.age_ranges.split(',')
+      .map(r => Number(r.trim()))
+      .sort((a,b) => a-b)
+    : [];
+  let category: string | null = null;
+  if (circuit_km === null) {
+    // Non-competitive circuit, only one category
+    category = "General"
+  } else if (registration.age_at_registration && a_ranges.length > 0) {
+    const age = registration.age_at_registration;
+    const firstMax = a_ranges.find(r => r > age) || 0;
+    if (a_ranges.indexOf(firstMax) === 0) {
+      category = `<${firstMax}/${circuit_km}KM`;
+    } else {
+      const minAge = firstMax === 0
+        ? a_ranges[a_ranges.length - 1]
+        : a_ranges[a_ranges.indexOf(firstMax) - 1];
+      category = `${minAge}${firstMax === 0 ? "+" : `-${firstMax - 1}`}/${circuit_km}KM`;
+    }
   }
 
   return {
     registration,
-    demanded_clothing: clothing.find(c => c.id === registration.demanded_clothing_id) || null,
-    reserved_clothing: clothing.find(c => c.id === registration.reserved_clothing_id) || null,
+    demanded_clothing,
+    reserved_clothing,
     payment: {
       fee_amount: event.fee_amount,
       fee_currency: event.fee_currency,
       fee_payment_due_date: event.fee_payment_due_date,
       fee_amount_promotional: event.fee_amount_promotional,
       promotional_fee_payment_due_date: event.promotional_fee_payment_due_date,
-      paid_amount: registration.paid_amount,
+      current_fee_amount,
+      current_fee_is_promotional,
       discount_amount: discount_amount,
+      paid_amount: registration.paid_amount,
       pending_to_pay: pending_to_pay,
-    }
+    },
+    category,
   };
 }
 
@@ -179,7 +225,41 @@ const getUserRegistrationFull = async (
     return null;
   }
   const regParsed = ARSportingEventRegistrationSchema.shape.registration.parse(registration);
-  return buildUserRegistration(regParsed, event, clothing);
+  let demandedClothingRemaining = 0;
+  const demandedClothing = clothing.find(c => c.id === regParsed.demanded_clothing_id);
+  if (demandedClothing
+      && demandedClothing.purchased_quantity
+      && demandedClothing.purchased_quantity > 0
+      && regParsed.demanded_clothing_id
+      && regParsed.status !== 'paid') {
+    const clothingInfo = await db
+      .select({id: sportingEventRegistrations.id})
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.event_id, eventId),
+        eq(sportingEventRegistrations.reserved_clothing_id, regParsed.demanded_clothing_id),
+      ))
+      .all();
+    demandedClothingRemaining = demandedClothing.purchased_quantity - clothingInfo.length;
+  }
+  
+  const circuit = await db
+    .select({ distance_km: sportingEventCircuits.distance_km })
+    .from(sportingEventCircuits)
+    .where(and(
+      eq(sportingEventCircuits.id, registration.circuit_id as number),
+      eq(sportingEventCircuits.competitive, 1)
+    ))
+    .limit(1)
+    .get();
+  const circuit_km = circuit ? circuit.distance_km : null;
+  return buildUserRegistration(
+    regParsed,
+    event,
+    clothing,
+    circuit_km,
+    demandedClothingRemaining
+  );
 }
 
 
@@ -279,6 +359,14 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
     .from(sportingEventRegistrations)
     .where(eq(sportingEventRegistrations.event_id, eventId))
     .all();
+  const circuits = await db
+    .select({ id: sportingEventCircuits.id, distance_km: sportingEventCircuits.distance_km })
+    .from(sportingEventCircuits)
+    .where(and(
+      eq(sportingEventCircuits.event_id, eventId),
+      eq(sportingEventCircuits.competitive, 1)
+    ))
+    .all();
   const usersData = await db
     .select({
       id: users.id,
@@ -295,7 +383,8 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
       ...buildUserRegistration(
         ARSportingEventRegistrationSchema.shape.registration.parse(r),
         event,
-        clothingParsed
+        clothingParsed,
+        circuits.find(c => c.id === r.circuit_id)?.distance_km || null
       ),
       user: usersData.find(u => u.id === r.user_id) || null,
     }))

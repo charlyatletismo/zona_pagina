@@ -5,18 +5,18 @@ import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import { MercadoPagoLogo } from '@/components/icons/mercadoPago';
 import { Button } from '@/components/ui/button';
 import { getMessage } from '@/lib/utils';
+import { trainingTeamsData } from '@/lib/queryCache'
 import z from 'zod';
 import {
-  ARSportingEventRegistrationSchema
+  ARSportingEventRegistrationSchema,
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import {
   ArrowLeft,
   CalendarIcon,
   CheckCircle,
-  BadgeQuestionMarkIcon,
-  Shirt,
-  MapPin,
+  ShirtIcon,
+  // MapPin,
   Users2,
   Ruler,
   AlertCircle,
@@ -26,6 +26,7 @@ import {
   Copy,
   Check,
   Cpu,
+  SquareChartGanttIcon,
 } from 'lucide-react';
 
 
@@ -36,14 +37,20 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
     const res = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventRegistrationSchema>
       >(`/api/sportingEvents/${params.eventId}/registration`);
-    return { res, eventId: params.eventId };
+    return {
+      res,
+      eventId: params.eventId,
+      trainingTeam: trainingTeamsData.data.find(
+        team => team.id === res.body?.data.registration.training_team_id
+      ) || null,
+    };
   },
   staleTime: 1000 * 60 * 5,
-})
+});
 
 
 function RouteComponent() {
-  const { res, eventId } = Route.useLoaderData();
+  const { res, eventId, trainingTeam } = Route.useLoaderData();
   const data = res.body.data;
 
   if (res.status !== 200 || !data) {
@@ -63,6 +70,41 @@ function RouteComponent() {
       </div>
     )
   }
+
+  const statusLabels = {
+    "pending": {
+      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />,
+      text: 'Pendiente de pago',
+    },
+    "partially_paid": {
+      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-yellow-500" />,
+      text: 'Pago parcial recibido',
+    },
+    "paid": {
+      icon: <CheckCircle className="w-5 h-5 inline-block mr-2 text-green-500" />,
+      text: 'Pagado',
+    },
+    "cancelled": {
+      icon: <CircleXIcon className="w-5 h-5 inline-block mr-2 text-white bg-red-500 rounded-full" />,
+      text: 'Cancelado',
+    },
+    "expired": {
+      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />,
+      text: 'Expirado',
+    },
+    "transferred": {
+      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />,
+      text: 'Transferido',
+    },
+    "not_registered": {
+      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-yellow-500" />,
+      text: 'No registrado',
+    }
+  }
+  const statusLabelReg = statusLabels[data.registration.status] || {
+    icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />,
+    text: 'Desconocido',
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -93,55 +135,42 @@ function RouteComponent() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Main Content - Left Column */}
         <div className="md:col-span-2 space-y-8">
-          {data.category ? (
-            <section>
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                    <CheckCircle className="w-6 h-6 text-primary" />
-                    Categoría
-                </h2>
-                <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                    {data.category.name || "No hay descripción disponible."}
-                </div>
-                {/* <p className="text-gray-600">Circuito ID: {data.category.circuit_id}</p> */}
-            </section>
-          ) : (
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <BadgeQuestionMarkIcon className="w-6 h-6 text-primary" />
-                Categoría
-              </h2>
-              <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                Por definir. Aún no se te ha asignado una categoría. Se le ha solicitado al organizador que la asigne.
-              </div>
-              {/* <p className="text-gray-600">Circuito ID: {data.category.circuit_id}</p> */}
-            </section>
-          )}
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+              <CheckCircle className="w-6 h-6 text-primary" />
+              Categoría
+            </h2>
+            <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+              {data.category}
+            </div>
+            {/* <p className="text-gray-600">Circuito ID: {data.category.circuit_id}</p> */}
+          </section>
 
           {/* Team */}
-          {data.training_team && (
+          {trainingTeam && (
             <section>
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                 <Users2 className="w-6 h-6 text-primary" />
                 Equipo de Entrenamiento
               </h2>
               <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                {data.training_team.name || "No hay descripción disponible."}
+                {trainingTeam.name || "No hay descripción disponible."}
               </div>
-              <div>
+              {/* <div>
                 <MapPin className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                <span className="text-gray-600">{data.training_team.location || "Ubicación no disponible."}</span>
-              </div>
+                <span className="text-gray-600">{trainingTeam.location || "Ubicación no disponible."}</span>
+              </div> */}
             </section>
           )}
 
           {/* Clothing */}
           <section>
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-              <Shirt className="w-6 h-6 text-primary" />
+              <ShirtIcon className="w-6 h-6 text-primary" />
               {
-                data.registration.demanded_clothing?.clothing_type === 'tshirt'
+                data.demanded_clothing?.clothing_type === 'tshirt'
                 ? 'Remera'
-                : data.registration.demanded_clothing?.clothing_type === 'tanktop'
+                : data.demanded_clothing?.clothing_type === 'tanktop'
                   ? 'Musculosa'
                   : 'Indumentaria'
               }
@@ -149,47 +178,39 @@ function RouteComponent() {
             <div className="space-y-4">
               <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
                 <Ruler className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                <b>Talle</b>: {data.registration.demanded_clothing?.size || 'No seleccionado'}
+                <b>Tu talle</b>: {data.demanded_clothing?.size || 'No seleccionado'}
               </div>
               <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                {data.registration.reserved_clothing_id === 0
-                 || data.registration.reserved_clothing ? (
-                  <CheckCircle className="w-5 h-5 inline-block mr-2 text-green-500" />
+                {data.reserved_clothing ? (
+                  <div className='flex justify-start items-center'>
+                    <CheckCircle className="w-5 h-5 inline-block mr-2 text-green-500" />
+                    <b>Talle Reservado</b>: {data.reserved_clothing.size}
+                  </div>
                 ) : (
-                  <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />
-                )}
-                <b>Talle Reservado</b>: {
-                  data.registration.reserved_clothing_id !== 0
-                  ? data.registration.reserved_clothing?.size || 'No reservado aún '
-                  : 'Declinaste la indumentaria'
-                }
-                {data.registration.reserved_clothing_id !== 0
-                  && !data.registration.reserved_clothing && (
-                  <p className="inline-block ml-2 text-sm text-red-500">{
-                    ((data.registration.demanded_clothing?.purchased_quantity || 0)
-                      - (data.registration.demanded_clothing?.reserved_quantity || 0)) > 0
-                      ? `(Quedan ${(data.registration.demanded_clothing?.purchased_quantity || 0)
-                      - (data.registration.demanded_clothing?.reserved_quantity || 0)
-                      } unidades disponibles)`
-                      : '(No quedan unidades disponibles)'
-                  }</p>
+                  <div className='flex justify-start items-center'>
+                    <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />
+                    {
+                      data.registration.reserved_clothing_id === 0 ? (
+                        "Declinaste la indumentaria"
+                      ) : data.registration.status === "paid" ? (
+                        "No se pudo reservar un talle. El organizador ya fue informado y se pondrá en contacto contigo."
+                      ) : (
+                        <div className='flex flex-col gap-0'>
+                          <p>Una vez que completes el pago, se intentará reservar tu talle</p>
+                          <p className="inline-block text-sm text-red-500">
+                            {(data.demanded_clothing?.remaining_quantity || 0) > 0
+                              ? `(Quedan ${data.demanded_clothing?.remaining_quantity} unidades disponibles)`
+                              : '(No quedan unidades disponibles)'}
+                          </p>
+                        </div>
+                      )
+                    }
+
+                  </div>
                 )}
               </div>
             </div>
           </section>
-
-          {/* Special Needs */}
-          {data.registration.special_needs && (
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <AlertCircle className="w-6 h-6 text-primary" />
-                Necesidades Especiales
-              </h2>
-              <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                {data.registration.special_needs}
-              </div>
-            </section>
-          )}
 
           {/* Chip */}
           <section>
@@ -198,10 +219,20 @@ function RouteComponent() {
               Chip de Cronometraje
             </h2>
             <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-              No tiene asignado ningún chip de cronometraje.
-              {/* {data.registration.chip_id
+              {data.registration.chip_id
                 ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
-                : 'No tiene asignado ningún chip de cronometraje.'} */}
+                : 'Una vez pagada la inscripción, se le asignará un chip.'}
+            </div>
+          </section>
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+              <SquareChartGanttIcon className="w-6 h-6 text-primary" />
+              Dorsal
+            </h2>
+            <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+              {data.registration.bib_number
+                ? `Tiene asignado el número de dorsal con ID: ${data.registration.bib_number}`
+                : 'Una vez pagada la inscripción, se le asignará un dorsal.'}
             </div>
           </section>
         </div>
@@ -212,31 +243,10 @@ function RouteComponent() {
           <div className="bg-white p-6 rounded-xl shadow-sm border space-y-6">
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Estado</h3>
-              {['pending', 'partially_paid'].includes(data.registration.status) ? (
-                <div>
-                  <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />
-                  {
-                    data.registration.status === 'pending'
-                    ? 'Pendiente de pago'
-                    : 'Pago parcial recibido'
-                  }
-                </div>
-              ) : data.registration.status === 'paid' ? (
-                <div>
-                  <CheckCircle className="w-5 h-5 inline-block mr-2 text-green-500" />
-                  Pagado
-                </div>
-              ) : data.registration.status === 'cancelled' ? (
-                <div>
-                  <CircleXIcon className="w-5 h-5 inline-block mr-2 text-white bg-red-500 rounded-full" />
-                  Cancelado
-                </div>
-              ) : (
-                <div>
-                  <AlertCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                  Desconocido
-                </div>
-              )}
+              <div>
+                {statusLabelReg.icon}
+                {statusLabelReg.text}
+              </div>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Importe</h3>
@@ -251,7 +261,7 @@ function RouteComponent() {
                   <BadgeDollarSignIcon className="w-5 h-5 inline-block mr-2 text-gray-500" />
                   Tarifa:
                 </div>
-                <div>${data.registration.fee_amount_original.toFixed(0)}</div>
+                <div>${data.payment.current_fee_amount}</div>
               </div>
               {data.registration.discount_percentage > 0 && (
                 <div className='flex justify-between'>
@@ -259,10 +269,7 @@ function RouteComponent() {
                     <span className='w-5 h-5 inline-block mr-2'></span>
                     Descuento:
                   </div>
-                  <div>-${(
-                    data.registration.fee_amount_original
-                    - data.registration.fee_amount_after_discount
-                    ).toFixed(0)}</div>
+                  <div>-${(data.payment.discount_amount).toFixed(0)}</div>
                 </div>
                 )}
               <div className='flex justify-between'>
@@ -270,21 +277,56 @@ function RouteComponent() {
                   <span className='w-5 h-5 inline-block mr-2'></span>
                   Pagado:
                 </div>
-                <div>-${data.registration.paid_amount.toFixed(0)}</div>
+                <div>-${data.payment.paid_amount.toFixed(0)}</div>
               </div>
               <div className='flex justify-between'>
                 <div>
                   <span className='w-5 h-5 inline-block mr-2'></span>
                   Saldo:
                 </div>
-                <div className='border-t-2'>${
-                  (data.registration.fee_amount_after_discount
-                    - data.registration.paid_amount
-                    ).toFixed(0)}</div>
+                <div className='border-t-2'>${data.payment.pending_to_pay.toFixed(0)}</div>
               </div>
+
+              {!data.payment.current_fee_is_promotional
+                && data.registration.status !== 'paid'
+                && data.payment.fee_payment_due_date
+                && (new Date(data.payment.fee_payment_due_date).getTime() - new Date().getTime()) < 7 * 24 * 60 * 60 * 1000 && (
+                  <div className='mt-4 text-sm font-bold text-destructive'>
+                    Quedan {
+                      Math.ceil((new Date(data.payment.fee_payment_due_date).getTime() - new Date().getTime()) / (24 * 60 * 60 * 1000))
+                    } días antes del vencimiento de pago.
+                    Completá el pago para evitar que expire tu inscripción y
+                    no puedas participar.
+                  </div>
+              )}
+
+              {data.payment.current_fee_is_promotional
+                && data.registration.status !== 'paid'
+                && data.payment.promotional_fee_payment_due_date
+                && (new Date(data.payment.promotional_fee_payment_due_date).getTime() - new Date().getTime()) < 7 * 24 * 60 * 60 * 1000 && (
+                  <div className='mt-4 text-sm font-bold text-yellow-600'>
+                    Quedan {
+                      Math.ceil((new Date(data.payment.promotional_fee_payment_due_date).getTime() - new Date().getTime()) / (24 * 60 * 60 * 1000))
+                    } días antes del vencimiento de pago de la promoción.
+                    Completá el pago para evitar que se te aplique la tarifa
+                    estándar.
+                  </div>
+              )}
+
+              {data.payment.current_fee_is_promotional && (data.registration.status !== 'paid' ? (
+                <div className='mt-4 text-sm text-green-600 flex gap-1'>
+                  Tarifa promocional aplicada.
+                  Válida hasta el {new Date(data.payment.promotional_fee_payment_due_date || '').toLocaleDateString()}.
+                  Luego de esa fecha, se aplicará la tarifa estándar de ${data.payment.fee_amount}.
+                </div>
+              ) : (
+                <div className='mt-4 text-sm text-gray-600 flex gap-1'>
+                  Tarifa promocional aplicada.
+                </div>
+              ))}
             </div>
           </div>
-          {data.registration.fee_amount_after_discount - data.registration.paid_amount > 0 && (
+          {data.payment.pending_to_pay > 0 && (
             <div className='text-center bg-white p-6 rounded-xl shadow-sm border space-y-6'>
               <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
               <div className='mb-2'>
@@ -292,7 +334,7 @@ function RouteComponent() {
               </div>
               <Button
                 onClick={async () => {
-                  const res = await postAuthenticated(`/api/payment/${eventId}`);
+                  const res = await postAuthenticated(`/api/sportingEvents/${eventId}/pay`);
                   if (res.status === 200) {
                     const mpLink = res.body.data.init_point;
                     console.log("response", res);

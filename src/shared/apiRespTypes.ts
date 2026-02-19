@@ -7,6 +7,7 @@ import {
   SportingEventClothingSchema,
   TrainingTeamSchema,
   SportingEventTransactionSchema,
+  SportingEventCircuitSchema,
 } from './types';
 
 
@@ -131,9 +132,12 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   promotional_fee_payment_due_date: z.coerce.date<string>().nullable().optional(),
   created_at: z.coerce.date<string>().nullable().optional(),
   updated_at: z.coerce.date<string>().nullable().optional(),
+  circuits: z.array(SportingEventCircuitSchema.extend({
+    competitive: z.coerce.boolean<number>().optional(),
+  })).nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
     date: z.coerce.date<string>(),
-    notify_at: z.coerce.date<string>().nullable(),
+    notify_at: z.coerce.date<string>().nullable().optional(),
   })).nullable().optional(),
 });
 
@@ -162,9 +166,16 @@ export const ARSportingEventRegistrationSchema = z.object({
     created_at: true,
     updated_by: true,
   }).extend({
-    updated_at: SportingEventRegistrationSchema.shape.updated_at.nullable(),
+    registration_date: z.coerce.date<string>(),
+    promotional_fee_applied: z.coerce.boolean<number>(),
+    kit_delivered: z.coerce.boolean<number>(),
+    updated_at: z.coerce.date<string>(),
   }),
-  demanded_clothing: SpClothingMinSchema.nullable(),
+  demanded_clothing: SpClothingMinSchema.extend({
+    remaining_quantity: z.number().min(0),
+  }).omit({
+    purchased_quantity: true,
+  }).nullable(),
   reserved_clothing: SpClothingMinSchema.nullable(),
   // circuit: SportingEventCircuitSchema.pick({
   //   id: true,
@@ -183,6 +194,8 @@ export const ARSportingEventRegistrationSchema = z.object({
     fee_payment_due_date: SportingEventSchema.shape.fee_payment_due_date,
     fee_amount_promotional: SportingEventSchema.shape.fee_amount_promotional,
     promotional_fee_payment_due_date: SportingEventSchema.shape.promotional_fee_payment_due_date,
+    current_fee_amount: z.number(),
+    current_fee_is_promotional: z.boolean(),
     paid_amount: z.number(),
     discount_amount: z.number(),
     pending_to_pay: z.number(),

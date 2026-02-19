@@ -209,6 +209,7 @@ export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
   description: text({ length: 512 }),
   distance_km: real().notNull(),
   map_url: text({ length: 512 }),
+  competitive: int().notNull().default(1), // 1 for competitive circuit, 0 for non-competitive (general category)
 });
 
 

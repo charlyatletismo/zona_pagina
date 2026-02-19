@@ -31,6 +31,7 @@ import { PhoneInput } from '@/components/phoneInput';
 import { ComboBoxIdName } from '@/components/comboBoxIdName';
 import { DatePicker } from '@/components/datePicker';
 import { DateTimePicker } from '@/components/datetimePicker';
+import { Switch } from '@/components/ui/switch';
 
 
 const { fieldContext, formContext } = createFormHookContexts()
@@ -46,6 +47,7 @@ export const { useAppForm } = createFormHook({
     ComboBoxIdName,
     DatePicker,
     DateTimePicker,
+    Switch,
 
     Select,
     SelectContent,

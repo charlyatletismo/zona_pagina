@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { LocationForm } from './locationForm';
+import { SCHEDULE_TEMPLATE_IDS } from '@shared/schedules';
 
 
 const getClothesByType = (
@@ -35,7 +36,14 @@ const getClothesByType = (
       acc.push({ key: clothingItem.clothing_type, data: [{ ...clothingItem, index }] });
     }
     return acc;
-  }, [] as {key: string, data: any[]}[])
+  }, [] as {
+      key: string,
+      data: (
+        z.infer<typeof SportingEventClothingSchema>
+        & { index: number }
+      )[]
+    }[]
+  )
   return clothesByType;
 }
 
@@ -52,7 +60,6 @@ const SportingEventForm = (
 
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
-  const [newCat, setNewCat] = useState(false);
 
   const form = useAppForm({
     defaultValues: data,
@@ -125,14 +132,14 @@ const SportingEventForm = (
         }}
       >
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className="mt-5 bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          <div className="mt-5 bg-green-50 text-green-600 p-3 rounded-md text-sm">
             {success}
           </div>
         )}
@@ -203,7 +210,7 @@ const SportingEventForm = (
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
-                  onValueChange={(e: any) => {
+                  onValueChange={(e) => {
                     field.handleChange(e);
                     field.handleBlur();
                   }}
@@ -232,6 +239,21 @@ const SportingEventForm = (
             )}
           />
 
+          {/* <form.AppField
+            name="photo_id"
+            children={(field) => (
+              <div className='space-y-2 md:col-span-2'>
+                <field.Label htmlFor={field.name}>Banner del Evento</field.Label>
+                <img src={field.state.value || ''} alt="Banner del Evento" className='w-full h-48 object-cover rounded-md border border-gray-300' />
+                
+                <Button type="button" variant="outline" className='cursor-pointer'>
+                  Cambiar banner
+                </Button>
+                
+              </div>
+            )}
+          /> */}
+
           <form.AppField
             name="description"
             children={(field) => (
@@ -247,31 +269,6 @@ const SportingEventForm = (
                   placeholder="Descripción del evento (opcional)"
                   rows={3}
                 />
-                {!field.state.meta.isValid && (
-                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
-                )}
-              </div>
-            )}
-          />
-
-          <form.AppField
-            name="fee_amount"
-            children={(field) => (
-              <div className='space-y-2 md:col-span-2 mx-auto max-w-2xl'>
-                <field.Label htmlFor={field.name}>Costo de Inscripción</field.Label>
-                <div className='relative'>
-                  <field.Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value || ''}
-                    onChange={(e) => field.handleChange(e.target.value ? parseFloat(e.target.value) : null)}
-                    onBlur={field.handleBlur}
-                    className={!field.state.meta.isValid ? 'border-destructive' : 'pl-5'}
-                  />
-                  <div className='absolute left-2 top-1 text-gray-500'>
-                    $
-                  </div>
-                </div>
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}
@@ -316,6 +313,197 @@ const SportingEventForm = (
               </div>
             )}
           />
+
+          <form.AppField
+            name="age_ranges"
+            children={(field) => (
+              <div className='space-y-2'>
+                <field.Label htmlFor={field.name}>Rangos de Edad</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value || ''}
+                  onChange={(e) => {
+                    let inputValue = e.target.value;
+                    if (inputValue && inputValue.slice(-1) === "," && field.state.value?.slice(-2) === ",0") {
+                      inputValue = inputValue.slice(0, -1);
+                    }
+                    const finalValue = inputValue
+                      ? inputValue.split(",").map(s => s.trim()).map(Number)
+                      : null;
+                    if (finalValue?.some(isNaN) || finalValue?.some(num => num.toString().includes("."))) {
+                      // Handle invalid numbers if needed
+                      return;
+                    }
+                    field.handleChange(finalValue?.join(",") || null);
+                  }}
+                  onBlur={() => {
+                    if (field.state.value !== null && field.state.value !== undefined) {
+                      // console.log('Sorting age ranges:', field.state.value);
+                      field.handleChange(field.state.value.split(",").map(Number).sort((a,b) => a-b).join(","))
+                      // console.log('finished age ranges:', field.state.value);
+                    }
+                    field.handleBlur();
+                  }}
+                  placeholder="18,25,30,40,50,60,70,80"
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  required
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+
+          <hr className='md:col-span-2' />
+
+          <div className="md:col-span-2 text-lg font-semibold my-auto">Tarifas</div>
+
+          <form.AppField
+            name="fee_amount"
+            children={(field) => (
+              <div className='space-y-2'>
+                <field.Label htmlFor={field.name}>Costo de Inscripción</field.Label>
+                <div className='relative'>
+                  <field.Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value || ''}
+                    onChange={(e) => field.handleChange(e.target.value ? parseFloat(e.target.value) : null)}
+                    onBlur={field.handleBlur}
+                    className={!field.state.meta.isValid ? 'border-destructive' : 'pl-5'}
+                  />
+                  <div className='absolute left-2 top-1 text-gray-500'>
+                    $
+                  </div>
+                </div>
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+
+          <form.AppField
+            name="fee_payment_due_date"
+            children={(field) => (
+              <div className='space-y-2'>
+                <field.Label htmlFor={field.name}>Vencimiento del Pago</field.Label>
+                <field.DateTimePicker
+                  name={field.name}
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                  onBlur={field.handleBlur}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+
+          <form.AppField
+            name="fee_amount_promotional"
+            children={(field) => (
+              <div className='col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <div className='space-y-2 mt-5 md:mt-0'>
+                  <field.Label htmlFor={field.name}>Costo Promocional de Inscripción</field.Label>
+                  <div className='relative'>
+                    <field.Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value || ''}
+                      onChange={(e) => field.handleChange(e.target.value ? parseFloat(e.target.value) : null)}
+                      onBlur={() => {
+                        if (field.state.value === null || field.state.value === undefined) {
+                          field.form.setFieldValue('promotional_fee_end', null);
+                          field.form.setFieldValue('promotional_fee_payment_due_date', null);
+                        }
+                        field.handleBlur()
+                      }}
+                      className={!field.state.meta.isValid ? 'border-destructive' : 'pl-5'}
+                    />
+                    <div className='absolute left-2 top-1 text-gray-500'>
+                      $
+                    </div>
+                  </div>
+                  {!field.state.meta.isValid && (
+                    <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                  )}
+                </div>
+                {field.state.value && (
+                  <form.AppField
+                    name="promotional_fee_payment_due_date"
+                    children={(field) => (
+                      field.form.state.values?.fee_amount_promotional ? 
+                        <div className='space-y-2'>
+                          <field.Label htmlFor={field.name}>Vencimiento del Pago Promocional</field.Label>
+                          <field.DateTimePicker
+                            name={field.name}
+                            borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                            value={field.state.value}
+                            onChange={field.handleChange}
+                            onBlur={field.handleBlur}
+                          />
+                          {!field.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      : null
+                      
+                    )}
+                  />
+                )}
+                {field.state.value && (
+                  <form.AppField
+                    name="registration_start"
+                    children={(field) => (
+                      <div className='space-y-2'>
+                        <field.Label htmlFor={field.name}>Inicio de la Promoción</field.Label>
+                        <field.Input
+                          name={field.name}
+                          value={field.state.value?.toLocaleDateString() || ''}
+                          disabled
+                        />
+                        <field.Input
+                          name={field.name}
+                          value={field.state.value?.toLocaleTimeString() || ''}
+                          disabled
+                        />
+                        {!field.state.meta.isValid && (
+                          <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                        )}
+                      </div>
+                    )}
+                  />
+                )}
+                {field.state.value && (
+                  <form.AppField
+                    name="promotional_fee_end"
+                    children={(field) => (
+                      <div className='space-y-2'>
+                        <field.Label htmlFor={field.name}>Fin de la Promoción</field.Label>
+                        <field.DateTimePicker
+                          name={field.name}
+                          borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                          value={field.state.value}
+                          onChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                        />
+                        {!field.state.meta.isValid && (
+                          <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                        )}
+                      </div>
+                    )}
+                  />
+                )}
+              </div>
+            )}
+          />
+
+          <hr className='md:col-span-2' />
 
           <form.AppField
             name="location"
@@ -755,6 +943,67 @@ const SportingEventForm = (
                             </div>
                           )}
                         />
+
+                        <form.AppField
+                          name={`schedules[${index}].notification_template_id`}
+                          children={(field) => (
+                            <div className="space-y-2 col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div className='space-y-2'>
+                                <field.Label htmlFor={field.name}>Envío de notificación</field.Label>
+                                <field.Select
+                                  name={field.name}
+                                  value={field.state.value || null}
+                                  onValueChange={(e) => {
+                                    field.handleChange(e || null);
+                                    field.handleBlur();
+                                  }}
+                                  onOpenChange={(o) => {
+                                    if (!o) {
+                                      field.handleBlur();
+                                    }
+                                  }}
+                                >
+                                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
+                                    <field.SelectValue placeholder="..." />
+                                  </field.SelectTrigger>
+                                  <field.SelectContent>
+                                    <field.SelectGroup>
+                                      <field.SelectLabel>Plantilla de notificación</field.SelectLabel>
+                                        <field.SelectItem key={null} value={null}>No enviar</field.SelectItem>
+                                        <field.SelectItem key={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY} value={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY}>Entrega de kits</field.SelectItem>
+                                    </field.SelectGroup>
+                                  </field.SelectContent>
+                                </field.Select>
+                                {!field.state.meta.isValid && (
+                                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                                )}
+                              </div>
+                              {field.state.value !== null && (
+                                <form.AppField
+                                  name={`schedules[${index}].notify_at`}
+                                  children={(subField) => (
+                                    <div className='space-y-2'>
+                                      <subField.Label htmlFor={subField.name}>Programar envío</subField.Label>
+                                      <field.DateTimePicker
+                                        name={subField.name}
+                                        borderColor={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                                        value={subField.state.value}
+                                        onChange={subField.handleChange}
+                                        onBlur={subField.handleBlur}
+                                      />
+                                      {!subField.state.meta.isValid && (
+                                        <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                                      )}
+                                    </div>
+                                  )}
+                                />
+                              )}
+                            </div>
+                          )}
+                        />
+
+                        <div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -779,6 +1028,7 @@ const SportingEventForm = (
                     field.pushValue({
                       name: "",
                       distance_km: 0,
+                      competitive: false,
                     })
                   }}
                 >
@@ -794,7 +1044,28 @@ const SportingEventForm = (
               {field.state.value && field.state.value.map((_, index) => (
                 <div key={index} className="p-4 border rounded-md">
                   <div className='flex flex-row justify-between mb-5'>
-                    <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
+                    <div className='flex gap-2'>
+                      <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
+                      <form.AppField
+                        name={`circuits[${index}].competitive`}
+                        children={(subField) => (
+                          <div className='flex items-center gap-1'>
+                            <subField.Switch
+                              id={subField.name}
+                              name={subField.name}
+                              checked={subField.state.value || false}
+                              onCheckedChange={(e) => {
+                                console.log("oncheckedchange", e)
+                                subField.handleChange(e)
+                              }}
+                            />
+                            <subField.Label htmlFor={subField.name}>
+                              {subField.state.value ? "Competitivo" : "No competitivo"}
+                            </subField.Label>
+                          </div>
+                        )}
+                      />
+                    </div>
                     <form.Button
                       variant='secondary'
                       type="button"
@@ -855,6 +1126,8 @@ const SportingEventForm = (
                       )}
                     />
 
+                    {/* Agregar bandera de circuito competitivo */}
+
                     <form.AppField
                       name={`circuits[${index}].map_url`}
                       children={(subField) => (
@@ -892,151 +1165,25 @@ const SportingEventForm = (
           )}
         />
 
-        {/* TODO: Categorías */}
+        <hr />
+
         <form.AppField
-          name="categories"
-          mode='array'
+          name="results_url"
           children={(field) => (
-            <div className="space-y-4 md:col-span-2">
-              <div className='flex flex-col sm:flex-row justify-between mt-6 mb-2'>
-                <div className="text-lg font-semibold my-auto">Categorías del Evento</div>
-                <form.Button
-                  variant='outline'
-                  type="button"
-                  onClick={() => {
-                    if (
-                        !field.form.state.values?.circuits
-                        || field.form.state.values.circuits.length === 0) {
-                      setError('Debe agregar al menos un circuito antes de agregar categorías.');
-                      setTimeout(() => {
-                        setError('');
-                      }, 2000);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      return;
-                    }
-                    if (field.form.state.values?.circuits.some(c => c.id === undefined)) {
-                      setError('Debe guardar el evento antes de agregar categorías a circuitos nuevos.');
-                      setTimeout(() => {
-                        setError('');
-                      }, 2000);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                      return;
-                    }
-                    setNewCat(true);
-                  }}
-                >
-                  <PlusIcon className="w-4 h-4" />
-                </form.Button>
-              </div>
-              {newCat && (
-                <div className='text-sm text-gray-500 italic mt-4'>
-                  Al agregar una categoría, se crean categorías para todos los circuitos existentes.
-                  Edite el nombre y las edades mínimas/máximas según corresponda.
-                </div>
+            <div className='space-y-2 md:col-span-2'>
+              <field.Label htmlFor={field.name}>URL de Resultados</field.Label>
+              <field.Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value || ''}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                placeholder="https://www.example.com/resultados"
+                className={!field.state.meta.isValid ? 'border-destructive' : ''}
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
               )}
-              {!field.state.value && (
-                <div className='text-sm text-gray-500 italic mt-4'>
-                  No se han agregado categorías al evento.
-                  Haga clic en el botón de arriba para agregar una categoría.
-                </div>
-              )}
-              {/* Categories implementation would go here */}
-              {field.state.value && field.state.value.map((_, index) => (
-                <div key={index} className="p-4 border rounded-md">
-                  <div className='flex flex-row justify-between mb-5'>
-                    <div className='flex flex-row gap-2'>
-                      <div className="text-sm font-medium my-auto rounded-full bg-secondary text-secondary-foreground w-8 h-8 flex items-center justify-center">{index + 1}</div>
-                      <div className="text-sm font-medium my-auto">
-                        Circuito: {
-                          field.form.state.values?.circuits?.find(c => c.id === field.state.value?.[index]?.circuit_id)?.name || 'N/A'
-                        }
-                      </div>
-                    </div>
-                    <form.Button
-                      variant='secondary'
-                      type="button"
-                      onClick={() => {
-                        if (field.state.value?.length === 1) {
-                          field.handleChange(null);
-                        } else {
-                          field.removeValue(index);
-                        }
-                      }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </form.Button>
-                  </div>
-                  <div className='space-y-4 grid grid-cols-1 md:grid-cols-2 gap-2'>
-                    <form.AppField
-                      name={`categories[${index}].name`}
-                      children={(subField) => (
-                        <div className='space-y-2'>
-                          <subField.Label htmlFor={subField.name}>Nombre de la categoría</subField.Label>
-                          <subField.Input
-                            id={subField.name}
-                            name={subField.name}
-                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
-                            value={subField.state.value || ""}
-                            onBlur={subField.handleBlur}
-                            onChange={(e) => {
-                              subField.handleChange(e.target.value);
-                            }}
-                            required
-                          />
-                          {!subField.state.meta.isValid && (
-                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
-                          )}
-                        </div>
-                      )}
-                    />
-
-                    <form.AppField
-                      name={`categories[${index}].min_age`}
-                      children={(subField) => (
-                        <div className='space-y-2'>
-                          <subField.Label htmlFor={subField.name}>Edad mínima</subField.Label>
-                          <subField.Input
-                            id={subField.name}
-                            name={subField.name}
-                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
-                            value={subField.state.value || ""}
-                            onBlur={subField.handleBlur}
-                            onChange={(e) => {
-                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
-                            }}
-                          />
-                          {!subField.state.meta.isValid && (
-                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
-                          )}
-                        </div>
-                      )}
-                    />
-
-                    <form.AppField
-                      name={`categories[${index}].max_age`}
-                      children={(subField) => (
-                        <div className='space-y-2'>
-                          <subField.Label htmlFor={subField.name}>Edad máxima</subField.Label>
-                          <subField.Input
-                            id={subField.name}
-                            name={subField.name}
-                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
-                            value={subField.state.value || ""}
-                            onBlur={subField.handleBlur}
-                            onChange={(e) => {
-                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
-                            }}
-                          />
-                          {!subField.state.meta.isValid && (
-                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
-                          )}
-                        </div>
-                      )}
-                    />
-
-                  </div>
-                </div>
-              ))}
             </div>
           )}
         />

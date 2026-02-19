@@ -57,18 +57,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
 function RouteComponent() {
   const { eventId } = Route.useParams();
   const { res } = Route.useLoaderData();
-  const data = res.body?.data || null;
-  if (res.status !== 200 || !data) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
-        <div className='text-center text-gray-600' >{getMessage(res.body?.message, 'Error desconocido')}</div>
-        <Button asChild variant="outline">
-            <Link to="/">Volver al inicio</Link>
-        </Button>
-      </div>
-    )
-  }
+  const [data, setData] = React.useState(res.body?.data || null);
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
   const now = new Date();
   const openToRegister =
@@ -115,16 +104,29 @@ function RouteComponent() {
           params: { eventId }
         })
       }, 1000);
-      data.user_registration_status = {
-        registration_status: res.body.data.registration_status,
-        category_name: res.body.data.category_name,
-        circuit_id: res.body.data.circuit_id,
-        pending_to_pay: res.body.data.pending_to_pay,
-      }
+      setData({
+        ...data,
+        user_registration_status: {
+          registration_status: res.body.data.registration_status,
+          circuit_id: res.body.data.circuit_id,
+          pending_to_pay: res.body.data.pending_to_pay,
+        }
+      });
     }
     setRegistering(-1);
   };
 
+  if (res.status !== 200 || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
+        <div className='text-center text-gray-600' >{getMessage(res.body?.message, 'Error desconocido')}</div>
+        <Button asChild variant="outline">
+            <Link to="/">Volver al inicio</Link>
+        </Button>
+      </div>
+    )
+  }
   if (!data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
@@ -173,13 +175,6 @@ function RouteComponent() {
           </div>
           <div className='px-1 py-1 my-auto'>
             <Badge
-              className='py-1 px-2 bg-blue-500 dark:bg-blue-600'
-            >
-              <b>Categoría</b> {data.user_registration_status.category_name}
-            </Badge>
-          </div>
-          <div className='px-1 py-1 my-auto'>
-            <Badge
               className={
                 'py-1 px-2 '
                 + {
@@ -187,7 +182,8 @@ function RouteComponent() {
                   'cancelled': 'bg-red-500 dark:bg-red-600',
                   'pending': 'bg-yellow-500 dark:bg-yellow-600',
                   'partially_paid': 'bg-orange-500 dark:bg-orange-600',
-                  'pending_category_set': 'bg-purple-500 dark:bg-purple-600',
+                  'expired': 'bg-gray-500 dark:bg-gray-600',
+                  'transferred': 'bg-purple-500 dark:bg-purple-600',
                   '': 'bg-gray-500 dark:bg-gray-600',
                 }[data.user_registration_status.registration_status || '']
               }
@@ -216,9 +212,9 @@ function RouteComponent() {
       }
 
       <div className="flex justify-between items-center mb-4">
-        <Button 
-          variant="ghost" 
-          className="pl-0 hover:bg-transparent hover:text-primary" 
+        <Button
+          variant="ghost"
+          className="pl-0 hover:bg-transparent hover:text-primary"
           asChild
         >
           <Link to="/">
@@ -299,11 +295,11 @@ function RouteComponent() {
         {/* Main Content - Left Column */}
         <div className="md:col-span-2 space-y-8">
           {/* Image */}
-          {data.image_url ? (
+          {data.photo_id ? (
               <div className="aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                  <img 
-                      src={data.image_url} 
-                      alt={data.title} 
+                  <img
+                      src={`https://imagedelivery.net/x1piYdlDlmNQ_iTYafCcEQ/${data.photo_id}/public`}
+                      alt={data.title}
                       className="w-full h-full object-cover"
                   />
               </div>
@@ -379,7 +375,7 @@ function RouteComponent() {
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Ubicación</h3>
               {data.location_lat && data.location_long ? (
-                <a 
+                <a
                   href={`https://www.google.com/maps/search/?api=1&query=${data.location_lat},${data.location_long}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -429,7 +425,7 @@ function RouteComponent() {
                       <p className="text-sm text-gray-600 mt-1">{circuit.description || 'Sin descripción'}</p>
                       <p className="text-sm text-gray-500 mt-1">Distancia: {circuit.distance_km} km</p>
                       {circuit.map_url && (
-                        <a 
+                        <a
                           href={circuit.map_url}
                           target="_blank"
                           rel="noopener noreferrer"
