@@ -246,15 +246,15 @@ function RouteComponent() {
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
       <h1 className='text-2xl font-bold mb-4'>Todos los eventos deportivos</h1>
-      <div className='flex gap-2 items-center mb-4 max-w-sm relative'>
+      {data.length > 0 && (<div className='flex gap-2 items-center mb-4 max-w-sm relative'>
         <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
         <Input
           value={table.getState().globalFilter ?? ''}
           onChange={e => table.setGlobalFilter(String(e.target.value))}
           placeholder="Buscar..."
         />
-      </div>
-      {data.length > 0 && table.getRowModel().rows.length > 0 ? (
+      </div>)}
+      {data.length > 0 && (table.getRowModel().rows.length > 0 ? (
         <div>
         <Table className='border min-w-3xl max-w-full'>
           <TableHeader>
@@ -322,7 +322,7 @@ function RouteComponent() {
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
           No hay resultados para tu búsqueda.
         </div>
-      )}
+      ))}
       {data.length === 0 && (
         <div className='text-center py-10 text-gray-500'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
