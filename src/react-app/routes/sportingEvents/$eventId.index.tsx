@@ -274,7 +274,7 @@ function RouteComponent() {
         </Button>
 
         {currentRole === ATHLETES_MANAGER_ROLE && (
-          <Button asChild variant="default">
+          <Button asChild variant="outline">
             <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
               <FilePlus2 className="w-4 h-4" />
               Registrar Atletas
