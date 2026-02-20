@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ALL_ROLES } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
@@ -28,6 +28,16 @@ import {
   Cpu,
   SquareChartGanttIcon,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  // DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog"
+import React from 'react';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
@@ -52,6 +62,10 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
 function RouteComponent() {
   const { res, eventId, trainingTeam } = Route.useLoaderData();
   const data = res.body.data;
+  const navigate = useNavigate();
+  
+  const [error, setError] = React.useState('');
+  const [success, setSuccess] = React.useState('');
 
   if (res.status !== 200 || !data) {
     return (
@@ -121,6 +135,21 @@ function RouteComponent() {
           </Link>
         </Button>
       </div>
+
+
+      {error && (
+        <div className="my-5 bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" />
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="my-5 bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          {success}
+        </div>
+      )}
+
 
       {/* Header */}
       <div className="mb-8 text-center">
@@ -402,6 +431,71 @@ function RouteComponent() {
                 </a>
               </Button>
             </div>
+            )}
+            {data.registration.status === 'pending' && (
+              <div className='text-center p-6 rounded-xl shadow-sm border border-dotted border-primary/50 bg-primary/10 space-y-6'>
+                <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Atención</h3>
+                <div className=''>
+                  Si te equivocaste de circuito o te inscribiste por error, podés eliminar tu inscripción mediante el siguiente botón.
+                </div>
+                <Dialog>
+                  <DialogTrigger>
+                    <Button variant="destructive" className='mx-auto'>
+                      Eliminar
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent showCloseButton={false}>
+                    <DialogHeader>
+                      <DialogTitle>¿Estás seguro?</DialogTitle>
+                      {/* <DialogDescription>
+                        Esta acción no se puede deshacer. Esto eliminará permanentemente tu inscripción
+                        y eliminará tus datos de nuestros servidores.
+                      </DialogDescription> */}
+                      <div className='flex gap-2 justify-end mt-2'>
+                        <DialogClose asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className='max-w-20 cursor-pointer'
+                          >
+                            Cancelar
+                          </Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            className='max-w-20 cursor-pointer'
+                            onClick={async () => {
+                              setTimeout(() => {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }, 500);
+                              const res = await postAuthenticated(
+                                `/api/sportingEvents/${eventId}/unregister`,
+                                { userId: data.registration.user_id }
+                              );
+                              if (res.status === 200) {
+                                setSuccess('Inscripción eliminada correctamente');
+                                setTimeout(() => {
+                                  setSuccess('');
+                                  navigate({to: `/sportingEvents/${eventId}`, reloadDocument: true});
+                                }, 1500);
+                              } else {
+                                setError(`Error al eliminar la inscripción: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                              }
+                            }}
+                          >
+                            Eliminar
+                          </Button>
+                        </DialogClose>
+                      </div>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+                {/* <div className='text-sm text-gray-600'>
+                  Esta opción solo está disponible mientras tu inscripción esté en estado pendiente.
+                </div> */}
+              </div>
             )}
 
         </div>

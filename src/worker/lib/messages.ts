@@ -224,6 +224,14 @@ export const M = {
     [ES]: "Error al procesar el pago de la inscripción del evento deportivo",
     [EN]: "Error processing sporting event registration payment"
   },
+  SPORTING_EVENT_REGISTRATION_CANNOT_BE_DELETED: {
+    [ES]: "La inscripción del evento deportivo no puede ser eliminada",
+    [EN]: "Sporting event registration cannot be deleted"
+  },
+  SPORTING_EVENT_REGISTRATION_DELETED_SUCCESSFULLY: {
+    [ES]: "Inscripción del evento deportivo eliminada correctamente",
+    [EN]: "Sporting event registration deleted successfully"
+  },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {

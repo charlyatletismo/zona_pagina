@@ -9,10 +9,13 @@ import {
   getSpEvent,
   addSpEvent,
   updateSpEvent,
-  registerToSpEvent,
   delSpEvent,
   getSpEventMin
 } from "./lib/sportingEvents";
+import {
+  registerToSpEvent,
+  deleteRegistrationToSpEvent
+} from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
   allSportingEventsList,
@@ -84,6 +87,25 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       return c.json({ message: res.message }, res.status);
     }
     return c.json({ message: res.message, data: res.data });
+  })
+  .post("/:id/unregister", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { userId }
+      : {userId: string} = await c.req.json();
+    if (!userId) {
+      return c.json({ message: M.SPORTING_EVENT_USER_ID_REQUIRED }, 400);
+    }
+    const reqUserId: string = c.get('jwtPayload')?.id;
+    const res = await deleteRegistrationToSpEvent(
+      db,
+      Number(id),
+      reqUserId,
+      userId);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: res.message });
   })
   .get("/:id/registration", async (c) => {
     const db = drizzle(c.env.DB);
