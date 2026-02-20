@@ -20,7 +20,7 @@ export const LocationForm = ({
 } : {
   location: z.infer<typeof LocationSchema> | null,
   dbLocations: string[],
-  onSuccess?: (locationId?: string) => void,
+  onSuccess?: (locationId?: string) => Promise<void>,
 }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -63,10 +63,10 @@ export const LocationForm = ({
         return;
       }
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
-      setTimeout(() => {
+      setTimeout(async () => {
         setSuccess('');
         if (onSuccess !== undefined) {
-          onSuccess(value.id);
+          await onSuccess(value.id);
         } else {
           navigate({ to: '..', reloadDocument: true });
         }
