@@ -978,6 +978,7 @@ const SportingEventForm = (
                                             field.handleChange("");
                                             field.handleBlur();
                                             field.setMeta((meta) => ({ ...meta, isBlurred: false }));
+                                            field.form.setFieldValue(`schedules[${index}].notify_at`, null);
                                           }}
                                         >
                                             <span className="text-xs text-red-900 mr-2 font-semibold">Borrar selección</span>
@@ -985,7 +986,12 @@ const SportingEventForm = (
                                         </div>
                                       }
                                       <field.SelectLabel>Plantilla de notificación</field.SelectLabel>
-                                        <field.SelectItem key={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY} value={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY}>Entrega de kits</field.SelectItem>
+                                        <field.SelectItem
+                                          key={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY}
+                                          value={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY}
+                                        >
+                                          Entrega de kits
+                                        </field.SelectItem>
                                     </field.SelectGroup>
                                   </field.SelectContent>
                                 </field.Select>
