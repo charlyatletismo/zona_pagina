@@ -14,6 +14,7 @@ import {
   FileUserIcon,
   FilePlus2,
   BadgeDollarSign,
+  PackageIcon,
   CircleDollarSignIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -198,6 +199,16 @@ function RouteComponent() {
               <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
                 <Edit className="w-4 h-4" />
                 Editar
+              </Link>
+            </Button>
+          )}
+
+
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/kitDelivery" params={{ eventId }}>
+                <PackageIcon className="w-4 h-4" />
+                Entrega de Kits
               </Link>
             </Button>
           )}
