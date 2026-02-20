@@ -434,7 +434,6 @@ function RouteComponent() {
             )}
             {data.registration.status === 'pending' && (
               <div className='text-center p-6 rounded-xl shadow-sm border border-dotted border-primary/50 bg-primary/10 space-y-6'>
-                <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Atención</h3>
                 <div className=''>
                   Si te equivocaste de circuito o te inscribiste por error, podés eliminar tu inscripción.
                 </div>
