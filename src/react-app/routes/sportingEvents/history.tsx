@@ -81,7 +81,7 @@ function RouteComponent() {
   const { data } = Route.useLoaderData();
 
   const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'date', desc: false },
+    { id: 'date', desc: true },
   ]);
 
   const columnHelper = createColumnHelper<z.infer<typeof SpBSchema>>();
