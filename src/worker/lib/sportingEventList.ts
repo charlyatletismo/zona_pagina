@@ -115,7 +115,7 @@ export const getUserRegisteredSpEvents = async (db: DrizzleD1Database, userId: s
       .from(sportingEvents)
       .where(inArray(
         sportingEvents.id,
-        registrations.map(r => r.event_id)
+        registrations.filter(r => r.event_id !== null).map(r => r.event_id) as number[]
       ));
     events.push(...batch);
     if (registrations.length < 100) {

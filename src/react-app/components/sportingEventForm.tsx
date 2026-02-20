@@ -211,7 +211,12 @@ const SportingEventForm = (
                   name={field.name}
                   value={field.state.value || ""}
                   onValueChange={(e) => {
-                    field.handleChange(e);
+                    const r = SportingEventSchema.shape.event_type.safeParse(e)
+                    if (r.success) {
+                      field.handleChange(r.data);
+                    } else {
+                      field.handleChange("other");
+                    }
                     field.handleBlur();
                   }}
                   onOpenChange={(o) => {
