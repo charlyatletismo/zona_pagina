@@ -123,6 +123,14 @@ export const M = {
     [ES]: "Datos de usuario inválidos",
     [EN]: "Invalid user data"
   },
+  USER_LOCATION_UPDATED_SUCCESSFULLY: {
+    [ES]: "Ubicación del usuario actualizada correctamente",
+    [EN]: "User location updated successfully"
+  },
+  USER_TRAINING_TEAM_UPDATED_SUCCESSFULLY: {
+    [ES]: "Equipo de entrenamiento del usuario actualizado correctamente",
+    [EN]: "User training team updated successfully"
+  },
 
   // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {
@@ -272,10 +280,6 @@ export const M = {
   LOCATION_DELETED_SUCCESSFULLY: {
     [ES]: "Ubicación eliminada correctamente",
     [EN]: "Location deleted successfully"
-  },
-  USER_LOCATION_UPDATED_SUCCESSFULLY: {
-    [ES]: "Ubicación del usuario actualizada correctamente",
-    [EN]: "User location updated successfully"
   },
 
   // -------------------------- TRAINING TEAMS --------------------------

@@ -29,7 +29,7 @@ export const TrainingTeamForm = ({
   trainingTeam: z.infer<typeof ARTrainingTeamSchema> | null,
   dbTrainingTeams: z.infer<typeof ARTrainingTeamIndexSchema>[],
   dbLocations: string[],
-  onSuccess?: () => void,
+  onSuccess?: (trainingTeamId?: number) => Promise<void>,
 }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -37,7 +37,7 @@ export const TrainingTeamForm = ({
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(dbLocations);
   const [userAutoFill, setUserAutoFill] = useState<string>("");
-  const path = trainingTeam
+  const path = trainingTeam?.id
     ? `/api/trainingTeams/update/${trainingTeam.id}`
     : "/api/trainingTeams/create";
 
@@ -87,10 +87,10 @@ export const TrainingTeamForm = ({
         return;
       }
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
-      setTimeout(() => {
+      setTimeout(async () => {
         setSuccess('');
         if (onSuccess !== undefined) {
-          onSuccess();
+          await onSuccess(res.body.data.id);
         } else {
           navigate({ to: '..', reloadDocument: true });
         }

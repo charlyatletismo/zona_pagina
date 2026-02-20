@@ -230,6 +230,13 @@ export const ARTrainingTeamIndexSchema = TrainingTeamSchema.pick({
   location: true,
 });
 
+export const ARTempTrainingTeamSchema = z.object({
+  id: UserSchema.shape.id,
+  temp: UserSchema.shape.training_team_temp,
+}).required({
+  temp: true,
+})
+
 
 ///////////////////////////////////////////////////////////////
 //                     /api/transactions                     //
