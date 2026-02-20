@@ -84,40 +84,7 @@ function RouteComponent() {
 
   const columnHelper = createColumnHelper<z.infer<typeof SpBSchema>>();
 
-  const defaultColumns = []
-  if (localStorage.getItem('USER_ROLE') === ORGANIZER_ROLE) {
-    defaultColumns.push(
-      columnHelper.display({
-        "id": "actions",
-        cell: props => (<div className='flex gap-2'>
-          {/* <Link
-            to={`/sportingEvents/$eventId`}
-            params={{ eventId: props.row.original.id.toString() }}
-            className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-          >
-            <Info className='w-4 h-4' />
-          </Link> */}
-          <Link
-            to={`/sportingEvents/$eventId/edit`}
-            params={{ eventId: props.row.original.id.toString() }}
-            className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-          >
-            <EditIcon className='w-4 h-4' />
-          </Link>
-          {/* <Link
-            to={`/sportingEvents/$eventId/registrations`}
-            params={{ eventId: props.row.original.id.toString() }}
-            className='text-primary/80 hover:text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded w-fit flex items-center gap-1'
-            about='Ver inscripciones al evento'
-          >
-            <FileArchiveIcon className='w-4 h-4' />
-          </Link> */}
-        </div>),
-      })
-    )
-  }
-
-  defaultColumns.push(...[
+  const defaultColumns = [
     columnHelper.accessor('status', {
       cell: info => {
         const value = info.getValue();
@@ -208,7 +175,7 @@ function RouteComponent() {
       enableSorting: true,
       sortUndefined: 'last',
     }),
-  ])
+  ]
 
 
   const table = useReactTable({
