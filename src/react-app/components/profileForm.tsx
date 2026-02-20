@@ -56,6 +56,7 @@ export const ProfileForm = ({
   const [managers, setManagers] = useState<{id: string, name: string}[]>(
     profile?.manager_id ? managersData.data : []
   );
+  const [showTrainingTeamTemp, setShowTrainingTeamTemp] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -561,18 +562,54 @@ export const ProfileForm = ({
                 name={field.name}
                 value={field.state.value?.toString() || ""}
                 onChange={(value) => {
+                  if (value === "-1") {
+                    return;
+                  }
                   field.handleChange(value ? Number(value) : null);
+                  if (value !== null) {
+                    field.form.setFieldValue('training_team_temp', null);
+                    setShowTrainingTeamTemp(false);
+                  }
                 }}
                 onBlur={field.handleBlur}
+                valKey={"-1"}
+                valKeyDesc="Otro (especificar debajo)"
+                valKeySetter={(val) => {
+                  field.form.setFieldValue('training_team_temp', val);
+                  setShowTrainingTeamTemp(true);
+                }}
                 placeholder="Seleccionar o escribir equipo de entrenamiento"
                 borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
               />
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* Debe indicar un equipo de entrenamiento</div>
               )}
+
+              {showTrainingTeamTemp && (
+                <form.AppField
+                  name="training_team_temp"
+                  children={(field) => (
+                    <div className="mt-2">
+                      <field.Input
+                        id={field.name}
+                        name={field.name}
+                        placeholder="Especificar equipo de entrenamiento"
+                        value={field.state.value || ''}
+                        onChange={(e) => field.handleChange(e.target.value || null)}
+                        onBlur={field.handleBlur}
+                        className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                      />
+                      {!field.state.meta.isValid && (
+                        <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message}</div>
+                      )}
+                    </div>
+                  )}
+                />
+              )}
             </div>
           )}
         />
+
 
         <form.AppField
           name="manager_id"
@@ -635,6 +672,7 @@ export const ProfileForm = ({
               disabled={isPristine || isSubmitting}
               onClick={(event) => {
                 event.preventDefault();
+                setShowTrainingTeamTemp(false);
                 form.reset();
               }}
             >

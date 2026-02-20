@@ -197,7 +197,13 @@ export const ProfileCard = ({
       <GridCell
         icon={Users}
         label="Equipo de Entrenamiento"
-        value={trainingTeams.find(team => team.id === profile.training_team_id)?.name}
+        value={
+          profile.training_team_id
+            ? trainingTeams.find(team => team.id === profile.training_team_id)?.name
+            : profile.training_team_temp 
+              ? profile.training_team_temp + " (en evaluación)"
+              : null
+        }
       />
 
       {manager && (
