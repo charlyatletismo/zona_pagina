@@ -221,7 +221,7 @@ function RouteComponent() {
             <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
               {data.registration.chip_id
                 ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
-                : 'Una vez pagada la inscripción, se le asignará un chip.'}
+                : 'Una vez pagada la inscripción, se te asignará un chip.'}
             </div>
           </section>
           <section>
@@ -232,7 +232,7 @@ function RouteComponent() {
             <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
               {data.registration.bib_number
                 ? `Tiene asignado el número de dorsal con ID: ${data.registration.bib_number}`
-                : 'Una vez pagada la inscripción, se le asignará un dorsal.'}
+                : 'Una vez pagada la inscripción, se te asignará un dorsal.'}
             </div>
           </section>
         </div>
