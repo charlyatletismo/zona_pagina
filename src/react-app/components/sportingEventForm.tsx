@@ -952,7 +952,7 @@ const SportingEventForm = (
                                 <field.Label htmlFor={field.name}>Envío de notificación</field.Label>
                                 <field.Select
                                   name={field.name}
-                                  value={field.state.value || null}
+                                  value={field.state.value || ""}
                                   onValueChange={(e) => {
                                     field.handleChange(e || null);
                                     field.handleBlur();
@@ -961,15 +961,29 @@ const SportingEventForm = (
                                     if (!o) {
                                       field.handleBlur();
                                     }
+                                    field.setMeta((meta) => ({ ...meta, isBlurred: o }));
                                   }}
+                                  open={field.state.meta.isBlurred}
                                 >
                                   <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
                                     <field.SelectValue placeholder="..." />
                                   </field.SelectTrigger>
                                   <field.SelectContent>
                                     <field.SelectGroup>
+                                      {field.state.value &&
+                                        <div
+                                          className="flex items-center justify-end p-2 bg-red-100 cursor-pointer hover:bg-red-200 border-b border-red-200 rounded"
+                                          onClick={() => {
+                                            field.handleChange("");
+                                            field.handleBlur();
+                                            field.setMeta((meta) => ({ ...meta, isBlurred: false }));
+                                          }}
+                                        >
+                                            <span className="text-xs text-red-900 mr-2 font-semibold">Borrar selección</span>
+                                            <Trash2 className="text-red-600 w-4 h-4" />
+                                        </div>
+                                      }
                                       <field.SelectLabel>Plantilla de notificación</field.SelectLabel>
-                                        <field.SelectItem key={null} value={null}>No enviar</field.SelectItem>
                                         <field.SelectItem key={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY} value={SCHEDULE_TEMPLATE_IDS.KITS_DELIVERY}>Entrega de kits</field.SelectItem>
                                     </field.SelectGroup>
                                   </field.SelectContent>
@@ -978,7 +992,7 @@ const SportingEventForm = (
                                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                                 )}
                               </div>
-                              {field.state.value !== null && (
+                              {!!field.state.value && (
                                 <form.AppField
                                   name={`schedules[${index}].notify_at`}
                                   children={(subField) => (
@@ -1025,10 +1039,12 @@ const SportingEventForm = (
                   variant='outline'
                   type="button"
                   onClick={() => {
+                    // El primer circuito agregado es competitivo por defecto, los siguientes no competitivos
+                    const competitive = !field.state.value || field.state.value.length === 0;
                     field.pushValue({
                       name: "",
                       distance_km: 0,
-                      competitive: false,
+                      competitive,
                     })
                   }}
                 >
