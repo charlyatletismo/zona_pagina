@@ -101,7 +101,14 @@ function RouteComponent() {
       sortUndefined: 'last',
     }),
     columnHelper.accessor('title', {
-      cell: info => info.getValue(),
+      cell: info => (
+        <Link
+            to={`/sportingEvents/$eventId`}
+            params={{ eventId: info.row.original.id.toString() }}
+            className='text-primary hover:text-primary/50 hover:underline'
+        >
+          {info.getValue()}
+        </Link>),
       header: () => 'Título',
       footer: props => props.column.id,
       enableSorting: true,
@@ -193,6 +200,14 @@ function RouteComponent() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    // // NOTE: it will always be visible because this view is only visible for
+    // // organizers, but this way if in the future we want to show this view
+    // // to other roles we just need to uncomment this code
+    // initialState: {
+    //   columnVisibility: {
+    //     actions: localStorage.getItem('USER_ROLE') === ORGANIZER_ROLE ? true : false,
+    //   }
+    // },
     state: {
       sorting
     },

@@ -314,7 +314,7 @@ function RouteComponent() {
       {data.length === 0 && (
         <div className='text-center py-10 text-gray-500'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
-          No hay eventos deportivos.
+          No te has inscripto a ningún evento deportivo aún.
         </div>
       )}
       {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
