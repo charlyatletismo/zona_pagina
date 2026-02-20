@@ -839,6 +839,7 @@ const SportingEventForm = (
                             } else {
                               field.removeValue(index);
                             }
+                            field.handleBlur();
                           }}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1091,6 +1092,7 @@ const SportingEventForm = (
                         } else {
                           field.removeValue(index);
                         }
+                        field.handleBlur();
                       }}
                     >
                       <Trash2 className="w-4 h-4" />
