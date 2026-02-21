@@ -150,7 +150,7 @@ export const TrainingTeamForm = ({
           children={([isSubmitting]) => (
             <div>
               {isSubmitting ? (
-                <div className='flex gap-4 items-center space-x-2 mb-4 text-sm text-gray-600'>
+                <div className="flex gap-4 items-center space-x-2 mb-4 text-sm bg-gray-50 text-gray-600 p-3 rounded-md">
                   <Spinner /><div>Guardando...</div>
                 </div>) : null
               }

@@ -133,31 +133,31 @@ export const ProfileForm = ({
         form.handleSubmit();
       }}
     >
-      {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" />
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
-          {success}
-        </div>
-      )}
-
-      <form.Subscribe
-        selector={(state) => [state.isSubmitting]}
-        children={([isSubmitting]) => (
-          <div>
-            {isSubmitting ? (
-              <div className='flex gap-4 items-center space-x-2 mb-4 text-sm text-gray-600'>
-                <Spinner /><div>Guardando...</div>
-              </div>) : null
-            }
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" />
+            {error}
           </div>
         )}
-      />
+
+        {success && (
+          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+            {success}
+          </div>
+        )}
+
+        <form.Subscribe
+          selector={(state) => [state.isSubmitting]}
+          children={([isSubmitting]) => (
+            <div>
+              {isSubmitting ? (
+                <div className="flex gap-4 items-center space-x-2 mb-4 text-sm bg-gray-50 text-gray-600 p-3 rounded-md">
+                  <Spinner /><div>Guardando...</div>
+                </div>) : null
+              }
+            </div>
+          )}
+        />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 

@@ -149,7 +149,7 @@ const SportingEventForm = (
           children={([isSubmitting]) => (
             <div>
               {isSubmitting ? (
-                <div className='flex gap-4 items-center space-x-2 mb-4 text-sm text-gray-600'>
+                <div className="mt-5 mb-4 bg-gray-50 text-gray-600 p-3 rounded-md text-sm flex gap-4 items-center space-x-2">
                   <Spinner /><div>Guardando...</div>
                 </div>) : null
               }
@@ -411,7 +411,7 @@ const SportingEventForm = (
           <form.AppField
             name="fee_amount_promotional"
             children={(field) => (
-              <div className='col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div className='space-y-2 mt-5 md:mt-0'>
                   <field.Label htmlFor={field.name}>Costo Promocional de Inscripción</field.Label>
                   <div className='relative'>
@@ -952,7 +952,7 @@ const SportingEventForm = (
                         <form.AppField
                           name={`schedules[${index}].notification_template_id`}
                           children={(field) => (
-                            <div className="space-y-2 col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="space-y-2 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                               <div className='space-y-2'>
                                 <field.Label htmlFor={field.name}>Envío de notificación</field.Label>
                                 <field.Select
