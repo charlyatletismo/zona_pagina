@@ -33,6 +33,7 @@ export const DeleteButton = ({
       <DialogTrigger>
         <Button
           variant="destructive"
+          type="button"
           className='mx-auto flex gap-2 items-center cursor-pointer'
           title={dgTitle || "Eliminar"}
           size={btnText ? "sm" : "icon-sm"}
