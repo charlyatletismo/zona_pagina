@@ -15,6 +15,7 @@ import {
 } from '@shared/lang';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { DeleteButton } from './deleteButton';
 import { LocationForm } from './locationForm';
 import { SCHEDULE_TEMPLATE_IDS } from '@shared/schedules';
 
@@ -60,6 +61,7 @@ const SportingEventForm = (
 
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
+  const [moreOptions, setMoreOptions] = useState(false);
 
   const form = useAppForm({
     defaultValues: data,
@@ -1215,6 +1217,49 @@ const SportingEventForm = (
             </div>
           )}
         />
+
+        <hr />
+
+        <Button
+          variant='outline'
+          type='button'
+          onClick={() => setMoreOptions(!moreOptions)}
+        >
+          {moreOptions
+            ? "Ocultar opciones avanzadas"
+            : "Mostrar opciones avanzadas"}
+        </Button>
+        
+        {data && data.id && moreOptions && (
+          <div>
+            <div className='bg-destructive/5 p-5 rounded-lg flex justify-between items-center'>
+              <div className="text-lg font-semibold">Zona de peligro</div>
+              <DeleteButton
+                btnText="Eliminar evento"
+                btnIcon={null}
+                dgTitle="¿Estás seguro que querés eliminar este evento?"
+                dgDescription={"Esta acción no se puede deshacer. Si "
+                  + "eliminás el evento, se eliminarán todas las inscripciones "
+                  + "asociadas al mismo, los pagos registrados y toda la "
+                  + "información relacionada en general. No podrás recuperarlo."}
+                onConfirm={async () => {
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 500);
+                  const res = await postAuthenticated(`/api/sportingEvents/delete/${data.id}`);
+                  if (res.status === 200) {
+                    setSuccess('Evento eliminado exitosamente');
+                    setTimeout(() => {
+                      navigate({to: '/', reloadDocument: true});
+                    }, 1500);
+                  } else {
+                    setError(getMessage(res.body?.message, 'Error desconocido al eliminar el evento'));
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {localStorage.getItem('ADMIN_MODE') === 'active' && (
           <div>
