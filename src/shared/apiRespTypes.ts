@@ -168,6 +168,7 @@ export const ARSportingEventRegistrationSchema = z.object({
   }).extend({
     registration_date: z.coerce.date<string>(),
     promotional_fee_applied: z.coerce.boolean<number>(),
+    full_payment_date: z.coerce.date<string>().nullable(),
     kit_delivered: z.coerce.boolean<number>(),
     updated_at: z.coerce.date<string>(),
   }),
