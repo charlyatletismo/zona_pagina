@@ -203,7 +203,6 @@ export const SportingEventRegistrationStatusEnum = z.enum([
   'paid',
   'expired',
   'cancelled',
-  'transferred',
 ])
 
 

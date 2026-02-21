@@ -106,10 +106,6 @@ function RouteComponent() {
       icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />,
       text: 'Expirado',
     },
-    "transferred": {
-      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />,
-      text: 'Transferido',
-    },
     "not_registered": {
       icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-yellow-500" />,
       text: 'No registrado',

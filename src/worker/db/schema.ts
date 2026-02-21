@@ -290,8 +290,7 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
   // user registered before the promotional fee end date
   promotional_fee_applied: int().notNull().default(0),
   paid_amount: real().notNull().default(0),
-  // "pending", "partially_paid", "paid", "expired", "cancelled",
-  // "transferred", etc.
+  // "pending", "partially_paid", "paid", "expired", "cancelled", etc.
   status: text({ length: 16 }).notNull().default('pending'),
   full_payment_date: text(),
 

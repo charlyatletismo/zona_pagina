@@ -352,7 +352,6 @@ const SportingEventForm = (
                   }}
                   placeholder="18,25,30,40,50,60,70,80"
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
-                  required
                 />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>

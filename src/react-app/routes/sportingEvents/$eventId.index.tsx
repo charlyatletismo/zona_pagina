@@ -244,7 +244,6 @@ function RouteComponent() {
                   'pending': 'bg-yellow-500 dark:bg-yellow-600',
                   'partially_paid': 'bg-orange-500 dark:bg-orange-600',
                   'expired': 'bg-gray-500 dark:bg-gray-600',
-                  'transferred': 'bg-purple-500 dark:bg-purple-600',
                   '': 'bg-gray-500 dark:bg-gray-600',
                 }[data.user_registration_status.registration_status || '']
               }
