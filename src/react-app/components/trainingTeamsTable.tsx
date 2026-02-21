@@ -4,7 +4,7 @@ import { ARTrainingTeamAllSchema } from '@shared/apiRespTypes';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DialogButton } from '@/components/dialogButton';
+import { DeleteButton } from '@/components/deleteButton';
 import {
   // FileArchiveIcon,
   EditIcon,
@@ -105,7 +105,7 @@ export const TrainingTeamsTable = ({data}: {data: z.infer<typeof ARTrainingTeamA
             <EditIcon className='w-4 h-4' />
           </Link>
         </Button>
-        <DialogButton
+        <DeleteButton
           dgDescription="Esta acción no se puede deshacer. Esto eliminará permanentemente el equipo de entrenamiento."
           onConfirm={async () => {
             // Lógica para eliminar el equipo de entrenamiento

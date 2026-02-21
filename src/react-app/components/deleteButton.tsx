@@ -11,7 +11,7 @@ import {
 import { Trash2Icon } from 'lucide-react';
 
 
-export const DialogButton = ({
+export const DeleteButton = ({
   btnText = null,
   btnIcon = <Trash2Icon className='w-4 h-4' />,
   dgTitle = "¿Estás seguro?",

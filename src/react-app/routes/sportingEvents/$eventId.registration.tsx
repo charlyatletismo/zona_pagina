@@ -11,7 +11,7 @@ import {
   ARSportingEventRegistrationSchema,
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
-import { DialogButton } from '@/components/dialogButton';
+import { DeleteButton } from '@/components/deleteButton';
 import {
   ArrowLeft,
   CalendarIcon,
@@ -425,7 +425,7 @@ function RouteComponent() {
                 <div className=''>
                   Si te equivocaste de circuito o te inscribiste por error, podés eliminar tu inscripción.
                 </div>
-                <DialogButton
+                <DeleteButton
                   btnText="Eliminar"
                   btnIcon={null}
                   dgTitle="¿Estás seguro que querés eliminar tu inscripción?"
