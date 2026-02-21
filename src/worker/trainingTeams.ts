@@ -137,4 +137,18 @@ export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
       )
       .run();
     return c.json({ message: M.TRAINING_TEAM_UPDATED_SUCCESSFULLY });
+  })
+  .post("/delete/:id", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const id = c.req.param("id");
+    await db
+      .delete(trainingTeams)
+      .where(
+        eq(trainingTeams.id, Number(id))
+      )
+      .run();
+    return c.json({ message: M.TRAINING_TEAM_DELETED_SUCCESSFULLY });
   });

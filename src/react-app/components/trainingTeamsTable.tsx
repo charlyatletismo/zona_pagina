@@ -1,9 +1,10 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { TrainingTeamSchema } from '@shared/types';
 import { ARTrainingTeamAllSchema } from '@shared/apiRespTypes';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DialogButton } from '@/components/dialogButton';
 import {
   // FileArchiveIcon,
   EditIcon,
@@ -30,10 +31,12 @@ import {
   useReactTable,
   flexRender
 } from '@tanstack/react-table';
-import { customFilterFn } from '@/lib/utils';
+import { customFilterFn, getMessage } from '@/lib/utils';
+import { postAuthenticated } from '@/lib/apiCalls';
 
 
 export const TrainingTeamsTable = ({data}: {data: z.infer<typeof ARTrainingTeamAllSchema>[]}) => {
+  const navigate = useNavigate();
   const columnHelper = createColumnHelper<z.infer<typeof TrainingTeamSchema>>();
   
   const defaultColumns = [
@@ -102,6 +105,23 @@ export const TrainingTeamsTable = ({data}: {data: z.infer<typeof ARTrainingTeamA
             <EditIcon className='w-4 h-4' />
           </Link>
         </Button>
+        <DialogButton
+          dgDescription="Esta acción no se puede deshacer. Esto eliminará permanentemente el equipo de entrenamiento."
+          onConfirm={async () => {
+            // Lógica para eliminar el equipo de entrenamiento
+            const res = await postAuthenticated(`/api/trainingTeams/delete/${props.row.original.id}`);
+            if (res.status !== 200) {
+              console.error(
+                'Error al eliminar el equipo de entrenamiento:',
+                getMessage(res.body?.message, 'Error desconocido')
+              );
+              alert('Hubo un error al eliminar el equipo '
+                + 'de entrenamiento. Por favor, intenta '
+                + 'nuevamente más tarde.');
+            }
+            navigate({to: '.', reloadDocument: true});
+          }}
+        />
       </div>),
     })
   ]
