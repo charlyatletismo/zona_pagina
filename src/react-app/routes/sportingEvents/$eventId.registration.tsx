@@ -11,6 +11,7 @@ import {
   ARSportingEventRegistrationSchema,
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
+import { DialogButton } from '@/components/dialogButton';
 import {
   ArrowLeft,
   CalendarIcon,
@@ -28,15 +29,6 @@ import {
   Cpu,
   SquareChartGanttIcon,
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  // DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog"
 import React from 'react';
 
 
@@ -433,60 +425,29 @@ function RouteComponent() {
                 <div className=''>
                   Si te equivocaste de circuito o te inscribiste por error, podés eliminar tu inscripción.
                 </div>
-                <Dialog>
-                  <DialogTrigger>
-                    <Button variant="destructive" className='mx-auto'>
-                      Eliminar
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent showCloseButton={false}>
-                    <DialogHeader>
-                      <DialogTitle>¿Estás seguro?</DialogTitle>
-                      {/* <DialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente tu inscripción
-                        y eliminará tus datos de nuestros servidores.
-                      </DialogDescription> */}
-                      <div className='flex gap-2 justify-end mt-2'>
-                        <DialogClose asChild>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className='max-w-20 cursor-pointer'
-                          >
-                            Cancelar
-                          </Button>
-                        </DialogClose>
-                        <DialogClose asChild>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            className='max-w-20 cursor-pointer'
-                            onClick={async () => {
-                              setTimeout(() => {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }, 500);
-                              const res = await postAuthenticated(
-                                `/api/sportingEvents/${eventId}/unregister`,
-                                { userId: data.registration.user_id }
-                              );
-                              if (res.status === 200) {
-                                setSuccess('Inscripción eliminada correctamente');
-                                setTimeout(() => {
-                                  setSuccess('');
-                                  navigate({to: `/sportingEvents/${eventId}`, reloadDocument: true});
-                                }, 1500);
-                              } else {
-                                setError(`Error al eliminar la inscripción: ${getMessage(res.body?.message, 'Error desconocido')}`);
-                              }
-                            }}
-                          >
-                            Eliminar
-                          </Button>
-                        </DialogClose>
-                      </div>
-                    </DialogHeader>
-                  </DialogContent>
-                </Dialog>
+                <DialogButton
+                  btnText="Eliminar"
+                  btnIcon={null}
+                  dgTitle="¿Estás seguro que querés eliminar tu inscripción?"
+                  onConfirm={async () => {
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 500);
+                    const res = await postAuthenticated(
+                      `/api/sportingEvents/${eventId}/unregister`,
+                      { userId: data.registration.user_id }
+                    );
+                    if (res.status === 200) {
+                      setSuccess('Inscripción eliminada correctamente');
+                      setTimeout(() => {
+                        setSuccess('');
+                        navigate({to: `/sportingEvents/${eventId}`, reloadDocument: true});
+                      }, 1500);
+                    } else {
+                      setError(`Error al eliminar la inscripción: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                    }
+                  }}
+                />
                 {/* <div className='text-sm text-gray-600'>
                   Esta opción solo está disponible mientras tu inscripción esté en estado pendiente.
                 </div> */}
