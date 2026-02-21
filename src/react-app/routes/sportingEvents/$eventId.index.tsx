@@ -194,6 +194,24 @@ function RouteComponent() {
             </Button>
           )}
 
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/kitDelivery" params={{ eventId }}>
+                <PackageIcon className="w-4 h-4" />
+                Entrega de Kits
+              </Link>
+            </Button>
+          )}
+
+          {currentRole === ORGANIZER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/editPhotoAndGallery" params={{ eventId }}>
+                <ImageIcon className="w-4 h-4" />
+                Foto y Galería
+              </Link>
+            </Button>
+          )}
+
           {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
             <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
@@ -203,15 +221,6 @@ function RouteComponent() {
             </Button>
           )}
 
-
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/kitDelivery" params={{ eventId }}>
-                <PackageIcon className="w-4 h-4" />
-                Entrega de Kits
-              </Link>
-            </Button>
-          )}
         </div>
       )}
 
