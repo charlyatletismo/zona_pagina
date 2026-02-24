@@ -155,71 +155,68 @@ function RouteComponent() {
         </div>
       )}
 
+      {currentRole === ADMIN_ROLE && (
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 justify-center mb-6 p-4 border-b'>
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
+              <Edit className="w-4 h-4" />
+              Editar
+            </Link>
+          </Button>
+        </div>
+      )}
 
-      {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
-        <div className='flex flex-wrap gap-2 justify-center mb-6 p-4 border-b'>
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
-                <CircleDollarSignIcon className="w-4 h-4" />
-                Balance financiero
-              </Link>
-            </Button>
-          )}
+      {currentRole === ORGANIZER_ROLE && (
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 justify-center mb-6 p-4 border-b'>
 
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/allRegistrations" params={{ eventId }}>
-                <FileUserIcon className="w-4 h-4" />
-                Inscripciones
-              </Link>
-            </Button>
-          )}
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
+              <Edit className="w-4 h-4" />
+              Editar
+            </Link>
+          </Button>
 
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
-                <BadgeDollarSign className="w-4 h-4" />
-                Nueva transacción
-              </Link>
-            </Button>
-          )}
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/editPhotoAndGallery" params={{ eventId }}>
+              <ImageIcon className="w-4 h-4" />
+              Editar Fotos
+            </Link>
+          </Button>
 
-          {[ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE].includes(currentRole) && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
-                <FilePlus2 className="w-4 h-4" />
-                Registrar Atletas
-              </Link>
-            </Button>
-          )}
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/allRegistrations" params={{ eventId }}>
+              <FileUserIcon className="w-4 h-4" />
+              Inscripciones
+            </Link>
+          </Button>
 
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/kitDelivery" params={{ eventId }}>
-                <PackageIcon className="w-4 h-4" />
-                Entrega de Kits
-              </Link>
-            </Button>
-          )}
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+              <FilePlus2 className="w-4 h-4" />
+              Registrar Atletas
+            </Link>
+          </Button>
 
-          {currentRole === ORGANIZER_ROLE && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/editPhotoAndGallery" params={{ eventId }}>
-                <ImageIcon className="w-4 h-4" />
-                Foto y Galería
-              </Link>
-            </Button>
-          )}
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/kitDelivery" params={{ eventId }}>
+              <PackageIcon className="w-4 h-4" />
+              Entrega de Kits
+            </Link>
+          </Button>
 
-          {[ADMIN_ROLE, ORGANIZER_ROLE].includes(currentRole) && (
-            <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
-                <Edit className="w-4 h-4" />
-                Editar
-              </Link>
-            </Button>
-          )}
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
+              <BadgeDollarSign className="w-4 h-4" />
+              Nueva transacción
+            </Link>
+          </Button>
+
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
+              <CircleDollarSignIcon className="w-4 h-4" />
+              Balance financiero
+            </Link>
+          </Button>
 
         </div>
       )}
@@ -292,14 +289,28 @@ function RouteComponent() {
           </Link>
         </Button>
 
-        {currentRole === ATHLETES_MANAGER_ROLE && (
-          <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
-              <FilePlus2 className="w-4 h-4" />
-              Registrar Atletas
-            </Link>
-          </Button>
-        )}
+        <div className='flex flex-row gap-2'>
+          {currentRole === ATHLETES_MANAGER_ROLE && (
+            <Button asChild variant="outline">
+              <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+                <FilePlus2 className="w-4 h-4" />
+                Registrar Atletas
+              </Link>
+            </Button>
+          )}
+          {data.results_url && (
+            <Button
+              variant="default"
+              className='animate-tremor repeat-1 bg-green-600 hover:bg-green-700'
+              asChild
+            >
+              <a href={data.results_url} target="_blank" rel="noopener noreferrer">
+                <FileTextIcon className="w-4 h-4" />
+                Ver Resultados
+              </a>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Header */}
