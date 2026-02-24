@@ -20,6 +20,8 @@ export interface Env {
     GRAPH_API_TOKEN: string;
     GRAPH_API_PHONE_NUMBER_ID: string;
     MERCADOPAGO_ACCESS_TOKEN: string;
+    CLOUDFLARE_ACCOUNT_ID: string;
+    CLOUDFLARE_IMAGES_API_TOKEN: string;
 }
 type Variables = JwtVariables
 

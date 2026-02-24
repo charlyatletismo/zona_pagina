@@ -149,6 +149,20 @@ export const ARSportingEventMinSchema = SportingEventSchema.pick({
   date: z.coerce.date<string>(),
 });
 
+export const ARSportingEventGallerySchema = SportingEventSchema.pick({
+  id: true,
+  title: true,
+  photo_id: true
+}).extend({
+  // TODO: Make a proper schema
+  gallery_photos: z.array(z.object({
+    id: z.string(), // Cloudflare Images ID
+    order_n: z.number(), // Shown order in the gallery
+    created_by: z.string(),
+    created_at: z.coerce.date<string>(),
+  })).nullable().optional(),
+});
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //                     /api/sportingEvents/:id/registration                     //

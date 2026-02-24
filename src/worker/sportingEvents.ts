@@ -10,8 +10,13 @@ import {
   addSpEvent,
   updateSpEvent,
   delSpEvent,
-  getSpEventMin
+  getSpEventMin,
 } from "./lib/sportingEvents";
+import {
+  deleteSpEventPhoto,
+  getSpEventGallery,
+  updateSpEventPhoto,
+} from "./lib/sportingEventPhotos";
 import {
   registerToSpEvent,
   deleteRegistrationToSpEvent
@@ -199,6 +204,64 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
         preference_id: res.id,
       }
     });
+  })
+  .get("/:id/gallery", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const res = await getSpEventGallery(db, Number(id));
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ data: res.data });
+  })
+  .post("/:id/updatePhoto", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const formData = await c.req.formData();
+    if (!formData) {
+      return c.json({ message: M.SPORTING_EVENT_PHOTO_REQUIRED }, 400);
+    }
+    if (!c.env.CLOUDFLARE_ACCOUNT_ID || !c.env.CLOUDFLARE_IMAGES_API_TOKEN) {
+      return c.json({ message: M.SPORTING_EVENT_PHOTO_UPDATE_ERROR }, 500);
+    }
+    const userId: string = c.get('jwtPayload').id;
+    const res = await updateSpEventPhoto(
+      db,
+      Number(id),
+      formData,
+      userId,
+      c.env.CLOUDFLARE_ACCOUNT_ID,
+      c.env.CLOUDFLARE_IMAGES_API_TOKEN,
+    );
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: M.SPORTING_EVENT_PHOTO_UPDATED_SUCCESSFULLY });
+  })
+  .post("/:id/deletePhoto", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    if (!c.env.CLOUDFLARE_ACCOUNT_ID || !c.env.CLOUDFLARE_IMAGES_API_TOKEN) {
+      return c.json({ message: M.SPORTING_EVENT_PHOTO_UPDATE_ERROR }, 500);
+    }
+    const userId: string = c.get('jwtPayload').id;
+    const res = await deleteSpEventPhoto(
+      db,
+      Number(id),
+      userId,
+      c.env.CLOUDFLARE_ACCOUNT_ID,
+      c.env.CLOUDFLARE_IMAGES_API_TOKEN,
+    );
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: M.SPORTING_EVENT_PHOTO_DELETED_SUCCESSFULLY });
   })
   .post("/create", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

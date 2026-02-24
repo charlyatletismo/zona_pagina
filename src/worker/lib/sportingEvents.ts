@@ -6,7 +6,7 @@ import {
   sportingEventCircuits,
   sportingEventSchedules,
   sportingEventRegistrations,
-  sportingEventClothing
+  sportingEventClothing,
 } from '../db/schema'
 import { userRegisteredInEvent } from './sportingEventRegistrations';
 import { M } from './messages';
@@ -23,7 +23,7 @@ import { ARSportingEventSchema } from '@shared/apiRespTypes';
 interface DataResult {
   status: ContentfulStatusCode;
   message?: Record<string, string>;
-  data?: any;
+  data?: unknown;
 }
 interface NoDataResult {
   status: ContentfulStatusCode;

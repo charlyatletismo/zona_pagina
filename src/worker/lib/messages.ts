@@ -189,9 +189,29 @@ export const M = {
     [ES]: "La ropa del evento deportivo no es válida",
     [EN]: "Invalid sporting event clothing data"
   },
-  SPORTING_EVENT_ATHLETE_CATEGORY_INVALID_DATA: {
-    [ES]: "Los datos de la categoría de atleta del evento deportivo no son válidos",
-    [EN]: "Invalid sporting event athlete category data"
+  SPORTING_EVENT_PHOTO_UPDATED_SUCCESSFULLY: {
+    [ES]: "Foto del evento deportivo actualizada correctamente",
+    [EN]: "Sporting event photo updated successfully"
+  },
+  SPORTING_EVENT_PHOTO_REQUIRED: {
+    [ES]: "La foto del evento deportivo es obligatoria",
+    [EN]: "Sporting event photo is required"
+  },
+  SPORTING_EVENT_PHOTO_UPDATE_ERROR: {
+    [ES]: "Error al actualizar la foto del evento deportivo",
+    [EN]: "Error updating sporting event photo"
+  },
+  SPORTING_EVENT_PHOTO_NOT_FOUND: {
+    [ES]: "Foto del evento deportivo no encontrada",
+    [EN]: "Sporting event photo not found"
+  },
+  SPORTING_EVENT_PHOTO_DELETE_ERROR: {
+    [ES]: "Error al eliminar la foto del evento deportivo",
+    [EN]: "Error deleting sporting event photo"
+  },
+  SPORTING_EVENT_PHOTO_DELETED_SUCCESSFULLY: {
+    [ES]: "Foto del evento deportivo eliminada correctamente",
+    [EN]: "Sporting event photo deleted successfully"
   },
 
 
