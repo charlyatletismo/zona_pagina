@@ -7,11 +7,12 @@ import { authRoute } from "./auth";
 import { sportingEventsRoute } from "./sportingEvents";
 import { settingsRoute } from "./settings";
 import { usersRoute } from "./users";
-import { M } from "./lib/messages";
+import { chipsRoute } from "./chips";
 import { locationsRoute } from "./locations";
 import { trainingTeamsRoute } from "./trainingTeams";
 import { sportingEventTransactionsRoute } from "./sportingEventTransactions";
 import { webhookMercadoPagoRoute } from "./webhookMercadoPago";
+import { M } from "./lib/messages";
 
 
 export interface Env {
@@ -70,6 +71,7 @@ export default {
         app.route('/api/sportingEvents', sportingEventsRoute);
         app.route('/api/settings', settingsRoute);
         app.route('/api/users', usersRoute);
+        app.route('/api/chips', chipsRoute);
         app.route('/api/locations', locationsRoute);
         app.route('/api/trainingTeams', trainingTeamsRoute);
         app.route('/api/sportingEventTransactions', sportingEventTransactionsRoute);

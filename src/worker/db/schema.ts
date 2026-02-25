@@ -41,9 +41,11 @@ export const trainingTeams = sqliteTable("training_teams", {
 
 
 export const chips = sqliteTable("chips", {
-  id: text({ length: 12 }).primaryKey(), // Generally with the format: CH00302, but can be any string up to 12 characters
-  linked_bib_number: int().unique().notNull(), // if the chip is linked to a bib number, it is stored here for easy reference
-  enabled: int().notNull().default(1), // 1 for enabled, 0 for disabled
+  id: int().primaryKey({ autoIncrement: true }),
+  prefix: text({ length: 8 }), // Generally with the format: CH, but can be any string up to 8 characters
+  padding_n: int().default(5), // CH00325
+  start: int().notNull(), // 300
+  end: int().notNull(), // 500
   created_at: text()
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -307,11 +309,7 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
       { onDelete: 'set null',
         onUpdate: 'cascade' }
       ),
-  chip_id: text({ length: 12 })
-    .references(() => chips.id,
-      { onDelete: 'set null',
-        onUpdate: 'cascade' }
-      ),
+  chip_id: text({ length: 32 }),
   bib_number: int(),
 
   // Kit = bib + chip + clothing

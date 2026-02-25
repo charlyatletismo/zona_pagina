@@ -134,15 +134,16 @@ export const TrainingTeamSchema = z.object({
 
 
 export const ChipSchema = z.object({
-  id: z.string().min(1, 'El ID del chip no puede estar vacío')
-    .max(12, 'El ID del chip no puede exceder los 12 caracteres'),
-  linked_bib_number: z.number()
-    .min(1, 'El número de dorsal vinculado debe ser mayor a 0')
-    .nullable().optional(),
-  enabled: z.boolean().default(true),
+  id: z.number().optional(),
+  prefix: z.string()
+    .min(1, "Debe ingresar un prefijo")
+    .max(8, "El prefijo no debe superar los 8 caracteres"),
+  padding_n: z.number().min(0, "Debe ingresar un número positivo"),
+  start: z.number().min(0, "Debe ingresar un número positivo"),
+  end: z.number().min(0, "Debe ingresar un número positivo"),
   created_at: z.date().optional(),
   updated_at: z.date().optional(),
-})
+});
 
 
 export const SportingEventCircuitSchema = z.object({
@@ -280,7 +281,9 @@ export const SportingEventRegistrationSchema = z.object({
   full_payment_date: z.date().nullable(),
   demanded_clothing_id: SportingEventClothingSchema.shape.id.nullable(),
   reserved_clothing_id: SportingEventClothingSchema.shape.id.nullable(),
-  chip_id: ChipSchema.shape.id.nullable(),
+  chip_id: z.string()
+    .max(32, "El ID del chip no puede exceder los 32 caracteres")
+    .nullable(),
   bib_number: z.number().nullable(),
   kit_delivered: z.boolean().default(false),
   created_at: z.date(),

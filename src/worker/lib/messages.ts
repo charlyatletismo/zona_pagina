@@ -284,6 +284,33 @@ export const M = {
   },
 
 
+  // -------------------------- Chips --------------------------
+  CHIPS_SUCCESS_CREATING: {
+    [ES]: "Chips creados correctamente",
+    [EN]: "Chips created successfully"
+  },
+  CHIPS_SUCCESS_UPDATING: {
+    [ES]: "Chips actualizados correctamente",
+    [EN]: "Chips updated successfully"
+  },
+  CHIPS_ERROR_UPDATING: {
+    [ES]: "Error al actualizar los chips",
+    [EN]: "Error updating chips"
+  },
+  CHIPS_NOT_FOUND: {
+    [ES]: "Chips no encontrados",
+    [EN]: "Chips not found"
+  },
+  CHIPS_SUCCESS_DELETING: {
+    [ES]: "Chips eliminados correctamente",
+    [EN]: "Chips deleted successfully"
+  },
+  CHIPS_INVALID_DATA: {
+    [ES]: "Datos de chips inválidos",
+    [EN]: "Invalid chips data"
+  },
+
+
   // -------------------------- LOCATIONS --------------------------
   LOCATION_NOT_FOUND: {
     [ES]: "Ubicación no encontrada",

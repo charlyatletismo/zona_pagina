@@ -8,6 +8,7 @@ import {
   TrainingTeamSchema,
   SportingEventTransactionSchema,
   SportingEventCircuitSchema,
+  ChipSchema,
 } from './types';
 
 
@@ -87,6 +88,20 @@ export const ARUserMinSchema = UserSchema.pick({
   name: true,
   surname: true,
 });
+
+
+////////////////////////////////////////////////////////
+//                     /api/chips                     //
+////////////////////////////////////////////////////////
+
+
+export const ARChipSchema = ChipSchema.extend({
+  created_at: z.coerce.date<string>(),
+  updated_at: z.coerce.date<string>(),
+}).partial({
+  created_at: true,
+  updated_at: true,
+})
 
 
 /////////////////////////////////////////////////////////////////
