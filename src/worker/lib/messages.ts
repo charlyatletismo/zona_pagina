@@ -309,6 +309,10 @@ export const M = {
     [ES]: "Datos de chips inválidos",
     [EN]: "Invalid chips data"
   },
+  CHIPS_OVERLAPPING: {
+    [ES]: "Los chips se superponen con un rango existente",
+    [EN]: "Chips overlap with an existing range"
+  },
 
 
   // -------------------------- LOCATIONS --------------------------
