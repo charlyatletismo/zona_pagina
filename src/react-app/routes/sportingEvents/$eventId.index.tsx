@@ -290,7 +290,7 @@ function RouteComponent() {
         </Button>
 
         <div className='flex flex-row gap-2'>
-          {currentRole === ATHLETES_MANAGER_ROLE && (
+          {currentRole === ATHLETES_MANAGER_ROLE && openToRegister && (
             <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
                 <FilePlus2 className="w-4 h-4" />
