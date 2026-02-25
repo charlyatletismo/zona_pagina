@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { ChipSchema } from '@shared/types';
 import z from 'zod';
+import { removeDiacritics } from '@/lib/utils';
 
 
 export const ChipsForm = ({
@@ -96,7 +97,11 @@ export const ChipsForm = ({
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={(e) => field.handleChange(
+                    removeDiacritics(e.target.value)
+                    .toUpperCase()
+                    .replace(/[0-9]/g, '')
+                  )}
                   onBlur={field.handleBlur}
                   className={!field.state.meta.isValid ? 'border-destructive' : ''}
                 />
