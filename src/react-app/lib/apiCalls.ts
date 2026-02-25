@@ -17,7 +17,7 @@ export const getAuthenticatedThrow = async <T = any>(path: string, schema?: z.Zo
 }
 
 
-export const getAuthenticated = async <T = unknown>(
+export const getAuthenticated = async <T = any>(
   path: string,
   schema?: z.ZodSchema<T>,
   navigate: any = () => {}
@@ -50,7 +50,7 @@ export const getAuthenticated = async <T = unknown>(
 }
 
 
-export const postAuthenticated = async <T = unknown>(path: string, body?: object, navigate: any = () => {}): Promise<{
+export const postAuthenticated = async <T = any>(path: string, body?: object, navigate: any = () => {}): Promise<{
   status: number,
   body: {
     data: T,
@@ -83,7 +83,7 @@ export const postAuthenticated = async <T = unknown>(path: string, body?: object
 }
 
 
-export const postAuthenticatedFile = async <T = unknown>(path: string, body: FormData, navigate: any = () => {}): Promise<{
+export const postAuthenticatedFile = async <T = any>(path: string, body: FormData, navigate: any = () => {}): Promise<{
   status: number,
   body: {
     data: T,
