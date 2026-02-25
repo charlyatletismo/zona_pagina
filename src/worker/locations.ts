@@ -37,6 +37,9 @@ export const locationsRoute = new Hono<{ Bindings: Env }>()
     return c.json({ data: allLocs });
   })
   .get("/temporary", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
     const db = drizzle(c.env.DB);
     const tempLoc = await db
       .select({
