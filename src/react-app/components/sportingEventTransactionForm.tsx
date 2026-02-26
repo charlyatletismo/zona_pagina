@@ -105,7 +105,11 @@ export const SportingEventTransactionForm = ({
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
       setTimeout(() => {
         setSuccess('');
-        onSuccess ? onSuccess() : navigate({ to: '..', reloadDocument: true });
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate({ to: '..', reloadDocument: true });
+        }
       }, 1000);
     },
   });
