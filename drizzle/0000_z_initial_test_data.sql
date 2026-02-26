@@ -511,9 +511,9 @@ VALUES
     6,
     'Villa Corre',
     'Todo villa corre!!',
-    '2026-02-20T10:00',
-    '2025-12-10T10:00',
-    '2026-02-10T10:00',
+    '2026-04-20T03:00:00',
+    '2026-02-20T03:00:00',
+    '2026-04-01T03:00:00',
     NULL,
     NULL,
     NULL,
@@ -537,7 +537,10 @@ INSERT INTO sporting_event_circuits (
   name,
   description,
   distance_km,
-  competitive)
+  competitive,
+  bib_number_start,
+  bib_number_end
+)
 VALUES
   (
     1,
@@ -545,7 +548,9 @@ VALUES
     '8K Circuito Principal',
     'Circuito principal de 8 kilómetros que recorre las principales calles de La Vanguardia.',
     8.0,
-    1
+    1,
+    1,
+    300
   ),
   (
     2,
@@ -553,7 +558,9 @@ VALUES
     '4K Circuito Alternativo',
     'Circuito alternativo de 4 kilómetros ideal para corredores principiantes.',
     4.0,
-    0
+    0,
+    301,
+    500
   ),
   (
     3,
@@ -561,7 +568,9 @@ VALUES
     'Principal 8K',
     'Descripción 8K',
     8.0,
-    1
+    1,
+    1,
+    300
   ),
   (
     4,
@@ -569,7 +578,9 @@ VALUES
     'Alternativo 4K',
     'Descripción 4K',
     4.0,
-    0
+    0,
+    301,
+    500
   );
 
 

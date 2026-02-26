@@ -1,8 +1,8 @@
 -- ------------- Users ------------- --
 -- unique index for phone number, but only for non-null values
-CREATE UNIQUE INDEX idx_unique_phone_number
-ON users (phone_number)
-WHERE phone_number IS NOT NULL;
+CREATE UNIQUE INDEX idx_unique_phone
+ON users (phone)
+WHERE phone IS NOT NULL;
 -- unique index for email, but only for non-null values
 CREATE UNIQUE INDEX idx_unique_email
 ON users (email)
