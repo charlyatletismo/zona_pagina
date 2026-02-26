@@ -19,7 +19,8 @@ import {
 } from "./lib/sportingEventPhotos";
 import {
   registerToSpEvent,
-  deleteRegistrationToSpEvent
+  deleteRegistrationToSpEvent,
+  setRegistrationAsPaid,
 } from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
@@ -31,7 +32,6 @@ import {
   getManagedUsersRegistrations,
   getAllUsersRegistrations,
   getUserRegistrationWithEvent,
-  setRegistrationAsPaid,
 } from "./lib/sportingEventRegistrations";
 import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";

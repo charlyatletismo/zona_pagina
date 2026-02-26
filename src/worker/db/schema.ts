@@ -42,8 +42,8 @@ export const trainingTeams = sqliteTable("training_teams", {
 
 export const chips = sqliteTable("chips", {
   id: int().primaryKey({ autoIncrement: true }),
-  prefix: text({ length: 8 }), // Generally with the format: CH, but can be any string up to 8 characters
-  padding_n: int().default(5), // CH00325
+  prefix: text({ length: 8 }).notNull(), // Generally with the format: CH, but can be any string up to 8 characters
+  padding_n: int().notNull(), // CH00325
   start: int().notNull(), // 300
   end: int().notNull(), // 500
   created_at: text()

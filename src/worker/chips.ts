@@ -67,7 +67,11 @@ export const chipsRoute = new Hono<{ Bindings: Env }>()
     const allChips = await db
       .select()
       .from(chips)
-      .orderBy(asc(chips.prefix), asc(chips.padding_n), asc(chips.start))
+      .orderBy(
+        asc(chips.prefix),
+        asc(chips.padding_n),
+        asc(chips.start)
+      )
       .all();
     return c.json({ data: allChips });
   })

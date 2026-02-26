@@ -1,22 +1,11 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
-import { ContentfulStatusCode } from 'hono/utils/http-status';
 import {
   sportingEvents,
   // sportingEventGallery,
 } from '../db/schema'
 import { M } from './messages';
-
-
-interface DataResult {
-  status: ContentfulStatusCode;
-  message?: Record<string, string>;
-  data?: unknown;
-}
-interface NoDataResult {
-  status: ContentfulStatusCode;
-  message: Record<string, string>;
-}
+import { DataResult, NoDataResult } from './utils';
 
 
 export const getSpEventGallery = async (

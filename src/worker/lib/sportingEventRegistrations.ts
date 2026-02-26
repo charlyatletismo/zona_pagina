@@ -390,22 +390,3 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
     }))
   );
 }
-
-
-export const setRegistrationAsPaid = async (
-  db: DrizzleD1Database,
-  registrationId: number,
-  userId: string,
-) => {
-  await db.update(sportingEventRegistrations)
-    .set({
-      status: 'paid',
-      full_payment_date: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      updated_by: userId,
-    })
-    .where(eq(
-      sportingEventRegistrations.id,
-      registrationId
-    ));
-}

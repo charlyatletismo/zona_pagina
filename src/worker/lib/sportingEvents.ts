@@ -1,6 +1,5 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq, asc, inArray } from 'drizzle-orm';
-import { ContentfulStatusCode } from 'hono/utils/http-status';
 import {
   sportingEvents,
   sportingEventCircuits,
@@ -18,17 +17,8 @@ import {
   SportingEventScheduleSchema,
 } from '@shared/types';
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
+import { DataResult, NoDataResult } from './utils';
 
-
-interface DataResult {
-  status: ContentfulStatusCode;
-  message?: Record<string, string>;
-  data?: unknown;
-}
-interface NoDataResult {
-  status: ContentfulStatusCode;
-  message: Record<string, string>;
-}
 
 export const getSpEventMin = async (
     db: DrizzleD1Database,
@@ -238,6 +228,8 @@ export const addSpEvent = async (
         ...circuit,
         event_id: result[0].id,
         competitive: circuit.competitive ? 1 : 0,
+        bib_number_start: circuit.bib_number_start || 0,
+        bib_number_end: circuit.bib_number_end || 0,
       }))
     );
   }
@@ -390,6 +382,8 @@ export const updateSpEvent = async (
   const finalCircuitSchema = z.array(
     SportingEventCircuitSchema.omit({id: true}).required({
       event_id: true,
+      bib_number_start: true,
+      bib_number_end: true,
     }).extend({
       competitive: z.coerce.number<boolean>().optional(),
     })
