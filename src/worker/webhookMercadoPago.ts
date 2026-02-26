@@ -66,7 +66,7 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env }>()
       c.env.MERCADOPAGO_SECRET_KEY
       );
     console.log('Is the request valid according to MercadoPago webhook validation?', valid);
-    // TEMPORARY: Mercado Pago sends valid signatures when testing the webhook,
+    // FIXME: TEMPORARY. Mercado Pago sends valid signatures when testing the webhook,
     // but when we test it with a real payment, the signatures are invalid.
     // We need to investigate why this is happening, but for now we will allow all requests to be processed
     // to avoid missing real payments.
