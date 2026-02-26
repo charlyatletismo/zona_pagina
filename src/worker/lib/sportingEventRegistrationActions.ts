@@ -212,6 +212,7 @@ export const setRegistrationAsPaid = async (
   db: DrizzleD1Database,
   registrationId: number,
   userId: string,
+  paidAmount?: number
 ) => {
   // Set registration as paid
   // Set full_payment_date to now
@@ -224,6 +225,8 @@ export const setRegistrationAsPaid = async (
     id: sportingEventRegistrations.id,
     event_id: sportingEventRegistrations.event_id,
     circuit_id: sportingEventRegistrations.circuit_id,
+    status: sportingEventRegistrations.status,
+    paid_amount: sportingEventRegistrations.paid_amount,
     user_id: sportingEventRegistrations.user_id,
     demanded_clothing_id: sportingEventRegistrations.demanded_clothing_id,
   })
@@ -234,6 +237,10 @@ export const setRegistrationAsPaid = async (
   if (!registration) {
     console.error("Registration not found for id", registrationId);
     throw new Error("Registration not found for id " + registrationId);
+  }
+  if (registration.status === 'paid') {
+    console.log(`Registration ${registrationId} is already marked as paid`);
+    return;
   }
   const latestRegistrationWithBib = await db
     .select({ bib: sportingEventRegistrations.bib_number })
@@ -340,6 +347,8 @@ export const setRegistrationAsPaid = async (
     }
   }
 
+  const totalPaidAmount = (registration.paid_amount || 0) + (paidAmount || 0);
+
   await db.update(sportingEventRegistrations)
     .set({
       status: 'paid',
@@ -351,6 +360,7 @@ export const setRegistrationAsPaid = async (
       updated_by: userId,
       bib_number: nextBibNumber,
       chip_id: chipId,
+      paid_amount: totalPaidAmount,
     })
     .where(eq(
       sportingEventRegistrations.id,

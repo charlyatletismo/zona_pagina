@@ -12,6 +12,11 @@
 		"directory": "./dist/client",
 		"not_found_handling": "single-page-application"
 	},
+	
+  "vars": {
+    "BASE_URL": "https://zona-atletismo-webapp.charly-zonaatletismo.workers.dev",
+  },
+
 	"d1_databases": [
 		{
 			"binding": "DB",

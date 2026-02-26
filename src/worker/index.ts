@@ -18,9 +18,11 @@ import { M } from "./lib/messages";
 export interface Env {
     DB: D1Database;
     JWT_SECRET: string;
+    BASE_URL: string;
     GRAPH_API_TOKEN: string;
     GRAPH_API_PHONE_NUMBER_ID: string;
     MERCADOPAGO_ACCESS_TOKEN: string;
+    MERCADOPAGO_SECRET_KEY: string;
     CLOUDFLARE_ACCOUNT_ID: string;
     CLOUDFLARE_IMAGES_API_TOKEN: string;
 }
@@ -33,6 +35,18 @@ const RGX_WEBHOOKS = /^\/api\/webhook\/.*$/;
 
 
 export default {
+    // async scheduled(
+    //     controller: ScheduledController,
+    //     env: Env,
+    //     ctx: ExecutionContext,
+    // ) {
+    //     const scheduledTime = new Date(controller.scheduledTime);
+    //     console.log("cron scheduled", scheduledTime.toISOString());
+    //     console.log("cron processed at", new Date().toISOString());
+    //     // here we can run any scheduled tasks, for example sending notifications for upcoming schedule items
+    //     // we can also use the scheduled time to determine which notifications to send, for example if we want to send notifications for schedule items happening in the next 24 hours, we can calculate the time range and query the database for schedule items with notify_at within that range
+    //     // TODO: implement scheduled tasks and notifications
+    // },
     async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
         const app = new Hono<{ Bindings: Env, Variables: Variables }>();
 
@@ -45,13 +59,13 @@ export default {
                 secret: c.env.JWT_SECRET,
                 alg: 'HS256',
             })
-            if (c.req.header('Authorization')) {
-                // console.log("Authorization header found, applying JWT middleware");
-                return jwtMiddleware(c, next);
-            }
             if (RGX_WEBHOOKS.test(c.req.path)) {
                 // console.log("Skipping JWT auth for webhooks");
                 return next();
+            }
+            if (c.req.header('Authorization')) {
+                // console.log("Authorization header found, applying JWT middleware");
+                return jwtMiddleware(c, next);
             }
             if (RGX_AUTH.test(c.req.path) && c.req.method === 'POST') {
                 // console.log("Skipping JWT auth for login");
