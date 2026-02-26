@@ -83,6 +83,14 @@ export const M = {
     [ES]: "El usuario ya existe",
     [EN]: "User already exists"
   },
+  USER_EMAIL_ALREADY_IN_USE: {
+    [ES]: "El correo electrónico ya está en uso",
+    [EN]: "Email already in use"
+  },
+  USER_PHONE_ALREADY_IN_USE: {
+    [ES]: "El número de teléfono ya está en uso",
+    [EN]: "Phone number already in use"
+  },
   USER_DATE_OF_BIRTH_NOT_SET: {
     [ES]: "La fecha de nacimiento del usuario no está establecida",
     [EN]: "User date of birth not set"

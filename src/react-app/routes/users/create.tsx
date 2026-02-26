@@ -25,6 +25,11 @@ export const Route = createFileRoute('/users/create')({
 function RouteComponent() {
   const { locationsApi, tteamsApi } = Route.useLoaderData();
 
+  let defaultManagerId = null;
+  if (localStorage.getItem('USER_ROLE') === ATHLETES_MANAGER_ROLE) {
+    defaultManagerId = localStorage.getItem('USER_ID');
+  }
+
   return (
     <FormBox
       title="Crear Usuario"
@@ -41,6 +46,7 @@ function RouteComponent() {
     >
       <ProfileForm
         profile={null}
+        defaultManagerId={defaultManagerId}
         locations={locationsApi.body.data}
         trainingTeams={tteamsApi.body.data}
         postUrl={`/api/users/create`}

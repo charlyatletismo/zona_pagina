@@ -29,7 +29,7 @@ import {
   useReactTable,
   flexRender,
 } from '@tanstack/react-table';
-import { lowerAndRemoveDiacritics } from '@/lib/utils';
+import { customFilterFn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
 
@@ -50,12 +50,6 @@ export const Route = createFileRoute('/users/')({
   },
   staleTime: 1000 * 60 * 5,
 })
-
-
-const customFilterFn = (row: any, columnId: string, filterValue: string) => {
-  const cellValue: string = row.getValue(columnId);
-  return lowerAndRemoveDiacritics(String(cellValue)).includes(lowerAndRemoveDiacritics(filterValue));
-}
 
 
 function RouteComponent() {
@@ -140,6 +134,7 @@ function RouteComponent() {
       },
       footer: props => props.column.id,
       enableSorting: true,
+      enableHiding: true,
       sortUndefined: 'last',
     }),
     columnHelper.display({
@@ -173,6 +168,7 @@ function RouteComponent() {
       globalFilter: '',
       columnVisibility: {
         id: false,
+        role: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
       },
       sorting: [
         { id: "role", desc: true },

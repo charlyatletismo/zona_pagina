@@ -93,7 +93,7 @@ export const UserSchema = z.object({
   discount_percentage: z.number({error: "Debe ser un número"})
     .min(0, 'El porcentaje de descuento no puede ser negativo')
     .max(100, 'El porcentaje de descuento no puede exceder 100%')
-    .prefault(0),
+    .optional(),
   manager_id: z.string()
     .max(USER_ID_MAX_LENGTH, 'El ID del manager no puede exceder los 28 caracteres')
     .nullable().optional(),

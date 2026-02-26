@@ -24,11 +24,13 @@ const SETTINGS_API_PATH = '/api/settings';
 
 export const ProfileForm = ({
   profile,
+  defaultManagerId,
   locations,
   trainingTeams,
-  postUrl
+  postUrl,
 } : {
   profile: z.infer<typeof ARSettingsSchema> | null,
+  defaultManagerId?: string | null,
   locations: string[],
   trainingTeams: z.infer<typeof ARTrainingTeamIndexSchema>[],
   postUrl: string
@@ -54,19 +56,20 @@ export const ProfileForm = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [managers, setManagers] = useState<{id: string, name: string}[]>(
-    profile?.manager_id ? managersData.data : []
+    (profile?.manager_id || defaultManagerId) ? managersData.data : []
   );
   const [showTrainingTeamTemp, setShowTrainingTeamTemp] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      if (profile?.manager_id) {
-        const managers = await getNonOrgManagersData(profile.manager_id);
+      const mid = profile?.manager_id || defaultManagerId;
+      if (mid) {
+        const managers = await getNonOrgManagersData(mid);
         setManagers(managers);
       }
     }
     fetchData();
-  }, [profile?.manager_id]);
+  }, [profile?.manager_id, defaultManagerId]);
 
   const specialFieldsShow = (
     postUrl !== SETTINGS_API_PATH
@@ -89,6 +92,7 @@ export const ProfileForm = ({
       email: '',
       emergency_contact_name: '',
       emergency_contact_phone: '',
+      manager_id: defaultManagerId || '',
     },
     validators: {
       onBlur: UserSchema,

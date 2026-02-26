@@ -58,17 +58,55 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
     return c.json({ data: allUsers });
   })
   .post("/create", async (c) => {
-    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
-      return c.json({ message: M.UNAUTHORIZED }, 403);
-    }
+    // if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+    //   return c.json({ message: M.UNAUTHORIZED }, 403);
+    // }
     const newUserData = ARUserSchema.safeParse(await c.req.json());
     if (!newUserData.success) {
       return c.json({ message: M.USER_INVALID_DATA }, 400);
     }
+    if (!newUserData.data.id || !newUserData.data.phone) {
+      return c.json({ message: M.USER_INVALID_DATA }, 400);
+    }
     const db = drizzle(c.env.DB);
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, newUserData.data.id))
+      .get();
+    if (existingUser) {
+      return c.json({ message: M.USER_ALREADY_EXISTS }, 400);
+    }
+    const existingPhone = await db
+      .select()
+      .from(users)
+      .where(eq(users.phone, newUserData.data.phone!))
+      .get();
+    if (existingPhone) {
+      return c.json({ message: M.USER_PHONE_ALREADY_IN_USE }, 400);
+    }
+
+    if (newUserData.data.email) {
+      const existingEmail = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, newUserData.data.email!))
+        .get();
+      if (existingEmail) {
+        return c.json({ message: M.USER_EMAIL_ALREADY_IN_USE }, 400);
+      }
+    }
+
+
     const res = await db.insert(users).values({
       ...newUserData.data,
       date_of_birth: newUserData.data.date_of_birth?.toISOString(),
+      discount_percentage: authorizedOrg(c.get('jwtPayload')?.role)
+        ? newUserData.data.discount_percentage || 0
+        : 0,
+      special_needs: authorizedOrg(c.get('jwtPayload')?.role)
+        ? newUserData.data.special_needs || null
+        : null,
       role: authorizedOrg(c.get('jwtPayload')?.role)
         ? (newUserData.data.role || ATHLETE_ROLE)
         : ATHLETE_ROLE,
