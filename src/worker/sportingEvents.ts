@@ -33,6 +33,7 @@ import {
   getAllUsersRegistrations,
   getUserRegistrationWithEvent,
 } from "./lib/sportingEventRegistrations";
+import { buildItemId } from "./lib/utilsPayment";
 import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";
 
@@ -157,7 +158,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       console.error(`Registration ${data.registration.id} for event `
         + `${id} has no pending amount to pay but is not marked `
         + `as paid. Marking as paid to avoid blocking the user.`);
-      setRegistrationAsPaid(db, data.registration.id, userId);
+      await setRegistrationAsPaid(db, data.registration.id, userId);
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ALREADY_PAID }, 400);
     }
     // console.log("Using MercadoPago access token:", c.env.MERCADOPAGO_ACCESS_TOKEN);
@@ -173,18 +174,19 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       body: JSON.stringify({
         items: [
           {
-            id: `event_${id}_user_${userId}`,
+            id: buildItemId(id, userId, data.registration.id),
             title: data.event.title,
             quantity: 1,
             unit_price: data.payment?.pending_to_pay || 0,
           }
         ],
-        // back_urls: {
-        //   success: `http://localhost:5173/sportingEvents/${id}/registration`,
-        //   failure: `http://localhost:5173/sportingEvents/${id}/registration`,
-        //   pending: `http://localhost:5173/sportingEvents/${id}/registration`
-        // },
-        // auto_return: "approved",
+        back_urls: {
+          success: `${c.env.BASE_URL}/sportingEvents/${id}/registration`,
+          failure: `${c.env.BASE_URL}/sportingEvents/${id}/registration`,
+          pending: `${c.env.BASE_URL}/sportingEvents/${id}/registration`,
+        },
+        auto_return: "approved",
+        // notification_url: `${c.env.BASE_URL}/api/webhook/mercadoPago/payment`,
       })
     });
     if (!response.ok) {
