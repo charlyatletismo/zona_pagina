@@ -102,7 +102,8 @@ function RouteComponent() {
         setSuccess('');
         navigate({
           to: "/sportingEvents/$eventId/registration",
-          params: { eventId }
+          params: { eventId },
+          reloadDocument: true,
         })
       }, 1000);
       setData({

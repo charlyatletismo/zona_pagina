@@ -156,6 +156,8 @@ export const SportingEventCircuitSchema = z.object({
     .max(1000, 'La distancia no puede exceder los 1000 km'),
   map_url: z.string().max(512).nullable().optional(),
   competitive: z.boolean().optional(),
+  bib_number_start: z.number().min(0, 'El número de bib debe ser positivo').optional(),
+  bib_number_end: z.number().min(0, 'El número de bib debe ser positivo').optional(),
 });
 
 

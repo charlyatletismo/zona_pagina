@@ -1053,11 +1053,24 @@ const SportingEventForm = (
                   type="button"
                   onClick={() => {
                     // El primer circuito agregado es competitivo por defecto, los siguientes no competitivos
-                    const competitive = !field.state.value || field.state.value.length === 0;
+                    let firstOne = true;
+                    let bib_number_start = 1;
+                    let bib_number_end = 300;
+                    if (field.state.value && field.state.value.length > 0) {
+                      firstOne = false;
+                      bib_number_start = (
+                        field.state.value[
+                          field.state.value.length - 1
+                        ].bib_number_end || 0
+                        ) + 1;
+                      bib_number_end = bib_number_start + 199;
+                    }
                     field.pushValue({
                       name: "",
                       distance_km: 0,
-                      competitive,
+                      competitive: firstOne, // we make the first circuit competitive by default
+                      bib_number_start,
+                      bib_number_end,
                     })
                   }}
                 >
@@ -1156,7 +1169,49 @@ const SportingEventForm = (
                       )}
                     />
 
-                    {/* Agregar bandera de circuito competitivo */}
+                    <form.AppField
+                      name={`circuits[${index}].bib_number_start`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Núm. de Dorsal inicial</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
+                            }}
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
+
+                    <form.AppField
+                      name={`circuits[${index}].bib_number_end`}
+                      children={(subField) => (
+                        <div className='space-y-2'>
+                          <subField.Label htmlFor={subField.name}>Núm. de Dorsal final</subField.Label>
+                          <subField.Input
+                            id={subField.name}
+                            name={subField.name}
+                            className={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                            value={subField.state.value || ""}
+                            onBlur={subField.handleBlur}
+                            onChange={(e) => {
+                              subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
+                            }}
+                          />
+                          {!subField.state.meta.isValid && (
+                            <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                          )}
+                        </div>
+                      )}
+                    />
 
                     <form.AppField
                       name={`circuits[${index}].map_url`}
