@@ -230,7 +230,7 @@ function RouteComponent() {
           </section>
 
           {/* Chip */}
-          <section>
+          {(data.category !== 'General' || data.registration.chip_id !== null) && (<section>
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
               <Cpu className="w-6 h-6 text-primary" />
               Chip de Cronometraje
@@ -240,7 +240,7 @@ function RouteComponent() {
                 ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
                 : 'Una vez pagada la inscripción, se te asignará un chip.'}
             </div>
-          </section>
+          </section>)}
           <section>
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
               <SquareChartGanttIcon className="w-6 h-6 text-primary" />
@@ -265,7 +265,17 @@ function RouteComponent() {
                 {statusLabelReg.text}
               </div>
             </div>
-            <div>
+            {data.registration.status === 'paid' && (
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-2">Inscripción completada el</h3>
+                <div>
+                  {data.registration.full_payment_date
+                    ? new Date(data.registration.full_payment_date).toLocaleDateString()
+                    : 'Fecha de pago no disponible'}
+                </div>
+              </div>
+            )}
+            {data.registration.status !== 'paid' && (<div>
               <h3 className="font-semibold text-gray-900 mb-2">Importe</h3>
               { data.registration.discount_percentage > 0 && (
                 <div className="mb-2">
@@ -305,7 +315,6 @@ function RouteComponent() {
               </div>
 
               {!data.payment.current_fee_is_promotional
-                && data.registration.status !== 'paid'
                 && data.payment.fee_payment_due_date
                 && (new Date(data.payment.fee_payment_due_date).getTime() - new Date().getTime()) < 7 * 24 * 60 * 60 * 1000 && (
                   <div className='mt-4 text-sm font-bold text-destructive'>
@@ -318,7 +327,6 @@ function RouteComponent() {
               )}
 
               {data.payment.current_fee_is_promotional
-                && data.registration.status !== 'paid'
                 && data.payment.promotional_fee_payment_due_date
                 && (new Date(data.payment.promotional_fee_payment_due_date).getTime() - new Date().getTime()) < 7 * 24 * 60 * 60 * 1000 && (
                   <div className='mt-4 text-sm font-bold text-yellow-600'>
@@ -330,18 +338,14 @@ function RouteComponent() {
                   </div>
               )}
 
-              {data.payment.current_fee_is_promotional && (data.registration.status !== 'paid' ? (
+              {data.payment.current_fee_is_promotional && (
                 <div className='mt-4 text-sm text-green-600 flex gap-1'>
                   Tarifa promocional aplicada.
                   Válida hasta el {new Date(data.payment.promotional_fee_payment_due_date || '').toLocaleDateString()}.
                   Luego de esa fecha, se aplicará la tarifa estándar de ${data.payment.fee_amount}.
                 </div>
-              ) : (
-                <div className='mt-4 text-sm text-gray-600 flex gap-1'>
-                  Tarifa promocional aplicada.
-                </div>
-              ))}
-            </div>
+              )}
+            </div>)}
           </div>
           {data.payment.pending_to_pay > 0 && (
             <div className='text-center bg-white p-6 rounded-xl shadow-sm border space-y-6'>

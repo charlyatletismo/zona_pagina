@@ -33,7 +33,7 @@ import {
   useReactTable,
   flexRender
 } from '@tanstack/react-table';
-import { lowerAndRemoveDiacritics } from '@/lib/utils';
+import { customFilterFn } from '@/lib/utils';
 
 
 export const Route = createFileRoute('/locations/')({
@@ -48,13 +48,6 @@ export const Route = createFileRoute('/locations/')({
   },
   staleTime: 0, // force reload every time
 })
-
-
-const customFilterFn = (row: any, columnId: string, filterValue: string) => {
-  const cellValue: string = row.getValue(columnId);
-  return lowerAndRemoveDiacritics(String(cellValue)).includes(lowerAndRemoveDiacritics(filterValue));
-}
-
 
 
 function RouteComponent() {

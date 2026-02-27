@@ -221,9 +221,9 @@ export const ARSportingEventRegistrationSchema = z.object({
   payment: z.object({
     fee_amount: SportingEventSchema.shape.fee_amount,
     fee_currency: SportingEventSchema.shape.fee_currency,
-    fee_payment_due_date: SportingEventSchema.shape.fee_payment_due_date,
+    fee_payment_due_date: z.coerce.date<string>().nullable(),
     fee_amount_promotional: SportingEventSchema.shape.fee_amount_promotional,
-    promotional_fee_payment_due_date: SportingEventSchema.shape.promotional_fee_payment_due_date,
+    promotional_fee_payment_due_date: z.coerce.date<string>().nullable(),
     current_fee_amount: z.number(),
     current_fee_is_promotional: z.boolean(),
     paid_amount: z.number(),
