@@ -268,6 +268,10 @@ export const M = {
     [ES]: "Inscripción del evento deportivo eliminada correctamente",
     [EN]: "Sporting event registration deleted successfully"
   },
+  SPORTING_EVENT_REGISTRATION_KIT_DELIVERY_STATUS_UPDATED_SUCCESSFULLY: {
+    [ES]: "Estado de entrega del kit de la inscripción del evento deportivo actualizado correctamente",
+    [EN]: "Sporting event registration kit delivery status updated successfully"
+  },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {

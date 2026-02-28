@@ -1,4 +1,4 @@
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and, inArray, like } from 'drizzle-orm';
 import {
   ARSportingEventSchema,
   ARSportingEventRegistrationSchema,
@@ -389,4 +389,66 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
       user: usersData.find(u => u.id === r.user_id) || null,
     }))
   );
+}
+
+
+export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: number, partialUserId?: string, bib?: string) => {
+  const evData = await getEventData(db, eventId);
+  if (!evData) {
+    return null;
+  }
+  const { clothing } = evData;
+  const clothingParsed = z.array(SpClothingMinSchema).parse(clothing);
+  const whereClause = and(
+    eq(sportingEventRegistrations.event_id, eventId),
+    eq(sportingEventRegistrations.status, 'paid'),
+    partialUserId ? like(sportingEventRegistrations.user_id, `%${partialUserId}%`) : undefined,
+    bib ? eq(sportingEventRegistrations.bib_number, Number(bib)) : undefined,
+  );
+  const registrations = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      user_id: sportingEventRegistrations.user_id,
+      bib_number: sportingEventRegistrations.bib_number,
+      chip_id: sportingEventRegistrations.chip_id,
+      reserved_clothing_id: sportingEventRegistrations.reserved_clothing_id,
+      kit_delivered: sportingEventRegistrations.kit_delivered,
+    })
+    .from(sportingEventRegistrations)
+    .where(whereClause)
+    .all();
+  
+  const usersData = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      surname: users.surname,
+    })
+    .from(users)
+    .where(inArray(users.id, registrations.map(r => r.user_id as string)))
+    .all();
+
+  const regs = registrations.map(r => ({
+    ...r,
+    clothing_size: clothingParsed.find(c => c.id === r.reserved_clothing_id)?.size || null,
+    full_name: `${usersData.find(u => u.id === r.user_id)?.name || ''} ${usersData.find(u => u.id === r.user_id)?.surname || ''}`.trim(),
+  }))
+  return regs;
+}
+
+
+export const updateSpEventRegistrationKitDeliveredStatus = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  registrationId: number,
+  deliveredKit: boolean
+) => {
+  await db
+    .update(sportingEventRegistrations)
+    .set({ kit_delivered: deliveredKit ? 1 : 0 })
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      eq(sportingEventRegistrations.id, registrationId),
+    ))
+    .run();
 }

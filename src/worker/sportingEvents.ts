@@ -29,6 +29,8 @@ import {
 } from "./lib/sportingEventList";
 import {
   getUserRegistration,
+  getPaidRegistrations,
+  updateSpEventRegistrationKitDeliveredStatus,
   getManagedUsersRegistrations,
   getAllUsersRegistrations,
   getUserRegistrationWithEvent,
@@ -122,6 +124,23 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
     }
     return c.json({ data: res });
+  })
+  .get("/:id/paidRegistrations", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { partialUserId, bib } = c.req.query();
+    const res = await getPaidRegistrations(db, Number(id), partialUserId, bib);
+    return c.json({ data: res });
+  })
+  .post("/:id/registrations/:regId/deliveredKit/:flag", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id, regId, flag } = c.req.param();
+    const delivered = flag === 'true';
+    await updateSpEventRegistrationKitDeliveredStatus(db, Number(id), Number(regId), delivered);
+    return c.json({ message: M.SPORTING_EVENT_REGISTRATION_KIT_DELIVERY_STATUS_UPDATED_SUCCESSFULLY });
   })
   .get("/:id/allRegistrations", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

@@ -239,6 +239,18 @@ export const ARManagedSportingEventRegistrationSchema = ARSportingEventRegistrat
 })
 
 
+export const ARSportingEventRegistrationMinSchema = SportingEventRegistrationSchema.pick({
+  id: true,
+  user_id: true,
+  bib_number: true,
+  chip_id: true,
+  kit_delivered: true,
+}).extend({
+  full_name: z.string(),
+  clothing_size: SportingEventClothingSchema.shape.size.nullable(),
+  kit_delivered: z.coerce.boolean<number>(),
+})
+
 ////////////////////////////////////////////////////////////////
 //                     /api/trainingTeams                     //
 ////////////////////////////////////////////////////////////////

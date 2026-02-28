@@ -8,15 +8,15 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog"
-import { Trash2Icon } from 'lucide-react';
+import { CircleArrowRightIcon } from 'lucide-react';
 
 
-export const DeleteButton = ({
+export const ConfirmButton = ({
   btnText = null,
-  btnIcon = <Trash2Icon className='w-4 h-4' />,
+  btnIcon = <CircleArrowRightIcon className='w-4 h-4' />,
   dgTitle = "¿Estás seguro?",
   dgDescription = null,
-  dgConfirmBtnText = "Eliminar",
+  dgConfirmBtnText = "Confirmar",
   dgCancelBtnText = "Cancelar",
   onConfirm,
 }: {
@@ -32,10 +32,10 @@ export const DeleteButton = ({
     <Dialog>
       <DialogTrigger>
         <Button
-          variant="destructive"
+          variant="default"
           type="button"
           className='mx-auto flex gap-2 items-center cursor-pointer'
-          title="Eliminar"
+          title="Confirmar"
           size={btnText ? "sm" : "icon-sm"}
         >
           {btnIcon}
@@ -60,7 +60,7 @@ export const DeleteButton = ({
             <DialogClose asChild>
               <Button
                 type="button"
-                variant="destructive"
+                variant="default"
                 className='max-w-20 cursor-pointer'
                 onClick={onConfirm}
               >
