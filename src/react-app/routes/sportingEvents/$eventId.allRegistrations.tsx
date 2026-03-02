@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
-import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import {
+  getAuthenticatedThrow,
+  postAuthenticated
+} from '@/lib/apiCalls';
 import {
   ARSportingEventRegistrationFlatSchema,
 } from '@shared/apiRespTypes';
@@ -57,7 +60,8 @@ import {
   flexRender
 } from '@tanstack/react-table';
 import { GoBackButton } from '@/components/goBackButton';
-import { customFilterFn } from '@/lib/utils';
+import { customFilterFn, getMessage } from '@/lib/utils';
+import React from 'react';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations')({
@@ -91,6 +95,8 @@ export const PkgAnimation = ({kit_delivered} : {kit_delivered: boolean}) => {
 
 function RouteComponent() {
   const { resRegApi } = Route.useLoaderData();
+  const { eventId } = Route.useParams();
+  const [data, setData] = React.useState(resRegApi.body.data)
 
   const statusBadges: Record<string, { text: string, color: string }> = {
     'pending': { text: 'Pendiente', color: 'border border-yellow-400 text-yellow-500' },
@@ -308,7 +314,26 @@ function RouteComponent() {
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {}} className='group'>
+              <DropdownMenuItem onClick={async () => {
+                // Lógica para marcar el kit como entregado
+                const res = await postAuthenticated(
+                  `/api/sportingEvents/${eventId}`
+                  + `/registrations/${props.row.original.id}`
+                  + `/deliveredKit/${props.row.original.kit_delivered ? 'false' : 'true'}`);
+                if (res.status !== 200) {
+                  console.error(
+                    'Error al marcar como entregado:',
+                    getMessage(res.body?.message, 'Error desconocido')
+                  );
+                  alert('Hubo un error al marcar como entregado. '
+                    + 'Por favor, intenta nuevamente más tarde.');
+                }
+                setData(prevData => prevData.map(item => 
+                  item.id === props.row.original.id 
+                    ? { ...item, kit_delivered: !item.kit_delivered } 
+                    : item
+                ));
+              }} className='group'>
                 <PkgAnimation kit_delivered={props.row.original.kit_delivered} />
               </DropdownMenuItem>
 
@@ -321,7 +346,7 @@ function RouteComponent() {
 
   const table = useReactTable({
     columns: defaultColumns,
-    data: resRegApi.body.data,
+    data: data,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
