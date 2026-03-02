@@ -1,6 +1,5 @@
-import { Link } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { GoBackButton } from '@/components/goBackButton';
 
 
 export const FormBox = ({
@@ -25,36 +24,12 @@ export const FormBox = ({
     }) => {
   return (
     <div className={`container mx-auto ${padding} max-w-3xl`}>
-      {returnText && returnPath && !returnDisabled &&
-        <Button
-          variant="ghost"
-          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-          asChild
-        >
-          <Link to={returnPath} params={returnParams ? returnParams : {}}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {returnText}
-          </Link>
-        </Button>
-      }
-      {!(returnText && returnPath) && !returnDisabled &&
-        <Button
-          variant="ghost"
-          className="mb-4 pl-0 hover:bg-transparent hover:text-primary cursor-pointer"
-          onClick={() => {
-            if (window.history.length > 1) {
-              window.history.back()
-            } else {
-              window.location.href = window.location.href + '/..'
-            }
-          }}
-          asChild
-        >
-          <div>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver atrás
-          </div>
-        </Button>
+      {!returnDisabled &&
+        <GoBackButton
+          returnText={returnText}
+          returnPath={returnPath}
+          returnParams={returnParams}
+        />
       }
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {(title || description) && (
