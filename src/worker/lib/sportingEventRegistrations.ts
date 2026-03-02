@@ -10,6 +10,7 @@ import {
   sportingEventCircuits,
   sportingEventClothing,
   users,
+  trainingTeams,
 } from '../db/schema'
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { DrizzleD1Database } from 'drizzle-orm/d1';
@@ -97,20 +98,44 @@ const getEventData = async (db: DrizzleD1Database, eventId: number) => {
 }
 
 
-const buildUserRegistration = (
-  registration: z.infer<typeof ARSportingEventRegistrationSchema.shape.registration>,
+const getCategory = (
+  ageRanges: number[],
+  ageAtRegistration: number | null,
+  userSex: string | null,
+  circuitIsCompetitive: boolean | null,
+  circuitKm: number | null
+) => {
+  let category: string | null = null;
+  if (!circuitIsCompetitive) {
+    // Non-competitive circuit, only one category
+    category = "General"
+  } else if (ageAtRegistration && ageRanges.length > 0) {
+    const age = ageAtRegistration;
+    const firstMax = ageRanges.find(r => r > age) || 0;
+    if (ageRanges.indexOf(firstMax) === 0) {
+      category = `<${firstMax}/${circuitKm}KM`;
+    } else {
+      const minAge = firstMax === 0
+        ? ageRanges[ageRanges.length - 1]
+        : ageRanges[ageRanges.indexOf(firstMax) - 1];
+      category = `${minAge}${firstMax === 0 ? "+" : `-${firstMax - 1}`}/${circuitKm}KM`;
+    }
+  }
+  return category;
+}
+
+const getPendingToPayAmount = (
   event: {
-    title: string,
-    age_ranges: string | null,
     fee_amount: number | null,
-    fee_currency: string | null,
-    fee_payment_due_date: string | null,
     fee_amount_promotional: number | null,
     promotional_fee_payment_due_date: string | null,
   },
-  clothing: z.infer<typeof SpClothingMinSchema>[],
-  circuit_km: number | null,
-  demandedClothingRemaining?: number,
+  registration: {
+    status: string,
+    promotional_fee_applied: boolean,
+    discount_percentage?: number | null,
+    paid_amount?: number | null,
+  }
 ) => {
   let current_fee_amount = event.fee_amount || 0;
   let current_fee_is_promotional = false;
@@ -131,6 +156,36 @@ const buildUserRegistration = (
       pending_to_pay = 0;
     }
   }
+  return {
+    current_fee_amount,
+    current_fee_is_promotional,
+    discount_amount,
+    pending_to_pay,
+  };
+}
+
+
+const buildUserRegistration = (
+  registration: z.infer<typeof ARSportingEventRegistrationSchema.shape.registration>,
+  event: {
+    title: string,
+    age_ranges: string | null,
+    fee_amount: number | null,
+    fee_currency: string | null,
+    fee_payment_due_date: string | null,
+    fee_amount_promotional: number | null,
+    promotional_fee_payment_due_date: string | null,
+  },
+  clothing: z.infer<typeof SpClothingMinSchema>[],
+  circuit_km: number | null,
+  demandedClothingRemaining?: number,
+) => {
+  const {
+    current_fee_amount,
+    current_fee_is_promotional,
+    discount_amount,
+    pending_to_pay
+  } = getPendingToPayAmount(event, registration);
 
   const dem = clothing.find(c => c.id === registration.demanded_clothing_id)
   const demanded_clothing = dem ? {
@@ -146,27 +201,19 @@ const buildUserRegistration = (
     size: resv.size,
   } : null;
 
+
   const a_ranges = event.age_ranges
     ? event.age_ranges.split(',')
       .map(r => Number(r.trim()))
       .sort((a,b) => a-b)
     : [];
-  let category: string | null = null;
-  if (circuit_km === null) {
-    // Non-competitive circuit, only one category
-    category = "General"
-  } else if (registration.age_at_registration && a_ranges.length > 0) {
-    const age = registration.age_at_registration;
-    const firstMax = a_ranges.find(r => r > age) || 0;
-    if (a_ranges.indexOf(firstMax) === 0) {
-      category = `<${firstMax}/${circuit_km}KM`;
-    } else {
-      const minAge = firstMax === 0
-        ? a_ranges[a_ranges.length - 1]
-        : a_ranges[a_ranges.indexOf(firstMax) - 1];
-      category = `${minAge}${firstMax === 0 ? "+" : `-${firstMax - 1}`}/${circuit_km}KM`;
-    }
-  }
+  const category = getCategory(
+    a_ranges,
+    registration.age_at_registration,
+    null,
+    circuit_km !== null ? true : null, // TODO: maybe change this logic
+    circuit_km
+  );
 
   return {
     registration,
@@ -360,11 +407,16 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
     .where(eq(sportingEventRegistrations.event_id, eventId))
     .all();
   const circuits = await db
-    .select({ id: sportingEventCircuits.id, distance_km: sportingEventCircuits.distance_km })
+    .select({
+      id: sportingEventCircuits.id,
+      name: sportingEventCircuits.name,
+      distance_km: sportingEventCircuits.distance_km,
+      competitive: sportingEventCircuits.competitive,
+    })
     .from(sportingEventCircuits)
     .where(and(
       eq(sportingEventCircuits.event_id, eventId),
-      eq(sportingEventCircuits.competitive, 1)
+      // eq(sportingEventCircuits.competitive, 1)
     ))
     .all();
   const usersData = await db
@@ -373,22 +425,64 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
       name: users.name,
       surname: users.surname,
       phone: users.phone,
-      email: users.email
+      email: users.email,
+      sex: users.sex,
     })
     .from(users)
     .where(inArray(users.id, registrations.map(r => r.user_id as string)))
     .all();
-  return await Promise.all(
-    registrations.map(r => ({
-      ...buildUserRegistration(
-        ARSportingEventRegistrationSchema.shape.registration.parse(r),
-        event,
-        clothingParsed,
-        circuits.find(c => c.id === r.circuit_id)?.distance_km || null
-      ),
-      user: usersData.find(u => u.id === r.user_id) || null,
-    }))
-  );
+  const trainingTeamsData = await db
+    .select({
+      id: trainingTeams.id,
+      name: trainingTeams.name,
+    })
+    .from(trainingTeams)
+    .where(inArray(trainingTeams.id, registrations.map(r => r.training_team_id as number)))
+    .all();
+
+  const a_ranges = event.age_ranges
+    ? event.age_ranges.split(',')
+      .map(r => Number(r.trim()))
+      .sort((a,b) => a-b)
+    : [];
+
+  const result = registrations.map(r => {
+    const regParsed = ARSportingEventRegistrationSchema.shape.registration.parse(r);
+    const circuit = circuits.find(c => c.id === regParsed.circuit_id);
+    const user = usersData.find(u => u.id === r.user_id);
+
+    const circuitIsCompetitive = circuit ? circuit.competitive === 1 : null;
+    const category = getCategory(
+      a_ranges,
+      regParsed.age_at_registration,
+      user?.sex ?? null,
+      circuitIsCompetitive,
+      circuit?.distance_km || null
+    );
+
+    const {
+      // current_fee_amount,
+      // current_fee_is_promotional,
+      // discount_amount,
+      pending_to_pay
+    } = getPendingToPayAmount(event, regParsed);
+
+    return {
+      ...regParsed,
+      category: category,
+      circuit_name: circuit?.name,
+      circuit_distance_km: circuit?.distance_km,
+      circuit_competitive: circuitIsCompetitive,
+      user_full_name: user ? `${user.name} ${user.surname}` : null,
+      user_phone: user?.phone || null,
+      user_email: user?.email || null,
+      user_training_team_name: trainingTeamsData.find(t => t.id === regParsed.training_team_id)?.name || null,
+      demanded_clothing_size: clothingParsed.find(c => c.id === regParsed.demanded_clothing_id)?.size || null,
+      reserved_clothing_size: clothingParsed.find(c => c.id === regParsed.reserved_clothing_id)?.size || null,
+      pending_to_pay,
+    }
+  })
+  return result;
 }
 
 

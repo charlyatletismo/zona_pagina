@@ -251,6 +251,23 @@ export const ARSportingEventRegistrationMinSchema = SportingEventRegistrationSch
   kit_delivered: z.coerce.boolean<number>(),
 })
 
+
+export const ARSportingEventRegistrationFlatSchema = ARSportingEventRegistrationSchema
+    .shape.registration.extend({
+  category: z.string().nullable(),
+  circuit_name: z.string().nullable(),
+  circuit_distance_km: z.number().nullable(),
+  circuit_competitive: z.coerce.boolean().nullable(),
+  user_full_name: z.string(),
+  user_phone: z.string().nullable(),
+  user_email: z.string().nullable(),
+  user_training_team_name: z.string().nullable(),
+  demanded_clothing_size: SportingEventClothingSchema.shape.size.nullable(),
+  reserved_clothing_size: SportingEventClothingSchema.shape.size.nullable(),
+  pending_to_pay: z.number(),
+})
+
+
 ////////////////////////////////////////////////////////////////
 //                     /api/trainingTeams                     //
 ////////////////////////////////////////////////////////////////
