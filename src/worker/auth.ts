@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { Env } from "./index";
+import { Env, Variables } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
 import { sign } from 'hono/jwt';
 import { eq, or } from 'drizzle-orm';
@@ -13,7 +13,7 @@ const genCode = () => {
 }
 
 
-export const authRoute = new Hono<{ Bindings: Env }>()
+export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .post("/sendCode", async (c) => {
     const { phone }: { phone: string } = await c.req.json();
     if (!phone) {

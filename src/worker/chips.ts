@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './index';
+import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, asc, and, not } from 'drizzle-orm';
 import { chips } from './db/schema';
@@ -55,7 +55,7 @@ const overlappingChip = (
 }
 
 
-export const chipsRoute = new Hono<{ Bindings: Env }>()
+export const chipsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .use(async (c, next) => {
     if (!authorizedOrg(c.get('jwtPayload')?.role)) {
       return c.json({ message: M.UNAUTHORIZED }, 403);

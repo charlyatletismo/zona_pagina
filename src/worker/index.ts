@@ -13,6 +13,7 @@ import { trainingTeamsRoute } from "./trainingTeams";
 import { sportingEventTransactionsRoute } from "./sportingEventTransactions";
 import { webhookMercadoPagoRoute } from "./webhookMercadoPago";
 import { M } from "./lib/messages";
+import { JWTPayload } from "@shared/types";
 
 
 export interface Env {
@@ -26,7 +27,7 @@ export interface Env {
     CLOUDFLARE_ACCOUNT_ID: string;
     CLOUDFLARE_IMAGES_API_TOKEN: string;
 }
-type Variables = JwtVariables
+export type Variables = JwtVariables<JWTPayload>;
 
 
 const RGX_AUTH = /^\/api\/auth\/(sendCode|register|login)$/;

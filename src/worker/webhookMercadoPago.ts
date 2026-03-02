@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './index';
+import { Env, Variables } from './index';
 import { setRegistrationAsPaid } from './lib/sportingEventRegistrationActions';
 import { drizzle } from 'drizzle-orm/d1';
 import { parseItemId } from './lib/utilsPayment';
@@ -51,7 +51,7 @@ const validRequest = async (
 }
 
 
-export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env }>()
+export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .use(async (c, next) => {
     const xsig = c.req.header('x-signature');
     const xreqid = c.req.header('x-request-id');

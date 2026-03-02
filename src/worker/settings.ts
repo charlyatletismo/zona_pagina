@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './index';
+import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import { users, userUpdates } from './db/schema';
@@ -8,7 +8,7 @@ import { M } from './lib/messages';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
 
 
-export const settingsRoute = new Hono<{ Bindings: Env }>()
+export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const userId = c.get('jwtPayload').id;

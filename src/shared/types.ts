@@ -363,3 +363,14 @@ export const TransactionTypeByCategory: Record<string, 'inflow' | 'outflow'> = {
   other_inflow: 'inflow',
   other_outflow: 'outflow',
 };
+
+export const JWTPayloadSchema = z.object({
+  id: z.string(),
+  phone: z.string(),
+  role: z.enum(ALL_ROLES),
+  name: z.string().nullable(),
+  surname: z.string().nullable(),
+  manager_id: z.string().nullable(),
+});
+
+export type JWTPayload = z.infer<typeof JWTPayloadSchema>;

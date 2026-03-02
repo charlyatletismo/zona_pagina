@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { Env } from "./index";
+import { Env, Variables } from "./index";
 import { drizzle } from 'drizzle-orm/d1';
 import {
   authorizedAthMan,
@@ -40,7 +40,7 @@ import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";
 
 
-export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
+export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const res = await mainSportingEventsList(db);
@@ -126,6 +126,9 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env }>()
     return c.json({ data: res });
   })
   .get("/:id/paidRegistrations", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
     const { partialUserId, bib } = c.req.query();

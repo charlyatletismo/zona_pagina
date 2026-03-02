@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './index';
+import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import {
   trainingTeams,
@@ -15,7 +15,7 @@ import { eq, isNotNull } from 'drizzle-orm';
 import { authorizedOrg } from '@shared/roles';
 
 
-export const trainingTeamsRoute = new Hono<{ Bindings: Env }>()
+export const trainingTeamsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const data = await db

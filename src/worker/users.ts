@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './index';
+import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from './db/schema';
 import { eq, and, not, InferInsertModel } from 'drizzle-orm';
@@ -14,7 +14,7 @@ import { ARUserSchema } from '@shared/apiRespTypes';
 import { M } from './lib/messages';
 
 
-export const usersRoute = new Hono<{ Bindings: Env }>()
+export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .use(async (c, next) => {
     if (!authorizedAthMan(c.get('jwtPayload')?.role)) {
       return c.json({ message: M.UNAUTHORIZED }, 403);
@@ -136,7 +136,7 @@ export const usersRoute = new Hono<{ Bindings: Env }>()
           surname: users.surname,
         })
         .from(users)
-        .where(eq(users.id, c.get('jwtPayload').manager_id))
+        .where(eq(users.id, c.get('jwtPayload').manager_id!))
         .get();
       if (!manager) {
         return c.json({ data: [] });

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Env } from './index';
+import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq } from 'drizzle-orm';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
@@ -13,7 +13,7 @@ import { authorizedOrg } from '@shared/roles';
 import { M } from "./lib/messages";
 
 
-export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env }>()
+export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .use(async (c, next) => {
     if (c.req.method !== 'GET' && !authorizedOrg(c.get('jwtPayload')?.role)) {
       return c.json({ message: M.UNAUTHORIZED }, 403);
