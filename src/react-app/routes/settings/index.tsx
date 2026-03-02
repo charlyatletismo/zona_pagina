@@ -1,11 +1,12 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import { Edit, ArrowLeft } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls'
 import { ProfileCard } from '@/components/profileCard'
 import z from 'zod';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
+import { GoBackButton } from '@/components/goBackButton';
 
 
 export const Route = createFileRoute('/settings/')({
@@ -23,7 +24,6 @@ export const Route = createFileRoute('/settings/')({
 
 function RouteComponent() {
   const { res } = Route.useLoaderData();
-  const navigate = useNavigate();
 
   if (!res.body?.data) {
     return <div className="p-8 text-center">No se encontró información del perfil</div>;
@@ -32,15 +32,7 @@ function RouteComponent() {
   if (res.status === 404 || !res.body?.data) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-          onClick={() => navigate({ to: '..' })}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver atrás
-        </Button>
-
+        <GoBackButton />
         <div className="p-8 text-center">No se encontró información del perfil</div>
       </div>
     );
@@ -49,14 +41,7 @@ function RouteComponent() {
   if (res.status !== 200) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-          onClick={() => navigate({ to: '..' })}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver atrás
-        </Button>
+        <GoBackButton />
         <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil</div>
       </div>
     );
@@ -65,6 +50,7 @@ function RouteComponent() {
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
+      <GoBackButton />
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">Mi Perfil</h2>

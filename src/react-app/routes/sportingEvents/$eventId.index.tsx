@@ -7,7 +7,6 @@ import {
   FileTextIcon,
   TrophyIcon,
   ImageIcon,
-  ArrowLeft,
   Edit,
   AlertCircle,
   Check,
@@ -32,6 +31,7 @@ import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
 import { ButtonPing } from '@/components/pingingButton';
+import { GoBackButton } from '@/components/goBackButton';
 import z from 'zod';
 
 
@@ -124,7 +124,7 @@ function RouteComponent() {
         <h2 className="text-2xl font-bold">Error al cargar el evento</h2>
         <div className='text-center text-gray-600' >{getMessage(res.body?.message, 'Error desconocido')}</div>
         <Button asChild variant="outline">
-            <Link to="/">Volver al inicio</Link>
+          <Link to="/">Volver al inicio</Link>
         </Button>
       </div>
     )
@@ -134,7 +134,7 @@ function RouteComponent() {
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <h2 className="text-2xl font-bold">Evento no encontrado</h2>
         <Button asChild variant="outline">
-            <Link to="/">Volver al inicio</Link>
+          <Link to="/">Volver al inicio</Link>
         </Button>
       </div>
     )
@@ -279,16 +279,7 @@ function RouteComponent() {
       }
 
       <div className="flex justify-between items-center mb-4">
-        <Button
-          variant="ghost"
-          className="pl-0 hover:bg-transparent hover:text-primary"
-          asChild
-        >
-          <Link to="/">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al Inicio
-          </Link>
-        </Button>
+        <GoBackButton />
 
         <div className='flex flex-row gap-2'>
           {currentRole === ATHLETES_MANAGER_ROLE && openToRegister && (

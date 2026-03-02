@@ -21,10 +21,18 @@ function RouteComponent() {
       </div>
 
       <div className="flex gap-4">
-        <Button asChild variant="outline">
-          <Link to="..">
-            Volver atrás
-          </Link>
+        <Button
+          asChild
+          variant="outline"
+          onClick={() => {
+            if (window.history.length > 1) {
+              window.history.back()
+            } else {
+              window.location.href = window.location.href + '/..'
+            }
+          }}
+        >
+          Volver atrás
         </Button>
         <Button asChild>
           <Link to="/">

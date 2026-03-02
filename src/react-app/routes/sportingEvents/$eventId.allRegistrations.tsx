@@ -247,14 +247,16 @@ function RouteComponent() {
       <div className='flex flex-col sm:flex-row sm:justify-between'>
         <div className='mb-4 sm:mb-0 w-full'>
           <h1 className='text-2xl font-bold mb-4'>Inscripciones</h1>
-          <div className='flex gap-2 items-center mb-4 w-full max-w-md relative'>
-            <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
-            <Input
-              value={table.getState().globalFilter ?? ''}
-              onChange={e => table.setGlobalFilter(String(e.target.value))}
-              placeholder="Buscar..."
-            />
-          </div>
+          {resRegApi.body.data.length > 0 && (
+            <div className='flex gap-2 items-center mb-4 w-full max-w-md relative'>
+              <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
+              <Input
+                value={table.getState().globalFilter ?? ''}
+                onChange={e => table.setGlobalFilter(String(e.target.value))}
+                placeholder="Buscar..."
+              />
+            </div>
+          )}
         </div>
         {/* <div className='flex gap-2 flex-col sm:flex-row mb-8 sm:mb-0'>
           <Button variant='outline'>

@@ -12,8 +12,8 @@ import {
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { DeleteButton } from '@/components/deleteButton';
+import { GoBackButton } from '@/components/goBackButton';
 import {
-  ArrowLeft,
   CalendarIcon,
   CheckCircle,
   ShirtIcon,
@@ -110,20 +110,7 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-
-      <div className="flex justify-between items-center mb-4">
-        <Button
-          variant="ghost"
-          className="pl-0 hover:bg-transparent hover:text-primary"
-          asChild
-        >
-          <Link to="..">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al evento
-          </Link>
-        </Button>
-      </div>
-
+      <GoBackButton />
 
       {error && (
         <div className="my-5 bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">

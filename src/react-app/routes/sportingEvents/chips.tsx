@@ -8,7 +8,8 @@ import { ChipsForm } from '@/components/chipsForm';
 import { FormBox } from '@/components/formBox';
 import { Button } from '@/components/ui/button';
 import { DeleteButton } from '@/components/deleteButton';
-import { PlusIcon, ArrowLeft } from 'lucide-react';
+import { GoBackButton } from '@/components/goBackButton';
+import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
 
@@ -32,23 +33,7 @@ function RouteComponent() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Button
-        variant="ghost"
-        className="mb-4 hover:bg-transparent hover:text-primary cursor-pointer"
-        onClick={() => {
-          if (window.history.length > 1) {
-            window.history.back()
-          } else {
-            window.location.href = window.location.href + '/..'
-          }
-        }}
-        asChild
-      >
-        <div>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver atrás
-        </div>
-      </Button>
+      <GoBackButton />
       <h2 className="ml-4 text-2xl font-bold text-gray-800">Editar Segmentos de Chips</h2>
       <p className="ml-4 text-gray-500 text-sm mt-1 mb-6">
         Aquí puedes editar los chips disponibles para los eventos deportivos.

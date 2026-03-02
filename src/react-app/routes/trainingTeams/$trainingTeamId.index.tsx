@@ -3,7 +3,8 @@ import { ORGANIZER_ROLE } from '@shared/roles';
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, EditIcon, Mail, MapPin, PersonStanding, Phone } from 'lucide-react';
+import { GoBackButton } from '@/components/goBackButton';
+import { EditIcon, Mail, MapPin, PersonStanding, Phone } from 'lucide-react';
 import { getMessage } from '@/lib/utils';
 import { TrainingTeamSchema } from '@shared/types';
 import { ARTrainingTeamAllSchema } from '@shared/apiRespTypes';
@@ -112,17 +113,8 @@ function RouteComponent() {
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
-      <Button
-        variant="ghost"
-        className="mb-4 pl-0 hover:bg-transparent hover:text-primary cursor-pointer"
-        onClick={() => window.history.back()}
-        asChild
-      >
-        <div>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver atrás
-        </div>
-      </Button>
+      <GoBackButton />
+
       {res.status === 200
         ? <TrainingTeamCard data={res.body.data} />
         : <div className="p-6 bg-red-100 text-red-700 rounded">

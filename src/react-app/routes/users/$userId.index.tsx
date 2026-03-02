@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import z from 'zod';
 import { Button } from '@/components/ui/button'
-import { Edit, ArrowLeft, CogIcon, IdCard } from 'lucide-react'
+import { Edit, CogIcon, IdCard } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import { ARUserSchema } from '@shared/apiRespTypes';
@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { GoBackButton } from '@/components/goBackButton';
 
 
 export const Route = createFileRoute('/users/$userId/')({
@@ -38,15 +39,7 @@ function RouteComponent() {
   if (userApiRes.status === 404 || !userApiRes.body.data) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-          onClick={() => navigate({ to: '..' })}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver atrás
-        </Button>
-        
+        <GoBackButton />
         <div className="p-8 text-center">No se encontró información del perfil</div>
       </div>
     );
@@ -55,14 +48,7 @@ function RouteComponent() {
   if (userApiRes.status !== 200) {
     return (
       <div className="p-4 w-full md:max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-          onClick={() => navigate({ to: '..' })}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver atrás
-        </Button>
+        <GoBackButton />
         <div className="text-red-500 p-8 text-center">Error al cargar la información del perfil</div>
       </div>
     );
@@ -94,14 +80,7 @@ function RouteComponent() {
 
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
-      <Button
-        variant="ghost"
-        className="mb-4 pl-0 hover:bg-transparent hover:text-primary"
-        onClick={() => navigate({ to: '..' })}
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Volver atrás
-      </Button>
+      <GoBackButton />
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
