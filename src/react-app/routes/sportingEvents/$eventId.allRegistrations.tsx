@@ -18,6 +18,9 @@ import {
   EllipsisIcon,
   CircleXIcon,
   ArrowLeftRightIcon,
+  CircleCheckIcon,
+  PercentCircleIcon,
+  CircleDollarSignIcon,
 } from 'lucide-react';
 import {
   Table,
@@ -32,7 +35,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  // DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -57,6 +72,21 @@ export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations'
   },
   staleTime: 0, // force reload every time
 })
+
+
+export const PkgAnimation = ({kit_delivered} : {kit_delivered: boolean}) => {
+  const open = <PackageOpenIcon className='w-4 h-4' />;
+  const closed = <PackageIcon className='w-4 h-4' />;
+  const order = kit_delivered ? [open, closed] : [closed, open];
+
+  return (
+    <div className='flex gap-2 items-center'>
+      <div className='group-hover:hidden'>{order[0]}</div>
+      <div className='hidden group-hover:block'>{order[1]}</div>
+      Kit {kit_delivered ? 'NO entregado' : 'ya entregado'}
+    </div>
+  )
+}
 
 
 function RouteComponent() {
@@ -137,9 +167,48 @@ function RouteComponent() {
       enableSorting: true,
       enableGlobalFilter: false,
     }),
+    columnHelper.accessor('discount_percentage', {
+      header: 'Desc.',
+      cell: info => <div>
+        <Popover>
+          <PopoverTrigger
+            asChild
+            disabled={!info.getValue() || info.getValue() === 0}
+          >
+            <button className={
+              (!info.getValue() || info.getValue() === 0)
+                ? ''
+                : 'underline decoration-dotted cursor-pointer'
+              }
+            >
+              {info.getValue()}%
+            </button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className='text-xs'>{info.row.original.discount_reason}</div>
+          </PopoverContent>
+        </Popover>
+      </div>,
+      footer: props => props.column.id,
+      enableSorting: true,
+      enableGlobalFilter: false,
+    }),
     columnHelper.accessor('category', {
       header: 'Categoría',
-      cell: info => info.getValue(),
+      cell: info => <div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className='underline decoration-dotted cursor-pointer'>{info.getValue()}</button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className='space-y-1 text-xs'>
+              <p><b>Circuito</b> {info.row.original.circuit_name} ({info.row.original.circuit_distance_km}km)</p>
+              <p><b>Competitivo</b> {info.row.original.circuit_competitive ? 'Sí' : 'No'}</p>
+              <p><b>Edad al inscribirse</b> {info.row.original.age_at_registration}</p>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>,
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
@@ -177,7 +246,7 @@ function RouteComponent() {
       header: 'Kit',
       cell: info => info.getValue()
         ? <div className='text-green-500 p-2'><PackageOpenIcon className='w-4 h-4' /></div>
-        : <div className='text-red-500 p-2'><PackageIcon className='w-4 h-4' /></div>,
+        : <div className='text-gray-500 p-2'><PackageIcon className='w-4 h-4' /></div>,
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
@@ -197,25 +266,53 @@ function RouteComponent() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
-            <DropdownMenuItem onClick={() => {}}>Aplicar descuento</DropdownMenuItem>
-            {props.row.original.status !== "paid" && (
-              <DropdownMenuItem onClick={() => {}}>
-                Marcar como pagado
+            <DropdownMenuGroup>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                Acciones
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {props.row.original.status !== "paid" && (
+                    <DropdownMenuItem onClick={() => {}}>
+                      <CircleDollarSignIcon className='w-4 h-4 text-blue-500' />
+                      Registrar pago
+                    </DropdownMenuItem>
+                  )}
+                  {props.row.original.status !== "paid" && (
+                    <DropdownMenuItem onClick={() => {}}>
+                      <PercentCircleIcon className='w-4 h-4' />
+                      Aplicar descuento
+                    </DropdownMenuItem>
+                  )}
+                  {props.row.original.status !== "paid" && (
+                    <DropdownMenuItem onClick={() => {}}>
+                      <CircleCheckIcon className='w-4 h-4 text-green-500' />
+                      Marcar como pagado
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => {}}>
+                    <CircleXIcon className='w-4 h-4 text-red-500' />
+                    Cancelar
+                  </DropdownMenuItem>
+                  {props.row.original.status === "paid" && (
+                    <DropdownMenuItem onClick={() => {}}>
+                      <ArrowLeftRightIcon className='w-4 h-4' />
+                      Transferir
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuSubContent>
+
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {}} className='group'>
+                <PkgAnimation kit_delivered={props.row.original.kit_delivered} />
               </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={() => {}}>
-              <CircleXIcon className='w-4 h-4 text-red-500' />
-              Cancelar
-            </DropdownMenuItem>
-            {props.row.original.status === "paid" && (
-              <DropdownMenuItem onClick={() => {}}>
-                <ArrowLeftRightIcon className='w-4 h-4' />
-                Transferir
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={() => {}}>
-              Kit {props.row.original.kit_delivered ? 'NO entregado' : 'ya entregado'}
-            </DropdownMenuItem>
+
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -248,7 +345,7 @@ function RouteComponent() {
         <div className='mb-4 sm:mb-0 w-full'>
           <h1 className='text-2xl font-bold mb-4'>Inscripciones</h1>
           {resRegApi.body.data.length > 0 && (
-            <div className='flex gap-2 items-center mb-4 w-full max-w-md relative'>
+            <div className='flex gap-2 items-center mb-4 w-full max-w-sm relative'>
               <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
               <Input
                 value={table.getState().globalFilter ?? ''}
@@ -334,7 +431,7 @@ function RouteComponent() {
             ))}
           </TableBody>
         </Table>
-        <div className='text-gray-500'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
+        <div className='text-gray-500 mt-2'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
         </div>
       ) : (
         <div className='text-center py-10 text-gray-500 min-w-3xl max-w-full'>
