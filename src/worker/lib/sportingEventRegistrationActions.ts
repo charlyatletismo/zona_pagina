@@ -5,12 +5,14 @@ import {
   sportingEvents,
   sportingEventCircuits,
   sportingEventRegistrations,
-  sportingEventClothing
+  sportingEventClothing,
+  sportingEventTransactions
 } from '../db/schema'
 import { M } from './messages';
 import { authorizedOrg, authorizedAthMan } from '@shared/roles';
 import { getNextChipId } from './chips';
 import { DataResult, NoDataResult } from './utils';
+import { getPendingToPayAmount } from './sportingEventRegistrations';
 
 
 const isAuthorizedReg = async (db: DrizzleD1Database, reqUserId: string, userId: string) => {
@@ -366,4 +368,150 @@ export const setRegistrationAsPaid = async (
       sportingEventRegistrations.id,
       registrationId
     ));
+}
+
+export const newPaymentForRegistration = async (
+  db: DrizzleD1Database,
+  registrationId: number,
+  paidAmount: number,
+) => {
+  const registration = await db.select({
+      id: sportingEventRegistrations.id,
+      event_id: sportingEventRegistrations.event_id,
+      user_id: sportingEventRegistrations.user_id,
+      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
+      paid_amount: sportingEventRegistrations.paid_amount,
+      status: sportingEventRegistrations.status,
+      discount_percentage: sportingEventRegistrations.discount_percentage,
+    })
+    .from(sportingEventRegistrations)
+    .where(eq(sportingEventRegistrations.id, registrationId))
+    .limit(1)
+    .get();
+  if (!registration) {
+    return false;
+  }
+  const eventData = await db
+    .select({
+      fee_amount: sportingEvents.fee_amount,
+      fee_amount_promotional: sportingEvents.fee_amount_promotional,
+      promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
+    })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, registration.event_id!))
+    .limit(1)
+    .get();
+  if (!eventData) {
+    return false;
+  }
+  if (registration.status === 'paid') {
+    await db.update(sportingEventRegistrations)
+      .set({
+        paid_amount: (registration.paid_amount || 0) + paidAmount,
+        updated_at: new Date().toISOString(),
+      })
+      .where(eq(
+        sportingEventRegistrations.id,
+        registrationId
+      ));
+    return true;
+  }
+
+  const {
+    pending_to_pay
+  } = getPendingToPayAmount(
+    eventData,
+    {
+      ...registration,
+      promotional_fee_applied: registration.promotional_fee_applied === 1
+    }
+  )
+
+  if (paidAmount < pending_to_pay) {
+    await db.update(sportingEventRegistrations)
+      .set({
+        paid_amount: (registration.paid_amount || 0) + paidAmount,
+        updated_at: new Date().toISOString(),
+      })
+      .where(eq(
+        sportingEventRegistrations.id,
+        registrationId
+      ));
+    return true;
+  }
+
+  await setRegistrationAsPaid(db, registrationId, registration.user_id, paidAmount);
+  return true;
+}
+
+export const calculatePaidBasedOnTransactions = async (
+  db: DrizzleD1Database,
+  registrationId: number
+) => {
+  const registration = await db.select({
+      id: sportingEventRegistrations.id,
+      event_id: sportingEventRegistrations.event_id,
+      user_id: sportingEventRegistrations.user_id,
+      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
+      paid_amount: sportingEventRegistrations.paid_amount,
+      status: sportingEventRegistrations.status,
+      discount_percentage: sportingEventRegistrations.discount_percentage,
+    })
+    .from(sportingEventRegistrations)
+    .where(eq(sportingEventRegistrations.id, registrationId))
+    .limit(1)
+    .get();
+  if (!registration) {
+    return false;
+  }
+  const eventData = await db
+    .select({
+      fee_amount: sportingEvents.fee_amount,
+      fee_amount_promotional: sportingEvents.fee_amount_promotional,
+      promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
+    })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, registration.event_id!))
+    .limit(1)
+    .get();
+  if (!eventData) {
+    return false;
+  }
+
+  const transactions = await db
+    .select({ amount: sportingEventTransactions.amount })
+    .from(sportingEventTransactions)
+    .where(and(
+      eq(sportingEventTransactions.registration_id, registrationId),
+      eq(sportingEventTransactions.category, 'registration_payment'),
+      eq(sportingEventTransactions.status, 'completed'),
+    ))
+    .all();
+  const totalPaid = transactions.reduce((sum, t) => sum + t.amount, 0);
+
+  const {
+    pending_to_pay
+  } = getPendingToPayAmount(
+    eventData,
+    {
+      ...registration,
+      paid_amount: totalPaid,
+      promotional_fee_applied: registration.promotional_fee_applied === 1
+    }
+  )
+
+  if (pending_to_pay <= 0) {
+    await setRegistrationAsPaid(db, registrationId, registration.user_id, totalPaid - (registration.paid_amount || 0));
+  } else {
+    await db.update(sportingEventRegistrations)
+      .set({
+        status: 'pending',
+        paid_amount: totalPaid,
+        updated_at: new Date().toISOString(),
+      })
+      .where(eq(
+        sportingEventRegistrations.id,
+        registrationId
+      ));
+  }
 }

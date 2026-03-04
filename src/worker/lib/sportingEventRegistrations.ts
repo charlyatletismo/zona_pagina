@@ -124,7 +124,7 @@ const getCategory = (
   return category;
 }
 
-const getPendingToPayAmount = (
+export const getPendingToPayAmount = (
   event: {
     fee_amount: number | null,
     fee_amount_promotional: number | null,

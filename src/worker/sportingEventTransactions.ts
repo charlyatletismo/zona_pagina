@@ -8,7 +8,10 @@ import {
   ARSportEvTransactionSchema,
   ARSportEvTransactionMinSchema,
 } from '@shared/apiRespTypes';
-
+import {
+  newPaymentForRegistration,
+  calculatePaidBasedOnTransactions
+} from './lib/sportingEventRegistrationActions';
 import { authorizedOrg } from '@shared/roles';
 import { M } from "./lib/messages";
 
@@ -71,6 +74,16 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       transaction_date: data.data.transaction_date.toISOString(),
     });
 
+    if (data.data.status === 'completed'
+        && data.data.category === 'registration_payment'
+        && data.data.registration_id) {
+      // update paid amount
+      const result = await newPaymentForRegistration(db, data.data.registration_id, data.data.amount)
+      if (!result) {
+        console.error('Failed to update registration payment after transaction creation');
+      }
+    }
+
     return c.json({ message: M.SPORTING_EVENT_TRANSACTION_CREATED_SUCCESSFULLY });
   })
   .post("/update/:id", async (c) => {
@@ -98,17 +111,43 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       })
       .where(eq(sportingEventTransactions.id, Number(id)));
 
+    if (data.data.status === 'completed'
+        && data.data.category === 'registration_payment'
+        && data.data.registration_id) {
+      // update paid amount
+      const result = await calculatePaidBasedOnTransactions(db, data.data.registration_id)
+      if (!result) {
+        console.error('Failed to update registration payment after transaction creation');
+      }
+    }
+
     return c.json({ message: M.SPORTING_EVENT_TRANSACTION_UPDATED_SUCCESSFULLY });
   })
   .post("/delete/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
 
-    const res = await db.delete(sportingEventTransactions)
+    const trToDelete = await db
+      .select()
+      .from(sportingEventTransactions)
+      .where(eq(sportingEventTransactions.id, Number(id)))
+      .get();
+
+    if (!trToDelete) {
+      return c.json({ message: M.SPORTING_EVENT_TRANSACTION_NOT_FOUND }, 404);
+    }
+
+    await db.delete(sportingEventTransactions)
       .where(eq(sportingEventTransactions.id, Number(id)));
 
-    if (res.meta.changes === 0) {
-      return c.json({ message: M.SPORTING_EVENT_TRANSACTION_NOT_FOUND }, 404);
+    if (trToDelete.status === 'completed'
+        && trToDelete.category === 'registration_payment'
+        && trToDelete.registration_id) {
+      // update paid amount
+      const result = await calculatePaidBasedOnTransactions(db, trToDelete.registration_id)
+      if (!result) {
+        console.error('Failed to update registration payment after transaction creation');
+      }
     }
 
     return c.json({ message: M.SPORTING_EVENT_TRANSACTION_DELETED_SUCCESSFULLY });
