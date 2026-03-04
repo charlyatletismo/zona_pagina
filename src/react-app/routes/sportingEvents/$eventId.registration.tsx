@@ -79,7 +79,7 @@ function RouteComponent() {
 
   const statusLabels = {
     "pending": {
-      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />,
+      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-background bg-yellow-500 rounded-full" />,
       text: 'Pendiente de pago',
     },
     "partially_paid": {
@@ -91,7 +91,7 @@ function RouteComponent() {
       text: 'Pagado',
     },
     "cancelled": {
-      icon: <CircleXIcon className="w-5 h-5 inline-block mr-2 text-white bg-red-500 rounded-full" />,
+      icon: <CircleXIcon className="w-5 h-5 inline-block mr-2 text-background bg-red-500 rounded-full" />,
       text: 'Cancelado',
     },
     "expired": {
@@ -113,14 +113,14 @@ function RouteComponent() {
       <GoBackButton />
 
       {error && (
-        <div className="my-5 bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+        <div className="my-5 bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
           {error}
         </div>
       )}
 
       {success && (
-        <div className="my-5 bg-green-50 text-green-600 p-3 rounded-md text-sm">
+        <div className="my-5 bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
           {success}
         </div>
       )}
@@ -128,7 +128,7 @@ function RouteComponent() {
 
       {/* Header */}
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Detalles de Inscripción</h1>
+        <h1 className="text-4xl font-bold mb-2">Detalles de Inscripción</h1>
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
           <CalendarIcon className="w-5 h-5" />
           <span>Registrado el {new Date(data.registration.registration_date).toLocaleDateString()}</span>
@@ -144,10 +144,10 @@ function RouteComponent() {
               <CheckCircle className="w-6 h-6 text-primary" />
               Categoría
             </h2>
-            <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+            <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
               {data.category}
             </div>
-            {/* <p className="text-gray-600">Circuito ID: {data.category.circuit_id}</p> */}
+            {/* <p className="text-muted-foreground">Circuito ID: {data.category.circuit_id}</p> */}
           </section>
 
           {/* Team */}
@@ -157,12 +157,12 @@ function RouteComponent() {
                 <Users2 className="w-6 h-6 text-primary" />
                 Equipo de Entrenamiento
               </h2>
-              <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+              <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
                 {trainingTeam.name || "No hay descripción disponible."}
               </div>
               {/* <div>
-                <MapPin className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                <span className="text-gray-600">{trainingTeam.location || "Ubicación no disponible."}</span>
+                <MapPin className="w-5 h-5 inline-block mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">{trainingTeam.location || "Ubicación no disponible."}</span>
               </div> */}
             </section>
           )}
@@ -180,11 +180,11 @@ function RouteComponent() {
               }
             </h2>
             <div className="space-y-4">
-              <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-                <Ruler className="w-5 h-5 inline-block mr-2 text-gray-500" />
+              <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
+                <Ruler className="w-5 h-5 inline-block mr-2 text-muted-foreground" />
                 <b>Tu talle</b>: {data.demanded_clothing?.size || 'No seleccionado'}
               </div>
-              <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+              <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
                 {data.reserved_clothing ? (
                   <div className='flex justify-start items-center'>
                     <CheckCircle className="w-5 h-5 inline-block mr-2 text-green-500" />
@@ -192,7 +192,7 @@ function RouteComponent() {
                   </div>
                 ) : (
                   <div className='flex justify-start items-center'>
-                    <AlertCircle className="w-5 h-5 inline-block mr-2 text-white bg-yellow-500 rounded-full" />
+                    <AlertCircle className="w-5 h-5 inline-block mr-2 text-background bg-yellow-500 rounded-full" />
                     {
                       data.registration.reserved_clothing_id === 0 ? (
                         "Declinaste la indumentaria"
@@ -217,23 +217,25 @@ function RouteComponent() {
           </section>
 
           {/* Chip */}
-          {(data.category !== 'General' || data.registration.chip_id !== null) && (<section>
-            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-              <Cpu className="w-6 h-6 text-primary" />
-              Chip de Cronometraje
-            </h2>
-            <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
-              {data.registration.chip_id
-                ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
-                : 'Una vez pagada la inscripción, se te asignará un chip.'}
-            </div>
-          </section>)}
+          {(data.category !== 'General' || data.registration.chip_id !== null) && (
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                <Cpu className="w-6 h-6 text-primary" />
+                Chip de Cronometraje
+              </h2>
+              <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
+                {data.registration.chip_id
+                  ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
+                  : 'Una vez pagada la inscripción, se te asignará un chip.'}
+              </div>
+            </section>
+          )}
           <section>
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
               <SquareChartGanttIcon className="w-6 h-6 text-primary" />
               Dorsal
             </h2>
-            <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+            <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
               {data.registration.bib_number
                 ? `Tiene asignado el número de dorsal con ID: ${data.registration.bib_number}`
                 : 'Una vez pagada la inscripción, se te asignará un dorsal.'}
@@ -244,9 +246,9 @@ function RouteComponent() {
         {/* Sidebar - Right Column */}
         <div className="space-y-6">
           {/* Payment details */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border space-y-6">
+          <div className="p-6 rounded-xl shadow-sm border space-y-6">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Estado</h3>
+              <h3 className="font-semibold mb-2">Estado</h3>
               <div>
                 {statusLabelReg.icon}
                 {statusLabelReg.text}
@@ -254,7 +256,7 @@ function RouteComponent() {
             </div>
             {data.registration.status === 'paid' && (
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Inscripción completada el</h3>
+                <h3 className="font-semibold mb-2">Inscripción completada el</h3>
                 <div>
                   {data.registration.full_payment_date
                     ? new Date(data.registration.full_payment_date).toLocaleDateString()
@@ -263,16 +265,16 @@ function RouteComponent() {
               </div>
             )}
             {data.registration.status !== 'paid' && (<div>
-              <h3 className="font-semibold text-gray-900 mb-2">Importe</h3>
+              <h3 className="font-semibold mb-2">Importe</h3>
               { data.registration.discount_percentage > 0 && (
                 <div className="mb-2">
-                  <PercentCircle className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                  <PercentCircle className="w-5 h-5 inline-block mr-2 text-muted-foreground" />
                   Descuento aplicado: {data.registration.discount_percentage}% {data.registration.discount_reason ? `(${data.registration.discount_reason})` : ''}
                 </div>
               )}
               <div className='flex justify-between'>
                 <div>
-                  <BadgeDollarSignIcon className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                  <BadgeDollarSignIcon className="w-5 h-5 inline-block mr-2 text-muted-foreground" />
                   Tarifa:
                 </div>
                 <div>${data.payment.current_fee_amount}</div>
@@ -293,12 +295,14 @@ function RouteComponent() {
                 </div>
                 <div>-${data.payment.paid_amount.toFixed(0)}</div>
               </div>
-              <div className='flex justify-between'>
-                <div>
-                  <span className='w-5 h-5 inline-block mr-2'></span>
-                  Saldo:
+              <div className='flex'>
+                <span className='w-5 h-5 inline-block mr-3'></span>
+                <div className='w-full flex justify-between border-t'>
+                  <div>
+                    Saldo:
+                  </div>
+                  <div>${data.payment.pending_to_pay.toFixed(0)}</div>
                 </div>
-                <div className='border-t-2'>${data.payment.pending_to_pay.toFixed(0)}</div>
               </div>
 
               {!data.payment.current_fee_is_promotional
@@ -335,8 +339,8 @@ function RouteComponent() {
             </div>)}
           </div>
           {data.payment.pending_to_pay > 0 && (
-            <div className='text-center bg-white p-6 rounded-xl shadow-sm border space-y-6'>
-              <h3 className="font-semibold text-gray-900 mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
+            <div className='text-center p-6 rounded-xl shadow-sm border space-y-6'>
+              <h3 className="font-semibold mb-2 decoration-2 decoration-dotted decoration-primary underline">Acción requerida</h3>
               <div className='mb-2'>
                 Para completar tu inscripción, debés abonar el saldo pendiente.
               </div>
@@ -362,7 +366,11 @@ function RouteComponent() {
                   flex items-center gap-2
                   bg-sky-50 hover:bg-sky-100
                   border-sky-200 hover:border-sky-300
-                  text-sky-900 hover:text-sky-700'
+                  text-sky-900 hover:text-sky-700
+                  dark:bg-sky-600/10 dark:hover:bg-sky-700/10
+                  dark:border-sky-700/50 dark:hover:border-sky-700
+                  dark:text-sky-300 dark:hover:text-sky-100
+                  '
               >
                 <MercadoPagoLogo className='size-8' />
                 Pagar con Mercado Pago

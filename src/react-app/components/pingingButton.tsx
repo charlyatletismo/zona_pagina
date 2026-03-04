@@ -27,8 +27,8 @@ export const ButtonPing = (
     <div className='flex justify-center'>
       <div className="relative inline-flex group">
         <div className={
-          "bg-white text-gray-900 group-hover:text-primary "
-          + "rounded-xl shadow-md border border-gray-200 "
+          "bg-background text-foreground group-hover:text-primary "
+          + "rounded-lg shadow-md border border-muted-foreground "
           + "group-hover:shadow-lg group-hover:border-primary "
           + "transition-all duration-300 font-bold text-center my-auto "
           + textBySize
