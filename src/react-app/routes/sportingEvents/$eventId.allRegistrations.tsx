@@ -163,6 +163,7 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
+      sortingFn: 'alphanumeric',
       enableGlobalFilter: true,
     }),
     columnHelper.accessor('status', {
@@ -235,6 +236,7 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
+      sortingFn: 'alphanumeric',
       enableGlobalFilter: false,
     }),
     columnHelper.accessor('bib_number', {
@@ -251,6 +253,7 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
+      sortingFn: 'alphanumeric',
       enableGlobalFilter: true,
     }),
     columnHelper.accessor('demanded_clothing_size', {
