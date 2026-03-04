@@ -103,13 +103,13 @@ export const SportingEventTransactionForm = ({
         return;
       }
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
-        if (onSuccess) {
+      if (onSuccess) {
         await onSuccess();
-        } else {
+      } else {
         setTimeout(async () => {
           navigate({ to: '..', reloadDocument: true });
         }, 1000);
-        }
+      }
     },
   });
 
