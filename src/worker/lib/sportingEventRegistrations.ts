@@ -113,12 +113,12 @@ const getCategory = (
     const age = ageAtRegistration;
     const firstMax = ageRanges.find(r => r > age) || 0;
     if (ageRanges.indexOf(firstMax) === 0) {
-      category = `<${firstMax}/${circuitKm}KM`;
+      category = `<${firstMax}/${userSex}/${circuitKm}KM`;
     } else {
       const minAge = firstMax === 0
         ? ageRanges[ageRanges.length - 1]
         : ageRanges[ageRanges.indexOf(firstMax) - 1];
-      category = `${minAge}${firstMax === 0 ? "+" : `-${firstMax - 1}`}/${circuitKm}KM`;
+      category = `${minAge}${firstMax === 0 ? "+" : `-${firstMax - 1}`}/${userSex}/${circuitKm}KM`;
     }
   }
   return category;
@@ -178,6 +178,7 @@ const buildUserRegistration = (
   },
   clothing: z.infer<typeof SpClothingMinSchema>[],
   circuit_km: number | null,
+  userSex: string | null,
   demandedClothingRemaining?: number,
 ) => {
   const {
@@ -201,7 +202,6 @@ const buildUserRegistration = (
     size: resv.size,
   } : null;
 
-
   const a_ranges = event.age_ranges
     ? event.age_ranges.split(',')
       .map(r => Number(r.trim()))
@@ -210,7 +210,7 @@ const buildUserRegistration = (
   const category = getCategory(
     a_ranges,
     registration.age_at_registration,
-    null,
+    userSex,
     circuit_km !== null ? true : null, // TODO: maybe change this logic
     circuit_km
   );
@@ -289,7 +289,16 @@ const getUserRegistrationFull = async (
       .all();
     demandedClothingRemaining = demandedClothing.purchased_quantity - clothingInfo.length;
   }
-  
+
+  const userData = await db
+    .select({
+      sex: users.sex,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+    .get();
+
   const circuit = await db
     .select({ distance_km: sportingEventCircuits.distance_km })
     .from(sportingEventCircuits)
@@ -305,6 +314,7 @@ const getUserRegistrationFull = async (
     event,
     clothing,
     circuit_km,
+    userData?.sex ?? null,
     demandedClothingRemaining
   );
 }
