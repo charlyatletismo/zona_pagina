@@ -11,7 +11,7 @@ export function ThemeModeToggle({
   const currentTheme = localStorage.getItem("vite-ui-theme")
 
   function toggleTheme() {
-    console.log("Current theme:", currentTheme)
+    // console.log("Current theme:", currentTheme)
     if (currentTheme === "light") {
       setTheme("dark")
       // currentTheme = "dark"

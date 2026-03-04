@@ -47,7 +47,7 @@ export const DatePicker = ({
           selected={value || undefined}
           captionLayout="dropdown"
           onSelect={(date) => {
-            console.log("selected date", date);
+            // console.log("selected date", date);
             onChange(!date ? null : new Date(date));
             setOpen(false)
             onBlur();
