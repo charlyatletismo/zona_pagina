@@ -213,7 +213,7 @@ export const deleteRegistrationToSpEvent = async (
 export const setRegistrationAsPaid = async (
   db: DrizzleD1Database,
   registrationId: number,
-  userId: string,
+  updatedBy: string,
   paidAmount?: number
 ) => {
   // Set registration as paid
@@ -231,6 +231,9 @@ export const setRegistrationAsPaid = async (
     paid_amount: sportingEventRegistrations.paid_amount,
     user_id: sportingEventRegistrations.user_id,
     demanded_clothing_id: sportingEventRegistrations.demanded_clothing_id,
+    chip_id: sportingEventRegistrations.chip_id,
+    bib_number: sportingEventRegistrations.bib_number,
+    reserved_clothing_id: sportingEventRegistrations.reserved_clothing_id,
   })
   .from(sportingEventRegistrations)
   .where(eq(sportingEventRegistrations.id, registrationId))
@@ -242,9 +245,13 @@ export const setRegistrationAsPaid = async (
   }
   if (registration.status === 'paid') {
     console.log(`Registration ${registrationId} is already marked as paid`);
-    return;
+    return {
+      bib_number: registration.bib_number,
+      chip_id: registration.chip_id,
+      reserved_clothing_id: registration.reserved_clothing_id,
+    };
   }
-  const latestRegistrationWithBib = await db
+  const latestBibFromRegistrations = await db
     .select({ bib: sportingEventRegistrations.bib_number })
     .from(sportingEventRegistrations)
     .where(and(
@@ -252,7 +259,7 @@ export const setRegistrationAsPaid = async (
       eq(sportingEventRegistrations.circuit_id, registration.circuit_id!),
       isNotNull(sportingEventRegistrations.bib_number)
     ))
-    .orderBy(desc(sportingEventRegistrations.registration_date))
+    .orderBy(desc(sportingEventRegistrations.bib_number))
     .limit(1)
     .get();
   const circuitData = await db
@@ -271,8 +278,8 @@ export const setRegistrationAsPaid = async (
   }
 
   // BIB Assingment
-  let nextBibNumber = (latestRegistrationWithBib && latestRegistrationWithBib.bib)
-    ? latestRegistrationWithBib.bib + 1
+  let nextBibNumber = (latestBibFromRegistrations && latestBibFromRegistrations.bib)
+    ? latestBibFromRegistrations.bib + 1
     : circuitData.bib_start;
   if (nextBibNumber > circuitData.bib_end) {
     console.error("No more bib numbers available for circuit_id", registration.circuit_id);
@@ -291,7 +298,7 @@ export const setRegistrationAsPaid = async (
         isNotNull(sportingEventRegistrations.bib_number),
         gt(sportingEventRegistrations.bib_number, maxBibForCircuit!.end) // only consider bib numbers that exceed the normal range
       ))
-      .orderBy(desc(sportingEventRegistrations.registration_date))
+      .orderBy(desc(sportingEventRegistrations.bib_number))
       .limit(1)
       .get();
     nextBibNumber = latestRegistrationWithExceededBib
@@ -303,19 +310,19 @@ export const setRegistrationAsPaid = async (
   let chipId: string | null = null;
   if (circuitData.competitive) {
     // Assign chip
-    const latestRegistrationWithChip = await db
+    const latestChipIdFromRegistrations = await db
       .select({ chip_id: sportingEventRegistrations.chip_id })
       .from(sportingEventRegistrations)
       .where(and(
         eq(sportingEventRegistrations.status, 'paid'),
         isNotNull(sportingEventRegistrations.chip_id)
       ))
-      .orderBy(desc(sportingEventRegistrations.registration_date))
+      .orderBy(desc(sportingEventRegistrations.chip_id))
       .limit(1)
       .get();
 
     try {
-      chipId = await getNextChipId(db, latestRegistrationWithChip?.chip_id || null);
+      chipId = await getNextChipId(db, latestChipIdFromRegistrations?.chip_id || null);
     } catch (error) {
       console.error("Error getting next chip ID:", error);
     }
@@ -359,7 +366,7 @@ export const setRegistrationAsPaid = async (
         ? registration.demanded_clothing_id
         : null,
       updated_at: new Date().toISOString(),
-      updated_by: userId,
+      updated_by: updatedBy,
       bib_number: nextBibNumber,
       chip_id: chipId,
       paid_amount: totalPaidAmount,
@@ -368,6 +375,12 @@ export const setRegistrationAsPaid = async (
       sportingEventRegistrations.id,
       registrationId
     ));
+
+  return {
+    bib_number: nextBibNumber,
+    chip_id: chipId,
+    reserved_clothing_id: clothingCanBeReserved ? registration.demanded_clothing_id : null,
+  }
 }
 
 export const newPaymentForRegistration = async (
@@ -501,7 +514,12 @@ export const calculatePaidBasedOnTransactions = async (
   )
 
   if (pending_to_pay <= 0) {
-    await setRegistrationAsPaid(db, registrationId, registration.user_id, totalPaid - (registration.paid_amount || 0));
+    await setRegistrationAsPaid(
+      db,
+      registrationId,
+      registration.user_id,
+      totalPaid - (registration.paid_amount || 0)
+    );
   } else {
     await db.update(sportingEventRegistrations)
       .set({
@@ -513,5 +531,97 @@ export const calculatePaidBasedOnTransactions = async (
         sportingEventRegistrations.id,
         registrationId
       ));
+  }
+}
+
+
+export const applyDiscountToRegistrations = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  registrationIds: number[],
+  discountPercentage: number,
+  updatedBy: string,
+): Promise<DataResult> => {
+  const registrations = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      user_id: sportingEventRegistrations.user_id,
+      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
+      paid_amount: sportingEventRegistrations.paid_amount,
+      status: sportingEventRegistrations.status,
+      discount_percentage: sportingEventRegistrations.discount_percentage,
+      discount_reason: sportingEventRegistrations.discount_reason,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      inArray(sportingEventRegistrations.id, registrationIds),
+    ))
+    .all();
+  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
+  }
+
+  const eventData = await db
+    .select({
+      fee_amount: sportingEvents.fee_amount,
+      fee_amount_promotional: sportingEvents.fee_amount_promotional,
+      promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
+    })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .limit(1)
+    .get();
+  if (!eventData) {
+    return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
+  }
+
+  const results = []
+  for (const registration of registrations) {
+    const {
+      pending_to_pay
+    } = getPendingToPayAmount(
+      eventData,
+      {
+        ...registration,
+        promotional_fee_applied: registration.promotional_fee_applied === 1,
+        discount_percentage: Math.min(100, registration.discount_percentage + discountPercentage),
+      }
+    );
+    await db.update(sportingEventRegistrations)
+      .set({
+        discount_percentage: Math.min(100, registration.discount_percentage + discountPercentage),
+        discount_reason: registration.discount_percentage
+            ? `${discountPercentage} [old ${registration.discount_percentage}% ${registration.discount_reason}]`
+            : `Descuento manual del ${discountPercentage}%`,
+        paid_amount: registration.paid_amount,
+        updated_at: new Date().toISOString(),
+        updated_by: updatedBy,
+      })
+      .where(eq(
+        sportingEventRegistrations.id,
+        registration.id
+      ));
+    if (pending_to_pay <= 0) {
+      await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
+      results.push({
+        id: registration.id,
+        status: 'paid',
+        discount: registration.discount_percentage + discountPercentage,
+        pending: 0,
+      })
+    } else {
+      results.push({
+        id: registration.id,
+        status: 'pending',
+        discount: registration.discount_percentage + discountPercentage,
+        pending: pending_to_pay,
+      })
+    }
+  }
+  return {
+    status: 200,
+    message: M.SPORTING_EVENT_REGISTRATIONS_DISCOUNT_APPLIED_SUCCESSFULLY,
+    data: results,
   }
 }

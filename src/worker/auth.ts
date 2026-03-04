@@ -44,7 +44,8 @@ export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
         "00000001",
         "00000002",
         "00000003",
-        "00000004"].includes(user.id)) {
+        "00000004",
+        "00000005"].includes(user.id)) {
       console.log("Test user - skipping Whatsapp message sending");
       return c.json({
         message: {

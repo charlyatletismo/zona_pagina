@@ -735,7 +735,7 @@ const ApplyDiscountRegDialog = ({
                   // Lógica para aplicar un descuento
                   const r = await postAuthenticated<
                     {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
-                    >(`/api/sportingEvents/${eventId}/registrations/chargeFree`,
+                    >(`/api/sportingEvents/${eventId}/registrations/applyDiscount`,
                       {registrationIds: regsId, discount: discount}
                     );
                   if (r.status !== 200) {

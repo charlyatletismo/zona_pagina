@@ -228,6 +228,10 @@ export const M = {
     [ES]: "Inscripción al evento deportivo no encontrada",
     [EN]: "Sporting event registration not found"
   },
+  SPORTING_EVENT_REGISTRATIONS_NOT_FOUND: {
+    [ES]: "Inscripciones al evento deportivo no encontradas",
+    [EN]: "Sporting event registrations not found"
+  },
   SPORTING_EVENT_REGISTRATION_PAYMENT_MISSING_REQUIRED_FIELDS: {
     [ES]: "Faltan campos obligatorios en el pago de la inscripción del evento deportivo",
     [EN]: "Missing required fields in sporting event registration payment"
@@ -271,6 +275,26 @@ export const M = {
   SPORTING_EVENT_REGISTRATION_KIT_DELIVERY_STATUS_UPDATED_SUCCESSFULLY: {
     [ES]: "Estado de entrega del kit de la inscripción del evento deportivo actualizado correctamente",
     [EN]: "Sporting event registration kit delivery status updated successfully"
+  },
+  SPORTING_EVENT_REGISTRATION_IDS_REQUIRED: {
+    [ES]: "Se requieren los IDs de las inscripciones del evento deportivo",
+    [EN]: "Sporting event registration IDs required"
+  },
+  SPORTING_EVENT_REGISTRATION_DISCOUNT_INVALID: {
+    [ES]: "Descuento inválido para las inscripciones del evento deportivo",
+    [EN]: "Invalid discount for sporting event registrations"
+  },
+  SPORTING_EVENT_REGISTRATIONS_DISCOUNT_APPLIED_SUCCESSFULLY: {
+    [ES]: "Descuento aplicado correctamente a las inscripciones del evento deportivo",
+    [EN]: "Discount applied successfully to sporting event registrations"
+  },
+  SPORTING_EVENT_REGISTRATION_TRANSFERRED_SUCCESSFULLY: {
+    [ES]: "Inscripción del evento deportivo transferida correctamente",
+    [EN]: "Sporting event registration transferred successfully"
+  },
+  SPORTING_EVENT_REGISTRATION_CANNOT_BE_TRANSFERRED: {
+    [ES]: "La inscripción del evento deportivo no puede ser transferida",
+    [EN]: "Sporting event registration cannot be transferred"
   },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------

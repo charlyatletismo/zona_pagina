@@ -21,6 +21,7 @@ import {
   registerToSpEvent,
   deleteRegistrationToSpEvent,
   setRegistrationAsPaid,
+  applyDiscountToRegistrations,
 } from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
@@ -134,6 +135,26 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     const { partialUserId, bib } = c.req.query();
     const res = await getPaidRegistrations(db, Number(id), partialUserId, bib);
     return c.json({ data: res });
+  })
+  .post("/:id/registrations/applyDiscount", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { registrationIds, discount }
+      : {registrationIds: number[], discount: number} = await c.req.json();
+    if (!registrationIds || !Array.isArray(registrationIds) || registrationIds.length === 0) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_IDS_REQUIRED }, 400);
+    }
+    if (typeof discount !== 'number' || discount < 0) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_DISCOUNT_INVALID }, 400);
+    }
+    const res = await applyDiscountToRegistrations(db, Number(id), registrationIds, discount, c.get('jwtPayload').id);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: res.message, data: res.data });
   })
   .post("/:id/registrations/:regId/deliveredKit/:flag", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {
