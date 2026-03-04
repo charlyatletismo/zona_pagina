@@ -961,8 +961,8 @@ const TransferRegDialog = ({
                   // Lógica para transferir la inscripción
                   const r = await postAuthenticated(
                     `/api/sportingEvents/${eventId}/registrations/transfer`,
-                      {fromRegistrationId: regId, benefUserId: benefUserId}
-                    );
+                    {fromRegistrationId: regId, benefUserId: benefUserId}
+                  );
                   if (r.status !== 200) {
                     console.error('Error transfiriendo inscripción:', getMessage(r.body?.message, 'Error desconocido'));
                     setError(
