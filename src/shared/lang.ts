@@ -143,6 +143,10 @@ export const TransactionCategoryDesc: {[key: string]: {[key: string]: string}} =
     [ES]: "Reembolso de inscripción",
     [EN]: "Registration refund",
   },
+  mercado_pago_fee: {
+    [ES]: "Comisión de Mercado Pago",
+    [EN]: "Mercado Pago fee",
+  },
   infrastructure: {
     [ES]: "Infraestructura",
     [EN]: "Infrastructure",

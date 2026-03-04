@@ -312,6 +312,7 @@ export const SportingEventTransactionSchema = z.object({
   category: z.enum([
     'registration_payment',
     'registration_refund',
+    'mercado_pago_fee',
     'infrastructure',
     'marketing',
     'prizes',
@@ -351,6 +352,7 @@ export const SportingEventTransactionSchema = z.object({
 export const TransactionTypeByCategory: Record<string, 'inflow' | 'outflow'> = {
   registration_payment: 'inflow',
   registration_refund: 'outflow',
+  mercado_pago_fee: 'outflow',
   infrastructure: 'outflow',
   marketing: 'outflow',
   prizes: 'outflow',
