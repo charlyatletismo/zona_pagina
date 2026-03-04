@@ -60,8 +60,8 @@ export const getManagersData = async () => {
 }
 
 export const getNonOrgManagersData = async (partialId: string) => {
-  console.log('getNonOrgManagersData called with partialId:', partialId);
-  console.log('Current managersData:', managersData);
+  // console.log('getNonOrgManagersData called with partialId:', partialId);
+  // console.log('Current managersData:', managersData);
   const found = managersData.data.filter(manager => manager.id.includes(partialId));
   if (found.length > 0 && managersData.expire > Date.now()) {
     return found;
