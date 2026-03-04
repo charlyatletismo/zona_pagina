@@ -51,9 +51,9 @@ function RouteComponent() {
   return (
     <div className="p-4 w-full md:max-w-4xl mx-auto">
       <GoBackButton />
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Mi Perfil</h2>
+      <div className="rounded-lg border shadow-md overflow-hidden">
+        <div className="p-6 border-b flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Mi Perfil</h2>
           <Link to="/settings/profile">
             <Button variant="outline" className="flex items-center gap-2">
               <Edit className="w-4 h-4" />

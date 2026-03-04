@@ -35,12 +35,12 @@ const GridCell = ({
   link?: string | null,
 }) => (
   <div className="flex items-start gap-3">
-    <Icon className="w-5 h-5 text-gray-500 mt-1" />
+    <Icon className="w-5 h-5 text-muted-foreground mt-1" />
     <div>
-      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
       {
         link
-        ? <a href={link} className='text-md underline text-primary/70 hover:text-primary' target='_blank'>{value || 'No especificado'}</a>
+        ? <a href={link} className='text-md underline text-primary hover:text-primary' target='_blank'>{value || 'No especificado'}</a>
         : <p className="text-md">{value || 'No especificado'}</p>
       }
     </div>

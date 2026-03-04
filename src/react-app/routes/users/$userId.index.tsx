@@ -82,9 +82,9 @@ function RouteComponent() {
     <div className="p-4 w-full md:max-w-4xl mx-auto">
       <GoBackButton />
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">{userApiRes.body.data.name} {userApiRes.body.data.surname}</h2>
+      <div className="rounded-lg border shadow-md overflow-hidden">
+        <div className="p-6 border-b flex justify-between items-center">
+          <h2 className="text-2xl font-bold">{userApiRes.body.data.name} {userApiRes.body.data.surname}</h2>
 
           <div className='flex gap-2'>
             {canEdit && (
