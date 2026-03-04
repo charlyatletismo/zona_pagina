@@ -1,5 +1,6 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/themeProvider";
+import { useState } from "react";
 
 
 export function ThemeModeToggle({
@@ -8,16 +9,17 @@ export function ThemeModeToggle({
   className?: string
 }) {
   const { setTheme } = useTheme()
-  const currentTheme = localStorage.getItem("vite-ui-theme")
+  const [currentTheme, setCurrentTheme] = useState(
+    localStorage.getItem("vite-ui-theme") as "light" | "dark" || "light")
 
   function toggleTheme() {
     // console.log("Current theme:", currentTheme)
     if (currentTheme === "light") {
       setTheme("dark")
-      // currentTheme = "dark"
+      setCurrentTheme("dark")
     } else {
       setTheme("light")
-      // currentTheme = "light"
+      setCurrentTheme("light")
     }
     // console.log("Now theme:", currentTheme)
   }
