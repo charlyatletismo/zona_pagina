@@ -82,10 +82,6 @@ function RouteComponent() {
       icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-background bg-yellow-500 rounded-full" />,
       text: 'Pendiente de pago',
     },
-    "partially_paid": {
-      icon: <AlertCircle className="w-5 h-5 inline-block mr-2 text-yellow-500" />,
-      text: 'Pago parcial recibido',
-    },
     "paid": {
       icon: <CheckCircle className="w-5 h-5 inline-block mr-2 text-green-500" />,
       text: 'Pagado',

@@ -45,7 +45,7 @@ export const userRegisteredInEvent = async (
     };
   }
   let pending_to_pay = 0;
-  if (registration.status === 'pending' || registration.status === 'partially_paid') {
+  if (registration.status === 'pending') {
     if (registration.promotional_fee_applied && ev.promotional_fee_end && new Date() < new Date(ev.promotional_fee_end)) {
       pending_to_pay = ev.fee_amount_promotional! - registration.paid_amount;
     } else {
@@ -139,7 +139,7 @@ const getPendingToPayAmount = (
 ) => {
   let current_fee_amount = event.fee_amount || 0;
   let current_fee_is_promotional = false;
-  if (registration.status === 'pending' || registration.status === 'partially_paid') {
+  if (registration.status === 'pending') {
     if (registration.promotional_fee_applied && event.promotional_fee_payment_due_date && new Date() < new Date(event.promotional_fee_payment_due_date)) {
       current_fee_amount = event.fee_amount_promotional!;
       current_fee_is_promotional = true;
@@ -150,7 +150,7 @@ const getPendingToPayAmount = (
     ? Math.round(current_fee_amount * ((registration.discount_percentage as number) / 100))
     : 0;
   let pending_to_pay = 0;
-  if (registration.status === 'pending' || registration.status === 'partially_paid') {
+  if (registration.status === 'pending') {
     pending_to_pay = current_fee_amount - discount_amount - (registration.paid_amount as number);
     if (pending_to_pay < 0) {
       pending_to_pay = 0;

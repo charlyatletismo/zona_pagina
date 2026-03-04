@@ -202,7 +202,6 @@ export const SportingEventTypesEnum = z.enum([
 export const SportingEventRegistrationStatusEnum = z.enum([
   'not_registered',
   'pending',
-  'partially_paid',
   'paid',
   'expired',
   'cancelled',

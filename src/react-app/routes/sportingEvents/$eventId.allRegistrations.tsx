@@ -24,6 +24,7 @@ import {
   CircleCheckIcon,
   PercentCircleIcon,
   CircleDollarSignIcon,
+  AlertCircle,
 } from 'lucide-react';
 import {
   Table,
@@ -117,7 +118,6 @@ function RouteComponent() {
 
   const statusBadges: Record<string, { text: string, color: string }> = {
     'pending': { text: 'Pendiente', color: 'border border-yellow-400 text-yellow-500' },
-    'partially_paid': { text: 'Pendiente', color: 'border border-yellow-400 text-yellow-500' },
     'paid': { text: 'Pagado', color: 'border border-green-400 text-green-500' },
     'expired': { text: 'Expirado', color: 'border border-gray-400 text-gray-500' },
     'cancelled': { text: 'Cancelado', color: 'border border-gray-400 text-gray-500' },
@@ -680,7 +680,7 @@ const ApplyDiscountRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
-  onSuccess: (regs: {id: number, status: 'pending' | 'partially_paid' | 'paid', discount: number, pending: number}[]) => void,
+  onSuccess: (regs: {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]) => void,
 }) => {
   const [discount, setDiscount] = React.useState(0);
 
@@ -731,7 +731,7 @@ const ApplyDiscountRegDialog = ({
                   }
                   // Lógica para aplicar un descuento
                   const r = await postAuthenticated<
-                    {id: number, status: 'pending' | 'partially_paid' | 'paid', discount: number, pending: number}[]
+                    {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
                     >(`/api/sportingEvents/${eventId}/registrations/chargeFree`,
                       {registrationIds: regsId, discount: discount}
                     );
@@ -956,9 +956,8 @@ const TransferRegDialog = ({
                     return;
                   }
                   // Lógica para transferir la inscripción
-                  const r = await postAuthenticated<
-                    {id: number, status: 'pending' | 'partially_paid' | 'paid', discount: number, pending: number}[]
-                    >(`/api/sportingEvents/${eventId}/registrations/transfer`,
+                  const r = await postAuthenticated(
+                    `/api/sportingEvents/${eventId}/registrations/transfer`,
                       {fromRegistrationId: regId, benefUserId: benefUserId}
                     );
                   if (r.status !== 200) {

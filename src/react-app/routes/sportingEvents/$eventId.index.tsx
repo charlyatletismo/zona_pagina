@@ -249,7 +249,6 @@ function RouteComponent() {
                   'paid': 'bg-green-500 dark:bg-green-600',
                   'cancelled': 'bg-red-500 dark:bg-red-600',
                   'pending': 'bg-yellow-500 dark:bg-yellow-600',
-                  'partially_paid': 'bg-orange-500 dark:bg-orange-600',
                   'expired': 'bg-gray-500 dark:bg-gray-600',
                   '': 'bg-gray-500 dark:bg-gray-600',
                 }[data.user_registration_status.registration_status || '']
@@ -264,8 +263,7 @@ function RouteComponent() {
                 size='sm'
                 padding='px-0 py-1'
                 pingType={
-                  ['pending', 'partially_paid'].includes(
-                    data.user_registration_status.registration_status || '')
+                  (data.user_registration_status.registration_status || '') === 'pending'
                     ? 1
                     : 2}
               >

@@ -78,7 +78,7 @@ export const getSpEvent = async (
     .from(sportingEventClothing)
     .where(eq(sportingEventClothing.event_id, eventId));
   const athletesConfirmed = athletesRegistered.filter(
-    ar => ar.status === 'paid' || ar.status === 'partially_paid');
+    ar => ar.status === 'paid');
   const ev = {
     ...event[0],
     circuits: circuits.length > 0 ? circuits : null,
