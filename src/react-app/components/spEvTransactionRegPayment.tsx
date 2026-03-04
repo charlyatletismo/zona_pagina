@@ -1,41 +1,33 @@
 import { SportingEventTransactionForm } from "./sportingEventTransactionForm";
 
 
-export const SpEvTransactionGeneralForm = ({
+export const SpEvTransactionRegPaymentForm = ({
   eventId,
+  regId,
   onSuccess,
 }: {
   eventId: number,
+  regId: number,
   onSuccess?: () => Promise<void>,
 }) => {
   return (
     <SportingEventTransactionForm
       transaction={{
         event_id: eventId,
+        registration_id: regId,
+        category: 'registration_payment',
+        transaction_type: 'inflow',
+        status: 'completed',
       }}
       showFields={[
-        "amount",
-        "category",
         "transaction_date",
+        "category",
+        "amount",
         "description",
-        "user_id",
-        "vendor_supplier",
-        "receipt_url",
         "payment_method",
-        "status",
-        "description",
       ]}
       categoriesOptions={[
-        'infrastructure',
-        'marketing',
-        'prizes',
-        'clothing',
-        'permits',
-        'equipment',
-        'sponsorship',
-        'partner_services',
-        'other_inflow',
-        'other_outflow'
+        'registration_payment',
       ]}
       onSuccess={onSuccess}
     />

@@ -298,7 +298,7 @@ export const SportingEventRegistrationSchema = z.object({
 export const TRANSACTION_PAYMENT_METHODS = [
   'cash',
   'bank_transfer',
-  'mercadopago_payment',
+  'mercado_pago_checkout_pro',
   'other'
 ]
 

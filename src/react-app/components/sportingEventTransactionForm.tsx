@@ -43,7 +43,7 @@ export const SportingEventTransactionForm = ({
   transaction: z.infer<typeof SportingEventTransactionSchemaPartial> | null,
   showFields?: z.infer<typeof FieldsSchema>[],
   categoriesOptions?: string[],
-  onSuccess?: () => void,
+  onSuccess?: () => Promise<void>,
 }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
@@ -103,14 +103,13 @@ export const SportingEventTransactionForm = ({
         return;
       }
       setSuccess(getMessage(res.body?.message, 'Guardado con éxito'));
-      setTimeout(() => {
-        setSuccess('');
         if (onSuccess) {
-          onSuccess();
+        await onSuccess();
         } else {
+        setTimeout(async () => {
           navigate({ to: '..', reloadDocument: true });
+        }, 1000);
         }
-      }, 1000);
     },
   });
 

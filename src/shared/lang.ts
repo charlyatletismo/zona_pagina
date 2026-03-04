@@ -95,9 +95,9 @@ export const TransactionPaymentMethodDesc: {[key: string]: {[key: string]: strin
     [ES]: "Transferencia bancaria",
     [EN]: "Bank transfer",
   },
-  mercado_pago_payment: {
-    [ES]: "Pago vía Mercado Pago",
-    [EN]: "Payment via Mercado Pago",
+  mercado_pago_checkout_pro: {
+    [ES]: "Mercado Pago Checkout Pro",
+    [EN]: "Mercado Pago Checkout Pro",
   },
   other: {
     [ES]: "Otro",

@@ -47,6 +47,15 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  // DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog"
+import {
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -62,6 +71,7 @@ import {
 import { GoBackButton } from '@/components/goBackButton';
 import { customFilterFn, getMessage } from '@/lib/utils';
 import React from 'react';
+import { SpEvTransactionRegPaymentForm } from '@/components/spEvTransactionRegPayment';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations')({
@@ -78,25 +88,32 @@ export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations'
 })
 
 
-export const PkgAnimation = ({kit_delivered} : {kit_delivered: boolean}) => {
-  const open = <PackageOpenIcon className='w-4 h-4' />;
-  const closed = <PackageIcon className='w-4 h-4' />;
-  const order = kit_delivered ? [open, closed] : [closed, open];
-
-  return (
-    <div className='flex gap-2 items-center'>
-      <div className='group-hover:hidden'>{order[0]}</div>
-      <div className='hidden group-hover:block'>{order[1]}</div>
-      Kit {kit_delivered ? 'NO entregado' : 'ya entregado'}
-    </div>
-  )
-}
-
-
 function RouteComponent() {
   const { resRegApi } = Route.useLoaderData();
   const { eventId } = Route.useParams();
-  const [data, setData] = React.useState(resRegApi.body.data)
+  const [data, setData] = React.useState(resRegApi.body.data);
+
+  const [error, _setError] = React.useState('');
+  const [success, _setSuccess] = React.useState('');
+  const setError = (msg: string) => {
+    _setError(msg)
+    setTimeout(() => {
+      _setError('');
+    }, 2000);
+  };
+  const setSuccess = (msg: string) => {
+    _setSuccess(msg)
+    setTimeout(() => {
+      _setSuccess('');
+    }, 3000);
+  };
+
+  const [addPaymentRegId, setAddPaymentRegId] = React.useState<number | null>(null);
+  const [applyDiscountRegId, setApplyDiscountRegId] = React.useState<number[] | null>(null);
+  const [markPaidRegId, setMarkPaidRegId] = React.useState<number[] | null>(null);
+  const [cancelingRegId, setCancelingRegId] = React.useState<number[] | null>(null);
+  const [transferringRegId, setTransferringRegId] = React.useState<number | null>(null);
+
 
   const statusBadges: Record<string, { text: string, color: string }> = {
     'pending': { text: 'Pendiente', color: 'border border-yellow-400 text-yellow-500' },
@@ -280,29 +297,54 @@ function RouteComponent() {
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   {props.row.original.status !== "paid" && (
-                    <DropdownMenuItem onClick={() => {}}>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setAddPaymentRegId(props.row.original.id);
+                      }}
+                    >
                       <CircleDollarSignIcon className='w-4 h-4 text-blue-500' />
                       Registrar pago
                     </DropdownMenuItem>
                   )}
                   {props.row.original.status !== "paid" && (
-                    <DropdownMenuItem onClick={() => {}}>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setApplyDiscountRegId([props.row.original.id]);
+                      }}
+                    >
                       <PercentCircleIcon className='w-4 h-4' />
                       Aplicar descuento
                     </DropdownMenuItem>
                   )}
                   {props.row.original.status !== "paid" && (
-                    <DropdownMenuItem onClick={() => {}}>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setMarkPaidRegId([props.row.original.id]);
+                      }}
+                    >
                       <CircleCheckIcon className='w-4 h-4 text-green-500' />
                       Marcar como pagado
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={() => {}}>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setCancelingRegId([props.row.original.id]);
+                    }}
+                  >
                     <CircleXIcon className='w-4 h-4 text-red-500' />
                     Cancelar
                   </DropdownMenuItem>
                   {props.row.original.status === "paid" && (
-                    <DropdownMenuItem onClick={() => {}}>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setTransferringRegId(props.row.original.id);
+                      }}
+                    >
                       <ArrowLeftRightIcon className='w-4 h-4' />
                       Transferir
                     </DropdownMenuItem>
@@ -366,6 +408,65 @@ function RouteComponent() {
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
       <GoBackButton />
+
+      <AddPaymentRegDialog
+        eventId={eventId}
+        regId={addPaymentRegId}
+        setRegId={setAddPaymentRegId}
+        setSuccess={setSuccess}
+        />
+      <ApplyDiscountRegDialog
+        eventId={eventId}
+        regsId={applyDiscountRegId}
+        setRegsId={setApplyDiscountRegId}
+        setError={setError}
+        setSuccess={setSuccess}
+        onSuccess={(regs) => {
+          setData(prevData => prevData.map(reg => {
+            const found = regs.find(r => r.id === reg.id)
+            if (!found) return reg;
+            return {
+              ...reg,
+              status: found.status,
+              pending_to_pay: found.pending,
+              discount_percentage: found.discount,
+              discount_reason: 'Descuento aplicado manualmente por el organizador'
+            }
+          }));
+        }}
+        />
+      <MarkAsPaidRegDialog
+        eventId={eventId}
+        regsId={markPaidRegId}
+        setRegsId={setMarkPaidRegId}
+        setError={setError}
+        setSuccess={setSuccess}
+        onSuccess={() => {
+          setData(prevData => prevData.map(reg =>
+            markPaidRegId?.includes(reg.id) ? { ...reg, status: 'paid', pending_to_pay: 0 } : reg
+          ));
+        }}
+        />
+      <CancelRegDialog
+        eventId={eventId}
+        regsId={cancelingRegId}
+        setRegsId={setCancelingRegId}
+        setError={setError}
+        setSuccess={setSuccess}
+        onSuccess={() => {
+          setData(prevData => prevData.map(reg => 
+            cancelingRegId?.includes(reg.id) ? { ...reg, status: 'cancelled' } : reg
+          ));
+        }}
+        />
+      <TransferRegDialog
+        eventId={eventId}
+        regId={transferringRegId}
+        setRegId={setTransferringRegId}
+        setError={setError}
+        setSuccess={setSuccess}
+      />
+
       <div className='flex flex-col sm:flex-row sm:justify-between'>
         <div className='mb-4 sm:mb-0 w-full'>
           <h1 className='text-2xl font-bold mb-4'>Inscripciones</h1>
@@ -471,5 +572,399 @@ function RouteComponent() {
         </div>
       )}
     </div>
+  )
+}
+
+
+export const PkgAnimation = ({kit_delivered} : {kit_delivered: boolean}) => {
+  const open = <PackageOpenIcon className='w-4 h-4' />;
+  const closed = <PackageIcon className='w-4 h-4' />;
+  const order = kit_delivered ? [open, closed] : [closed, open];
+
+  return (
+    <div className='flex gap-2 items-center'>
+      <div className='group-hover:hidden'>{order[0]}</div>
+      <div className='hidden group-hover:block'>{order[1]}</div>
+      Kit {kit_delivered ? 'NO entregado' : 'ya entregado'}
+    </div>
+  )
+}
+
+
+const AddPaymentRegDialog = ({
+  regId,
+  setRegId,
+  eventId,
+  setSuccess,
+}: {
+  regId: number | null,
+  setRegId: (regId: number | null) => void,
+  eventId: string,
+  setSuccess: (msg: string) => void,
+}) => {
+
+  return (
+    <Dialog open={regId !== null} onOpenChange={() => {
+      setRegId(null);
+    }}>
+      <DialogContent showCloseButton={false} className='md:min-w-3xl lg:min-w-4xl'>
+        <DialogHeader>
+          <DialogTitle>Registrar pago</DialogTitle>
+          <DialogDescription>
+            Se agregará una nueva transacción de pago a la inscripción,
+            sumando al monto ya pagado. Útil para registrar pagos
+            parciales o pagos realizados fuera de la plataforma
+            (transferencia, efectivo, etc.).
+          </DialogDescription>
+
+        <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
+          <SpEvTransactionRegPaymentForm
+            eventId={Number(eventId)}
+            regId={regId!}
+            onSuccess={async () => {
+              setSuccess('Pago registrado exitosamente.');
+              setRegId(null);
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+            }}
+          />
+        </div>
+          
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Salir
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+const ApplyDiscountRegDialog = ({
+  regsId,
+  setRegsId,
+  eventId,
+  setError,
+  setSuccess,
+  onSuccess,
+}: {
+  regsId: number[] | null,
+  setRegsId: (regsId: number[] | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+  onSuccess: (regs: {id: number, status: 'pending' | 'partially_paid' | 'paid', discount: number, pending: number}[]) => void,
+}) => {
+  const [discount, setDiscount] = React.useState(0);
+
+  return (
+    <Dialog open={regsId !== null} onOpenChange={() => {
+      setRegsId(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Descuento</DialogTitle>
+          <DialogDescription>
+            Se aplicará un descuento al monto de la tarifa total de la inscripción.
+          </DialogDescription>
+
+          <Input
+            name="discount"
+            placeholder="(%) Descuento a aplicar"
+            value={discount || ''}
+            onChange={(e) => {
+              const num = Number(e.target.value)
+              if (isNaN(num) || num < 0 || num > 100) {
+                return;
+              }
+              setDiscount(num)
+            }}
+            required={true}
+            />
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                onClick={async (e) => {
+                  if (!discount || discount <= 0) {
+                    e.preventDefault();
+                    return;
+                  }
+                  // Lógica para aplicar un descuento
+                  const r = await postAuthenticated<
+                    {id: number, status: 'pending' | 'partially_paid' | 'paid', discount: number, pending: number}[]
+                    >(`/api/sportingEvents/${eventId}/registrations/chargeFree`,
+                      {registrationIds: regsId, discount: discount}
+                    );
+                  if (r.status !== 200) {
+                    console.error('Error aplicando el descuento:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError('Hubo un error al aplicar el descuento. Por favor, intenta nuevamente.');
+                  } else {
+                    setSuccess('Descuento aplicado exitosamente.');
+                    onSuccess(r.body?.data);
+                  }
+                  setDiscount(0);
+                  setRegsId(null);
+                }}
+              >
+                Confirmar
+              </Button>
+              </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+const MarkAsPaidRegDialog = ({
+  regsId,
+  setRegsId,
+  eventId,
+  setError,
+  setSuccess,
+  onSuccess,
+}: {
+  regsId: number[] | null,
+  setRegsId: (regsId: number[] | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+  onSuccess: () => void,
+}) => {
+  return (
+    <Dialog open={regsId !== null} onOpenChange={() => {
+      setRegsId(null);
+    }}>
+      {/* <DialogTrigger className='w-full'>
+        {children}
+      </DialogTrigger> */}
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Desestimar monto pendiente</DialogTitle>
+          <DialogDescription>
+            Se le dará al beneficiario como descuento el monto
+            pendiente de pago, completando así el pago de la inscripción.
+          </DialogDescription>
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                onClick={async () => {
+                  // Lógica para desestimar el monto pendiente
+                  const r = await postAuthenticated(
+                    `/api/sportingEvents/${eventId}/registrations/chargeFree`,
+                    {registrationIds: regsId}
+                  );
+                  if (r.status !== 200) {
+                    console.error('Error desestimando el monto pendiente:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError('Hubo un error al desestimar el monto pendiente. Por favor, intenta nuevamente.');
+                  } else {
+                    setSuccess('Monto pendiente desestimado exitosamente.');
+                    onSuccess();
+                  }
+                  setRegsId(null);
+                }}
+              >
+                Confirmar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+const CancelRegDialog = ({
+  regsId,
+  setRegsId,
+  eventId,
+  setError,
+  setSuccess,
+  onSuccess,
+}: {
+  regsId: number[] | null,
+  setRegsId: (regsId: number[] | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+  onSuccess: () => void,
+}) => {
+  return (
+    <Dialog open={regsId !== null} onOpenChange={() => {
+      setRegsId(null);
+    }}>
+      {/* <DialogTrigger className='w-full'>
+        {children}
+      </DialogTrigger> */}
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>¿Estás seguro?</DialogTitle>
+          <DialogDescription>Al cancelar la inscripción,
+            evitarás que el usuario participe en el evento y
+            no se pueda volver a inscribir a no ser que vuelvas
+            a activarlo manualmente.
+          </DialogDescription>
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Salir
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className='max-w-20 cursor-pointer'
+                onClick={async () => {
+                  // Lógica para cancelar la inscripción
+                  const r = await postAuthenticated(
+                    `/api/sportingEvents/${eventId}/registrations/cancel`,
+                    {registrationIds: regsId}
+                  );
+                  if (r.status !== 200) {
+                    console.error('Error canceling registration:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError('Hubo un error al cancelar la inscripción. Por favor, intenta nuevamente.');
+                  } else {
+                    setSuccess('Inscripción cancelada exitosamente.');
+                    onSuccess();
+                  }
+                  setRegsId(null);
+                }}
+              >
+                Confirmar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+const TransferRegDialog = ({
+  regId,
+  setRegId,
+  eventId,
+  setError,
+  setSuccess,
+}: {
+  regId: number | null,
+  setRegId: (regId: number | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+}) => {
+  const [benefUserId, setBenefUserId] = React.useState("");
+
+  return (
+    <Dialog open={regId !== null} onOpenChange={() => {
+      setRegId(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Descuento</DialogTitle>
+          <DialogDescription>
+            Se aplicará un descuento al monto de la tarifa total de la inscripción.
+          </DialogDescription>
+
+          <Input
+            name="benefUserId"
+            placeholder="DNI del usuario beneficiario"
+            value={benefUserId || ''}
+            onChange={(e) => setBenefUserId(e.target.value)}
+            required={true}
+            />
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                onClick={async (e) => {
+                  if (!benefUserId) {
+                    e.preventDefault();
+                    return;
+                  }
+                  // Lógica para transferir la inscripción
+                  const r = await postAuthenticated<
+                    {id: number, status: 'pending' | 'partially_paid' | 'paid', discount: number, pending: number}[]
+                    >(`/api/sportingEvents/${eventId}/registrations/transfer`,
+                      {fromRegistrationId: regId, benefUserId: benefUserId}
+                    );
+                  if (r.status !== 200) {
+                    console.error('Error transfiriendo inscripción:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError(
+                      'Hubo un error al transferir la inscripción.'
+                      + (r.body?.message || ''));
+                  } else {
+                    setSuccess('Inscripción transferida exitosamente.');
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                  }
+                  setBenefUserId('');
+                  setRegId(null);
+                }}
+              >
+                Confirmar
+              </Button>
+              </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   )
 }
