@@ -223,7 +223,7 @@ export const ProfileCard = ({
         />
       )}
 
-      {profile.discount_percentage && profile.discount_percentage > 0 && (
+      {profile.discount_percentage !== undefined && (profile.discount_percentage > 0) && (
         <GridCell
           icon={PercentIcon}
           label="Descuento Aplicado"
