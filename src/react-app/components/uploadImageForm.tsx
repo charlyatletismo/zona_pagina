@@ -77,12 +77,12 @@ export const UploadImageForm = ({
     >
       <div className="flex flex-col w-full gap-2">
 
-        <div className="aspect-video rounded-xl overflow-hidden relative">
+        <div className="aspect-video rounded-xl overflow-hidden relative border border-muted-foreground">
           <img
             id={'imagePreview_' + tagId}
             src=""
             alt="Click para cargar imagen"
-            className='w-full h-full object-cover text-sm flex justify-center items-center bg-gray-100 border border-gray-200'
+            className='w-full h-full object-cover text-sm flex justify-center items-center'
           />
 
           <input
@@ -90,7 +90,7 @@ export const UploadImageForm = ({
             name={tagId}
             type='file'
             accept='image/*'
-            className='absolute top-0 left-0 h-full text-gray-100 cursor-pointer opacity-0'
+            className='absolute top-0 left-0 h-full cursor-pointer opacity-0'
             disabled={loading}
             onChange={(e) => {
               if (e.target.files && e.target.files[0]) {

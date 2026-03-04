@@ -57,7 +57,7 @@ function Index() {
         </div>
 
         <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
             {localStorage.getItem('USER_NAME') ? 'Hola,' : 'Eventos'} <span className="text-primary relative inline-block">
               {localStorage.getItem('USER_NAME') ? localStorage.getItem('USER_NAME') : 'Deportivos'}
               <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -65,7 +65,7 @@ function Index() {
               </svg>
             </span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             {localStorage.getItem('USER_ROLE') === 'organizer'
               ? 'Gestiona y crea eventos deportivos para tu organización de manera fácil y eficiente.'
               : localStorage.getItem('USER_ROLE') !== 'admin'
@@ -79,7 +79,7 @@ function Index() {
         {sections.map((section) => (
           section.items.length > 0 && (
             <section key={section.title}>
-              <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center">
+              <h2 className="text-3xl font-bold mb-8 flex items-center">
                 <span className={`w-2 h-8 ${section.color} rounded-full mr-3`}></span>
                 {section.title}
               </h2>
@@ -97,13 +97,13 @@ function Index() {
         {events.open.length === 0 && events.comingSoon.length === 0 && events.closed.length === 0 && events.past.length === 0 && (
           <section className="text-center py-16">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CalendarIcon className="h-12 w-12 text-gray-400" />
+              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+                <CalendarIcon className="h-12 w-12 text-muted-foreground" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold mb-2">
                 Próximamente nuevos eventos
               </h2>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Estamos preparando eventos increíbles para ti. ¡Vuelve pronto!
               </p>
             </div>
@@ -115,11 +115,11 @@ function Index() {
             <Link to="/sportingEvents/history"
               className='max-w-md mx-auto py-5
                 flex gap-2 items-center justify-center
-                text-lg font-medium text-gray-700 shadow-lg
-                border border-gray-200 rounded-lg
+                text-lg font-medium text-muted-foreground shadow-lg
+                border border-muted rounded-lg
                 hover:animate-tremor transition-all duration-150 group'
             >
-              <History className='h-6 w-6 p-1 group-hover:text-white bg-gray-100 group-hover:bg-primary rounded-full' />
+              <History className='h-6 w-6 p-1 group-hover:text-white bg-muted group-hover:bg-primary rounded-full' />
               Ver todos los eventos
             </Link>
           </section>

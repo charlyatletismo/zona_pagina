@@ -81,7 +81,7 @@ function RouteComponent() {
         </div>
 
         <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 mb-6">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
             Herramientas de <span className="text-primary relative inline-block">
               Gestión
               <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -89,7 +89,7 @@ function RouteComponent() {
               </svg>
             </span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Panel de control centralizado para la administración de eventos, usuarios y recursos.
           </p>
         </div>
@@ -103,7 +103,7 @@ function RouteComponent() {
               <div className="p-2 bg-primary/10 rounded-lg text-primary">
                 <section.icon className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">{section.title}</h2>
+              <h2 className="text-2xl font-bold">{section.title}</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -111,18 +111,18 @@ function RouteComponent() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="group hover:animate-tremor relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 flex flex-col h-full"
+                  className="group hover:animate-tremor relative bg-background p-5 rounded-xl border border-accent shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200 flex flex-col h-full"
                 >
                   <div className="flex items-start gap-4 mb-3">
-                    <div className="p-2.5 rounded-lg bg-gray-50 text-gray-500 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+                    <div className="p-2.5 rounded-lg bg-gray-400/10 text-gray-500 group-hover:bg-primary group-hover:text-white transition-colors duration-200">
                       <item.icon className="w-5 h-5" />
                     </div>
-                    <div className="font-semibold text-gray-900">
+                    <div className="font-semibold">
                       {item.label}
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-500 leading-relaxed pl-13">
+                  <p className="text-sm text-muted-foreground leading-relaxed pl-13">
                     {item.description}
                   </p>
 

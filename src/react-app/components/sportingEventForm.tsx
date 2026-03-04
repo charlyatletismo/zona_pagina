@@ -134,14 +134,14 @@ const SportingEventForm = (
         }}
       >
         {error && (
-          <div className="mt-5 bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className="mt-5 bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mt-5 bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          <div className="mt-5 bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
             {success}
           </div>
         )}
@@ -151,7 +151,7 @@ const SportingEventForm = (
           children={([isSubmitting]) => (
             <div>
               {isSubmitting ? (
-                <div className="mt-5 mb-4 bg-gray-50 text-gray-600 p-3 rounded-md text-sm flex gap-4 items-center space-x-2">
+                <div className="mt-5 mb-4 bg-muted text-muted-foreground p-3 rounded-md text-sm flex gap-4 items-center space-x-2">
                   <Spinner /><div>Guardando...</div>
                 </div>) : null
               }

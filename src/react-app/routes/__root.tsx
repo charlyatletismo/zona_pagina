@@ -1,13 +1,23 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import logo_zona from "@/assets/logo.png";
+import logo_zona_dark from "@/assets/logo_dark.png";
 import { Instagram } from '@/components/icons/instagram';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { Navigation } from '@/components/nav';
 import { NotFound } from '@/components/notFound';
+import { useTheme } from '@/components/themeProvider';
+import React from 'react';
 
 
 const RootLayout = () => {
+  const { theme } = useTheme();
+  const [resolvedTheme, setResolvedTheme] = React.useState(theme);
+
+  React.useEffect(() => {
+    setResolvedTheme(theme)
+  }, [theme]);
+
   // const [theme, setTheme] = React.useState(() => {
   //   if (typeof window !== 'undefined') {
   //     return localStorage.getItem('theme') || 'light'
@@ -36,7 +46,15 @@ const RootLayout = () => {
       <div className="relative z-10 flex flex-wrap gap-2 justify-center sm:justify-between items-center px-10">
         <div>
           <Link to="/">
-            <img src={logo_zona} alt="Zona Atletismo Logo" className="max-w-xs h-20 mr-2 py-3" />
+            <img 
+              src={
+                resolvedTheme === 'light'
+                ? logo_zona
+                : logo_zona_dark
+              }
+              alt="Zona Atletismo Logo"
+              className="max-w-xs h-20 mr-2 py-3"
+              />
           </Link>
         </div>
         <div className='flex'>
@@ -56,16 +74,16 @@ const RootLayout = () => {
         </div>
 
         <div className='relative z-10 flex flex-col sm:flex-row items-center gap-8 my-6'>
-          <a href="https://www.instagram.com/zonaatletismo/" className='flex items-center text-gray-600 hover:text-primary transition-colors duration-300 group' target="_blank" rel="noopener noreferrer">
+          <a href="https://www.instagram.com/zonaatletismo/" className='flex items-center text-muted-foreground hover:text-primary transition-colors duration-300 group' target="_blank" rel="noopener noreferrer">
             <Instagram className="h-6 w-6 group-hover:scale-110 transition-transform" />
             <span className="ml-2 font-medium">Seguinos en Instagram</span>
           </a>
-          <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex items-center text-gray-600 hover:text-primary transition-colors duration-300 group' target="_blank" rel="noopener noreferrer">
+          <a href="https://wa.me/5493400660640?text=Hola%20Zona%20Atletismo%2C%20quiero%20más%20información" className='flex items-center text-muted-foreground hover:text-primary transition-colors duration-300 group' target="_blank" rel="noopener noreferrer">
             <Whatsapp className="h-6 w-6 group-hover:scale-110 transition-transform" />
             <span className="ml-2 font-medium">Contactanos por WhatsApp</span>
           </a>
         </div>
-        <p className="relative z-10 text-gray-500 text-sm">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
+        <p className="relative z-10 text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
         {/* <a className="flex items-center justify-center gap-2 text-gray-600 hover:text-black" href="https://goran.com.ar/" target="_blank" rel="noopener noreferrer">
           <Laptop size={22} className='pt-1' />
           <span className="py-2">Powered by gorandp</span>

@@ -40,7 +40,7 @@ function RouteComponent() {
   const [data, setData] = React.useState<z.infer<typeof ARSportingEventRegistrationMinSchema>[]>([]);
 
   const columnHelper = createColumnHelper<z.infer<typeof ARSportingEventRegistrationMinSchema>>();
-    
+
   const defaultColumns = [
     columnHelper.accessor('user_id', {
       header: 'DNI',
@@ -186,7 +186,7 @@ function RouteComponent() {
             ))}
           </TableBody>
         </Table>
-        <div className='text-gray-500 mt-2'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
+        <div className='text-muted-foreground mt-2'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
         </div>
       )}
     </FormBox>

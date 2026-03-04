@@ -10,15 +10,16 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import * as roles from '@shared/roles';
+import { ThemeModeToggle } from './themeModeToggle';
 import { clearUserInfo } from '@/lib/utils';
 // import { Sun, Moon } from 'lucide-react';
 // import { Code2, Laptop } from 'lucide-react';
 
 
 const navClass = (
-  'bg-transparent text-gray-600 '
-  + 'hover:text-gray-700 hover:bg-primary/20 '
-  + '[&.active]:text-white [&.active]:bg-primary/60 '
+  'bg-transparent border-transparent border-1 border-solid '
+  + 'hover:border-primary/40 hover:bg-transparent '
+  + '[&.active]:bg-transparent '
   + 'font-medium transition-colors '
 );
 
@@ -111,6 +112,17 @@ export const Navigation = () => {
           </NavigationMenuLink>
         </NavigationMenuItem>
 
+        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && (
+          <NavigationMenuItem>
+            <ThemeModeToggle
+              className={
+                navigationMenuTriggerStyle()
+                + " cursor-pointer "
+                + navClass
+              }
+            />
+          </NavigationMenuItem>
+        )}
         {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && (
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>

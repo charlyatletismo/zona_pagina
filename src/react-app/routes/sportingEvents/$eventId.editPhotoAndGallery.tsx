@@ -53,32 +53,32 @@ function RouteComponent() {
       <div className="p-6 space-y-2">
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className="bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          <div className="bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
             {success}
           </div>
         )}
 
         {loading ? (
-          <div className="bg-gray-50 text-gray-600 p-3 rounded-md text-sm flex gap-4 items-center space-x-2">
+          <div className="bg-muted text-muted-foreground p-3 rounded-md text-sm flex gap-4 items-center space-x-2">
             <Spinner /><div>Actualizando...</div>
           </div>) : null
         }
 
 
-        <h1 className='text-xl font-bold text-gray-800'>Foto del evento</h1>
+        <h1 className='text-xl font-bold'>Foto del evento</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className='flex flex-col gap-2'>
             <p>Ahora</p>
             {res.body.data.photo_id ? (
               <div className='flex flex-col gap-2'>
-                <div className="aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                <div className="aspect-video rounded-xl overflow-hidden border border-muted">
                   <img
                       src={`https://imagedelivery.net/x1piYdlDlmNQ_iTYafCcEQ/${res.body.data.photo_id}/public`}
                       alt={res.body.data.title}
@@ -122,10 +122,10 @@ function RouteComponent() {
                 </Button>
               </div>
             ) : (
-              <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-                <div className="text-center text-gray-400">
-                    <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                    <p>No hay imagen para el evento</p>
+              <div className="aspect-video rounded-xl flex items-center justify-center border-2 border-dashed border-muted-foreground">
+                <div className="text-center text-muted-foreground">
+                  <ImageIcon className="w-12 h-12 mx-auto mb-2" />
+                  <p>No hay imagen para el evento</p>
                 </div>
               </div>
             )}
@@ -143,14 +143,14 @@ function RouteComponent() {
           </div>
         </div>
 
-        <h1 className='text-xl font-bold text-gray-800 mt-5'>Galería</h1>
+        {/* <h1 className='text-xl font-bold text-gray-800 mt-5'>Galería</h1>
         <p className="text-gray-600 mb-4">Agrega fotos adicionales del evento para mostrar en la galería.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
           <div>
             A charlar
           </div>
-        </div>
+        </div> */}
       </div>
     </FormBox>
   )

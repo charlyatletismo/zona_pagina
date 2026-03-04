@@ -78,14 +78,14 @@ export const SearchRegistrationForm = ({
       }}
     >
       {error && (
-        <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+        <div className="mb-4 bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-4 bg-green-50 text-green-600 p-3 rounded-md text-sm">
+        <div className="mb-4 bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
           {success}
         </div>
       )}
@@ -95,7 +95,7 @@ export const SearchRegistrationForm = ({
         children={([isSubmitting]) => (
           <div>
             {isSubmitting ? (
-              <div className="flex gap-4 items-center space-x-2 mb-4 text-sm bg-gray-50 text-gray-600 p-3 rounded-md">
+              <div className="flex gap-4 items-center space-x-2 mb-4 text-sm bg-muted text-muted-foreground p-3 rounded-md">
                 <Spinner /><div>Buscando...</div>
               </div>) : null
             }

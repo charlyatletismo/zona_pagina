@@ -307,7 +307,7 @@ function RouteComponent() {
 
       {/* Header */}
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">{data.title}</h1>
+        <h1 className="text-4xl font-bold mb-2">{data.title}</h1>
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
           <CalendarIcon className="w-5 h-5" />
           <span>{new Date(data.date).toLocaleDateString()}</span>
@@ -319,7 +319,7 @@ function RouteComponent() {
         <div className="md:col-span-2 space-y-8">
           {/* Image */}
           {data.photo_id ? (
-              <div className="aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+              <div className="aspect-video rounded-xl overflow-hidden border">
                   <img
                       src={`https://imagedelivery.net/x1piYdlDlmNQ_iTYafCcEQ/${data.photo_id}/public`}
                       alt={data.title}
@@ -327,8 +327,8 @@ function RouteComponent() {
                   />
               </div>
           ) : (
-              <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-                  <div className="text-center text-gray-400">
+              <div className="aspect-video rounded-xl flex items-center justify-center border-2 border-dashed">
+                  <div className="text-center text-muted-foreground">
                       <ImageIcon className="w-12 h-12 mx-auto mb-2" />
                       <p>Imagen del Evento</p>
                   </div>
@@ -341,35 +341,10 @@ function RouteComponent() {
                   <InfoIcon className="w-6 h-6 text-primary" />
                   Descripción
               </h2>
-              <div className="prose max-w-none text-gray-600 whitespace-pre-wrap">
+              <div className="prose max-w-none whitespace-pre-wrap">
                   {data.description || "No hay descripción disponible."}
               </div>
           </section>
-
-          {/* Rules */}
-          {data.rules && (
-              <section>
-                  <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                      <FileTextIcon className="w-6 h-6 text-primary" />
-                      Reglamento
-                  </h2>
-                  <div className="bg-gray-50 p-6 rounded-lg text-sm text-gray-600 whitespace-pre-wrap border">
-                      {data.rules}
-                  </div>
-              </section>
-          )}
-          {/* Prizes */}
-          {data.award_prizes && (
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <TrophyIcon className="w-6 h-6 text-primary" />
-                Premios
-              </h2>
-              <div className="bg-yellow-50 p-6 rounded-lg text-sm text-gray-700 whitespace-pre-wrap border border-yellow-100">
-                {data.award_prizes}
-              </div>
-            </section>
-          )}
           {data.schedules && data.schedules.length > 0 && (
             <section>
                 <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
@@ -380,45 +355,71 @@ function RouteComponent() {
                   {data.schedules.map((schedule) => (
                     <div key={schedule.id} className="mb-2 border-l-4 border-primary pl-4">
                         <h3 className="text-lg font-medium mb-1">{schedule.title}</h3>
-                        <div className="text-sm text-gray-500 mb-2">{schedule.date?.toLocaleString()}</div>
+                        <div className="text-sm text-muted-foreground mb-2">{schedule.date?.toLocaleString()}</div>
                         {schedule.description && (
-                          <p className="text-gray-600 whitespace-pre-wrap">{schedule.description}</p>
+                          <p className="text-muted-foreground whitespace-pre-wrap">{schedule.description}</p>
                         )}
                     </div>
                   ))}
                 </div>
             </section>
           )}
+
+          {/* Prizes */}
+          {data.award_prizes && (
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                <TrophyIcon className="w-6 h-6 text-primary" />
+                Premios
+              </h2>
+              <div className="prose max-w-none whitespace-pre-wrap">
+                {data.award_prizes}
+              </div>
+            </section>
+          )}
+
+          {/* Rules */}
+          {data.rules && (
+              <section>
+                  <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                      <FileTextIcon className="w-6 h-6 text-primary" />
+                      Reglamento
+                  </h2>
+                  <div className="prose max-w-none whitespace-pre-wrap">
+                      {data.rules}
+                  </div>
+              </section>
+          )}
         </div>
 
         {/* Sidebar - Right Column */}
         <div className="space-y-6">
           {/* Key Details Card */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border space-y-6">
+          <div className="p-6 rounded-xl shadow-sm border space-y-6">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Ubicación</h3>
+              <h3 className="font-semibold mb-2">Ubicación</h3>
               {data.location_lat && data.location_long ? (
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${data.location_lat},${data.location_long}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-2 text-gray-600 hover:text-primary transition-colors group"
+                  className="flex items-start gap-2 text-muted-foreground hover:text-primary transition-colors group"
                 >
                   <MapPinIcon className="w-5 h-5 shrink-0 mt-0.5" />
                   <div>
                     <p className="group-hover:underline">{data.location || "Ubicación por definir"}</p>
                     {data.location_address && (
-                      <p className="text-sm text-gray-500 mt-1">{data.location_address}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{data.location_address}</p>
                     )}
                   </div>
                 </a>
               ) : (
-                <div className="flex items-start gap-2 text-gray-600">
+                <div className="flex items-start gap-2 text-muted-foreground">
                   <MapPinIcon className="w-5 h-5 shrink-0 mt-0.5" />
                   <div>
                     <p>{data.location || "Ubicación por definir"}</p>
                     {data.location_address && (
-                      <p className="text-sm text-gray-500 mt-1">{data.location_address}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{data.location_address}</p>
                     )}
                   </div>
                 </div>
@@ -426,27 +427,27 @@ function RouteComponent() {
             </div>
 
             <div className="border-t pt-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Inscripciones</h3>
+              <h3 className="font-semibold mb-2">Inscripciones</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Inicio:</span>
+                  <span className="text-muted-foreground">Inicio:</span>
                   <span>{data.registration_start ? data.registration_start.toLocaleDateString() : 'TBA'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Cierre:</span>
+                  <span className="text-muted-foreground">Cierre:</span>
                   <span>{data.registration_end ? data.registration_end.toLocaleDateString() : 'TBA'}</span>
                 </div>
               </div>
             </div>
             {data.circuits && data.circuits.length > 0 && (
               <div className="border-t pt-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Circuitos</h3>
+                <h3 className="font-semibold mb-4">Circuitos</h3>
                 <div className="space-y-4">
                   {data.circuits.map((circuit) => (
                     <div key={circuit.id} className="p-1">
                       <h4 className="mb-2 border-l-2 border-primary pl-4">{circuit.name}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{circuit.description || 'Sin descripción'}</p>
-                      <p className="text-sm text-gray-500 mt-1">Distancia: {circuit.distance_km} km</p>
+                      <p className="text-sm text-muted-foreground mt-1">{circuit.description || 'Sin descripción'}</p>
+                      <p className="text-sm text-muted-foreground mt-1">Distancia: {circuit.distance_km} km</p>
                       {circuit.map_url && (
                         <a
                           href={circuit.map_url}
@@ -492,7 +493,7 @@ const RegisterButton = (
       openToRegister: boolean;
       userRegistered: number}
     ) => {
-  const classDisabled = "w-full mt-2 bg-gray-300 text-gray-600 cursor-not-allowed";
+  const classDisabled = "w-full mt-2 bg-muted text-muted-foreground cursor-not-allowed";
   if (userRegistered === circuitId) {
     return (
       <Button

@@ -31,18 +31,18 @@ export const FormBox = ({
           returnParams={returnParams}
         />
       }
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="border border-muted rounded-lg shadow-md overflow-hidden">
         {(title || description) && (
-          <div className="p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
-            <p className="text-gray-500 text-sm mt-1">
+          <div className="p-6 border-b border-muted">
+          <h2 className="text-2xl font-bold">{title}</h2>
+            <p className="text-muted-foreground text-sm mt-1">
               {description}
             </p>
           </div>
         )}
 
         {error ? ( (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md flex items-center text-sm m-4">
+          <div className="bg-red-500/10 text-red-600 p-3 rounded-md flex items-center text-sm m-4">
             <AlertCircle className="w-4 h-4 mr-2" />
             {error}
           </div>

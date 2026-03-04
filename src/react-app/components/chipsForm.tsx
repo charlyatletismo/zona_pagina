@@ -60,14 +60,14 @@ export const ChipsForm = ({
       }}
     >
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className="bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          <div className="bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
             {success}
           </div>
         )}
@@ -77,7 +77,7 @@ export const ChipsForm = ({
           children={([isSubmitting]) => (
             <div>
               {isSubmitting ? (
-                <div className="flex gap-4 items-center space-x-2 mb-4 text-sm bg-gray-50 text-gray-600 p-3 rounded-md">
+                <div className="flex gap-4 items-center space-x-2 mb-4 text-sm bg-muted text-muted-foreground p-3 rounded-md">
                   <Spinner /><div>Guardando...</div>
                 </div>) : null
               }
@@ -194,7 +194,7 @@ export const ChipsForm = ({
         children={([prefix, padding_n, start, end]) => (
           <div className="space-y-2 col-span-2 md:col-span-4">
             <div>Ejemplos</div>
-            <div className='text-sm text-gray-500 grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <div className='text-sm text-muted-foreground grid grid-cols-1 sm:grid-cols-2 gap-4'>
                 <div className='flex flex-col'>
                   <div>Prefijo: CH | Relleno: 5 | Inicio: 1 | Fin: 5</div>
                   <div>CH00001, ..., CH00003, ..., CH00005</div>

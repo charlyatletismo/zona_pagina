@@ -482,42 +482,47 @@ export const LoginDynamicForm = () => {
 
   return (
     <div className="relative min-h-[80vh] flex items-center justify-center p-4">
-      <div className='w-full max-w-md bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-8'>
+      <div className='w-full max-w-md backdrop-blur-xl rounded-2xl shadow-2xl border border-muted p-8'>
         <div className="flex flex-col items-center mb-8">
           {sharedData.status !== 'initial' && (
             <div className='mr-auto'>
-              <Button variant="ghost" size="icon" onClick={() => {
-                setSharedData({
-                  phone: sharedData.phone,
-                  status: 'initial',
-                });
-              }}>
-                <ArrowLeftIcon className="h-6 w-6 text-gray-600 cursor-pointer" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className='cursor-pointer'
+                onClick={() => {
+                  setSharedData({
+                    phone: sharedData.phone,
+                    status: 'initial',
+                  });
+                }}
+              >
+                <ArrowLeftIcon className="h-6 w-6 text-muted-foreground cursor-pointer" />
               </Button>
             </div>
           )}
           <div className="p-3 bg-primary/10 rounded-full mb-4">
             <User2Icon className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{title[sharedData.status]}</h1>
-          <p className="text-sm text-gray-500 mt-2 text-center">{subtitle[sharedData.status]}</p>
+          <h1 className="text-2xl font-bold">{title[sharedData.status]}</h1>
+          <p className="text-sm text-muted-foreground mt-2 text-center">{subtitle[sharedData.status]}</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className="bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm">
+          <div className="bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
             {success}
           </div>
         )}
 
         {sharedData.status === 'register' && (
-          <div className='space-y-1 text-center text-gray-700 text-sm'>
+          <div className='space-y-1 text-center text-muted-foreground text-sm'>
             <div>Parece que no tienes una cuenta.</div>
             <div>Por favor, regístrate proporcionando tu número de DNI</div>
           </div>

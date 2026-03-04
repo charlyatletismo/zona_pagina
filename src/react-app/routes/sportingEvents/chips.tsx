@@ -34,8 +34,8 @@ function RouteComponent() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <GoBackButton />
-      <h2 className="ml-4 text-2xl font-bold text-gray-800">Editar Segmentos de Chips</h2>
-      <p className="ml-4 text-gray-500 text-sm mt-1 mb-6">
+      <h2 className="ml-4 text-2xl font-bold">Editar Segmentos de Chips</h2>
+      <p className="ml-4 text-muted-foreground text-sm mt-1 mb-6">
         Aquí puedes editar los chips disponibles para los eventos deportivos.
       </p>
 

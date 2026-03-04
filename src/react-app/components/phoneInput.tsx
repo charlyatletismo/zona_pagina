@@ -33,9 +33,9 @@ export const PhoneInput = ({
       <div className="flex mb-2">
         <span className={
           "inline-flex items-center px-3 "
-          + "text-sm text-gray-900 bg-gray-200 "
+          + "text-sm text-muted-foreground bg-muted "
           + "rounded-l-md border border-r-0 "
-          + (borderColor || "border-gray-300")}
+          + (borderColor || "")}
         >
           +
         </span>
@@ -61,8 +61,8 @@ export const PhoneInput = ({
         />
         <span className={
           "inline-flex items-center px-3 "
-          + "text-sm text-gray-900 bg-gray-200 "
-          + "border border-x-0 " + (borderColor || "border-gray-300")}
+          + "text-sm text-muted-foreground bg-muted "
+          + "border border-x-0 " + (borderColor || "")}
         >
           9
         </span>
@@ -83,7 +83,7 @@ export const PhoneInput = ({
             onChange(((value || '').split("_")[0] || '') + "_9_" + (e.target.value || ''))
           }}
           onBlur={onBlur}
-          className={"rounded-l-none border-l-0 " + (borderColor || "border-gray-300")}
+          className={"rounded-l-none border-l-0 " + (borderColor || "")}
           required={required}
           disabled={disabled}
         />
