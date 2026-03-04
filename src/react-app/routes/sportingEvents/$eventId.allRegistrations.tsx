@@ -356,7 +356,7 @@ function RouteComponent() {
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={async () => {
+              <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
                 // Lógica para marcar el kit como entregado
                 const res = await postAuthenticated(
                   `/api/sportingEvents/${eventId}`
@@ -367,7 +367,7 @@ function RouteComponent() {
                     'Error al marcar como entregado:',
                     getMessage(res.body?.message, 'Error desconocido')
                   );
-                  alert('Hubo un error al marcar como entregado. '
+                  setError('Hubo un error al marcar como entregado. '
                     + 'Por favor, intenta nuevamente más tarde.');
                 }
                 setData(prevData => prevData.map(item => 
@@ -375,7 +375,7 @@ function RouteComponent() {
                     ? { ...item, kit_delivered: !item.kit_delivered } 
                     : item
                 ));
-              }} className='group'>
+              }}>
                 <PkgAnimation kit_delivered={props.row.original.kit_delivered} />
               </DropdownMenuItem>
 
@@ -407,6 +407,19 @@ function RouteComponent() {
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
+      {error && (
+        <div className="my-4 bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" />
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="my-4 bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
+          {success}
+        </div>
+      )}
+
       <GoBackButton />
 
       <AddPaymentRegDialog
@@ -415,6 +428,7 @@ function RouteComponent() {
         setRegId={setAddPaymentRegId}
         setSuccess={setSuccess}
         />
+
       <ApplyDiscountRegDialog
         eventId={eventId}
         regsId={applyDiscountRegId}
@@ -435,6 +449,7 @@ function RouteComponent() {
           }));
         }}
         />
+
       <MarkAsPaidRegDialog
         eventId={eventId}
         regsId={markPaidRegId}
@@ -447,6 +462,7 @@ function RouteComponent() {
           ));
         }}
         />
+
       <CancelRegDialog
         eventId={eventId}
         regsId={cancelingRegId}
@@ -459,6 +475,7 @@ function RouteComponent() {
           ));
         }}
         />
+
       <TransferRegDialog
         eventId={eventId}
         regId={transferringRegId}
