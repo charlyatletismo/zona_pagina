@@ -296,6 +296,10 @@ export const M = {
     [ES]: "La inscripción del evento deportivo no puede ser transferida",
     [EN]: "Sporting event registration cannot be transferred"
   },
+  SPORTING_EVENT_REGISTRATIONS_CHARGED_FREE_SUCCESSFULLY: {
+    [ES]: "Montos pendientes de las inscripciones desestimados correctamente",
+    [EN]: "Pending amounts of sporting event registrations dismissed successfully"
+  },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {

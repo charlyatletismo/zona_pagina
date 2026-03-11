@@ -205,7 +205,7 @@ function RouteComponent() {
                 : 'underline decoration-dotted cursor-pointer'
               }
             >
-              {info.getValue()}%
+              {info.getValue().toFixed(0)}%
             </button>
           </PopoverTrigger>
           <PopoverContent>
@@ -459,10 +459,18 @@ function RouteComponent() {
         setRegsId={setMarkPaidRegId}
         setError={setError}
         setSuccess={setSuccess}
-        onSuccess={() => {
-          setData(prevData => prevData.map(reg =>
-            markPaidRegId?.includes(reg.id) ? { ...reg, status: 'paid', pending_to_pay: 0 } : reg
-          ));
+        onSuccess={(regs) => {
+          setData(prevData => prevData.map(reg => {
+            const found = regs.find(r => r.id === reg.id)
+            if (!found) return reg;
+            return {
+              ...reg,
+              status: found.status,
+              pending_to_pay: found.pending,
+              discount_percentage: found.discount,
+              discount_reason: 'Descuento aplicado desestimando monto pendiente'
+            }
+          }));
         }}
         />
 
@@ -713,6 +721,39 @@ const ApplyDiscountRegDialog = ({
             />
 
           <div className='flex gap-2 justify-end mt-2'>
+            {(!discount || discount <= 0) && (
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="cursor-pointer"
+                  disabled={!!discount || discount > 0}
+                  onClick={async (e) => {
+                    if (discount || discount > 0) {
+                      e.preventDefault();
+                      return;
+                    }
+                    // Lógica para sacar un descuento
+                    const r = await postAuthenticated<
+                      {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
+                      >(`/api/sportingEvents/${eventId}/registrations/applyDiscount`,
+                        {registrationIds: regsId, discount: 0}
+                      );
+                    if (r.status !== 200) {
+                      console.error('Error sacando el descuento:', getMessage(r.body?.message, 'Error desconocido'));
+                      setError('Hubo un error al sacar el descuento. Por favor, intenta nuevamente.');
+                    } else {
+                      setSuccess('Descuento sacado exitosamente.');
+                      onSuccess(r.body?.data);
+                    }
+                    setDiscount(0);
+                    setRegsId(null);
+                  }}
+                >
+                  Sacar descuento
+                </Button>
+              </DialogClose>
+            )}
             <DialogClose asChild>
               <Button
                 type="button"
@@ -727,6 +768,7 @@ const ApplyDiscountRegDialog = ({
                 type="button"
                 variant="default"
                 className='max-w-20 cursor-pointer'
+                disabled={!discount || discount <= 0}
                 onClick={async (e) => {
                   if (!discount || discount <= 0) {
                     e.preventDefault();
@@ -749,9 +791,9 @@ const ApplyDiscountRegDialog = ({
                   setRegsId(null);
                 }}
               >
-                Confirmar
+                Aplicar
               </Button>
-              </DialogClose>
+            </DialogClose>
           </div>
         </DialogHeader>
       </DialogContent>
@@ -773,7 +815,7 @@ const MarkAsPaidRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
-  onSuccess: () => void,
+  onSuccess: (regs: {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]) => void,
 }) => {
   return (
     <Dialog open={regsId !== null} onOpenChange={() => {
@@ -807,8 +849,10 @@ const MarkAsPaidRegDialog = ({
                 className='max-w-20 cursor-pointer'
                 onClick={async () => {
                   // Lógica para desestimar el monto pendiente
-                  const r = await postAuthenticated(
-                    `/api/sportingEvents/${eventId}/registrations/chargeFree`,
+                  const r = await postAuthenticated<
+                    {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
+                    >(
+                    `/api/sportingEvents/${eventId}/registrations/dismissPending`,
                     {registrationIds: regsId}
                   );
                   if (r.status !== 200) {
@@ -816,7 +860,7 @@ const MarkAsPaidRegDialog = ({
                     setError('Hubo un error al desestimar el monto pendiente. Por favor, intenta nuevamente.');
                   } else {
                     setSuccess('Monto pendiente desestimado exitosamente.');
-                    onSuccess();
+                    onSuccess(r.body.data);
                   }
                   setRegsId(null);
                 }}
