@@ -665,7 +665,7 @@ const AddPaymentRegDialog = ({
     <Dialog open={regId !== null} onOpenChange={() => {
       setRegId(null);
     }}>
-      <DialogContent showCloseButton={false} className='md:min-w-3xl lg:min-w-4xl'>
+      <DialogContent showCloseButton={true} className='md:min-w-3xl lg:min-w-4xl'>
         <DialogHeader>
           <DialogTitle>Registrar pago</DialogTitle>
           <DialogDescription>
