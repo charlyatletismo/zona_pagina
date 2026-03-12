@@ -632,7 +632,7 @@ export const ProfileForm = ({
                   field.handleChange(value || null);
                 }}
                 onChangeSearch={async (value) => {
-                  if (value.length > 3) {
+                  if (value.length >= 3) {
                     const res = await getNonOrgManagersData(value)
                     setManagers(res);
                   }

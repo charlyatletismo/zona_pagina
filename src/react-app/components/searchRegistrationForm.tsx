@@ -109,7 +109,7 @@ export const SearchRegistrationForm = ({
           name="user_id"
           children={(field) => (
             <div className="space-y-2">
-              <field.Label htmlFor={field.name}>DNI (4 dígitos mínimo)</field.Label>
+              <field.Label htmlFor={field.name}>DNI (últimos 3 dígitos)</field.Label>
               <field.Input
                 id={field.name}
                 name={field.name}
