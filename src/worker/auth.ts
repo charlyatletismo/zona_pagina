@@ -41,6 +41,7 @@ export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     if ([
         "42556386",
         "34525736",
+        "28880983",
         "00000001",
         "00000002",
         "00000003",
