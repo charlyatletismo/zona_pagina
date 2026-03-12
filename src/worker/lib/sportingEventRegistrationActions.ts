@@ -717,3 +717,46 @@ export const dismissPendingAmountsRegistrations = async (
     data: result,
   }
 }
+
+
+export const cancelRegistrations = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  registrationIds: number[],
+  updatedBy: string,
+): Promise<DataResult> => {
+  const registrations = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      status: sportingEventRegistrations.status,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      inArray(sportingEventRegistrations.id, registrationIds),
+    ))
+    .all();
+  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
+  }
+
+  for (const registration of registrations) {
+    await db.update(sportingEventRegistrations)
+      .set({
+        status: 'cancelled',
+        reserved_clothing_id: null,
+        chip_id: null,
+        bib_number: null,
+        updated_at: new Date().toISOString(),
+        updated_by: updatedBy,
+      })
+      .where(eq(
+        sportingEventRegistrations.id,
+        registration.id
+      ));
+  }
+  return {
+    status: 200,
+    message: M.SPORTING_EVENT_REGISTRATIONS_CANCELLED_SUCCESSFULLY,
+  }
+}
