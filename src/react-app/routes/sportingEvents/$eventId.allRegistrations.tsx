@@ -25,6 +25,7 @@ import {
   PercentCircleIcon,
   CircleDollarSignIcon,
   AlertCircle,
+  ArrowUpCircleIcon,
 } from 'lucide-react';
 import {
   Table,
@@ -113,6 +114,7 @@ function RouteComponent() {
   const [applyDiscountRegId, setApplyDiscountRegId] = React.useState<number[] | null>(null);
   const [markPaidRegId, setMarkPaidRegId] = React.useState<number[] | null>(null);
   const [cancelingRegId, setCancelingRegId] = React.useState<number[] | null>(null);
+  const [reactivatingRegId, setReactivatingRegId] = React.useState<number[] | null>(null);
   const [transferringRegId, setTransferringRegId] = React.useState<number | null>(null);
 
 
@@ -299,7 +301,7 @@ function RouteComponent() {
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {props.row.original.status !== "paid" && (
+                  {props.row.original.status === "pending" && (
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() => {
@@ -310,7 +312,7 @@ function RouteComponent() {
                       Registrar pago
                     </DropdownMenuItem>
                   )}
-                  {props.row.original.status !== "paid" && (
+                  {props.row.original.status === "pending" && (
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() => {
@@ -321,7 +323,7 @@ function RouteComponent() {
                       Aplicar descuento
                     </DropdownMenuItem>
                   )}
-                  {props.row.original.status !== "paid" && (
+                  {props.row.original.status === "pending" && (
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() => {
@@ -332,15 +334,28 @@ function RouteComponent() {
                       Marcar como pagado
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setCancelingRegId([props.row.original.id]);
-                    }}
-                  >
-                    <CircleXIcon className='w-4 h-4 text-red-500' />
-                    Cancelar
-                  </DropdownMenuItem>
+                  {props.row.original.status !== "cancelled" && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setCancelingRegId([props.row.original.id]);
+                      }}
+                    >
+                      <CircleXIcon className='w-4 h-4 text-red-500' />
+                      Cancelar
+                    </DropdownMenuItem>
+                  )}
+                  {props.row.original.status === "cancelled" && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setReactivatingRegId([props.row.original.id]);
+                      }}
+                    >
+                      <ArrowUpCircleIcon className='w-4 h-4 text-blue-500' />
+                      Reactivar
+                    </DropdownMenuItem>
+                  )}
                   {props.row.original.status === "paid" && (
                     <DropdownMenuItem
                       className="cursor-pointer"
@@ -480,10 +495,25 @@ function RouteComponent() {
         setRegsId={setCancelingRegId}
         setError={setError}
         setSuccess={setSuccess}
-        onSuccess={() => {
-          setData(prevData => prevData.map(reg => 
-            cancelingRegId?.includes(reg.id) ? { ...reg, status: 'cancelled' } : reg
-          ));
+        onSuccess={async () => {
+          setSuccess('Inscripciones canceladas exitosamente.');
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        }}
+        />
+
+      <ReactivatingRegDialog
+        eventId={eventId}
+        regsId={reactivatingRegId}
+        setRegsId={setReactivatingRegId}
+        setError={setError}
+        setSuccess={setSuccess}
+        onSuccess={async () => {
+          setSuccess('Inscripciones reactivadas exitosamente.');
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         }}
         />
 
@@ -933,6 +963,74 @@ const CancelRegDialog = ({
                     setError('Hubo un error al cancelar la inscripción. Por favor, intenta nuevamente.');
                   } else {
                     setSuccess('Inscripción cancelada exitosamente.');
+                    onSuccess();
+                  }
+                  setRegsId(null);
+                }}
+              >
+                Confirmar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+const ReactivatingRegDialog = ({
+  regsId,
+  setRegsId,
+  eventId,
+  setError,
+  setSuccess,
+  onSuccess,
+}: {
+  regsId: number[] | null,
+  setRegsId: (regsId: number[] | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+  onSuccess: () => void,
+}) => {
+  return (
+    <Dialog open={regsId !== null} onOpenChange={() => {
+      setRegsId(null);
+    }}>
+      {/* <DialogTrigger className='w-full'>
+        {children}
+      </DialogTrigger> */}
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>¿Estás seguro?</DialogTitle>
+          <DialogDescription>Al reactivar la inscripción, el usuario podrá volver a participar en el evento.</DialogDescription>
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Salir
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                onClick={async () => {
+                  // Lógica para reactivar la inscripción
+                  const r = await postAuthenticated(
+                    `/api/sportingEvents/${eventId}/registrations/reactivate`,
+                    {registrationIds: regsId}
+                  );
+                  if (r.status !== 200) {
+                    console.error('Error reactivating registration:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError('Hubo un error al reactivar la inscripción. Por favor, intenta nuevamente.');
+                  } else {
+                    setSuccess('Inscripción reactivada exitosamente.');
                     onSuccess();
                   }
                   setRegsId(null);
