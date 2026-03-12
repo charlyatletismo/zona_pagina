@@ -592,7 +592,7 @@ export const applyDiscountToRegistrations = async (
       .set({
         discount_percentage: applyDiscount,
         discount_reason: applyDiscount > 0
-          ? `Descuento manual aplicado por ${updatedBy}`
+          ? `Descuento manual aplicado por ${updatedBy.slice(-3)}`
           : null,
         paid_amount: registration.paid_amount,
         updated_at: new Date().toISOString(),
@@ -636,12 +636,10 @@ export const dismissPendingAmountsRegistrations = async (
   const registrations = await db
     .select({
       id: sportingEventRegistrations.id,
-      user_id: sportingEventRegistrations.user_id,
       promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
       paid_amount: sportingEventRegistrations.paid_amount,
       status: sportingEventRegistrations.status,
       discount_percentage: sportingEventRegistrations.discount_percentage,
-      discount_reason: sportingEventRegistrations.discount_reason,
     })
     .from(sportingEventRegistrations)
     .where(and(
@@ -693,7 +691,7 @@ export const dismissPendingAmountsRegistrations = async (
       .set({
         discount_percentage: completeDiscount,
         discount_reason: completeDiscount > 0
-          ? `Descuento aplicado por ${updatedBy}, se desestimó el monto pendiente`
+          ? `Descuento aplicado por ${updatedBy.slice(-3)}, se desestimó el monto pendiente`
           : null,
         paid_amount: registration.paid_amount,
         updated_at: new Date().toISOString(),
@@ -713,7 +711,7 @@ export const dismissPendingAmountsRegistrations = async (
   }
   return {
     status: 200,
-    message: M.SPORTING_EVENT_REGISTRATIONS_CHARGED_FREE_SUCCESSFULLY,
+    message: M.SPORTING_EVENT_REGISTRATIONS_DISMISSED_PENDING_AMOUNTS_SUCCESSFULLY,
     data: result,
   }
 }
