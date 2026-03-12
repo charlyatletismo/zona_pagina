@@ -194,6 +194,10 @@ function RouteComponent() {
                         "Declinaste la indumentaria"
                       ) : data.registration.status === "paid" ? (
                         "No se pudo reservar un talle. El organizador ya fue informado y se pondrá en contacto contigo."
+                      ) : data.registration.status === "cancelled" ? (
+                        "No reservada"
+                      ) : data.registration.status === "expired" ? (
+                        "No reservada"
                       ) : (
                         <div className='flex flex-col gap-0'>
                           <p>Una vez que completes el pago, se intentará reservar tu talle</p>
@@ -222,7 +226,15 @@ function RouteComponent() {
               <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
                 {data.registration.chip_id
                   ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
-                  : 'Una vez pagada la inscripción, se te asignará un chip.'}
+                  : data.registration.status === "paid" ? (
+                    "No se pudo asignar un chip. El organizador ya fue informado y se pondrá en contacto contigo."
+                  ) : data.registration.status === "cancelled" ? (
+                    "No asignado"
+                  ) : data.registration.status === "expired" ? (
+                    "No asignado"
+                  ) : (
+                    "Una vez pagada la inscripción, se te asignará un chip."
+                  )}
               </div>
             </section>
           )}
@@ -234,7 +246,15 @@ function RouteComponent() {
             <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
               {data.registration.bib_number
                 ? `Tiene asignado el número de dorsal con ID: ${data.registration.bib_number}`
-                : 'Una vez pagada la inscripción, se te asignará un dorsal.'}
+                : data.registration.status === "paid" ? (
+                    "No se pudo asignar un dorsal. El organizador ya fue informado y se pondrá en contacto contigo."
+                  ) : data.registration.status === "cancelled" ? (
+                    "No asignado"
+                  ) : data.registration.status === "expired" ? (
+                    "No asignado"
+                  ) : (
+                    "Una vez pagada la inscripción, se te asignará un dorsal."
+                  )}
             </div>
           </section>
         </div>
@@ -260,12 +280,17 @@ function RouteComponent() {
                 </div>
               </div>
             )}
-            {data.registration.status !== 'paid' && (<div>
+            {data.registration.status === 'cancelled' && (
+              <div className='text-sm text-muted-foreground'>
+                Si creés que esto es un error, contactá al organizador.
+              </div>
+            )}
+            {data.registration.status === 'pending' && (<div>
               <h3 className="font-semibold mb-2">Importe</h3>
               { data.registration.discount_percentage > 0 && (
                 <div className="mb-2">
                   <PercentCircle className="w-5 h-5 inline-block mr-2 text-muted-foreground" />
-                  Descuento aplicado: {data.registration.discount_percentage}% {data.registration.discount_reason ? `(${data.registration.discount_reason})` : ''}
+                  Descuento aplicado: {data.registration.discount_percentage.toFixed(0)}% {data.registration.discount_reason ? `(${data.registration.discount_reason})` : ''}
                 </div>
               )}
               <div className='flex justify-between'>
