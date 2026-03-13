@@ -758,3 +758,79 @@ export const cancelRegistrations = async (
     message: M.SPORTING_EVENT_REGISTRATIONS_CANCELLED_SUCCESSFULLY,
   }
 }
+
+
+export const reactivateRegistrations = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  registrationIds: number[],
+  updatedBy: string,
+): Promise<DataResult> => {
+  const registrations = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
+      paid_amount: sportingEventRegistrations.paid_amount,
+      status: sportingEventRegistrations.status,
+      discount_percentage: sportingEventRegistrations.discount_percentage,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      inArray(sportingEventRegistrations.id, registrationIds),
+    ))
+    .all();
+  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
+  }
+
+  const eventData = await db
+    .select({
+      fee_amount: sportingEvents.fee_amount,
+      fee_amount_promotional: sportingEvents.fee_amount_promotional,
+      promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
+    })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .limit(1)
+    .get();
+  if (!eventData) {
+    return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
+  }
+
+  for (const registration of registrations) {
+    if (!['cancelled', 'expired'].includes(registration.status)) {
+      continue;
+    }
+    const {
+      pending_to_pay,
+    } = getPendingToPayAmount(
+      eventData,
+      {
+        ...registration,
+        status: 'pending',
+        promotional_fee_applied: registration.promotional_fee_applied === 1,
+      }
+    );
+    if (pending_to_pay > 0) {
+      await db.update(sportingEventRegistrations)
+        .set({
+          status: 'pending',
+          updated_at: new Date().toISOString(),
+          updated_by: updatedBy,
+        })
+        .where(eq(
+          sportingEventRegistrations.id,
+          registration.id
+        ));
+    }
+    else {
+      await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
+    }
+  }
+  return {
+    status: 200,
+    message: M.SPORTING_EVENT_REGISTRATIONS_REACTIVATED_SUCCESSFULLY,
+    // data: result,
+  }
+}

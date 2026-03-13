@@ -24,6 +24,7 @@ import {
   applyDiscountToRegistrations,
   dismissPendingAmountsRegistrations,
   cancelRegistrations,
+  reactivateRegistrations,
 } from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
@@ -198,6 +199,28 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_IDS_REQUIRED }, 400);
     }
     const res = await cancelRegistrations(
+      db,
+      Number(id),
+      registrationIds,
+      c.get('jwtPayload').id,
+    );
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, res.status);
+    }
+    return c.json({ message: res.message, data: res.data });
+  })
+  .post("/:id/registrations/reactivate", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { registrationIds }
+      : { registrationIds: number[] } = await c.req.json();
+    if (!registrationIds || !Array.isArray(registrationIds) || registrationIds.length === 0) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_IDS_REQUIRED }, 400);
+    }
+    const res = await reactivateRegistrations(
       db,
       Number(id),
       registrationIds,

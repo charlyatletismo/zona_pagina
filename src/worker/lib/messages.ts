@@ -304,6 +304,10 @@ export const M = {
     [ES]: "Inscripciones del evento deportivo canceladas correctamente",
     [EN]: "Sporting event registrations cancelled successfully"
   },
+  SPORTING_EVENT_REGISTRATIONS_REACTIVATED_SUCCESSFULLY: {
+    [ES]: "Inscripciones del evento deportivo reactivadas correctamente",
+    [EN]: "Sporting event registrations reactivated successfully"
+  },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {
