@@ -323,7 +323,7 @@ function RouteComponent() {
                       Aplicar descuento
                     </DropdownMenuItem>
                   )}
-                  {props.row.original.status === "pending" && (
+                  {["pending", "expired"].includes(props.row.original.status) && (
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() => {
@@ -334,7 +334,7 @@ function RouteComponent() {
                       Marcar como pagado
                     </DropdownMenuItem>
                   )}
-                  {props.row.original.status !== "cancelled" && (
+                  {["pending", "paid"].includes(props.row.original.status) && (
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() => {
@@ -510,7 +510,6 @@ function RouteComponent() {
         setError={setError}
         setSuccess={setSuccess}
         onSuccess={async () => {
-          setSuccess('Inscripciones reactivadas exitosamente.');
           setTimeout(() => {
             window.location.reload();
           }, 500);
@@ -1115,8 +1114,8 @@ const TransferRegDialog = ({
                   if (r.status !== 200) {
                     console.error('Error transfiriendo inscripción:', getMessage(r.body?.message, 'Error desconocido'));
                     setError(
-                      'Hubo un error al transferir la inscripción.'
-                      + (r.body?.message || ''));
+                      'Hubo un error al transferir la inscripción. '
+                      + getMessage(r.body?.message, 'Error desconocido'));
                   } else {
                     setSuccess('Inscripción transferida exitosamente.');
                     onSuccess();

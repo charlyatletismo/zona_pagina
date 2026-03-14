@@ -676,36 +676,35 @@ export const dismissPendingAmountsRegistrations = async (
       })
       continue;
     }
-    const {
-      current_fee_amount,
-    } = getPendingToPayAmount(
-      eventData,
-      {
-        ...registration,
-        promotional_fee_applied: registration.promotional_fee_applied === 1,
-      }
-    );
-    const pending = current_fee_amount - registration.paid_amount;
-    const completeDiscount = 100 * pending / current_fee_amount;
-    await db.update(sportingEventRegistrations)
-      .set({
-        discount_percentage: completeDiscount,
-        discount_reason: completeDiscount > 0
-          ? `Descuento aplicado por ${updatedBy.slice(-3)}, se desestimó el monto pendiente`
-          : null,
-        paid_amount: registration.paid_amount,
-        updated_at: new Date().toISOString(),
-        updated_by: updatedBy,
-      })
-      .where(eq(
-        sportingEventRegistrations.id,
-        registration.id
-      ));
+    // const {
+    //   current_fee_amount,
+    // } = getPendingToPayAmount(
+    //   eventData,
+    //   {
+    //     ...registration,
+    //     promotional_fee_applied: registration.promotional_fee_applied === 1,
+    //   }
+    // );
+    // const pending = current_fee_amount - registration.paid_amount;
+    // const completeDiscount = 100 * pending / current_fee_amount;
+    // await db.update(sportingEventRegistrations)
+    //   .set({
+    //     discount_percentage: completeDiscount,
+    //     discount_reason: completeDiscount > 0
+    //       ? `Descuento aplicado por ${updatedBy.slice(-3)}, se desestimó el monto pendiente`
+    //       : null,
+    //     updated_at: new Date().toISOString(),
+    //     updated_by: updatedBy,
+    //   })
+    //   .where(eq(
+    //     sportingEventRegistrations.id,
+    //     registration.id
+    //   ));
     await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
     result.push({
       id: registration.id,
       status: 'paid',
-      discount: completeDiscount,
+      discount: registration.discount_percentage,
       pending: 0,
     })
   }

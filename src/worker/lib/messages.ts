@@ -280,6 +280,10 @@ export const M = {
     [ES]: "Se requieren los IDs de las inscripciones del evento deportivo",
     [EN]: "Sporting event registration IDs required"
   },
+  SPORTING_EVENT_REGISTRATION_ID_REQUIRED: {
+    [ES]: "Se requiere el ID de la inscripción del evento deportivo",
+    [EN]: "Sporting event registration ID required"
+  },
   SPORTING_EVENT_REGISTRATION_DISCOUNT_INVALID: {
     [ES]: "Descuento inválido para las inscripciones del evento deportivo",
     [EN]: "Invalid discount for sporting event registrations"
@@ -308,6 +312,27 @@ export const M = {
     [ES]: "Inscripciones del evento deportivo reactivadas correctamente",
     [EN]: "Sporting event registrations reactivated successfully"
   },
+  SPORTING_EVENT_REGISTRATION_TRANSFER_ONLY_PAID_ALLOWED: {
+    [ES]: "Solo se permiten transferencias de inscripciones al evento deportivo que hayan sido pagadas",
+    [EN]: "Only transfers of sporting event registrations that have been paid are allowed"
+  },
+  SPORTING_EVENT_BENEFICIARY_USER_ID_REQUIRED: {
+    [ES]: "Se requiere el ID del usuario beneficiario para transferir la inscripción del evento deportivo",
+    [EN]: "Beneficiary user ID required to transfer sporting event registration"
+  },
+  SPORTING_EVENT_BENEFICIARY_REGISTRATION_NOT_FOUND: {
+    [ES]: "Inscripción del evento deportivo del beneficiario no encontrada",
+    [EN]: "Beneficiary sporting event registration not found"
+  },
+  SPORTING_EVENT_BENEFICIARY_REGISTRATION_ALREADY_PAID: {
+    [ES]: "La inscripción del evento deportivo del beneficiario ya ha sido pagada",
+    [EN]: "Beneficiary sporting event registration has already been paid"
+  },
+  SPORTING_EVENT_BENEFICIARY_REGISTRATION_CANCELLED: {
+    [ES]: "La inscripción del evento deportivo del beneficiario está cancelada",
+    [EN]: "Beneficiary sporting event registration is cancelled"
+  },
+  
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {
