@@ -834,3 +834,95 @@ export const reactivateRegistrations = async (
     // data: result,
   }
 }
+
+
+export const transferRegistration = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  fromRegistrationId: number,
+  toUserId: string,
+  updatedBy: string,
+): Promise<DataResult> => {
+  const fromRegistration = await db.select({
+    id: sportingEventRegistrations.id,
+    status: sportingEventRegistrations.status,
+    event_id: sportingEventRegistrations.event_id,
+    user_id: sportingEventRegistrations.user_id,
+    circuit_id: sportingEventRegistrations.circuit_id,
+    bib_number: sportingEventRegistrations.bib_number,
+    chip_id: sportingEventRegistrations.chip_id,
+    paid_amount: sportingEventRegistrations.paid_amount,
+    promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
+    discount_percentage: sportingEventRegistrations.discount_percentage,
+  })
+  .from(sportingEventRegistrations)
+  .where(and(
+    eq(sportingEventRegistrations.id, fromRegistrationId),
+    eq(sportingEventRegistrations.event_id, eventId),
+  ))
+  .limit(1)
+  .get();
+  if (!fromRegistration) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND };
+  }
+  if (fromRegistration.status !== 'paid') {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_TRANSFER_ONLY_PAID_ALLOWED };
+  }
+  const toUser = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, toUserId))
+    .limit(1)
+    .get();
+  if (!toUser) {
+    return { status: 404, message: M.USER_NOT_FOUND };
+  }
+  const toUserRegistration = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      status: sportingEventRegistrations.status,
+      demanded_clothing_id: sportingEventRegistrations.demanded_clothing_id,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.user_id, toUserId),
+      eq(sportingEventRegistrations.event_id, eventId),
+    ))
+    .limit(1)
+    .get();
+  if (!toUserRegistration) {
+    return { status: 404, message: M.SPORTING_EVENT_BENEFICIARY_REGISTRATION_NOT_FOUND };
+  }
+  if (toUserRegistration.status === "paid") {
+    return { status: 400, message: M.SPORTING_EVENT_BENEFICIARY_REGISTRATION_ALREADY_PAID };
+  }
+  if (toUserRegistration.status === "cancelled") {
+    return { status: 400, message: M.SPORTING_EVENT_BENEFICIARY_REGISTRATION_CANCELLED };
+  }
+
+  await db.update(sportingEventRegistrations)
+    .set({
+      status: 'cancelled',
+      chip_id: null,
+      bib_number: null,
+      reserved_clothing_id: null,
+      updated_at: new Date().toISOString(),
+      updated_by: updatedBy,
+    })
+    .where(eq(sportingEventRegistrations.id, fromRegistration.id));
+  await db.update(sportingEventRegistrations)
+    .set({
+      status: 'paid',
+      chip_id: fromRegistration.chip_id,
+      bib_number: fromRegistration.bib_number,
+      reserved_clothing_id: toUserRegistration.demanded_clothing_id,
+      updated_at: new Date().toISOString(),
+      updated_by: updatedBy,
+    })
+    .where(eq(sportingEventRegistrations.id, toUserRegistration.id));
+
+  return {
+    status: 200,
+    message: M.SPORTING_EVENT_REGISTRATION_TRANSFERRED_SUCCESSFULLY,
+  }
+}

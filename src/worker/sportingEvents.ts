@@ -25,6 +25,7 @@ import {
   dismissPendingAmountsRegistrations,
   cancelRegistrations,
   reactivateRegistrations,
+  transferRegistration,
 } from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
@@ -230,6 +231,32 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       return c.json({ message: res.message }, res.status);
     }
     return c.json({ message: res.message, data: res.data });
+  })
+  .post("/:id/registrations/transfer", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { fromRegistrationId, benefUserId }
+      : { fromRegistrationId: number, benefUserId: string } = await c.req.json();
+    if (!fromRegistrationId) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ID_REQUIRED }, 400);
+    }
+    if (!benefUserId) {
+      return c.json({ message: M.SPORTING_EVENT_BENEFICIARY_USER_ID_REQUIRED }, 400);
+    }
+    const r = await transferRegistration(
+      db,
+      Number(id),
+      fromRegistrationId,
+      benefUserId,
+      c.get('jwtPayload').id,
+    );
+    if (r.status !== 200) {
+      return c.json({ message: r.message }, r.status);
+    }
+    return c.json({ message: r.message });
   })
   .post("/:id/registrations/:regId/deliveredKit/:flag", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

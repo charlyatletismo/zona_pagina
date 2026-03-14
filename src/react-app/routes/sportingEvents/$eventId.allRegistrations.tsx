@@ -523,6 +523,11 @@ function RouteComponent() {
         setRegId={setTransferringRegId}
         setError={setError}
         setSuccess={setSuccess}
+        onSuccess={async () => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        }}
       />
 
       <div className='flex flex-col sm:flex-row sm:justify-between'>
@@ -1052,12 +1057,14 @@ const TransferRegDialog = ({
   eventId,
   setError,
   setSuccess,
+  onSuccess,
 }: {
   regId: number | null,
   setRegId: (regId: number | null) => void,
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  onSuccess: () => void,
 }) => {
   const [benefUserId, setBenefUserId] = React.useState("");
 
@@ -1112,9 +1119,7 @@ const TransferRegDialog = ({
                       + (r.body?.message || ''));
                   } else {
                     setSuccess('Inscripción transferida exitosamente.');
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 500);
+                    onSuccess();
                   }
                   setBenefUserId('');
                   setRegId(null);
