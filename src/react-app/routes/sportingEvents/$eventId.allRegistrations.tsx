@@ -27,6 +27,7 @@ import {
   AlertCircle,
   ArrowUpCircleIcon,
 } from 'lucide-react';
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -94,6 +95,13 @@ function RouteComponent() {
   const { resRegApi } = Route.useLoaderData();
   const { eventId } = Route.useParams();
   const [data, setData] = React.useState(resRegApi.body.data);
+  const [rowSelection, setRowSelection] = React.useState({})
+  const [generalActionBtnsEnabled, setGeneralActionBtnsEnabled] = React.useState({
+    canCancel: false,
+    canMarkPaid: false,
+    canApplyDiscount: false,
+    canReactivate: false,
+  });
 
   const [error, _setError] = React.useState('');
   const [success, _setSuccess] = React.useState('');
@@ -128,6 +136,36 @@ function RouteComponent() {
   const columnHelper = createColumnHelper<z.infer<typeof ARSportingEventRegistrationFlatSchema>>();
 
   const defaultColumns = [
+    columnHelper.display({
+      "id": "select",
+      header: ({ table }) => (
+        <div className="flex items-center">
+          <Checkbox
+            className={"disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"}
+            checked={table.getIsSomeRowsSelected() ? "indeterminate" : table.getIsAllRowsSelected()}
+            onCheckedChange={
+              (c) => table.getToggleAllRowsSelectedHandler()(
+                {target: {checked: c === "indeterminate" ? true : c}}
+              )
+            }
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="px-1 flex items-center">
+          <Checkbox
+            className={"disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"}
+            checked={row.getIsSomeSelected() ? "indeterminate" : row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onCheckedChange={
+              (c) => row.getToggleSelectedHandler()(
+                {target: {checked: c === "indeterminate" ? true : c}}
+              )
+            }
+          />
+        </div>
+      ),
+    }),
     columnHelper.accessor('user_full_name', {
       header: 'Nombre',
       cell: info => (
@@ -421,7 +459,48 @@ function RouteComponent() {
       ]
     },
     globalFilterFn: customFilterFn,
+    enableRowSelection: true, //enable row selection for all rows
+    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
+    // use the row's id from the database as the row id
+    getRowId: row => row.id.toString(),
   })
+
+  React.useEffect(() => {
+    if (Object.keys(rowSelection).length === 0) {
+      setGeneralActionBtnsEnabled({
+        canCancel: false,
+        canMarkPaid: false,
+        canApplyDiscount: false,
+        canReactivate: false,
+      });
+      return;
+    }
+    let canCancel = true;
+    let canMarkPaid = true;
+    let canApplyDiscount = true;
+    let canReactivate = true;
+    Object.keys(rowSelection).forEach((key) => {
+      const row = table.getRow(key);
+      canCancel = canCancel && ["pending", "paid"].includes(row.original.status);
+      canMarkPaid = canMarkPaid && ["pending", "expired"].includes(row.original.status);
+      canApplyDiscount = canApplyDiscount && row.original.status === 'pending';
+      canReactivate = canReactivate && row.original.status === 'cancelled';
+      // console.log('row', row.original.status, canCancel, canMarkPaid, canApplyDiscount);
+    });
+    setGeneralActionBtnsEnabled({
+      canCancel,
+      canMarkPaid,
+      canApplyDiscount,
+      canReactivate,
+    });
+  }, [
+    table,
+    rowSelection,
+  ])
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
@@ -558,6 +637,52 @@ function RouteComponent() {
           </Button>
         </div> */}
       </div>
+      <div className='mb-4 flex gap-2'>
+        <Button
+          variant="outline"
+          className='cursor-pointer'
+          disabled={!generalActionBtnsEnabled.canApplyDiscount}
+          onClick={() => {
+            setApplyDiscountRegId(Object.keys(rowSelection).map(id => Number(id)));
+          }}
+        >
+          <PercentCircleIcon className='w-4 h-4' />
+          Aplicar descuento
+        </Button>
+        <Button
+          variant="outline"
+          className='cursor-pointer'
+          disabled={!generalActionBtnsEnabled.canMarkPaid}
+          onClick={() => {
+            setMarkPaidRegId(Object.keys(rowSelection).map(id => Number(id)));
+          }}
+        >
+          <CircleCheckIcon className='w-4 h-4 text-green-500' />
+          Marcar como pagado
+        </Button>
+        <Button
+          variant="outline"
+          className='cursor-pointer'
+          disabled={!generalActionBtnsEnabled.canCancel}
+          onClick={() => {
+            setCancelingRegId(Object.keys(rowSelection).map(id => Number(id)));
+          }}
+        >
+          <CircleXIcon className='w-4 h-4 text-red-500' />
+          Cancelar
+        </Button>
+        <Button
+          variant="outline"
+          className='cursor-pointer'
+          disabled={!generalActionBtnsEnabled.canReactivate}
+          onClick={() => {
+            setReactivatingRegId(Object.keys(rowSelection).map(id => Number(id)));
+          }}
+        >
+          <ArrowUpCircleIcon className='w-4 h-4 text-blue-500' />
+          Reactivar
+        </Button>
+      </div>
       {resRegApi.body.data.length > 0 && (table.getRowModel().rows.length > 0 ? (
         <div>
         <Table className='border min-w-3xl max-w-full'>
@@ -619,16 +744,23 @@ function RouteComponent() {
             ))}
           </TableBody>
         </Table>
-        <div className='text-gray-500 mt-2'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
+        {Object.keys(rowSelection).length > 0 && (
+          <div className='flex items-center gap-2 mt-2 text-muted-foreground'>
+            <span>{Object.keys(rowSelection).length} filas seleccionadas</span>
+          </div>
+        )}
+        <div className='text-muted-foreground mt-1'>
+          {table.getRowModel().rows.length.toLocaleString()} resultados
+        </div>
         </div>
       ) : (
-        <div className='text-center py-10 text-gray-500 min-w-3xl max-w-full'>
+        <div className='text-center py-10 text-muted-foreground min-w-3xl max-w-full'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
           No hay resultados para tu búsqueda.
         </div>
       ))}
       {resRegApi.body.data.length === 0 && (
-        <div className='text-center py-10 text-gray-500'>
+        <div className='text-center py-10 text-muted-foreground'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
           No hay inscripciones aún.
         </div>
