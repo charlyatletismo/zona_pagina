@@ -17,6 +17,8 @@ import {
   ActivityIcon,
   ArrowUp,
   ArrowDown,
+  GroupIcon,
+  UngroupIcon,
   SearchIcon,
   EllipsisIcon,
   CircleXIcon,
@@ -26,6 +28,7 @@ import {
   CircleDollarSignIcon,
   AlertCircle,
   ArrowUpCircleIcon,
+  ArrowRight,
 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -64,9 +67,12 @@ import {
   PopoverContent,
 } from '@/components/ui/popover';
 import {
+  GroupingState,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+  getGroupedRowModel,
+  getExpandedRowModel,
   createColumnHelper,
   useReactTable,
   flexRender
@@ -95,7 +101,8 @@ function RouteComponent() {
   const { resRegApi } = Route.useLoaderData();
   const { eventId } = Route.useParams();
   const [data, setData] = React.useState(resRegApi.body.data);
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [grouping, setGrouping] = React.useState<GroupingState>([])
+  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [generalActionBtnsEnabled, setGeneralActionBtnsEnabled] = React.useState({
     canCancel: false,
     canMarkPaid: false,
@@ -139,9 +146,9 @@ function RouteComponent() {
     columnHelper.display({
       "id": "select",
       header: ({ table }) => (
-        <div className="flex items-center">
+        <div className="flex gap-2 items-center px-1">
           <Checkbox
-            className={"disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"}
+            className="cursor-pointer"
             checked={table.getIsSomeRowsSelected() ? "indeterminate" : table.getIsAllRowsSelected()}
             onCheckedChange={
               (c) => table.getToggleAllRowsSelectedHandler()(
@@ -152,15 +159,34 @@ function RouteComponent() {
         </div>
       ),
       cell: ({ row }) => (
-        <div className="px-1 flex items-center">
+        <div className={"flex gap-2 items-center px-1 " /*+ `pl-${row.depth*4}`*/}>
           <Checkbox
-            className={"disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"}
+            className="cursor-pointer"
             checked={row.getIsSomeSelected() ? "indeterminate" : row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onCheckedChange={
               (c) => row.getToggleSelectedHandler()(
                 {target: {checked: c === "indeterminate" ? true : c}}
               )
+            }
+          />
+        </div>
+      ),
+      aggregatedCell: ({ row }) => (
+        <div className={"flex gap-2 items-center px-1 "
+          + `pl-${row.depth}`}>
+          <Checkbox
+            className="cursor-pointer"
+            checked={row.getIsSomeSelected() ? "indeterminate" : row.getIsAllSubRowsSelected()}
+            disabled={!row.getCanSelect()}
+            onCheckedChange={
+              (c) => row.subRows.forEach(subRow => {
+                if (subRow.getCanSelect()) {
+                  subRow.getToggleSelectedHandler()(
+                    {target: {checked: c === "indeterminate" ? true : c}}
+                  )
+                }
+              })
             }
           />
         </div>
@@ -196,6 +222,7 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: true,
+      enableGrouping: false,
     }),
     columnHelper.accessor('user_training_team_name', {
       header: 'Equipo',
@@ -230,6 +257,8 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: false,
+      enableGrouping: false,
+      aggregationFn: () => {},
     }),
     columnHelper.accessor('discount_percentage', {
       header: 'Desc.',
@@ -256,6 +285,8 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: false,
+      enableGrouping: false,
+      aggregationFn: () => {},
     }),
     columnHelper.accessor('category', {
       header: 'Categoría',
@@ -286,6 +317,8 @@ function RouteComponent() {
       enableSorting: true,
       sortUndefined: 'last',
       enableGlobalFilter: true,
+      enableGrouping: false,
+      aggregationFn: () => {},
     }),
     columnHelper.accessor('chip_id', {
       header: 'Chip',
@@ -295,6 +328,7 @@ function RouteComponent() {
       sortUndefined: 'last',
       sortingFn: 'alphanumeric',
       enableGlobalFilter: true,
+      enableGrouping: false,
     }),
     columnHelper.accessor('demanded_clothing_size', {
       header: 'Talle',
@@ -310,9 +344,11 @@ function RouteComponent() {
     }),
     columnHelper.accessor('kit_delivered', {
       header: 'Kit',
-      cell: info => info.getValue()
+      cell: info => <div>
+        {info.getValue()
         ? <div className='text-green-500 p-2'><PackageOpenIcon className='w-4 h-4' /></div>
-        : <div className='text-gray-500 p-2'><PackageIcon className='w-4 h-4' /></div>,
+        : <div className='text-gray-500 p-2'><PackageIcon className='w-4 h-4' /></div>}
+      </div>,
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
@@ -448,6 +484,8 @@ function RouteComponent() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     initialState: {
       globalFilter: '',
       // columnVisibility: {
@@ -464,9 +502,17 @@ function RouteComponent() {
     onRowSelectionChange: setRowSelection,
     state: {
       rowSelection,
+      grouping
     },
     // use the row's id from the database as the row id
     getRowId: row => row.id.toString(),
+    onGroupingChange: (updater) => {
+      setGrouping((old) => {
+        const newGrouping = typeof updater === 'function' ? updater(old) : updater;
+        // Take only the last clicked (or first) column to limit to 1
+        return newGrouping.slice(-1);
+      });
+    },
   })
 
   React.useEffect(() => {
@@ -693,6 +739,22 @@ function RouteComponent() {
                   {headerGroup.headers.map(header => (
                     <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder ? null : (
+                      <div className='flex gap-1 items-center'>
+                        {header.column.getCanGroup() ? (
+                          <button
+                            onClick={header.column.getToggleGroupingHandler()}
+                            className='cursor-pointer hover:text-primary'
+                            title={
+                              header.column.getIsGrouped()
+                              ? 'Desagrupar'
+                              : 'Agrupar'
+                            }
+                          >
+                            {header.column.getIsGrouped()
+                              ? <UngroupIcon className='w-4 h-4' />
+                              : <GroupIcon className='w-4 h-4' />}
+                          </button>
+                        ) : null}
                         <div className={"flex items-center gap-1 "
                           + (header.column.getCanSort()
                             ? "cursor-pointer select-none hover:text-primary"
@@ -722,6 +784,7 @@ function RouteComponent() {
                             desc: <ArrowDown className="h-4 w-4" />,
                           }[header.column.getIsSorted() as string] ?? null}
                         </div>
+                      </div>
                       )}
                     </TableHead>
                   ))}
@@ -734,10 +797,38 @@ function RouteComponent() {
               <TableRow key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
+                    {cell.getIsGrouped() ? (
+                      // If it's a grouped cell, add an expander and row count
+                      <div className='flex items-center gap-2'>
+                        <Button
+                          variant="ghost"
+                          onClick={row.getToggleExpandedHandler()}
+                          className={
+                            row.getCanExpand() ? 'cursor-pointer' : ''
+                          }
+                        >
+                          {row.getIsExpanded()
+                            ? <ArrowDown className='w-4 h-4' />
+                            : <ArrowRight className='w-4 h-4' />}
+                        </Button>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}{" "}
+                        <span className='text-muted-foreground'>({row.subRows.length})</span>
+                      </div>
+                    ) : cell.getIsAggregated() ? (
+                      flexRender(
+                        cell.column.columnDef.aggregatedCell ??
+                            cell.column.columnDef.cell,
+                        cell.getContext()
+                      )
+                    ) : cell.getIsPlaceholder() ? null
+                      : flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )
+                    }
                   </TableCell>
                 ))}
               </TableRow>
@@ -746,11 +837,11 @@ function RouteComponent() {
         </Table>
         {Object.keys(rowSelection).length > 0 && (
           <div className='flex items-center gap-2 mt-2 text-muted-foreground'>
-            <span>{Object.keys(rowSelection).length} filas seleccionadas</span>
+            <span>{Object.keys(rowSelection).length} inscripciones seleccionadas</span>
           </div>
         )}
         <div className='text-muted-foreground mt-1'>
-          {table.getRowModel().rows.length.toLocaleString()} resultados
+          {table.getPreGroupedRowModel().rows.length.toLocaleString()} resultados
         </div>
         </div>
       ) : (
