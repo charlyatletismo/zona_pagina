@@ -369,7 +369,7 @@ function RouteComponent() {
                       }}
                     >
                       <CircleCheckIcon className='w-4 h-4 text-green-500' />
-                      Marcar como pagado
+                      Desestimar pendiente
                     </DropdownMenuItem>
                   )}
                   {["pending", "paid"].includes(props.row.original.status) && (
@@ -658,7 +658,7 @@ function RouteComponent() {
           }}
         >
           <CircleCheckIcon className='w-4 h-4 text-green-500' />
-          Marcar como pagado
+          Desestimar pendiente
         </Button>
         <Button
           variant="outline"
