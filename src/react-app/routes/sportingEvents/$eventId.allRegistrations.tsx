@@ -811,6 +811,12 @@ function RouteComponent() {
                             ? <ArrowDown className='w-4 h-4' />
                             : <ArrowRight className='w-4 h-4' />}
                         </Button>
+                        {(cell.column.id === "user_training_team_name"
+                          && row.subRows.length >= 10)
+                          && <span className='text-primary'>
+                            <PercentCircleIcon className='w-4 h-4' />
+                            </span>
+                        }
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
