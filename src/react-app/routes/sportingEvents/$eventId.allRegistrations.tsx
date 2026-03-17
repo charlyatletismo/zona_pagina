@@ -246,6 +246,12 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: false,
+      sortingFn: (rowA, rowB, columnId) => {
+        const statusA: string = rowA.getValue(columnId);
+        const statusB: string = rowB.getValue(columnId);
+        const order = ['not_registered', 'pending', 'paid', 'expired', 'cancelled'];
+        return order.indexOf(statusA) - order.indexOf(statusB);
+      },
     }),
     columnHelper.accessor('pending_to_pay', {
       header: 'Pendiente',
