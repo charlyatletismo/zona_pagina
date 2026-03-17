@@ -194,7 +194,7 @@ function RouteComponent() {
           <Button asChild variant="outline">
             <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
               <FilePlus2 className="w-4 h-4" />
-              Registrar Atletas
+              Inscribir Atletas
             </Link>
           </Button>
 
@@ -284,7 +284,7 @@ function RouteComponent() {
             <Button asChild variant="outline">
               <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
                 <FilePlus2 className="w-4 h-4" />
-                Registrar Atletas
+                Inscribir Atletas
               </Link>
             </Button>
           )}
