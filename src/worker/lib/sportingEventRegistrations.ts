@@ -353,10 +353,10 @@ export const getUserRegistrationWithEvent = async (
 }
 
 
-export const getManagedUsersRegistrations = async (
+export const getAllUsersRegistrations = async (
   db: DrizzleD1Database,
   eventId: number,
-  managerId: string
+  managerId?: string,
 ) => {
   const evData = await getEventData(db, eventId);
   if (!evData) {
@@ -364,44 +364,20 @@ export const getManagedUsersRegistrations = async (
   }
   const { event, clothing } = evData;
   const clothingParsed = z.array(SpClothingMinSchema).parse(clothing);
-  // Only for admin and organizer roles
-  const resUsers = await db
-    .select({
-      users: {
-        id: users.id,
-        name: users.name,
-        surname: users.surname,
-        phone: users.phone,
-        email: users.email,
-        emergency_contact_phone: users.emergency_contact_phone,
-      }
-    })
-    .from(users)
-    .where(eq(users.manager_id, managerId))
-    .innerJoin(sportingEventRegistrations, and(
-      eq(sportingEventRegistrations.event_id, eventId),
-      eq(sportingEventRegistrations.user_id, users.id)
-    ))
-    .all();
-
-  const registrations = resUsers.map(async r => {
-    return {
-      ...await getUserRegistrationFull(db, eventId, r.users.id, event, clothingParsed),
-      user: r.users,
-    }
-  })
-  return await Promise.all(registrations);
-}
-
-
-export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: number) => {
-  // Only for admin and organizer roles
-  const evData = await getEventData(db, eventId);
-  if (!evData) {
-    return null;
+  let whereClause = null;
+  if (managerId) {
+    const resUsers = await db
+      .select({
+        id: users.id
+      })
+      .from(users)
+      .where(eq(users.manager_id, managerId))
+      .all();
+    whereClause = inArray(
+      sportingEventRegistrations.user_id,
+      resUsers.map(u => u.id as string)
+    );
   }
-  const { event, clothing } = evData;
-  const clothingParsed = z.array(SpClothingMinSchema).parse(clothing);
   const registrations = await db
     .select(
       ARSportingEventRegistrationSchema
@@ -414,7 +390,14 @@ export const getAllUsersRegistrations = async (db: DrizzleD1Database, eventId: n
           ),
     )
     .from(sportingEventRegistrations)
-    .where(eq(sportingEventRegistrations.event_id, eventId))
+    .where(
+      whereClause
+      ? and(
+          eq(sportingEventRegistrations.event_id, eventId),
+          whereClause,
+        )
+      : eq(sportingEventRegistrations.event_id, eventId)
+    )
     .all();
   const circuits = await db
     .select({

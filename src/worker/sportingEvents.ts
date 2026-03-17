@@ -36,7 +36,6 @@ import {
   getUserRegistration,
   getPaidRegistrations,
   updateSpEventRegistrationKitDeliveredStatus,
-  getManagedUsersRegistrations,
   getAllUsersRegistrations,
   getUserRegistrationWithEvent,
 } from "./lib/sportingEventRegistrations";
@@ -269,22 +268,17 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     return c.json({ message: M.SPORTING_EVENT_REGISTRATION_KIT_DELIVERY_STATUS_UPDATED_SUCCESSFULLY });
   })
   .get("/:id/allRegistrations", async (c) => {
-    if (!authorizedOrg(c.get('jwtPayload').role)) {
-      return c.json({ message: M.UNAUTHORIZED }, 403);
-    }
-    const db = drizzle(c.env.DB);
-    const { id } = c.req.param();
-    const res = await getAllUsersRegistrations(db, Number(id));
-    return c.json({ data: res });
-  })
-  .get("/:id/managedRegistrations", async (c) => {
     if (!authorizedAthMan(c.get('jwtPayload').role)) {
       return c.json({ message: M.UNAUTHORIZED }, 403);
     }
+    let managerId: string | undefined = undefined;
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      // athlete manager
+      managerId = c.get('jwtPayload').id;
+    }
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const userId: string = c.get('jwtPayload').id;
-    const res = await getManagedUsersRegistrations(db, Number(id), userId);
+    const res = await getAllUsersRegistrations(db, Number(id), managerId);
     return c.json({ data: res });
   })
   .post("/:id/pay", async (c) => {
