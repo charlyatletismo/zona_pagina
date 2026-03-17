@@ -7,6 +7,7 @@ import {
   ATHLETE_ROLE,
 } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import { getManagersData } from '@/lib/queryCache';
 import { ARUserSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
 import { ActivityIcon, ArrowDown, ArrowUp, ChevronRight, PlusIcon, SearchIcon } from 'lucide-react';
@@ -46,14 +47,15 @@ export const Route = createFileRoute('/users/')({
     const usersApi = await getAuthenticatedThrow<
       z.infer<typeof ARUserSchemaPartialArray>
       >('/api/users', ARUserSchemaPartialArray);
-    return { usersApi };
+    const managersData = await getManagersData();
+    return { usersApi, managersData };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const { usersApi } = Route.useLoaderData();
+  const { usersApi, managersData } = Route.useLoaderData();
 
   const columnHelper = createColumnHelper<z.infer<typeof ARUserSchemaPartial>>()
 
@@ -113,6 +115,28 @@ function RouteComponent() {
       enableSorting: true,
       sortUndefined: 'last',
     }),
+    columnHelper.accessor('manager_id', {
+      header: 'Manager',
+      cell: info => {
+        const managerId = info.getValue();
+        if (!managerId) return null;
+        const manager = managersData.find(m => m.id === managerId);
+        if (!manager) return (<div className='text-red-500 text-sm italic'>
+            Inexistente, corregir usuario
+          </div>);
+        return `${manager.name} ${manager.surname}`;
+      },
+      footer: props => props.column.id,
+      enableSorting: true,
+      sortingFn: (rowA, rowB, columnId) => {
+        const managerA = managersData.find(m => m.id === rowA.getValue(columnId));
+        const managerB = managersData.find(m => m.id === rowB.getValue(columnId));
+        const nameA = managerA ? `${managerA.name} ${managerA.surname}` : '';
+        const nameB = managerB ? `${managerB.name} ${managerB.surname}` : '';
+        return nameA.localeCompare(nameB);
+      },
+      sortUndefined: 'last',
+    }),
     columnHelper.accessor('role', {
       header: 'Rol',
       cell: info => {
@@ -169,6 +193,7 @@ function RouteComponent() {
       columnVisibility: {
         id: false,
         role: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
+        manager_id: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
       },
       sorting: [
         { id: "role", desc: true },
