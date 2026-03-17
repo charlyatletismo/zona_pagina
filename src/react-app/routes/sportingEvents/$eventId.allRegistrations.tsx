@@ -10,6 +10,7 @@ import {
 } from '@shared/apiRespTypes';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
   PackageIcon,
@@ -955,9 +956,18 @@ const ApplyDiscountRegDialog = ({
   onSuccess: (regs: {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]) => void,
 }) => {
   const [discount, setDiscount] = React.useState(0);
+  const [reason, setReason] = React.useState('');
+
+  React.useEffect(() => {
+    if (regsId && regsId.length >= 10) {
+      setReason('Descuento para equipos con 10 o más inscripciones');
+    }
+  }, [regsId])
 
   return (
     <Dialog open={regsId !== null} onOpenChange={() => {
+      setDiscount(0);
+      setReason('');
       setRegsId(null);
     }}>
       <DialogContent showCloseButton={false}>
@@ -967,9 +977,11 @@ const ApplyDiscountRegDialog = ({
             Se aplicará un descuento al monto de la tarifa total de la inscripción.
           </DialogDescription>
 
+          <Label htmlFor="discount" className="mt-4">Porcentaje de descuento a aplicar (%)</Label>
           <Input
+            id="discount"
             name="discount"
-            placeholder="(%) Descuento a aplicar"
+            placeholder=""
             value={discount || ''}
             onChange={(e) => {
               const num = Number(e.target.value)
@@ -979,6 +991,15 @@ const ApplyDiscountRegDialog = ({
               setDiscount(num)
             }}
             required={true}
+            />
+          <Label htmlFor="reason" className="mt-4">Motivo del descuento (opcional)</Label>
+          <Input
+            id="reason"
+            name="reason"
+            placeholder=""
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            required={false}
             />
 
           <div className='flex gap-2 justify-end mt-2'>
@@ -1008,6 +1029,7 @@ const ApplyDiscountRegDialog = ({
                       onSuccess(r.body?.data);
                     }
                     setDiscount(0);
+                    setReason('');
                     setRegsId(null);
                   }}
                 >
@@ -1039,7 +1061,7 @@ const ApplyDiscountRegDialog = ({
                   const r = await postAuthenticated<
                     {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
                     >(`/api/sportingEvents/${eventId}/registrations/applyDiscount`,
-                      {registrationIds: regsId, discount: discount}
+                      {registrationIds: regsId, discount: discount, reason: reason}
                     );
                   if (r.status !== 200) {
                     console.error('Error aplicando el descuento:', getMessage(r.body?.message, 'Error desconocido'));
@@ -1049,6 +1071,7 @@ const ApplyDiscountRegDialog = ({
                     onSuccess(r.body?.data);
                   }
                   setDiscount(0);
+                  setReason('');
                   setRegsId(null);
                 }}
               >

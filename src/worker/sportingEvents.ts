@@ -145,8 +145,8 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     }
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const { registrationIds, discount }
-      : {registrationIds: number[], discount: number} = await c.req.json();
+    const { registrationIds, discount, reason }
+      : { registrationIds: number[], discount: number, reason: string } = await c.req.json();
     if (!registrationIds || !Array.isArray(registrationIds) || registrationIds.length === 0) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_IDS_REQUIRED }, 400);
     }
@@ -158,6 +158,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       Number(id),
       registrationIds,
       discount,
+      reason,
       c.get('jwtPayload').id
     );
     if (res.status !== 200) {

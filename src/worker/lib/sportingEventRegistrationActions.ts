@@ -540,6 +540,7 @@ export const applyDiscountToRegistrations = async (
   eventId: number,
   registrationIds: number[],
   discountPercentage: number,
+  reason: string,
   updatedBy: string,
 ): Promise<DataResult> => {
   const registrations = await db
@@ -592,7 +593,7 @@ export const applyDiscountToRegistrations = async (
       .set({
         discount_percentage: applyDiscount,
         discount_reason: applyDiscount > 0
-          ? `Descuento manual aplicado por ${updatedBy.slice(-3)}`
+          ? (reason || `Descuento manual aplicado por ${updatedBy.slice(-3)}`)
           : null,
         paid_amount: registration.paid_amount,
         updated_at: new Date().toISOString(),
