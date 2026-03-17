@@ -35,6 +35,7 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
           surname: users.surname,
           phone: users.phone,
           email: users.email,
+          training_team_id: users.training_team_id,
         })
         .from(users)
         .where(eq(users.manager_id, managerId))
@@ -47,6 +48,8 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
           surname: users.surname,
           phone: users.phone,
           email: users.email,
+          training_team_id: users.training_team_id,
+          manager_id: users.manager_id,
           role: users.role,
         })
         .from(users)

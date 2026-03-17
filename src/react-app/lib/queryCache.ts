@@ -29,6 +29,15 @@ export const updateTrainingTeamsData = async (updateVar: CallableFunction) => {
 };
 
 
+export const getTrainingTeamsData = async () => {
+  if (trainingTeamsData.expire > Date.now()) {
+    return trainingTeamsData.data;
+  }
+  await updateTrainingTeamsData(() => {});
+  return trainingTeamsData.data;
+}
+
+
 export const managersData: {
   data: z.infer<typeof ARUserMinSchema>[],
   expire: number,
