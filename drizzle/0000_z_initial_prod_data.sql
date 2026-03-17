@@ -168,22 +168,6 @@ users (
     role
   )
 VALUES (
-    '42556386',
-    'Goran',
-    'Prpic',
-    '54_9_3400658856',
-    'gorandp@outlook.com',
-    NULL,
-    NULL,
-    'M',
-    '1998-11-25T03:00:00.000Z',
-    'L',
-    'Villa Constitución, Santa Fe, Argentina',
-    'Belgrano 1313, depto 5F',
-    NULL,
-    'admin'
-  ),
-  (
     '34525736',
     'Carlos',
     'Lopez',
@@ -214,4 +198,19 @@ VALUES (
     'Tito Martin 2340',
     1,
     'organizer'
+  ), (
+    '42556386',
+    'Goran',
+    'Prpic',
+    '54_9_3400658856',
+    'gorandp@outlook.com',
+    NULL,
+    NULL,
+    'M',
+    '1998-11-25T03:00:00.000Z',
+    'L',
+    'Villa Constitución, Santa Fe, Argentina',
+    'Belgrano 1313, depto 5F',
+    NULL,
+    'admin'
   );
