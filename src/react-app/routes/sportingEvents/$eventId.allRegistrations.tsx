@@ -607,8 +607,6 @@ function RouteComponent() {
               ...reg,
               status: found.status,
               pending_to_pay: found.pending,
-              discount_percentage: found.discount,
-              discount_reason: 'Descuento aplicado desestimando monto pendiente'
             }
           }));
         }}
