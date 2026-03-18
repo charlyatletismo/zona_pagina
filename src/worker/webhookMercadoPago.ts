@@ -102,7 +102,7 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Vari
             id: string,
             quantity: number,
             title: string,
-            unit_price: number,
+            unit_price: string, // What? it sends a string
           }[],
         },
         status: string,
@@ -113,35 +113,56 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Vari
           "total_paid_amount": number,
         }
       } = await res.json();
-      const item_id = paymentInfo.additional_info.items[0].id;
-      const { eventId, userId, registrationId } = parseItemId(item_id);
       const db = drizzle(c.env.DB);
-      try {
-        await setRegistrationAsPaid(
-          db,
-          registrationId,
-          userId,
-          paymentInfo.transaction_details.total_paid_amount
-        );
-      } catch (error) {
-        // We will still return a 200 response to MercadoPago to avoid retries,
-        // but we should investigate and fix the issue that caused this error
-        console.error('Error setting registration as paid:', error);
-      }
-      try {
-        await registrationPaymentThroughMP(
-          db,
-          eventId,
-          registrationId,
-          userId,
-          paymentInfo.transaction_details.total_paid_amount,
-          paymentInfo.transaction_details.net_received_amount
-        );
-      } catch (error) {
-        // We will still return a 200 response to MercadoPago to avoid retries,
-        // but we should investigate and fix the issue that caused this error
-        console.error('Error adding transaction:', error);
-      }
+      const netRecPerc = (
+        paymentInfo.transaction_details.net_received_amount
+        / paymentInfo.transaction_details.total_paid_amount
+      );
+      console.log('Processing payment with status:', paymentInfo.status);
+      console.log('Payment info', paymentInfo);
+      console.log("netRectPerc", netRecPerc);
+      for (const item of paymentInfo.additional_info.items) {
+        const item_id = item.id;
+        console.log('Processing item with id:', item_id, '/ paid:', parseFloat(item.unit_price));
+        const { eventId, userId, registrationId } = parseItemId(item_id);
+        try {
+          await setRegistrationAsPaid(
+            db,
+            registrationId,
+            userId,
+            parseFloat(item.unit_price),
+          );
+        } catch (error) {
+          // We will still return a 200 response to MercadoPago to avoid retries,
+          // but we should investigate and fix the issue that caused this error
+          console.error('Error setting registration as paid:', error);
+        }
+        try {
+          console.log(
+            'Adding transaction for registration:',
+            registrationId,
+            'user:',
+            userId,
+            'event:',
+            eventId,
+            'paid:',
+            parseFloat(item.unit_price),
+            'net received:',
+            parseFloat(item.unit_price) * netRecPerc);
+          await registrationPaymentThroughMP(
+            db,
+            eventId,
+            registrationId,
+            userId,
+            parseFloat(item.unit_price),
+            parseFloat(item.unit_price) * netRecPerc,
+          );
+        } catch (error) {
+          // We will still return a 200 response to MercadoPago to avoid retries,
+          // but we should investigate and fix the issue that caused this error
+          console.error('Error adding transaction:', error);
+        }
+      };
     }
     // If it doesn't have a payment ID or if there was an error,
     // we still want to return a 200 response to acknowledge receipt
