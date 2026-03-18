@@ -357,6 +357,7 @@ export const getAllUsersRegistrations = async (
   db: DrizzleD1Database,
   eventId: number,
   managerId?: string,
+  registrationIds?: number[]
 ) => {
   const evData = await getEventData(db, eventId);
   if (!evData) {
@@ -364,7 +365,9 @@ export const getAllUsersRegistrations = async (
   }
   const { event, clothing } = evData;
   const clothingParsed = z.array(SpClothingMinSchema).parse(clothing);
-  let whereClause = null;
+  const whereClause = [
+    eq(sportingEventRegistrations.event_id, eventId),
+  ];
   if (managerId) {
     const resUsers = await db
       .select({
@@ -373,10 +376,16 @@ export const getAllUsersRegistrations = async (
       .from(users)
       .where(eq(users.manager_id, managerId))
       .all();
-    whereClause = inArray(
+    whereClause.push(inArray(
       sportingEventRegistrations.user_id,
       resUsers.map(u => u.id as string)
-    );
+    ));
+  }
+  if (registrationIds) {
+    whereClause.push(inArray(
+      sportingEventRegistrations.id,
+      registrationIds
+    ));
   }
   const registrations = await db
     .select(
@@ -391,12 +400,9 @@ export const getAllUsersRegistrations = async (
     )
     .from(sportingEventRegistrations)
     .where(
-      whereClause
-      ? and(
-          eq(sportingEventRegistrations.event_id, eventId),
-          whereClause,
-        )
-      : eq(sportingEventRegistrations.event_id, eventId)
+      whereClause.length > 1
+      ? and(...whereClause)
+      : whereClause[0]
     )
     .all();
   const circuits = await db

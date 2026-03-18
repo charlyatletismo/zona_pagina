@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE } from '@shared/roles';
-import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import {
   ARUserSchema,
   ARSportingEventRegistrationFlatSchema,
@@ -532,7 +532,6 @@ function RouteComponent() {
           className='cursor-pointer'
           disabled={!generalActionBtnsEnabled.canPay}
           onClick={() => {
-            console.log(rowSelection);
             setPayRegIds(Object.keys(rowSelection).map(
                 id => finalData.find(
                   r => r.user_id.toString() === id
@@ -688,7 +687,7 @@ const PayRegsDialog = ({
         <DialogHeader>
           <DialogTitle>Pagar montos pendientes</DialogTitle>
           <DialogDescription>
-            Se le redigirá al portal seguro de Mercado Pago para completar el pago de los montos pendientes.
+            Se le redigirá al portal de Mercado Pago para completar el pago de los montos pendientes.
 
             <Table className='border mt-4'>
               <TableHeader>
@@ -741,19 +740,24 @@ const PayRegsDialog = ({
                 className='cursor-pointer'
                 onClick={async () => {
                   // Lógica para redirigir al portal de pago de MercadoPago
-                  // const r = await postAuthenticated<
-                  //   {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
-                  //   >(
-                  //   `/api/sportingEvents/${eventId}/registrations/dismissPending`,
-                  //   {registrationIds: regsId}
-                  // );
-                  // if (r.status !== 200) {
-                  //   console.error('Error desestimando el monto pendiente:', getMessage(r.body?.message, 'Error desconocido'));
-                  //   setError('Hubo un error al desestimar el monto pendiente. Por favor, intenta nuevamente.');
-                  // } else {
-                  //   setSuccess('Monto pendiente desestimado exitosamente.');
-                  //   onSuccess(r.body.data);
-                  // }
+                  const r = await postAuthenticated(
+                    `/api/sportingEvents/${eventId}/payMultipleRegs`,
+                    {registrationIds: regsId}
+                  );
+                  if (r.status !== 200) {
+                    setError('Hubo un error al redirigir a Mercado Pago. '
+                      + getMessage(r.body?.message, 'Error desconocido') );
+                  } else {
+                    setSuccess('Redirigiendo a Mercado Pago...');
+                    const mpLink = r.body.data.init_point;
+                    if (mpLink) {
+                      // redirect to MP
+                      window.location.href = mpLink;
+                    } else {
+                      setError('No se recibió un link de pago válido. '
+                        + 'Por favor, intenta nuevamente o contacta al organizador.');
+                    }
+                  }
                   setRegsId(null);
                 }}
               >

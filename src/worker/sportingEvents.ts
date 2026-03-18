@@ -347,6 +347,83 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       }
     });
   })
+  .post("/:id/payMultipleRegs", async (c) => {
+    if (!authorizedAthMan(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    let managerId: string | undefined = undefined;
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      // athlete manager
+      managerId = c.get('jwtPayload').id;
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { registrationIds } : { registrationIds: number[] } = await c.req.json();
+    const data = await getAllUsersRegistrations(db, Number(id), managerId, registrationIds);
+    if (!data || data.length !== registrationIds.length) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 403);
+    }
+    const paid = data.filter(d => d.status === 'paid');
+    if (paid.length > 0) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ALREADY_PAID }, 400);
+    }
+    const notPending = data.filter(d => d.pending_to_pay <= 0);
+    if (notPending.length > 0) {
+      // update registration status to paid (this MUST NEVER happen)
+      console.error(`Registrations '${notPending.map(d => d.id).join(', ')}' for event `
+        + `${id} has no pending amount to pay but is not marked `
+        + `as paid. Marking as paid to avoid blocking the user.`);
+      await Promise.all(notPending.map(async (d) =>
+        await setRegistrationAsPaid(db, d.id, c.get('jwtPayload').id)
+      ));
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ALREADY_PAID }, 400);
+    }
+    // console.log("Using MercadoPago access token:", c.env.MERCADOPAGO_ACCESS_TOKEN);
+    if (!c.env.MERCADOPAGO_ACCESS_TOKEN) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_PROCESSING_ERROR }, 500);
+    }
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${c.env.MERCADOPAGO_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify({
+        items: data.map((d) =>
+          ({
+            id: buildItemId(id, d.user_id, d.id),
+            title: d.user_full_name,
+            quantity: 1,
+            unit_price: d.pending_to_pay || 0,
+          })
+        ),
+        back_urls: {
+          success: `${c.env.BASE_URL}/sportingEvents/${id}/register`,
+          failure: `${c.env.BASE_URL}/sportingEvents/${id}/register`,
+          pending: `${c.env.BASE_URL}/sportingEvents/${id}/register`,
+        },
+        auto_return: "approved",
+        // notification_url: `${c.env.BASE_URL}/api/webhook/mercadoPago/payment`,
+      })
+    });
+    if (!response.ok) {
+      console.error(`HTTP ${response.status}: ${await response.text()}`);
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_PROCESSING_ERROR }, 500);
+    }
+    // console.log("MercadoPago preference creation response:", res);
+    // console.log("MercadoPago preference creation error:", err);
+
+    const res: {
+      id: string | null,
+      init_point: string | null,
+    } = await response.json();
+    return c.json({
+      data: {
+        init_point: res.init_point,
+        preference_id: res.id,
+      }
+    });
+  })
   .get("/:id/gallery", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
