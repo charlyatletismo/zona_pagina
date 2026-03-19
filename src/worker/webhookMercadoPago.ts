@@ -118,12 +118,9 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Vari
         paymentInfo.transaction_details.net_received_amount
         / paymentInfo.transaction_details.total_paid_amount
       );
-      console.log('Processing payment with status:', paymentInfo.status);
-      console.log('Payment info', paymentInfo);
-      console.log("netRectPerc", netRecPerc);
       for (const item of paymentInfo.additional_info.items) {
         const item_id = item.id;
-        console.log('Processing item with id:', item_id, '/ paid:', parseFloat(item.unit_price));
+        // console.log('Processing item with id:', item_id, '/ paid:', parseFloat(item.unit_price));
         const { eventId, userId, registrationId } = parseItemId(item_id);
         try {
           await setRegistrationAsPaid(
@@ -138,17 +135,6 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Vari
           console.error('Error setting registration as paid:', error);
         }
         try {
-          console.log(
-            'Adding transaction for registration:',
-            registrationId,
-            'user:',
-            userId,
-            'event:',
-            eventId,
-            'paid:',
-            parseFloat(item.unit_price),
-            'net received:',
-            parseFloat(item.unit_price) * netRecPerc);
           await registrationPaymentThroughMP(
             db,
             eventId,
