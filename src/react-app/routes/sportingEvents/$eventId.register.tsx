@@ -490,7 +490,7 @@ function RouteComponent() {
         setSuccess={setSuccess}
         />
 
-      <SeeRegistrationDetails
+      <SeeRegistrationDetailsDialog
         reg={seeDetailReg}
         setReg={setSeeDetailReg}
         statusBadges={statusBadges}
@@ -767,7 +767,7 @@ const PayRegsDialog = ({
 }
 
 
-export const SeeRegistrationDetails = ({
+export const SeeRegistrationDetailsDialog = ({
   reg,
   setReg,
   statusBadges,
