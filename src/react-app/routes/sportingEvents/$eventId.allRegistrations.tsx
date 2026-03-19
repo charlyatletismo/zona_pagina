@@ -913,20 +913,19 @@ const AddPaymentRegDialog = ({
             (transferencia, efectivo, etc.).
           </DialogDescription>
 
-        <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
-          <SpEvTransactionRegPaymentForm
-            eventId={Number(eventId)}
-            regId={regId!}
-            onSuccess={async () => {
-              setSuccess('Pago registrado exitosamente.');
-              setRegId(null);
-              setTimeout(() => {
-                window.location.reload();
-              }, 500);
-            }}
-          />
-        </div>
-          
+          <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
+            <SpEvTransactionRegPaymentForm
+              eventId={Number(eventId)}
+              regId={regId!}
+              onSuccess={async () => {
+                setSuccess('Pago registrado exitosamente.');
+                setRegId(null);
+                setTimeout(() => {
+                  window.location.reload();
+                }, 500);
+              }}
+            />
+          </div>
 
           <div className='flex gap-2 justify-end mt-2'>
             <DialogClose asChild>
