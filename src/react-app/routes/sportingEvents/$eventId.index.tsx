@@ -192,7 +192,7 @@ function RouteComponent() {
           </Button>
 
           <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+            <Link to="/sportingEvents/$eventId/registerAthletes" params={{ eventId }}>
               <FilePlus2 className="w-4 h-4" />
               Inscribir Atletas
             </Link>
@@ -282,7 +282,7 @@ function RouteComponent() {
         <div className='flex flex-row gap-2'>
           {currentRole === ATHLETES_MANAGER_ROLE && openToRegister && (
             <Button asChild variant="outline">
-              <Link to="/sportingEvents/$eventId/register" params={{ eventId }}>
+              <Link to="/sportingEvents/$eventId/registerAthletes" params={{ eventId }}>
                 <FilePlus2 className="w-4 h-4" />
                 Inscribir Atletas
               </Link>

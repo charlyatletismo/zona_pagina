@@ -74,7 +74,7 @@ const ARUserSchemaPartial = ARUserSchema.partial().required({
 const ARUserSchemaPartialArray = ARUserSchemaPartial.array();
 
 
-export const Route = createFileRoute('/sportingEvents/$eventId/register')({
+export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
