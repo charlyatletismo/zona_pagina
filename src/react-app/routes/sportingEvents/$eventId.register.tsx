@@ -73,7 +73,7 @@ const ARUserSchemaPartial = ARUserSchema.partial().required({
 const ARUserSchemaPartialArray = ARUserSchemaPartial.array();
 
 
-export const Route = createFileRoute('/sportingEvents/$eventId/register/')({
+export const Route = createFileRoute('/sportingEvents/$eventId/register')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async ({ params }) => {
@@ -831,12 +831,12 @@ export const SeeRegistrationDetails = ({
               <div className='font-light'>
                 Talle reservado: {reg?.reserved_clothing_size || 'No reservado'}
               </div>
-              {reg?.bib_number && <div className='font-light'>
-                Dorsal: {reg?.bib_number}
-              </div>}
-              {reg?.chip_id && <div className='font-light'>
-                Chip: {reg?.chip_id}
-              </div>}
+              <div className='font-light'>
+                Dorsal: {reg?.bib_number || 'No reservado'}
+              </div>
+              <div className='font-light'>
+                Chip: {reg?.chip_id || 'No reservado'}
+              </div>
             </div>
             <div>
               <h3 className='font-bold'>Circuito</h3>
