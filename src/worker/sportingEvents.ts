@@ -80,12 +80,12 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const { circuitId, userId }
-      : {circuitId: number, userId: string} = await c.req.json();
+    const { circuitId, userIds }
+      : {circuitId: number, userIds: string[]} = await c.req.json();
     if (!circuitId) {
       return c.json({ message: M.SPORTING_EVENT_CIRCUIT_ID_REQUIRED }, 400);
     }
-    if (!userId) {
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
       return c.json({ message: M.SPORTING_EVENT_USER_ID_REQUIRED }, 400);
     }
     const reqUserId: string = c.get('jwtPayload')?.id;
@@ -93,7 +93,8 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       db,
       Number(id),
       reqUserId,
-      userId,
+      authorizedOrg(c.get('jwtPayload').role),
+      userIds,
       circuitId);
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
@@ -103,9 +104,9 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
   .post("/:id/unregister", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
-    const { userId }
-      : {userId: string} = await c.req.json();
-    if (!userId) {
+    const { userIds }
+      : {userIds: string[]} = await c.req.json();
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
       return c.json({ message: M.SPORTING_EVENT_USER_ID_REQUIRED }, 400);
     }
     const reqUserId: string = c.get('jwtPayload')?.id;
@@ -113,7 +114,8 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       db,
       Number(id),
       reqUserId,
-      userId);
+      authorizedOrg(c.get('jwtPayload').role),
+      userIds);
     if (res.status !== 200) {
       return c.json({ message: res.message }, res.status);
     }

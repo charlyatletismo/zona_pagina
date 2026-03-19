@@ -83,7 +83,7 @@ function RouteComponent() {
       `/api/sportingEvents/${eventId}/register`,
       {
         "circuitId": circuitId,
-        "userId": localStorage.getItem('USER_ID')
+        "userIds": [localStorage.getItem('USER_ID')]
       },
       navigate);
     if (res.status !== 200) {

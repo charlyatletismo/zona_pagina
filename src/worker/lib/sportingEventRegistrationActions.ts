@@ -43,13 +43,18 @@ const isAuthorizedReg = async (db: DrizzleD1Database, reqUserId: string, userId:
 
 
 export const registerToSpEvent = async (
-    db: DrizzleD1Database,
-    eventId: number,
-    reqUserId: string,
-    userId: string,
-    circuitId: number): Promise<DataResult> => {
-  if (userId !== reqUserId && !(await isAuthorizedReg(db, reqUserId, userId))) {
-    return { status: 403, message: M.UNAUTHORIZED };
+  db: DrizzleD1Database,
+  eventId: number,
+  reqUserId: string,
+  reqIsOrganizer: boolean,
+  userIds: string[],
+  circuitId: number
+): Promise<DataResult> => {
+  if (!reqIsOrganizer) {
+    const authorized = await Promise.all(userIds.map(userId => userId === reqUserId || isAuthorizedReg(db, reqUserId, userId)));
+    if (!authorized.every(a => a)) {
+      return { status: 403, message: M.UNAUTHORIZED };
+    }
   }
   const spEvent = await db.select()
     .from(sportingEvents)
@@ -82,15 +87,16 @@ export const registerToSpEvent = async (
   const registration = await db.select({id: sportingEventRegistrations.id})
     .from(sportingEventRegistrations)
     .where(and(
-      eq(sportingEventRegistrations.user_id, userId),
+      inArray(sportingEventRegistrations.user_id, userIds),
       eq(sportingEventRegistrations.event_id, eventId),
     ))
     .limit(1);
   if (registration.length > 0) {
     return { status: 400, message: M.SPORTING_EVENT_ALREADY_REGISTERED };
   }
-  const userData = await db
+  const usersData = await db
     .select({
+      id: users.id,
       sex: users.sex,
       date_of_birth: users.date_of_birth,
       clothing_shirt_size: users.clothing_shirt_size,
@@ -99,26 +105,26 @@ export const registerToSpEvent = async (
       training_team_id: users.training_team_id,
     })
     .from(users)
-    .where(eq(users.id, userId))
-    .limit(1);
-  if (userData.length === 0) {
+    .where(inArray(users.id, userIds))
+    .all();
+  if (usersData.length === 0 || usersData.length !== userIds.length) {
     return { status: 404, message: M.USER_NOT_FOUND };
   }
 
-  if (!userData[0].clothing_shirt_size) {
+  if (usersData.some(u => !u.clothing_shirt_size)) {
     return { status: 400, message: M.USER_SHIRT_SIZE_NOT_SET };
   }
-  if (!userData[0].date_of_birth) {
+  if (usersData.some(u => !u.date_of_birth)) {
     return { status: 400, message: M.USER_DATE_OF_BIRTH_NOT_SET };
   }
   const calculateAge = (dateOfBirth: Date): number => {
-    const today = new Date();
-    const yearsDiff = today.getFullYear() - dateOfBirth.getFullYear();
+    const eventDate = new Date(spEvent[0].date);
+    const yearsDiff = eventDate.getFullYear() - dateOfBirth.getFullYear();
     if (
-      today.getMonth() < dateOfBirth.getMonth() ||
+      eventDate.getMonth() < dateOfBirth.getMonth() ||
       (
-        today.getMonth() === dateOfBirth.getMonth()
-        && today.getDate() < dateOfBirth.getDate()
+        eventDate.getMonth() === dateOfBirth.getMonth()
+        && eventDate.getDate() < dateOfBirth.getDate()
       )
     ) {
       return yearsDiff - 1;
@@ -126,59 +132,66 @@ export const registerToSpEvent = async (
     return yearsDiff;
   };
 
-  const userClothing = await db
+  const usersClothing = await db
     .select()
     .from(sportingEventClothing)
     .where(and(
       eq(sportingEventClothing.event_id, eventId),
-      eq(sportingEventClothing.size, userData[0].clothing_shirt_size),
+      inArray(sportingEventClothing.size, usersData.map(u => u.clothing_shirt_size!)),
     ))
-    .limit(1);
+    .all();
 
-  const feeAmountAfterDiscount = feeAmount * (1 - (userData[0].discount_percentage || 0) / 100);
-  const status = feeAmountAfterDiscount > 0 ? "pending" : "paid";
+  const results = []
+  for (const userData of usersData) {
+    const feeAmountAfterDiscount = feeAmount * (1 - (userData.discount_percentage || 0) / 100);
+    const status = feeAmountAfterDiscount > 0 ? "pending" : "paid";
 
-  const promotional = (
-      spEvent[0].fee_amount_promotional
-      && spEvent[0].promotional_fee_end
-    )
-    ? (new Date(spEvent[0].promotional_fee_end) > new Date())
-    : false;
+    const promotional = (
+        spEvent[0].fee_amount_promotional
+        && spEvent[0].promotional_fee_end
+      )
+      ? (new Date(spEvent[0].promotional_fee_end) > new Date())
+      : false;
 
-  const r = await db.insert(sportingEventRegistrations).values({
-    user_id: userId,
-    training_team_id: userData[0].training_team_id,
-    event_id: eventId,
-    circuit_id: circuitId,
-    age_at_registration: calculateAge(new Date(userData[0].date_of_birth)),
-    discount_percentage: userData[0].discount_percentage || 0,
-    discount_reason:
-      userData[0].discount_percentage
-      ? "Descuento automático para usuario (fijado en la configuración del usuario)"
-      : null,
-    // registration_date default to now in the database
-    promotional_fee_applied: promotional ? 1 : 0,
-    // paid_amount default to zero in the database
-    status: "pending",
-    demanded_clothing_id: userClothing.length > 0 ? userClothing[0].id : null,
-    // reserved_clothing_id default to null in the database
-    // chip_id default to null in the database
-    created_by: reqUserId,
-    updated_by: reqUserId,
-  }).returning({ id: sportingEventRegistrations.id });
+    const r = await db.insert(sportingEventRegistrations).values({
+      user_id: userData.id,
+      training_team_id: userData.training_team_id,
+      event_id: eventId,
+      circuit_id: circuitId,
+      age_at_registration: calculateAge(new Date(userData.date_of_birth!)),
+      discount_percentage: userData.discount_percentage || 0,
+      discount_reason:
+        userData.discount_percentage
+        ? "Descuento automático para usuario (fijado en la configuración del usuario)"
+        : null,
+      // registration_date default to now in the database
+      promotional_fee_applied: promotional ? 1 : 0,
+      // paid_amount default to zero in the database
+      status: "pending",
+      demanded_clothing_id: usersClothing.find(uc => uc.size === userData.clothing_shirt_size)?.id || null,
+      // reserved_clothing_id default to null in the database
+      // chip_id default to null in the database
+      created_by: reqUserId,
+      updated_by: reqUserId,
+    }).returning({ id: sportingEventRegistrations.id });
 
-  if (status === 'paid') {
-    await setRegistrationAsPaid(db, r[0].id, reqUserId);
+    if (status === 'paid') {
+      await setRegistrationAsPaid(db, r[0].id, reqUserId);
+    }
+
+    results.push({
+      id: r[0].id,
+      user_id: userData.id,
+      status,
+      circuit_id: circuitId,
+      pending_to_pay: feeAmountAfterDiscount,
+    })
   }
 
   return {
     status: 200,
     message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY,
-    data: {
-      registration_status: status,
-      circuit_id: circuitId,
-      pending_to_pay: feeAmountAfterDiscount,
-    }
+    data: results,
   };
 }
 
@@ -186,25 +199,33 @@ export const deleteRegistrationToSpEvent = async (
     db: DrizzleD1Database,
     eventId: number,
     reqUserId: string,
-    userId: string): Promise<NoDataResult> => {
-  if (userId !== reqUserId && !(await isAuthorizedReg(db, reqUserId, userId))) {
-    return { status: 403, message: M.UNAUTHORIZED };
+    reqIsOrganizer: boolean,
+    userIds: string[]): Promise<NoDataResult> => {
+  if (!reqIsOrganizer) {
+    const authorized = await Promise.all(userIds.map(userId => userId === reqUserId || isAuthorizedReg(db, reqUserId, userId)));
+    if (!authorized.every(a => a)) {
+      return { status: 403, message: M.UNAUTHORIZED };
+    }
   }
-  const registration = await db.select({id: sportingEventRegistrations.id, status: sportingEventRegistrations.status})
+  const registration = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      status: sportingEventRegistrations.status
+    })
     .from(sportingEventRegistrations)
     .where(and(
-      eq(sportingEventRegistrations.user_id, userId),
+      inArray(sportingEventRegistrations.user_id, userIds),
       eq(sportingEventRegistrations.event_id, eventId),
     ))
-    .limit(1);
-  if (registration.length === 0) {
+    .all();
+  if (registration.length === 0 || registration.length !== userIds.length) {
     return { status: 404, message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND };
   }
-  if (registration[0].status !== 'pending') {
+  if (registration.some(r => r.status !== 'pending') && !reqIsOrganizer) {
     return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_CANNOT_BE_DELETED };
   }
   await db.delete(sportingEventRegistrations)
-    .where(eq(sportingEventRegistrations.id, registration[0].id))
+    .where(inArray(sportingEventRegistrations.id, registration.map(r => r.id)))
     .run();
   return { status: 200, message: M.SPORTING_EVENT_REGISTRATION_DELETED_SUCCESSFULLY };
 }

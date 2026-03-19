@@ -455,7 +455,7 @@ function RouteComponent() {
                     }, 500);
                     const res = await postAuthenticated(
                       `/api/sportingEvents/${eventId}/unregister`,
-                      { userId: data.registration.user_id }
+                      { userIds: [data.registration.user_id] }
                     );
                     if (res.status === 200) {
                       setSuccess('Inscripción eliminada correctamente');

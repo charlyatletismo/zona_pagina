@@ -5,6 +5,7 @@ import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import {
   ARUserSchema,
   ARSportingEventRegistrationFlatSchema,
+  ARSportingEventSchema,
 } from '@shared/apiRespTypes';
 import z from 'zod';
 import { GoBackButton } from '@/components/goBackButton';
@@ -85,6 +86,10 @@ export const Route = createFileRoute('/sportingEvents/$eventId/register')({
       z.infer<typeof ARSportingEventRegistrationFlatSchema>[]
       >(`/api/sportingEvents/${params.eventId}/allRegistrations`,
         z.array(ARSportingEventRegistrationFlatSchema));
+    const resEventData = await getAuthenticatedThrow<
+      z.infer<typeof ARSportingEventSchema>
+      >(`/api/sportingEvents/${params.eventId}`,
+        ARSportingEventSchema);
     const finalData = [...resRegApi.body.data];
     resUsersApi.body.data.forEach(user => {
       const found = finalData.find(reg => reg.user_id === user.id);
@@ -125,16 +130,15 @@ export const Route = createFileRoute('/sportingEvents/$eventId/register')({
         })
       }
     });
-    return { finalData };
+    return { finalData, eventData: resEventData.body.data };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const { finalData } = Route.useLoaderData();
+  const { finalData, eventData } = Route.useLoaderData();
   const { eventId } = Route.useParams();
-  const [data, setData] = React.useState(finalData);
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [generalActionBtnsEnabled, setGeneralActionBtnsEnabled] = React.useState({
     canPay: false,
@@ -409,7 +413,7 @@ function RouteComponent() {
 
   const table = useReactTable({
     columns: defaultColumns,
-    data: data,
+    data: finalData,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -481,6 +485,23 @@ function RouteComponent() {
       )}
 
       <GoBackButton />
+
+      <RegisterUsersDialog
+        regs={registerUsers}
+        setRegs={setRegisterUsers}
+        eventId={eventId}
+        eventData={eventData}
+        setError={setError}
+        setSuccess={setSuccess}
+        />
+      
+      <DeleteRegistrationDialog
+        regs={deleteRegs}
+        setRegs={setDeleteRegs}
+        eventId={eventId}
+        setError={setError}
+        setSuccess={setSuccess}
+        />
 
       <PayRegsDialog
         regs={payRegs}
@@ -654,6 +675,213 @@ function RouteComponent() {
   )
 }
 
+
+const RegisterUsersDialog = ({
+  regs,
+  setRegs,
+  eventId,
+  eventData,
+  setError,
+  setSuccess,
+}: {
+  regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null,
+  setRegs: (regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null) => void,
+  eventId: string,
+  eventData: z.infer<typeof ARSportingEventSchema>,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+}) => {
+  const [circuitId, setCircuitId] = React.useState<number | null>(null);
+
+  return (
+    <Dialog open={regs !== null} onOpenChange={() => {
+      setCircuitId(null)
+      setRegs(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Inscribir</DialogTitle>
+          <DialogDescription>
+            Se inscribirán las personas seleccionadas al circuito que elijas.
+            <div className='flex gap-2 mt-4'>
+              {eventData.circuits?.map(circuit => (
+                <div key={circuit.id} className='flex items-center gap-2 mb-2'>
+                  <Button
+                    type="button"
+                    variant={circuitId === circuit.id ? 'default' : 'outline'}
+                    className='cursor-pointer border'
+                    onClick={() => setCircuitId(circuitId === circuit.id ? null : circuit.id!)}
+                  >
+                    {circuit.name}
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Table className='border mt-4'>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Atleta</TableHead>
+                  <TableHead>Equipo</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {regs?.map(reg => (
+                  <TableRow key={reg.id}>
+                    <TableCell>{reg.user_full_name}</TableCell>
+                    <TableCell>{reg.user_training_team_name}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell colSpan={2} className='font-bold'>{regs?.length} personas a inscribir</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </DialogDescription>
+
+          
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                disabled={circuitId === null}
+                onClick={async (e) => {
+                  if (circuitId === null) {
+                    e.preventDefault();
+                    return;
+                  }
+                  // Lógica para registrar usuarios
+                  const r = await postAuthenticated<
+                    {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
+                    >(`/api/sportingEvents/${eventId}/register`,
+                      {userIds: regs?.map(reg => reg.user_id), circuitId: circuitId}
+                    );
+                  if (r.status !== 200) {
+                    console.error('Error registrando usuarios:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError('Hubo un error al registrar los usuarios. '
+                      + getMessage(r.body?.message, 'Error desconocido')
+                    );
+                  } else {
+                    setSuccess('Usuarios registrados exitosamente.');
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                  }
+                  setCircuitId(null);
+                  setRegs(null);
+                }}
+              >
+                Aplicar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+
+const DeleteRegistrationDialog = ({
+  regs,
+  setRegs,
+  eventId,
+  setError,
+  setSuccess,
+}: {
+  regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null,
+  setRegs: (regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+}) => {
+  return (
+    <Dialog open={regs !== null} onOpenChange={() => {
+      setRegs(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Borrar Inscripciones</DialogTitle>
+          <DialogDescription>
+            Se borrarán las inscripciones seleccionadas.
+            <Table className='border mt-4'>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Atleta</TableHead>
+                  <TableHead>Equipo</TableHead>
+                  <TableHead>Circuito</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {regs?.map(reg => (
+                  <TableRow key={reg.id}>
+                    <TableCell>{reg.user_full_name}</TableCell>
+                    <TableCell>{reg.user_training_team_name}</TableCell>
+                    <TableCell>{reg.circuit_name}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell colSpan={3} className='font-bold'>{regs?.length} inscripciones a borrar</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </DialogDescription>
+
+          
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className='max-w-20 cursor-pointer'
+                onClick={async () => {
+                  // Lógica para borrar inscripciones de usuarios
+                  const r = await postAuthenticated(`/api/sportingEvents/${eventId}/unregister`,
+                      {userIds: regs?.map(reg => reg.user_id)}
+                    );
+                  if (r.status !== 200) {
+                    console.error('Error borrando inscripciones:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError('Hubo un error al borrar las inscripciones. '
+                      + getMessage(r.body?.message, 'Error desconocido')
+                    );
+                  } else {
+                    setSuccess('Inscripciones borradas exitosamente.');
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                  }
+                  setRegs(null);
+                }}
+              >
+                Borrar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 
 const PayRegsDialog = ({
