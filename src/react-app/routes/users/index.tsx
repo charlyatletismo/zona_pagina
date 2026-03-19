@@ -7,10 +7,20 @@ import {
   ATHLETE_ROLE,
 } from '@shared/roles';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
-import { getManagersData } from '@/lib/queryCache';
+import { getManagersData, getTrainingTeamsData } from '@/lib/queryCache';
 import { ARUserSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
-import { ActivityIcon, ArrowDown, ArrowUp, ChevronRight, PlusIcon, SearchIcon } from 'lucide-react';
+import {
+  ActivityIcon,
+  ArrowDown,
+  ArrowUp,
+  ChevronRight,
+  PlusIcon,
+  SearchIcon,
+  GroupIcon,
+  UngroupIcon,
+  ArrowRight,
+} from 'lucide-react';
 import z from 'zod';
 import { getMessage } from '@/lib/utils';
 import { RolDescriptions } from '@shared/lang';
@@ -23,21 +33,27 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  GroupingState,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
+  getGroupedRowModel,
+  getExpandedRowModel,
   createColumnHelper,
   useReactTable,
   flexRender,
 } from '@tanstack/react-table';
 import { customFilterFn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import React from 'react';
 
 
 const ARUserSchemaPartial = ARUserSchema.partial().required({
   id: true,
+}).extend({
+  manager_full_name: z.string().optional().nullable(),
+  training_team_name: z.string().optional().nullable(),
 });
-const ARUserSchemaPartialArray = ARUserSchemaPartial.array();
 
 
 export const Route = createFileRoute('/users/')({
@@ -45,17 +61,29 @@ export const Route = createFileRoute('/users/')({
   beforeLoad: authCheck([ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE]),
   loader: async () => {
     const usersApi = await getAuthenticatedThrow<
-      z.infer<typeof ARUserSchemaPartialArray>
-      >('/api/users', ARUserSchemaPartialArray);
+      z.infer<typeof ARUserSchemaPartial>[]
+      >('/api/users', z.array(ARUserSchemaPartial));
     const managersData = await getManagersData();
-    return { usersApi, managersData };
+    const trainingTeamsData = await getTrainingTeamsData();
+    const usersData = usersApi.status !== 200 ? null : usersApi.body.data?.map(user => {
+      const trainingTeam = trainingTeamsData.find(team => team.id === user.training_team_id);
+      const manager = managersData.find(m => m.id === user.manager_id);
+      return {
+        ...user,
+        manager_full_name: manager ? `${manager.name} ${manager.surname}` : null,
+        training_team_name: trainingTeam ? trainingTeam.name : null,
+      }
+    });
+    return { usersData };
   },
   staleTime: 1000 * 60 * 5,
 })
 
 
 function RouteComponent() {
-  const { usersApi, managersData } = Route.useLoaderData();
+  const { usersData } = Route.useLoaderData();
+
+  const [grouping, setGrouping] = React.useState<GroupingState>([])
 
   const columnHelper = createColumnHelper<z.infer<typeof ARUserSchemaPartial>>()
 
@@ -66,18 +94,28 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       enableHiding: true,
+      enableGrouping: false,
     }),
     columnHelper.accessor('name', {
       header: 'Nombre',
       cell: info => info.getValue(),
       footer: props => props.column.id,
       enableSorting: true,
+      enableGrouping: false,
     }),
     columnHelper.accessor('surname', {
       header: 'Apellido',
       cell: info => info.getValue(),
       footer: props => props.column.id,
       enableSorting: true,
+      enableGrouping: false,
+    }),
+    columnHelper.accessor('training_team_name', {
+      header: 'Equipo de Entrenamiento',
+      cell: info => info.getValue() || '',
+      footer: props => props.column.id,
+      enableSorting: true,
+      sortUndefined: 'last',
     }),
     columnHelper.accessor('phone', {
       header: 'Celular',
@@ -96,6 +134,7 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
+      enableGrouping: false,
     }),
     columnHelper.accessor('email', {
       header: 'Email',
@@ -114,27 +153,14 @@ function RouteComponent() {
       footer: props => props.column.id,
       enableSorting: true,
       sortUndefined: 'last',
+      enableGrouping: false,
     }),
-    columnHelper.accessor('manager_id', {
+    columnHelper.accessor('manager_full_name', {
       header: 'Manager',
-      cell: info => {
-        const managerId = info.getValue();
-        if (!managerId) return null;
-        const manager = managersData.find(m => m.id === managerId);
-        if (!manager) return (<div className='text-red-500 text-sm italic'>
-            Inexistente, corregir usuario
-          </div>);
-        return `${manager.name} ${manager.surname}`;
-      },
+      cell: info => info.getValue() || '',
       footer: props => props.column.id,
+      enableHiding: true,
       enableSorting: true,
-      sortingFn: (rowA, rowB, columnId) => {
-        const managerA = managersData.find(m => m.id === rowA.getValue(columnId));
-        const managerB = managersData.find(m => m.id === rowB.getValue(columnId));
-        const nameA = managerA ? `${managerA.name} ${managerA.surname}` : '';
-        const nameB = managerB ? `${managerB.name} ${managerB.surname}` : '';
-        return nameA.localeCompare(nameB);
-      },
       sortUndefined: 'last',
     }),
     columnHelper.accessor('role', {
@@ -157,8 +183,8 @@ function RouteComponent() {
         </div>)
       },
       footer: props => props.column.id,
-      enableSorting: true,
       enableHiding: true,
+      enableSorting: true,
       sortUndefined: 'last',
     }),
     columnHelper.display({
@@ -184,16 +210,18 @@ function RouteComponent() {
 
   const table = useReactTable({
     columns: defaultColumns,
-    data: usersApi.body.data || [],
+    data: usersData || [],
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     initialState: {
       globalFilter: '',
       columnVisibility: {
         id: false,
         role: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
-        manager_id: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
+        manager_full_name: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
       },
       sorting: [
         { id: "role", desc: true },
@@ -202,9 +230,19 @@ function RouteComponent() {
       ]
     },
     globalFilterFn: customFilterFn,
+    state: {
+      grouping
+    },
+    onGroupingChange: (updater) => {
+      setGrouping((old) => {
+        const newGrouping = typeof updater === 'function' ? updater(old) : updater;
+        // Take only the last clicked (or first) column to limit to 1
+        return newGrouping.slice(-1);
+      });
+    },
   })
 
-  if (usersApi.status !== 200) {
+  if (usersData === null) {
     return (
       <div className="text-red-600 p-3 rounded-md flex items-center text-sm my-4 mx-auto">
         Error al cargar los usuarios. Por favor, refresque la página.
@@ -226,7 +264,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className='flex gap-2 items-center mb-4 relative'>
+      <div className='flex gap-2 items-center mb-4 w-full max-w-sm relative'>
         <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
         <Input
           value={table.getState().globalFilter ?? ''}
@@ -234,7 +272,7 @@ function RouteComponent() {
           placeholder="Buscar..."
         />
       </div>
-      {usersApi.body.data.length > 0 && (table.getRowModel().rows.length > 0 ? (
+      {usersData && usersData.length > 0 && (table.getRowModel().rows.length > 0 ? (
         <div>
         <Table className='border min-w-3xl max-w-full'>
           <TableHeader>
@@ -244,6 +282,22 @@ function RouteComponent() {
                   {headerGroup.headers.map(header => (
                     <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder ? null : (
+                      <div className='flex gap-1 items-center'>
+                        {header.column.getCanGroup() ? (
+                          <button
+                            onClick={header.column.getToggleGroupingHandler()}
+                            className='cursor-pointer hover:text-primary'
+                            title={
+                              header.column.getIsGrouped()
+                              ? 'Desagrupar'
+                              : 'Agrupar'
+                            }
+                          >
+                            {header.column.getIsGrouped()
+                              ? <UngroupIcon className='w-4 h-4' />
+                              : <GroupIcon className='w-4 h-4' />}
+                          </button>
+                        ) : null}
                         <div className={"flex items-center gap-1 "
                           + (header.column.getCanSort()
                             ? "cursor-pointer select-none hover:text-primary"
@@ -273,6 +327,7 @@ function RouteComponent() {
                             desc: <ArrowDown className="h-4 w-4" />,
                           }[header.column.getIsSorted() as string] ?? null}
                         </div>
+                      </div>
                       )}
                     </TableHead>
                   ))}
@@ -285,10 +340,38 @@ function RouteComponent() {
               <TableRow key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
+                    {cell.getIsGrouped() ? (
+                      // If it's a grouped cell, add an expander and row count
+                      <div className='flex items-center gap-2'>
+                        <Button
+                          variant="ghost"
+                          onClick={row.getToggleExpandedHandler()}
+                          className={
+                            row.getCanExpand() ? 'cursor-pointer' : ''
+                          }
+                        >
+                          {row.getIsExpanded()
+                            ? <ArrowDown className='w-4 h-4' />
+                            : <ArrowRight className='w-4 h-4' />}
+                        </Button>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}{" "}
+                        <span className='text-muted-foreground'>({row.subRows.length})</span>
+                      </div>
+                    ) : cell.getIsAggregated() ? (
+                      flexRender(
+                        cell.column.columnDef.aggregatedCell ??
+                            cell.column.columnDef.cell,
+                        cell.getContext()
+                      )
+                    ) : cell.getIsPlaceholder() ? null
+                      : flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )
+                    }
                   </TableCell>
                 ))}
               </TableRow>
@@ -303,7 +386,7 @@ function RouteComponent() {
           No hay resultados para tu búsqueda.
         </div>
       ))}
-      {usersApi.body.data.length === 0 && (
+      {usersData && usersData.length === 0 && (
         <div className='text-center py-10 text-gray-500'>
           <ActivityIcon className='w-8 h-8 mx-auto mb-2 animate-tremor repeat-2' />
           No hay usuarios registrados. Crea el primero en el botón de arriba.

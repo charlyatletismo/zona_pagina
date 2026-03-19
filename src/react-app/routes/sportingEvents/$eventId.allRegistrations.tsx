@@ -76,7 +76,7 @@ import {
   getExpandedRowModel,
   createColumnHelper,
   useReactTable,
-  flexRender
+  flexRender,
 } from '@tanstack/react-table';
 import { GoBackButton } from '@/components/goBackButton';
 import { customFilterFn, getMessage } from '@/lib/utils';
