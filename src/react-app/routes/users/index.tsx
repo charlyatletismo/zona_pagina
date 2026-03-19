@@ -269,7 +269,7 @@ function RouteComponent() {
         <Input
           value={table.getState().globalFilter ?? ''}
           onChange={e => table.setGlobalFilter(String(e.target.value))}
-          placeholder="Buscar..."
+          placeholder="Buscar DNI, nombre, email, celular, etc..."
         />
       </div>
       {usersData && usersData.length > 0 && (table.getRowModel().rows.length > 0 ? (
