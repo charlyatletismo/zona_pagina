@@ -157,10 +157,10 @@ function RouteComponent() {
     }, 3000);
   };
 
-  const [payRegIds, setPayRegIds] = React.useState<number[] | null>(null);
-  const [registerUsersIds, setRegisterUsersIds] = React.useState<string[] | null>(null);
-  const [deleteRegIds, setDeleteRegIds] = React.useState<number[] | null>(null);
-  const [seeDetailRegId, setSeeDetailRegId] = React.useState<number | null>(null);
+  const [payRegs, setPayRegs] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null>(null);
+  const [registerUsers, setRegisterUsers] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null>(null);
+  const [deleteRegs, setDeleteRegs] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null>(null);
+  const [seeDetailReg, setSeeDetailReg] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema> | null>(null);
 
   const statusBadges: Record<string, { text: string, color: string }> = {
     'not_registered': { text: 'No registrado', color: 'border border-blue-400 text-blue-500' },
@@ -369,7 +369,7 @@ function RouteComponent() {
             <DropdownMenuGroup>
               {props.row.original.pending_to_pay > 0 && (
                 <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
-                  setPayRegIds([props.row.original.id]);
+                  setPayRegs([props.row.original]);
                 }}>
                   <MercadoPagoLogo className='size-6' />
                   Pagar
@@ -377,7 +377,7 @@ function RouteComponent() {
               )}
               {props.row.original.status !== 'not_registered' && (
                 <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
-                  setSeeDetailRegId(props.row.original.id);
+                  setSeeDetailReg(props.row.original);
                 }}>
                   <InfoIcon className='w-4 h-4' />
                   Ver Detalle
@@ -385,7 +385,7 @@ function RouteComponent() {
               )}
               {props.row.original.status === 'not_registered' && (
                 <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
-                  setRegisterUsersIds([props.row.original.user_id]);
+                  setRegisterUsers([props.row.original]);
                 }}>
                   <CircleArrowUpIcon className='w-4 h-4 text-blue-500' />
                   Inscribir
@@ -394,7 +394,7 @@ function RouteComponent() {
               {(props.row.original.status === 'pending'
                 && props.row.original.paid_amount === 0) && (
                 <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
-                  setDeleteRegIds([props.row.original.id]);
+                  setDeleteRegs([props.row.original]);
                 }}>
                   <Trash2Icon className='w-4 h-4 text-red-500' />
                   Borrar
@@ -483,18 +483,16 @@ function RouteComponent() {
       <GoBackButton />
 
       <PayRegsDialog
-        regsId={payRegIds}
-        setRegsId={setPayRegIds}
-        regs={finalData}
+        regs={payRegs}
+        setRegs={setPayRegs}
         eventId={eventId}
         setError={setError}
         setSuccess={setSuccess}
         />
 
       <SeeRegistrationDetails
-        regId={seeDetailRegId}
-        setRegId={setSeeDetailRegId}
-        regs={finalData}
+        reg={seeDetailReg}
+        setReg={setSeeDetailReg}
         statusBadges={statusBadges}
       />
 
@@ -521,7 +519,12 @@ function RouteComponent() {
           className='cursor-pointer'
           disabled={!generalActionBtnsEnabled.canRegister}
           onClick={() => {
-            setRegisterUsersIds(Object.keys(rowSelection));
+            setRegisterUsers(Object.keys(rowSelection).map(
+                id => finalData.find(
+                  r => r.user_id.toString() === id
+                )!
+              )
+            );
           }}
         >
           <CircleArrowUpIcon className='w-4 h-4 text-blue-500' />
@@ -532,10 +535,10 @@ function RouteComponent() {
           className='cursor-pointer'
           disabled={!generalActionBtnsEnabled.canPay}
           onClick={() => {
-            setPayRegIds(Object.keys(rowSelection).map(
+            setPayRegs(Object.keys(rowSelection).map(
                 id => finalData.find(
                   r => r.user_id.toString() === id
-                )?.id || 0
+                )!
               )
             );
           }}
@@ -548,10 +551,10 @@ function RouteComponent() {
           className='cursor-pointer'
           disabled={!generalActionBtnsEnabled.canDelete}
           onClick={() => {
-            setDeleteRegIds(Object.keys(rowSelection).map(
+            setDeleteRegs(Object.keys(rowSelection).map(
                 id => finalData.find(
                   r => r.user_id.toString() === id
-                )?.id || 0
+                )!
               )
             );
           }}
@@ -654,31 +657,22 @@ function RouteComponent() {
 
 
 const PayRegsDialog = ({
-  regsId,
-  setRegsId,
   regs,
+  setRegs,
   eventId,
   setError,
   setSuccess,
 }: {
-  regsId: number[] | null,
-  setRegsId: (regsId: number[] | null) => void,
-  regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[],
+  regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null,
+  setRegs: (regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null) => void,
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
 }) => {
-  const [detailRegs, setDetailRegs] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema>[]>([]);
-
-  React.useEffect(() => {
-    if (regsId && regsId.length > 0) {
-      setDetailRegs(regs.filter(r => regsId.includes(r.id)));
-    }
-  }, [regsId, regs])
 
   return (
-    <Dialog open={regsId !== null} onOpenChange={() => {
-      setRegsId(null);
+    <Dialog open={regs !== null} onOpenChange={() => {
+      setRegs(null);
     }}>
       {/* <DialogTrigger className='w-full'>
         {children}
@@ -687,7 +681,7 @@ const PayRegsDialog = ({
         <DialogHeader>
           <DialogTitle>Pagar montos pendientes</DialogTitle>
           <DialogDescription>
-            Se le redigirá al portal de Mercado Pago para completar el pago de los montos pendientes.
+            Se le redirigirá al portal de Mercado Pago para completar el pago de los montos pendientes.
 
             <Table className='border mt-4'>
               <TableHeader>
@@ -698,7 +692,7 @@ const PayRegsDialog = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {detailRegs.map(reg => (
+                {regs?.map(reg => (
                   <TableRow key={reg.id}>
                     <TableCell>{reg.user_full_name}</TableCell>
                     {/* <TableCell>{reg.user_training_team_name}</TableCell> */}
@@ -713,7 +707,7 @@ const PayRegsDialog = ({
                 <TableRow>
                   <TableCell className='text-right font-bold'>Total a pagar:</TableCell>
                   <TableCell className='text-right font-bold'>
-                    {detailRegs.reduce((sum, reg) => sum + reg.pending_to_pay, 0).toLocaleString('es-AR', {
+                    {regs?.reduce((sum, reg) => sum + reg.pending_to_pay, 0).toLocaleString('es-AR', {
                       style: 'currency',
                       currency: 'ARS',
                     })}
@@ -742,7 +736,7 @@ const PayRegsDialog = ({
                   // Lógica para redirigir al portal de pago de MercadoPago
                   const r = await postAuthenticated(
                     `/api/sportingEvents/${eventId}/payMultipleRegs`,
-                    {registrationIds: regsId}
+                    {registrationIds: regs?.map(r => r.id) },
                   );
                   if (r.status !== 200) {
                     setError('Hubo un error al redirigir a Mercado Pago. '
@@ -758,7 +752,7 @@ const PayRegsDialog = ({
                         + 'Por favor, intenta nuevamente o contacta al organizador.');
                     }
                   }
-                  setRegsId(null);
+                  setRegs(null);
                 }}
               >
                 <MercadoPagoLogo className='w-6 h-6' />
@@ -774,21 +768,18 @@ const PayRegsDialog = ({
 
 
 export const SeeRegistrationDetails = ({
-  regId,
-  setRegId,
-  regs,
+  reg,
+  setReg,
   statusBadges,
 }: {
-  regId: number | null,
-  setRegId: (regId: number | null) => void,
-  regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[],
+  reg: z.infer<typeof ARSportingEventRegistrationFlatSchema> | null,
+  setReg: (reg: z.infer<typeof ARSportingEventRegistrationFlatSchema> | null) => void,
   statusBadges: Record<string, { text: string, color: string }>,
 }) => {
-  const reg = regId !== null ? regs.find(r => r.id === regId) : null;
 
   return (
-    <Dialog open={regId !== null} onOpenChange={() => {
-      setRegId(null);
+    <Dialog open={reg !== null} onOpenChange={() => {
+      setReg(null);
     }}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
