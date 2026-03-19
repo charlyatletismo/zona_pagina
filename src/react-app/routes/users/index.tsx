@@ -170,14 +170,14 @@ function RouteComponent() {
         if (!role) return null;
         const t = getMessage(RolDescriptions[role], role);
         return (<div className={
-          "text-white text-xs rounded-full text-center p-1 "
+          "text-xs rounded-full text-center p-1 "
           + (role === ATHLETE_ROLE
-            ? "bg-green-500"
+            ? "border border-green-500 text-green-500"
             : role === ATHLETES_MANAGER_ROLE
-              ? "bg-blue-500"
+              ? "border border-blue-500 text-blue-500"
               : role === ORGANIZER_ROLE
-              ? "bg-orange-500"
-              : "bg-sky-500")
+              ? "border border-orange-500 text-orange-500"
+              : "border border-sky-500 text-sky-500")
         }>
           {t}
         </div>)
