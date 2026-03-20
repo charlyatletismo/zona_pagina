@@ -20,7 +20,6 @@ import { Route as TrainingTeamsIndexRouteImport } from './routes/trainingTeams/i
 import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
-import { Route as UsersManagersRouteImport } from './routes/users/managers'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
 import { Route as TrainingTeamsCheckTemporaryRouteImport } from './routes/trainingTeams/checkTemporary'
@@ -102,11 +101,6 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
 const LocationsIndexRoute = LocationsIndexRouteImport.update({
   id: '/locations/',
   path: '/locations/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UsersManagersRoute = UsersManagersRouteImport.update({
-  id: '/users/managers',
-  path: '/users/managers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsersCreateRoute = UsersCreateRouteImport.update({
@@ -278,7 +272,6 @@ export interface FileRoutesByFullPath {
   '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/users/create': typeof UsersCreateRoute
-  '/users/managers': typeof UsersManagersRoute
   '/locations/': typeof LocationsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/sportingEvents/': typeof SportingEventsIndexRoute
@@ -319,7 +312,6 @@ export interface FileRoutesByTo {
   '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/users/create': typeof UsersCreateRoute
-  '/users/managers': typeof UsersManagersRoute
   '/locations': typeof LocationsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/sportingEvents': typeof SportingEventsIndexRoute
@@ -361,7 +353,6 @@ export interface FileRoutesById {
   '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/users/create': typeof UsersCreateRoute
-  '/users/managers': typeof UsersManagersRoute
   '/locations/': typeof LocationsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/sportingEvents/': typeof SportingEventsIndexRoute
@@ -404,7 +395,6 @@ export interface FileRouteTypes {
     | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/users/create'
-    | '/users/managers'
     | '/locations/'
     | '/settings/'
     | '/sportingEvents/'
@@ -445,7 +435,6 @@ export interface FileRouteTypes {
     | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/users/create'
-    | '/users/managers'
     | '/locations'
     | '/settings'
     | '/sportingEvents'
@@ -486,7 +475,6 @@ export interface FileRouteTypes {
     | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/users/create'
-    | '/users/managers'
     | '/locations/'
     | '/settings/'
     | '/sportingEvents/'
@@ -528,7 +516,6 @@ export interface RootRouteChildren {
   TrainingTeamsCheckTemporaryRoute: typeof TrainingTeamsCheckTemporaryRoute
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
   UsersCreateRoute: typeof UsersCreateRoute
-  UsersManagersRoute: typeof UsersManagersRoute
   LocationsIndexRoute: typeof LocationsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SportingEventsIndexRoute: typeof SportingEventsIndexRoute
@@ -627,13 +614,6 @@ declare module '@tanstack/react-router' {
       path: '/locations'
       fullPath: '/locations/'
       preLoaderRoute: typeof LocationsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/users/managers': {
-      id: '/users/managers'
-      path: '/users/managers'
-      fullPath: '/users/managers'
-      preLoaderRoute: typeof UsersManagersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/users/create': {
@@ -848,7 +828,6 @@ const rootRouteChildren: RootRouteChildren = {
   TrainingTeamsCheckTemporaryRoute: TrainingTeamsCheckTemporaryRoute,
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
   UsersCreateRoute: UsersCreateRoute,
-  UsersManagersRoute: UsersManagersRoute,
   LocationsIndexRoute: LocationsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SportingEventsIndexRoute: SportingEventsIndexRoute,

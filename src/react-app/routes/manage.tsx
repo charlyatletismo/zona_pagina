@@ -11,7 +11,6 @@ import {
   // Upload,
   CpuIcon,
   Users,
-  UserCog,
   MapPin,
   MapPinned,
   MapPinPlusIcon,
@@ -49,7 +48,6 @@ function RouteComponent() {
       items: [
         { to: "/users", icon: Users, label: "Usuarios", description: "Administrar base de datos de usuarios." },
         { to: "/users/create", icon: UserPlus2, label: "Crear nuevo usuario", description: "Agregar un nuevo usuario al sistema." },
-        { to: "/users/managers", icon: UserCog, label: "Managers", description: "Gestionar managers y qué usuarios administran." },
       ]
     },
     {
