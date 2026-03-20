@@ -62,7 +62,7 @@ function RouteComponent() {
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
   const now = new Date();
   const openToRegister =
-    data.registration_start && data.registration_end
+    (data && data.registration_start && data.registration_end)
     ? (now >= data.registration_start && now <= data.registration_end)
     : false;
   const [registering, setRegistering] = React.useState(-1);
