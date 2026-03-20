@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from './db/schema';
-import { eq, and, not, InferInsertModel } from 'drizzle-orm';
+import { eq, and, not, InferInsertModel, inArray } from 'drizzle-orm';
 import {
   ADMIN_ROLE,
   ATHLETES_MANAGER_ROLE,
@@ -159,6 +159,60 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       .all();
     return c.json({ data: managers });
   })
+  .get("/:id/managedUsers", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const managerId = c.req.param("id");
+    const managedUsers = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+      })
+      .from(users)
+      .where(eq(users.manager_id, managerId))
+      .all();
+    return c.json({ data: managedUsers });
+  })
+  .post("/managementTransfer", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const {
+      usersIds,
+      newManagerId
+    } : {
+      usersIds: string[],
+      newManagerId: string,
+    } = await c.req.json();
+
+    const db = drizzle(c.env.DB);
+    await db
+      .update(users)
+      .set({ manager_id: newManagerId })
+      .where(inArray(users.id, usersIds))
+      .run();
+    return c.json({
+      message: M.USERS_MANAGEMENT_TRANSFER_SUCCESSFUL,
+    });
+  })
+  .post("/managementRemoval", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const { usersIds }: { usersIds: string[] } = await c.req.json();
+    const db = drizzle(c.env.DB);
+    await db
+      .update(users)
+      .set({ manager_id: null })
+      .where(inArray(users.id, usersIds))
+      .run();
+    return c.json({
+      message: M.USERS_MANAGEMENT_REMOVAL_SUCCESSFUL
+    });
+  })
   .get("/exists/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const userId = c.req.param("id");
@@ -206,6 +260,24 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     }
     const db = drizzle(c.env.DB);
     const userId = c.req.param("id");
+    const user = await db
+      .select({ id: users.id, role: users.role })
+      .from(users)
+      .where(eq(users.manager_id, userId))
+      .get();
+    if (!user) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    if (user.role === ATHLETES_MANAGER_ROLE) {
+      const r2 = await db
+        .select({id: users.id})
+        .from(users)
+        .where(eq(users.manager_id, userId))
+        .get();
+      if (r2) {
+        return c.json({ message: M.USERS_CANNOT_CHANGE_ROLE_WITH_MANAGED_USERS }, 400);
+      }
+    }
     const { role } = await c.req.json();
     const res = await db
       .update(users)

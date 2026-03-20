@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import z from 'zod';
 import { Button } from '@/components/ui/button'
-import { Edit, CogIcon, IdCard, AlertCircle } from 'lucide-react'
+import { Edit, CogIcon, IdCard, AlertCircle, ArrowUpIcon, ArrowDownIcon } from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import { ARUserSchema, ARUserMinSchema } from '@shared/apiRespTypes';
 import { ProfileCard } from '@/components/profileCard';
-import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE } from '@shared/roles';
-import { getMessage } from '@/lib/utils';
+import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE, authorizedOrg } from '@shared/roles';
+import { customFilterFn, getMessage } from '@/lib/utils';
 import { RolDescriptions } from '@shared/lang';
 import {
   DropdownMenu,
@@ -24,6 +24,24 @@ import {
   // DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ComboBoxIdName } from '@/components/comboBoxIdName';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  createColumnHelper,
+  useReactTable,
+  flexRender,
+} from '@tanstack/react-table';
 import { GoBackButton } from '@/components/goBackButton';
 import React from 'react';
 
@@ -44,7 +62,14 @@ export const Route = createFileRoute('/users/$userId/')({
           z.array(ARUserMinSchema));
       managedUsers = managedUsersRes.body.data || [];
     }
-    return { userApiRes, managedUsers };
+    let managers: z.infer<typeof ARUserMinSchema>[] = [];
+    if (authorizedOrg(localStorage.getItem("USER_ROLE"))) {
+      const managersRes = await getAuthenticatedThrow<
+        z.infer<typeof ARUserMinSchema>[]
+        >('/api/users/managers', z.array(ARUserMinSchema));
+      managers = managersRes.body.data || [];
+    }
+    return { userApiRes, managedUsers, managers };
   },
   staleTime: 1000 * 60 * 5,
 })
@@ -52,10 +77,10 @@ export const Route = createFileRoute('/users/$userId/')({
 
 function RouteComponent() {
   const { userId } = Route.useParams();
-  const { userApiRes, managedUsers } = Route.useLoaderData();
+  const { userApiRes, managedUsers, managers } = Route.useLoaderData();
   const [changeRole, setChangeRole] = React.useState<string | null>(null);
   const [transferManagedUsersDialog, setTransferManagedUsersDialog] = React.useState<z.infer<typeof ARUserMinSchema>[] | null>(null);
-
+  
   const [error, _setError] = React.useState('');
   const [success, _setSuccess] = React.useState('');
   const setError = (msg: string) => {
@@ -183,6 +208,15 @@ function RouteComponent() {
       <RoleDialog
         currentRole={changeRole}
         setCurrentRole={setChangeRole}
+        userId={userApiRes.body.data.id}
+        setError={setError}
+        setSuccess={setSuccess}
+      />
+
+      <TransferManagedUsersDialog
+        managedUsers={transferManagedUsersDialog}
+        setManagedUsers={setTransferManagedUsersDialog}
+        managers={managers}
         userId={userApiRes.body.data.id}
         setError={setError}
         setSuccess={setSuccess}
@@ -328,6 +362,298 @@ const RoleDialog = ({
                 }}
               >
                 Confirmar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+export const ManagedUsersTable = ({
+  managedUsers,
+  rowSelection,
+  setRowSelection,
+}: {
+  managedUsers: z.infer<typeof ARUserMinSchema>[],
+  rowSelection: Record<string, boolean>,
+  setRowSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>,
+}) => {
+  const columnHelper = createColumnHelper<z.infer<typeof ARUserMinSchema>>();
+
+  const defaultColumns = [
+    columnHelper.display({
+      "id": "select",
+      header: ({ table }) => (
+        <div className="flex gap-2 items-center px-1">
+          <Checkbox
+            className="cursor-pointer"
+            checked={table.getIsSomeRowsSelected() ? "indeterminate" : table.getIsAllRowsSelected()}
+            onCheckedChange={
+              (c) => table.getToggleAllRowsSelectedHandler()(
+                {target: {checked: c === "indeterminate" ? true : c}}
+              )
+            }
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className={"flex gap-2 items-center px-1 " /*+ `pl-${row.depth*4}`*/}>
+          <Checkbox
+            className="cursor-pointer"
+            checked={row.getIsSomeSelected() ? "indeterminate" : row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onCheckedChange={
+              (c) => row.getToggleSelectedHandler()(
+                {target: {checked: c === "indeterminate" ? true : c}}
+              )
+            }
+          />
+        </div>
+      ),
+    }),
+    columnHelper.accessor('id', {
+      header: 'DNI',
+      cell: info => info.getValue(),
+      footer: props => props.column.id,
+      enableSorting: true,
+      enableGlobalFilter: true,
+    }),
+    columnHelper.accessor('surname', {
+      header: 'Apellido',
+      cell: info => info.getValue(),
+      footer: props => props.column.id,
+      enableSorting: true,
+      enableGlobalFilter: true,
+    }),
+    columnHelper.accessor('name', {
+      header: 'Nombre',
+      cell: info => info.getValue(),
+      footer: props => props.column.id,
+      enableSorting: true,
+      enableGlobalFilter: true,
+    }),
+  ]
+
+  const table = useReactTable({
+    columns: defaultColumns,
+    data: managedUsers,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    initialState: {
+      globalFilter: '',
+      // columnVisibility: {
+      //   id: false,
+      // },
+      sorting: [
+        { id: "surname", desc: false },
+        { id: "name", desc: false },
+      ]
+    },
+    globalFilterFn: customFilterFn,
+    enableRowSelection: true, //enable row selection for all rows
+    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection
+    },
+    // use the row's id from the database as the row id
+    getRowId: row => row.id.toString(),
+  })
+  
+  return (
+    <Table>
+      <TableHeader>
+        {table.getHeaderGroups().map(headerGroup => {
+          return (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <TableHead key={header.id} colSpan={header.colSpan}>
+                  {header.isPlaceholder ? null : (
+                  <div className='flex gap-1 items-center'>
+                    <div className={"flex items-center gap-1 "
+                      + (header.column.getCanSort()
+                        ? "cursor-pointer select-none hover:text-primary"
+                        : "")
+                      + (header.column.getCanSort() ?
+                          header.column.getIsSorted()
+                            ? " mr-0"
+                            : " mr-5"
+                          : " mr-0")}
+                      onClick={header.column.getToggleSortingHandler()}
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === 'asc'
+                            ? 'Sort ascending'
+                            : header.column.getNextSortingOrder() === 'desc'
+                              ? 'Sort descending'
+                              : 'Clear sort'
+                          : undefined
+                      }
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                      {{
+                        asc: <ArrowUpIcon className="h-4 w-4" />,
+                        desc: <ArrowDownIcon className="h-4 w-4" />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  </div>
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
+          )
+        })}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows.map(row => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <TableCell key={cell.id}>
+                {cell.getIsPlaceholder() ? null
+                  : flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )
+                }
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+
+const TransferManagedUsersDialog = ({
+  managedUsers,
+  setManagedUsers,
+  managers,
+  userId,
+  setError,
+  setSuccess,
+}: {
+  managedUsers: z.infer<typeof ARUserMinSchema>[] | null,
+  setManagedUsers: (users: z.infer<typeof ARUserMinSchema>[] | null) => void,
+  managers: z.infer<typeof ARUserMinSchema>[],
+  userId: string,
+  setError: (message: string) => void,
+  setSuccess: (message: string) => void,
+}) => {
+  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({});
+  const [newManager, setNewManager] = React.useState<string>("");
+
+  return (
+    <Dialog open={managedUsers !== null} onOpenChange={() => {
+      setNewManager("");
+      setRowSelection({});
+      setManagedUsers(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Administrar atletas a cargo</DialogTitle>
+          <DialogDescription className='gap-4'>
+            <span className='mb-4'>
+              Selecciona los atletas que quieras administrar.
+              Luego podrás reasignarlos a otro manager o remover su management.
+            </span>
+
+            {(managedUsers && managedUsers.length > 0) ? (
+              <ManagedUsersTable
+              managedUsers={managedUsers || []}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
+              />
+            ) : (
+              <div className='p-4 text-center'>No hay atletas a cargo</div>
+            )}
+            
+            <div className='mt-4'>
+              <ComboBoxIdName
+                data={managers
+                  .filter(manager => manager.id !== userId)
+                  .map(
+                    manager => ({
+                      id: manager.id,
+                      name: `${manager.surname} ${manager.name}`
+                    }))
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                }
+                label="Reasignar nuevo manager"
+                name="newManager"
+                value={newManager}
+                onChange={(value) => {
+                  setNewManager(value || "");
+                }}
+                onBlur={() => {}}
+                placeholder="DNI del nuevo manager"
+              />
+            </div>
+          </DialogDescription>
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className='cursor-pointer'
+                disabled={Object.keys(rowSelection).length === 0}
+                onClick={async () => {
+                  const res = await postAuthenticated(
+                    `/api/users/managementRemoval`,
+                    { usersIds: Object.keys(rowSelection) });
+                  if (res.status === 200) {
+                    setSuccess('Management removido exitosamente.');
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                  } else {
+                    setError(`Error al remover el management: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                  }
+                  setManagedUsers(null);
+                }}
+              >
+                Remover management
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                disabled={Object.keys(rowSelection).length === 0 || !newManager || newManager === ""}
+                onClick={async () => {
+                  const res = await postAuthenticated(
+                    `/api/users/managementTransfer`,
+                    { usersIds: Object.keys(rowSelection), newManagerId: newManager });
+                  if (res.status === 200) {
+                    setSuccess('Transferido exitosamente.');
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                  } else {
+                    setError(`Error al transferir: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                  }
+                  setManagedUsers(null);
+                }}
+              >
+                Transferir
               </Button>
             </DialogClose>
           </div>

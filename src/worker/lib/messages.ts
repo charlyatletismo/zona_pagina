@@ -139,6 +139,14 @@ export const M = {
     [ES]: "Equipo de entrenamiento del usuario actualizado correctamente",
     [EN]: "User training team updated successfully"
   },
+  USERS_MANAGEMENT_TRANSFER_SUCCESSFUL: {
+    [ES]: "Gestión transferida correctamente",
+    [EN]: "Management transferred successfully"
+  },
+  USERS_MANAGEMENT_REMOVAL_SUCCESSFUL: {
+    [ES]: "Gestión removida correctamente",
+    [EN]: "Management removed successfully"
+  },
 
   // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {

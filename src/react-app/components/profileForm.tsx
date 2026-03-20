@@ -55,7 +55,7 @@ export const ProfileForm = ({
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [managers, setManagers] = useState<{id: string, name: string}[]>(
+  const [managers, setManagers] = useState<{id: string, name: string, surname: string}[]>(
     (profile?.manager_id || defaultManagerId) ? managersData.data : []
   );
   const [showTrainingTeamTemp, setShowTrainingTeamTemp] = useState(false);
@@ -623,7 +623,7 @@ export const ProfileForm = ({
                 data={managers.map(
                   manager => ({
                     id: manager.id,
-                    name: manager.name
+                    name: `${manager.surname} ${manager.name}`
                   }))}
                 label="Manager"
                 name={field.name}
