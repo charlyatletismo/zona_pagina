@@ -147,6 +147,10 @@ export const M = {
     [ES]: "Gestión removida correctamente",
     [EN]: "Management removed successfully"
   },
+  USERS_CANNOT_CHANGE_ROLE_WITH_MANAGED_USERS: {
+    [ES]: "No se puede cambiar el rol de un usuario que tiene usuarios a cargo. Por favor, reasigna o elimina a los usuarios a cargo primero.",
+    [EN]: "Cannot change role of a user that has managed users. Please reassign or remove managed users first."
+  },
 
   // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {
