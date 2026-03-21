@@ -9,8 +9,10 @@ import z from 'zod';
 import {
   ARSportEvTransactionMinSchema
 } from '@shared/apiRespTypes';
+// import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DeleteButton } from '@/components/deleteButton';
+import { GoBackButton } from '@/components/goBackButton';
 import {
   ActivityIcon,
   ArrowUp,
@@ -19,8 +21,20 @@ import {
   AlertCircle,
   InfoIcon,
   EditIcon,
+  BanknoteArrowUpIcon,
+  BanknoteArrowDownIcon,
+  UngroupIcon,
+  GroupIcon,
+  ArrowRight,
+  // SearchIcon,
 } from 'lucide-react';
 import React from 'react';
+import {
+  TransactionCategoryDesc,
+  // TransactionTypeDesc,
+  // TransactionPaymentMethodDesc,
+  // TransactionStatusDesc,
+} from "@shared/lang";
 import {
   Table,
   TableBody,
@@ -30,14 +44,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  GroupingState,
   getCoreRowModel,
   getSortedRowModel,
+  // getFilteredRowModel,
+  getGroupedRowModel,
+  getExpandedRowModel,
   createColumnHelper,
   useReactTable,
   flexRender,
 } from '@tanstack/react-table';
-import { getMessage } from '@/lib/utils';
-import { GoBackButton } from '@/components/goBackButton';
+import { getMessage, getLang } from '@/lib/utils';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/balance')({
@@ -58,6 +75,7 @@ function RouteComponent() {
   const { resTrApi } = Route.useLoaderData();
   const data = resTrApi.body.data || [];
   const { eventId } = Route.useParams();
+  const [grouping, setGrouping] = React.useState<GroupingState>([]);
   const totalInflow = data
     .filter(tr => tr.transaction_type === 'inflow')
     .reduce((sum, tr) => sum + tr.amount, 0)
@@ -91,34 +109,89 @@ function RouteComponent() {
       enableSorting: true,
       enableGlobalFilter: false,
       enableGrouping: false,
+      aggregatedCell: () => {},
+    }),
+    columnHelper.accessor('transaction_date', {
+      header: 'Fecha',
+      cell: info => info.getValue().toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      footer: props => props.column.id,
+      enableSorting: true,
+      enableGlobalFilter: false,
+      enableGrouping: false,
+      aggregatedCell: () => {},
     }),
     columnHelper.accessor('transaction_type', {
       header: 'Tipo',
-      cell: info => info.getValue(),
+      cell: info => 
+        info.getValue() === 'inflow'
+          ? <div className="flex items-center border border-green-600 text-green-600 text-sm px-2 rounded-lg w-fit">
+            <BanknoteArrowUpIcon className="w-4 h-4 mr-1" />
+            Ingreso
+          </div>
+          : <div className="flex items-center border border-red-600 text-red-600 text-sm px-2 rounded-lg w-fit">
+            <BanknoteArrowDownIcon className="w-4 h-4 mr-1" />
+            Egreso
+          </div>,
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: false,
     }),
     columnHelper.accessor('category', {
       header: 'Categoría',
-      cell: info => info.getValue(),
+      cell: info => TransactionCategoryDesc[info.getValue()][getLang()],
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: false,
     }),
-    columnHelper.accessor('payment_method', {
-      header: 'Método de Pago',
+    // columnHelper.accessor('payment_method', {
+    //   header: 'Método de Pago',
+    //   cell: info => info.getValue() ? TransactionPaymentMethodDesc[info.getValue()][getLang()] : null,
+    //   footer: props => props.column.id,
+    //   enableSorting: true,
+    //   enableGlobalFilter: false,
+    // }),
+    columnHelper.accessor('vendor_or_athlete', {
+      header: 'Org/Atleta',
       cell: info => info.getValue(),
       footer: props => props.column.id,
       enableSorting: true,
-      enableGlobalFilter: false,
+      enableGlobalFilter: true,
     }),
     columnHelper.accessor('amount', {
       header: 'Monto',
-      cell: info => info.getValue().toLocaleString('es-AR', { style: 'currency', currency: 'ARS' }),
+      cell: info => {
+        let amount = info.getValue() as number;
+        if (info.row.original.transaction_type === 'outflow') { amount = -amount; }
+        return amount.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+      },
       footer: props => props.column.id,
       enableSorting: true,
       enableGlobalFilter: false,
+      enableGrouping: false,
+      aggregatedCell: info => {
+        const total = info.getValue() as number;
+        return total.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+      },
+      aggregationFn: (_columnId, leafRows) => {
+        // return the aggregated value
+        const total = leafRows.reduce((sum, row) => {
+          const trType = row.original.transaction_type;
+          const amount = row.original.amount;
+          if (trType === 'inflow') {
+            return sum + amount;
+          } else if (trType === 'outflow') {
+            return sum - amount;
+          }
+          return sum;
+        }, 0);
+        return total;
+      },
     }),
     columnHelper.display({
       "id": "actions",
@@ -171,6 +244,25 @@ function RouteComponent() {
     data: data,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    // getFilteredRowModel: getFilteredRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    initialState: {
+      // globalFilter: '',
+      sorting: [
+        { id: "id", desc: false },
+      ]
+    },
+    state: {
+      grouping
+    },
+    onGroupingChange: (updater) => {
+      setGrouping((old) => {
+        const newGrouping = typeof updater === 'function' ? updater(old) : updater;
+        // Take only the last clicked (or first) column to limit to 1
+        return newGrouping.slice(-1);
+      });
+    },
   })
 
   return (
@@ -258,6 +350,22 @@ function RouteComponent() {
                     {headerGroup.headers.map(header => (
                       <TableHead key={header.id} colSpan={header.colSpan}>
                         {header.isPlaceholder ? null : (
+                        <div className='flex gap-1 items-center'>
+                          {header.column.getCanGroup() ? (
+                            <button
+                              onClick={header.column.getToggleGroupingHandler()}
+                              className='cursor-pointer hover:text-primary'
+                              title={
+                                header.column.getIsGrouped()
+                                ? 'Desagrupar'
+                                : 'Agrupar'
+                              }
+                            >
+                              {header.column.getIsGrouped()
+                                ? <UngroupIcon className='w-4 h-4' />
+                                : <GroupIcon className='w-4 h-4' />}
+                            </button>
+                          ) : null}
                           <div className={"flex items-center gap-1 "
                             + (header.column.getCanSort()
                               ? "cursor-pointer select-none hover:text-primary"
@@ -287,6 +395,7 @@ function RouteComponent() {
                               desc: <ArrowDown className="h-4 w-4" />,
                             }[header.column.getIsSorted() as string] ?? null}
                           </div>
+                        </div>
                         )}
                       </TableHead>
                     ))}
@@ -299,14 +408,57 @@ function RouteComponent() {
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map(cell => (
                     <TableCell key={cell.id}>
-                      {flexRender(
+                      {cell.getIsGrouped() ? (
+                      // If it's a grouped cell, add an expander and row count
+                      <div className='flex items-center gap-2'>
+                        <Button
+                          variant="ghost"
+                          onClick={row.getToggleExpandedHandler()}
+                          className={
+                            row.getCanExpand() ? 'cursor-pointer' : ''
+                          }
+                        >
+                          {row.getIsExpanded()
+                            ? <ArrowDown className='w-4 h-4' />
+                            : <ArrowRight className='w-4 h-4' />}
+                        </Button>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}{" "}
+                        <span className='text-muted-foreground'>({row.subRows.length})</span>
+                      </div>
+                    ) : cell.getIsAggregated() ? (
+                      flexRender(
+                        cell.column.columnDef.aggregatedCell ??
+                            cell.column.columnDef.cell,
+                        cell.getContext()
+                      )
+                    ) : cell.getIsPlaceholder() ? null
+                      : flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
-                      )}
+                      )
+                    }
                     </TableCell>
                   ))}
                 </TableRow>
               ))}
+              <TableRow>
+                <TableCell colSpan={table.getVisibleFlatColumns().length - 2} className='text-right font-bold'>Total</TableCell>
+                <TableCell className='text-left font-bold'>
+                  {table.getFilteredRowModel().rows.reduce((sum, row) => {
+                    if (row.original.transaction_type === 'outflow') {
+                      return sum - row.original.amount
+                    }
+                    return sum + row.original.amount
+                  }, 0).toLocaleString('es-AR', {
+                    style: 'currency',
+                    currency: 'ARS',
+                  })}
+                </TableCell>
+                <TableCell></TableCell>
+              </TableRow>
             </TableBody>
           </Table>
           <div className='text-gray-500 mt-2'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
