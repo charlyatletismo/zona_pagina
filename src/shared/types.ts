@@ -294,14 +294,6 @@ export const SportingEventRegistrationSchema = z.object({
 });
 
 
-export const TRANSACTION_PAYMENT_METHODS = [
-  'cash',
-  'bank_transfer',
-  'mercado_pago_checkout_pro',
-  'other'
-]
-
-
 export const SportingEventTransactionSchema = z.object({
   id: z.number().optional(),
   event_id: SportingEventSchema.shape.id,
@@ -332,10 +324,12 @@ export const SportingEventTransactionSchema = z.object({
   registration_id: SportingEventRegistrationSchema.shape.id.nullable().optional(),
   vendor_supplier: z.string().max(256).nullable().optional(),
   receipt_url: z.string().max(512).nullable().optional(),
-  payment_method: z.enum(
-    TRANSACTION_PAYMENT_METHODS,
-    "Debe seleccionar un método de pago")
-    .optional(),
+  payment_method: z.enum([
+    'cash',
+    'bank_transfer',
+    'mercado_pago_checkout_pro',
+    'other'
+  ], 'Debe seleccionar un método de pago'),
   status: z.enum([
     'pending',
     'completed',
