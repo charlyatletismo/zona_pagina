@@ -32,18 +32,15 @@ export const GoBackButton = ({
       onClick={() => {
         const lastUrl = document.referrer;
         const currentUrl = window.location.href;
-        // console.log('Last URL:', lastUrl);
-        // console.log('Current URL:', currentUrl);
-        // console.log('History length:', window.history.length);
-        // console.log('comp', lastUrl.startsWith(window.location.origin))
-        if (lastUrl.startsWith(window.location.origin) && lastUrl !== currentUrl) {
+        if (
+          !lastUrl
+          || lastUrl?.startsWith(window.location.origin)
+          || lastUrl === currentUrl
+          || window.history.length <= 1
+        ) {
           window.location.href = window.location.href + '/..'
-        } else if (lastUrl === currentUrl) {
-          window.location.href = window.location.href + '/..'
-        } else if (window.history.length > 1) {
-          window.history.back()
         } else {
-          window.location.href = window.location.href + '/..'
+          window.history.back()
         }
       }}
     >
