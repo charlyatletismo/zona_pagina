@@ -30,7 +30,7 @@ export const DeleteButton = ({
 }) => {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button
           variant="destructive"
           type="button"
