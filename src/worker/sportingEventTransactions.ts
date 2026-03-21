@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, or } from 'drizzle-orm';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
 import {
   sportingEventTransactions,
@@ -53,26 +53,33 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
           allTransactions.map(t => t.registration_id).filter((id): id is number => id !== null))
       ))
       .all();
-    
+
     const usersData = await db
       .select({ id: users.id, name: users.name, surname: users.surname })
       .from(users)
-      .where(inArray(users.id, regs.map(r => r.user_id)))
+      .where(or(
+        inArray(users.id, regs.map(r => r.user_id)),
+        inArray(users.id, allTransactions.map(t => t.user_id).filter((id): id is string => id !== null && id !== undefined))
+      ))
       .all();
-    
+    const userIdToName = usersData.reduce((acc, user) => {
+      acc[user.id] = `${user.surname} ${user.name} (${user.id.slice(-3)})`;
+      return acc;
+    }, {} as Record<string, string>);
+
     const regToUser = regs.reduce((acc, reg) => {
-      const user = usersData.find(u => u.id === reg.user_id);
-      if (user) {
-        acc[reg.id] = `${user.surname} ${user.name} (${reg.user_id.slice(-3)})`;
-      } else {
-        acc[reg.id] = 'Usuario desconocido';
-      }
+      acc[reg.id] = userIdToName[reg.user_id] || 'Usuario desconocido';
       return acc;
     }, {} as Record<number, string>);
 
     return c.json({ data: allTransactions.map(t => ({
         ...t,
-        vendor_or_athlete: t.registration_id ? regToUser[t.registration_id as number] : t.vendor_supplier
+        vendor_or_athlete:
+          t.registration_id
+            ? regToUser[t.registration_id as number]
+            : t.user_id
+              ? userIdToName[t.user_id as string] || 'Usuario desconocido'
+              : t.vendor_supplier
       }))
     });
   })

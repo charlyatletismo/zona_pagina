@@ -315,6 +315,7 @@ export const ARSportEvTransactionMinSchemaDB = SportingEventTransactionSchema.pi
   payment_method: true,
   amount: true,
   registration_id: true,
+  user_id: true,
   vendor_supplier: true,
 }).extend({
   transaction_date: z.coerce.date<string>(),
