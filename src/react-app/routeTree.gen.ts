@@ -48,7 +48,6 @@ import { Route as SportingEventsEventIdAllRegistrationsRouteImport } from './rou
 import { Route as SportingEventsEventIdTransactionsIndexRouteImport } from './routes/sportingEvents/$eventId.transactions.index'
 import { Route as SportingEventsEventIdTransactionsCreateRouteImport } from './routes/sportingEvents/$eventId.transactions.create'
 import { Route as SportingEventsEventIdTransactionsTransactionIdIndexRouteImport } from './routes/sportingEvents/$eventId.transactions.$transactionId.index'
-import { Route as SportingEventsEventIdTransactionsTransactionIdEditRouteImport } from './routes/sportingEvents/$eventId.transactions.$transactionId.edit'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -259,12 +258,6 @@ const SportingEventsEventIdTransactionsTransactionIdIndexRoute =
     path: '/sportingEvents/$eventId/transactions/$transactionId/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SportingEventsEventIdTransactionsTransactionIdEditRoute =
-  SportingEventsEventIdTransactionsTransactionIdEditRouteImport.update({
-    id: '/sportingEvents/$eventId/transactions/$transactionId/edit',
-    path: '/sportingEvents/$eventId/transactions/$transactionId/edit',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -305,7 +298,6 @@ export interface FileRoutesByFullPath {
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/sportingEvents/$eventId/transactions/create': typeof SportingEventsEventIdTransactionsCreateRoute
   '/sportingEvents/$eventId/transactions/': typeof SportingEventsEventIdTransactionsIndexRoute
-  '/sportingEvents/$eventId/transactions/$transactionId/edit': typeof SportingEventsEventIdTransactionsTransactionIdEditRoute
   '/sportingEvents/$eventId/transactions/$transactionId/': typeof SportingEventsEventIdTransactionsTransactionIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -347,7 +339,6 @@ export interface FileRoutesByTo {
   '/users/$userId': typeof UsersUserIdIndexRoute
   '/sportingEvents/$eventId/transactions/create': typeof SportingEventsEventIdTransactionsCreateRoute
   '/sportingEvents/$eventId/transactions': typeof SportingEventsEventIdTransactionsIndexRoute
-  '/sportingEvents/$eventId/transactions/$transactionId/edit': typeof SportingEventsEventIdTransactionsTransactionIdEditRoute
   '/sportingEvents/$eventId/transactions/$transactionId': typeof SportingEventsEventIdTransactionsTransactionIdIndexRoute
 }
 export interface FileRoutesById {
@@ -390,7 +381,6 @@ export interface FileRoutesById {
   '/users/$userId/': typeof UsersUserIdIndexRoute
   '/sportingEvents/$eventId/transactions/create': typeof SportingEventsEventIdTransactionsCreateRoute
   '/sportingEvents/$eventId/transactions/': typeof SportingEventsEventIdTransactionsIndexRoute
-  '/sportingEvents/$eventId/transactions/$transactionId/edit': typeof SportingEventsEventIdTransactionsTransactionIdEditRoute
   '/sportingEvents/$eventId/transactions/$transactionId/': typeof SportingEventsEventIdTransactionsTransactionIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -434,7 +424,6 @@ export interface FileRouteTypes {
     | '/users/$userId/'
     | '/sportingEvents/$eventId/transactions/create'
     | '/sportingEvents/$eventId/transactions/'
-    | '/sportingEvents/$eventId/transactions/$transactionId/edit'
     | '/sportingEvents/$eventId/transactions/$transactionId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -476,7 +465,6 @@ export interface FileRouteTypes {
     | '/users/$userId'
     | '/sportingEvents/$eventId/transactions/create'
     | '/sportingEvents/$eventId/transactions'
-    | '/sportingEvents/$eventId/transactions/$transactionId/edit'
     | '/sportingEvents/$eventId/transactions/$transactionId'
   id:
     | '__root__'
@@ -518,7 +506,6 @@ export interface FileRouteTypes {
     | '/users/$userId/'
     | '/sportingEvents/$eventId/transactions/create'
     | '/sportingEvents/$eventId/transactions/'
-    | '/sportingEvents/$eventId/transactions/$transactionId/edit'
     | '/sportingEvents/$eventId/transactions/$transactionId/'
   fileRoutesById: FileRoutesById
 }
@@ -561,7 +548,6 @@ export interface RootRouteChildren {
   UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
   SportingEventsEventIdTransactionsCreateRoute: typeof SportingEventsEventIdTransactionsCreateRoute
   SportingEventsEventIdTransactionsIndexRoute: typeof SportingEventsEventIdTransactionsIndexRoute
-  SportingEventsEventIdTransactionsTransactionIdEditRoute: typeof SportingEventsEventIdTransactionsTransactionIdEditRoute
   SportingEventsEventIdTransactionsTransactionIdIndexRoute: typeof SportingEventsEventIdTransactionsTransactionIdIndexRoute
 }
 
@@ -840,13 +826,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SportingEventsEventIdTransactionsTransactionIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sportingEvents/$eventId/transactions/$transactionId/edit': {
-      id: '/sportingEvents/$eventId/transactions/$transactionId/edit'
-      path: '/sportingEvents/$eventId/transactions/$transactionId/edit'
-      fullPath: '/sportingEvents/$eventId/transactions/$transactionId/edit'
-      preLoaderRoute: typeof SportingEventsEventIdTransactionsTransactionIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -895,8 +874,6 @@ const rootRouteChildren: RootRouteChildren = {
     SportingEventsEventIdTransactionsCreateRoute,
   SportingEventsEventIdTransactionsIndexRoute:
     SportingEventsEventIdTransactionsIndexRoute,
-  SportingEventsEventIdTransactionsTransactionIdEditRoute:
-    SportingEventsEventIdTransactionsTransactionIdEditRoute,
   SportingEventsEventIdTransactionsTransactionIdIndexRoute:
     SportingEventsEventIdTransactionsTransactionIdIndexRoute,
 }

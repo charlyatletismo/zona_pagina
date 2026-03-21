@@ -1,14 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
+import {
+  SportingEventTransactionForm
+} from '@/components/sportingEventTransactionForm';
+import { FormBox } from '@/components/formBox';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
 import { ARSportEvTransactionSchema } from '@shared/apiRespTypes';
 import z from 'zod';
 
 
-export const Route = createFileRoute(
-  '/sportingEvents/$eventId/transactions/$transactionId/',
-)({
+export const Route = createFileRoute('/sportingEvents/$eventId/transactions/$transactionId/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
@@ -25,7 +27,17 @@ export const Route = createFileRoute(
 
 
 function RouteComponent() {
+  const { res } = Route.useLoaderData();
   return (
-    <div>Hello "/sportingEvents/$eventId/transactions/$transactionId/"!</div>
+    <FormBox
+      title="Editar Transacción del Evento Deportivo"
+      description="Edita una transacción existente asociada al evento deportivo."
+      returnText="Volver atrás"
+      returnPath=".."
+    >
+      <SportingEventTransactionForm
+        transaction={res.body.data}
+      />
+    </FormBox>
   )
 }
