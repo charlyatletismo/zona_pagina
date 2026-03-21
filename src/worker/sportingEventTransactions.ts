@@ -78,7 +78,7 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
           t.registration_id
             ? regToUser[t.registration_id as number]
             : t.user_id
-              ? userIdToName[t.user_id as string] || 'Usuario desconocido'
+              ? (userIdToName[t.user_id as string] || 'Usuario desconocido')
               : t.vendor_supplier
       }))
     });
