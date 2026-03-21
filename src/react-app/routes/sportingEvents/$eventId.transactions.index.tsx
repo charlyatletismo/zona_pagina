@@ -7,7 +7,8 @@ import {
 } from '@/lib/apiCalls';
 import z from 'zod';
 import {
-  ARSportEvTransactionMinSchema
+  ARSportEvTransactionMinSchema,
+  ARSportEvTransactionSchema,
 } from '@shared/apiRespTypes';
 // import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,10 +32,19 @@ import {
 import React from 'react';
 import {
   TransactionCategoryDesc,
-  // TransactionTypeDesc,
-  // TransactionPaymentMethodDesc,
+  TransactionTypeDesc,
+  TransactionPaymentMethodDesc,
   // TransactionStatusDesc,
 } from "@shared/lang";
+import {
+  Dialog,
+  DialogContent,
+  // DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  // DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -75,6 +85,8 @@ function RouteComponent() {
   const { resTrApi } = Route.useLoaderData();
   const data = resTrApi.body.data || [];
   const { eventId } = Route.useParams();
+  const [infoTransaction, setInfoTransaction] = React.useState<z.infer<typeof ARSportEvTransactionSchema> | null>(null);
+  const [loading, setLoading] = React.useState(false);
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
   const totalInflow = data
     .filter(tr => tr.transaction_type === 'inflow')
@@ -201,18 +213,31 @@ function RouteComponent() {
           size="icon-sm"
           className='cursor-pointer'
           title="Ver detalles"
+          disabled={loading}
+          onClick={async () => {
+            setLoading(true);
+            const res = await getAuthenticatedThrow<
+              z.infer<typeof ARSportEvTransactionSchema>
+              >(`/api/sportingEventTransactions/${props.row.original.id}`,
+              ARSportEvTransactionSchema);
+            if (res.status === 200) {
+              setInfoTransaction(res.body.data);
+            } else {
+              setError('Error al cargar la información de la transacción: '
+                + getMessage(res.body?.message, 'Error desconocido'));
+            }
+            setLoading(false);
+          }}
         >
-          <Link to='/sportingEvents/$eventId/transactions/$transactionId' params={{ eventId, transactionId: props.row.original.id!.toString() }}>
-            <InfoIcon className='w-4 h-4' />
-          </Link>
+          <InfoIcon className='w-4 h-4' />
         </Button>
-        <Button asChild
+        <Button
           variant='outline'
           size="icon-sm"
           className='cursor-pointer'
           title="Editar transacción"
         >
-          <Link to='/sportingEvents/$eventId/transactions/$transactionId/edit' params={{ eventId, transactionId: props.row.original.id!.toString() }}>
+          <Link to='/sportingEvents/$eventId/transactions/$transactionId' params={{ eventId, transactionId: props.row.original.id!.toString() }}>
             <EditIcon className='w-4 h-4' />
           </Link>
         </Button>
@@ -281,6 +306,12 @@ function RouteComponent() {
           {success}
         </div>
       )}
+
+      <InfoDialog
+        transaction={infoTransaction}
+        setTransaction={setInfoTransaction}
+      />
+
       <div className='flex flex-col sm:flex-row sm:justify-between'>
         <div className='mb-4 sm:mb-0'>
           <h1 className='text-2xl font-bold mb-4'>Balance del Evento</h1>
@@ -294,6 +325,7 @@ function RouteComponent() {
           </Button>
         </div>
       </div>
+
       <div className='flex flex-col gap-2 mb-5'>
         <Table className='border min-w-3xl max-w-full'>
           <TableBody>
@@ -325,8 +357,8 @@ function RouteComponent() {
             </TableRow>
           </TableBody>
         </Table>
-
       </div>
+
       <div className='flex flex-col gap-2'>
         <div>
           <h2 className='text-lg font-semibold mb-2'>Transacciones</h2>
@@ -477,5 +509,54 @@ function RouteComponent() {
 
       </div>
     </div>
+  )
+}
+
+
+const InfoDialog = ({
+  transaction,
+  setTransaction,
+} : {
+  transaction: z.infer<typeof ARSportEvTransactionSchema> | null,
+  setTransaction: (transaction: z.infer<typeof ARSportEvTransactionSchema> | null) => void,
+}) => {
+  return (
+    <Dialog open={transaction !== null} onOpenChange={() => {
+      setTransaction(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Transacción #{transaction?.id}</DialogTitle>
+          <div className='mt-2 flex flex-col gap-2 text-muted-foreground text-sm'>
+            <div><strong>ID del Evento:</strong> {transaction?.event_id}</div>
+            <div><strong>Fecha:</strong> {transaction?.transaction_date.toLocaleString('es-AR')}</div>
+            <div><strong>Tipo:</strong> {transaction ? TransactionTypeDesc[transaction.transaction_type][getLang()] : ''}</div>
+            <div><strong>Categoría:</strong> {transaction ? TransactionCategoryDesc[transaction.category][getLang()] : ''}</div>
+            <div><strong>Método de Pago:</strong> {transaction ? TransactionPaymentMethodDesc[transaction.payment_method][getLang()] : ''}</div>
+            <div><strong>Monto:</strong> {transaction ? transaction.amount.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' }) : ''}</div>
+            <div><strong>Descripción:</strong> {transaction?.description || 'Sin descripción'}</div>
+            <div><strong>ID de la Inscripción (si corresponde):</strong> {transaction?.registration_id || 'N/A'}</div>
+            <div><strong>ID del Usuario:</strong> {transaction?.user_id || 'N/A'}</div>
+            <div><strong>URL del Comprobante:</strong> {transaction?.receipt_url || 'N/A'}</div>
+            <div><strong>Creado por:</strong> {transaction?.created_by || 'N/A'}</div>
+            <div><strong>Creado el:</strong> {transaction?.created_at ? transaction.created_at.toLocaleString('es-AR') : 'N/A'}</div>
+            <div><strong>Actualizado por:</strong> {transaction?.updated_by || 'N/A'}</div>
+            <div><strong>Actualizado el:</strong> {transaction?.updated_at ? transaction.updated_at.toLocaleString('es-AR') : 'N/A'}</div>
+          </div>
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cerrar
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   )
 }
