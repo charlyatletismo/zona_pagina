@@ -27,25 +27,34 @@ export const GoBackButton = ({
     )
   }
   return (
-    <button
+    <Link
+      to=".."
       className={CLASS_NAME}
-      onClick={() => {
-        const lastUrl = document.referrer;
-        const currentUrl = window.location.href;
-        if (
-          !lastUrl
-          || lastUrl?.startsWith(window.location.origin)
-          || lastUrl === currentUrl
-          || window.history.length <= 1
-        ) {
-          window.location.href = window.location.href + '/..'
-        } else {
-          window.history.back()
-        }
-      }}
     >
       <ArrowLeft className="w-4 h-4 mr-2" />
       Volver atrás
-    </button>
+    </Link>
   )
+  // return (
+  //   <button
+  //     className={CLASS_NAME}
+  //     onClick={() => {
+  //       const lastUrl = document.referrer;
+  //       const currentUrl = window.location.href;
+  //       if (
+  //         !lastUrl
+  //         || lastUrl?.startsWith(window.location.origin)
+  //         || lastUrl === currentUrl
+  //         || window.history.length <= 1
+  //       ) {
+  //         window.location.href = window.location.href + '/..'
+  //       } else {
+  //         window.history.back()
+  //       }
+  //     }}
+  //   >
+  //     <ArrowLeft className="w-4 h-4 mr-2" />
+  //     Volver atrás
+  //   </button>
+  // )
 }
