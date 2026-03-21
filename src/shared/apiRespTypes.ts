@@ -307,15 +307,21 @@ export const ARSportEvTransactionSchema = SportingEventTransactionSchema.extend(
   updated_at: z.coerce.date<string>().optional(),
 })
 
-export const ARSportEvTransactionMinSchema = SportingEventTransactionSchema.pick({
+export const ARSportEvTransactionMinSchemaDB = SportingEventTransactionSchema.pick({
   id: true,
   category: true,
   transaction_type: true,
   transaction_date: true,
   payment_method: true,
   amount: true,
+  registration_id: true,
+  vendor_supplier: true,
 }).extend({
   transaction_date: z.coerce.date<string>(),
+});
+
+export const ARSportEvTransactionMinSchema = ARSportEvTransactionMinSchemaDB.extend({
+  vendor_or_athlete: z.string().nullable().optional(),
 });
 
 
