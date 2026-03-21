@@ -207,11 +207,11 @@ export const SportingEventTransactionForm = ({
                   Categoría
                   {field.state.value
                     ? TransactionTypeByCategory[field.state.value] === 'inflow'
-                      ? <div className="flex items-center bg-green-600 text-sm text-white px-2 rounded-lg">
+                      ? <div className="flex items-center border border-green-600 text-green-600 text-sm px-2 rounded-lg">
                         <BanknoteArrowUpIcon className="w-4 h-4 mr-1" />
                         Ingreso
                       </div>
-                      : <div className="flex items-center bg-red-600 text-sm text-white px-2 rounded-lg">
+                      : <div className="flex items-center border border-red-600 text-red-600 text-sm px-2 rounded-lg">
                         <BanknoteArrowDownIcon className="w-4 h-4 mr-1" />
                         Egreso
                       </div>
