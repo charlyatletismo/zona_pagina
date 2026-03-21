@@ -104,11 +104,7 @@ export const SportingEventTransactionForm = ({
         await onSuccess();
       } else {
         setTimeout(async () => {
-          navigate({
-            to: '/sportingEvents/$eventId/balance',
-            params: { eventId: value.event_id!.toString() },
-            reloadDocument: true
-          });
+          navigate({ to: '..', reloadDocument: true });
         }, 1000);
       }
     },

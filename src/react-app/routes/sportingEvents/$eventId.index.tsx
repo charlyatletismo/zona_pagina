@@ -206,16 +206,9 @@ function RouteComponent() {
           </Button>
 
           <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
-              <BadgeDollarSign className="w-4 h-4" />
-              Nueva transacción
-            </Link>
-          </Button>
-
-          <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/balance" params={{ eventId }}>
+            <Link to="/sportingEvents/$eventId/transactions" params={{ eventId }}>
               <CircleDollarSignIcon className="w-4 h-4" />
-              Balance financiero
+              Balance
             </Link>
           </Button>
 

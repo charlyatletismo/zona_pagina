@@ -7,7 +7,7 @@ import {
 import { FormBox } from '@/components/formBox';
 
 
-export const Route = createFileRoute('/sportingEvents/$eventId/newTransaction')({
+export const Route = createFileRoute('/sportingEvents/$eventId/transactions/create')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   // loader: async ({ params }) => {

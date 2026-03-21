@@ -57,7 +57,7 @@ import {
 import { getMessage, getLang } from '@/lib/utils';
 
 
-export const Route = createFileRoute('/sportingEvents/$eventId/balance')({
+export const Route = createFileRoute('/sportingEvents/$eventId/transactions/')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
@@ -268,27 +268,24 @@ function RouteComponent() {
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
       <GoBackButton />
-      
       {error && (
         <div className="my-4 bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
           {error}
         </div>
       )}
-
       {success && (
         <div className="my-4 bg-green-500/10 text-green-600 p-3 rounded-md text-sm">
           {success}
         </div>
       )}
-
       <div className='flex flex-col sm:flex-row sm:justify-between'>
         <div className='mb-4 sm:mb-0'>
           <h1 className='text-2xl font-bold mb-4'>Balance del Evento</h1>
         </div>
         <div className='flex gap-2 flex-col sm:flex-row mb-8 sm:mb-0'>
           <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/newTransaction" params={{ eventId }}>
+            <Link to="/sportingEvents/$eventId/transactions/create" params={{ eventId }}>
               <BadgeDollarSign className="w-4 h-4" />
               Nueva transacción
             </Link>
@@ -410,7 +407,7 @@ function RouteComponent() {
                     <TableCell key={cell.id}>
                       {cell.getIsGrouped() ? (
                       // If it's a grouped cell, add an expander and row count
-                      <div className='flex items-center gap-2'>
+                      (<div className='flex items-center gap-2'>
                         <Button
                           variant="ghost"
                           onClick={row.getToggleExpandedHandler()}
@@ -427,7 +424,7 @@ function RouteComponent() {
                           cell.getContext()
                         )}{" "}
                         <span className='text-muted-foreground'>({row.subRows.length})</span>
-                      </div>
+                      </div>)
                     ) : cell.getIsAggregated() ? (
                       flexRender(
                         cell.column.columnDef.aggregatedCell ??
@@ -480,7 +477,6 @@ function RouteComponent() {
         )} */}
 
       </div>
-
     </div>
   )
 }
