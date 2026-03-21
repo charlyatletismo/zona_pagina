@@ -105,9 +105,25 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       );
     }
 
+    if (data.data.registration_id) {
+      const reg = await db
+        .select({ user_id: sportingEventRegistrations.user_id })
+        .from(sportingEventRegistrations)
+        .where(eq(sportingEventRegistrations.id, data.data.registration_id))
+        .get();
+
+      if (!reg) {
+        return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 404);
+      }
+
+      data.data.user_id = reg.user_id;
+    }
+
     await db.insert(sportingEventTransactions).values({
       ...data.data,
       transaction_date: data.data.transaction_date.toISOString(),
+      created_by: c.get('jwtPayload').id,
+      updated_by: c.get('jwtPayload').id,
     });
 
     if (data.data.status === 'completed'
@@ -144,6 +160,7 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
         ...data.data,
         transaction_date: data.data.transaction_date.toISOString(),
         updated_at: new Date().toISOString(),
+        updated_by: c.get('jwtPayload').id,
       })
       .where(eq(sportingEventTransactions.id, Number(id)));
 
