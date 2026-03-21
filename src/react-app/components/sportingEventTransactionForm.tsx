@@ -25,6 +25,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { postAuthenticated, getAuthenticatedThrow } from "@/lib/apiCalls";
 import { getMessage, getLang } from "@/lib/utils";
+import { FormErrorsCard } from "./formErrorsCard";
 
 
 type Fields = keyof z.infer<typeof SportingEventTransactionSchema>;
@@ -480,22 +481,7 @@ export const SportingEventTransactionForm = ({
             <form.Subscribe
               selector={(state) => state.errors}
               children={(errors) => (
-                <>
-                  {Object.keys(errors).length > 0 ? (
-                    <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200" role="alert">
-                      <span className="font-medium">Por favor corrija los siguientes errores antes de continuar:</span>
-                      <ul className="mt-2 list-disc list-inside">
-                        {errors.map((error, index) => (
-                          <li key={index}>{JSON.stringify(error)}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
-                    <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg border border-green-200" role="alert">
-                      No hay errores de validación en el formulario.
-                    </div>
-                  )}
-                </>
+                <FormErrorsCard errors={errors} />
               )}
             />
           </div>
