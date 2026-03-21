@@ -3,7 +3,6 @@ import z from "zod";
 import {
   SportingEventTransactionSchema,
   TransactionTypeByCategory,
-  TRANSACTION_PAYMENT_METHODS,
 } from "@shared/types";
 import {
   ARSportingEventMinSchema
@@ -12,7 +11,7 @@ import {
   TransactionCategoryDesc,
   TransactionTypeDesc,
   TransactionPaymentMethodDesc,
-  TransactionStatusDesc,
+  // TransactionStatusDesc,
 } from "@shared/lang";
 import { useAppForm } from '@/lib/genForm';
 import { useState } from "react";
@@ -28,10 +27,12 @@ import { postAuthenticated, getAuthenticatedThrow } from "@/lib/apiCalls";
 import { getMessage, getLang } from "@/lib/utils";
 
 
-const FieldsSchema = z.enum(
-  SportingEventTransactionSchema.keyof().options
-);
-const SportingEventTransactionSchemaPartial = SportingEventTransactionSchema.partial();
+type Fields = keyof z.infer<typeof SportingEventTransactionSchema>;
+type TransactionPartial = Partial<z.infer<typeof SportingEventTransactionSchema>>;
+type CategoryValue = z.infer<typeof SportingEventTransactionSchema.shape.category>;
+type TransactionTypeValue = z.infer<typeof SportingEventTransactionSchema.shape.transaction_type>;
+type PaymentMethodValue = z.infer<typeof SportingEventTransactionSchema.shape.payment_method>;
+// type StatusValue = z.infer<typeof SportingEventTransactionSchema.shape.status>;
 
 
 export const SportingEventTransactionForm = ({
@@ -40,35 +41,31 @@ export const SportingEventTransactionForm = ({
   categoriesOptions,
   onSuccess,
 }: {
-  transaction: z.infer<typeof SportingEventTransactionSchemaPartial> | null,
-  showFields?: z.infer<typeof FieldsSchema>[],
-  categoriesOptions?: string[],
+  transaction: TransactionPartial | null,
+  showFields?: Fields[],
+  categoriesOptions?: CategoryValue[],
   onSuccess?: () => Promise<void>,
 }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const path = (transaction || {}).id
-    ? `/api/sportingEventTransactions/update/${transaction!.id}`
+  const path = transaction?.id
+    ? `/api/sportingEventTransactions/update/${transaction.id}`
     : "/api/sportingEventTransactions/create";
 
   categoriesOptions = categoriesOptions || SportingEventTransactionSchema.shape.category.options;
-  const defaults: Record<string, any> = {
+  const defaults: TransactionPartial = {
     event_id: 0,
-    transaction_type: '',
-    category: '',
+    // transaction_type: '',
+    // category: '',
     amount: 0,
     currency: 'ARS',
     description: null,
     transaction_date: new Date(),
     payment_method: "bank_transfer",
     status: "completed",
+    ...(transaction || {})
   }
-  Object.entries(transaction || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      defaults[key] = value;
-    }
-  });
 
   const form = useAppForm({
     defaultValues: defaults,
@@ -107,7 +104,11 @@ export const SportingEventTransactionForm = ({
         await onSuccess();
       } else {
         setTimeout(async () => {
-          navigate({ to: '..', reloadDocument: true });
+          navigate({
+            to: '/sportingEvents/$eventId/balance',
+            params: { eventId: value.event_id!.toString() },
+            reloadDocument: true
+          });
         }, 1000);
       }
     },
@@ -223,7 +224,7 @@ export const SportingEventTransactionForm = ({
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
-                  onValueChange={(e: any) => {
+                  onValueChange={(e: CategoryValue) => {
                     field.handleChange(e);
                     field.handleBlur();
                     // Set transaction_type based on category
@@ -266,7 +267,7 @@ export const SportingEventTransactionForm = ({
                   name={field.name}
                   value={field.state.value || ""}
                   disabled={true}
-                  onValueChange={(e: any) => {
+                  onValueChange={(e: TransactionTypeValue) => {
                     field.handleChange(e);
                     field.handleBlur();
                   }}
@@ -340,7 +341,7 @@ export const SportingEventTransactionForm = ({
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
-                  onValueChange={(e: any) => {
+                  onValueChange={(e: PaymentMethodValue) => {
                     field.handleChange(e);
                     field.handleBlur();
                   }}
@@ -356,7 +357,7 @@ export const SportingEventTransactionForm = ({
                   <field.SelectContent>
                     <field.SelectGroup>
                       <field.SelectLabel>Método de pago</field.SelectLabel>
-                      {TRANSACTION_PAYMENT_METHODS.map((pm) => (
+                      {SportingEventTransactionSchema.shape.payment_method.options.map((pm) => (
                         <field.SelectItem key={pm} value={pm}>{TransactionPaymentMethodDesc[pm][getLang()]}</field.SelectItem>
                       ))}
                     </field.SelectGroup>
@@ -370,7 +371,7 @@ export const SportingEventTransactionForm = ({
           />
         )}
 
-        {(!showFields || showFields.includes('status')) && (
+        {/* {(!showFields || showFields.includes('status')) && (
           <form.AppField
             name="status"
             children={(field) => (
@@ -379,7 +380,7 @@ export const SportingEventTransactionForm = ({
                 <field.Select
                   name={field.name}
                   value={field.state.value || ""}
-                  onValueChange={(e: any) => {
+                  onValueChange={(e: StatusValue) => {
                     field.handleChange(e);
                     field.handleBlur();
                   }}
@@ -407,7 +408,7 @@ export const SportingEventTransactionForm = ({
               </div>
             )}
           />
-        )}
+        )} */}
 
         {(!showFields || showFields.includes('vendor_supplier')) && (
           <form.AppField
