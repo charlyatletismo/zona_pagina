@@ -257,9 +257,6 @@ function RouteComponent() {
             No hay equipos temporales a revisar
           </div>
         )}
-        {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-          <pre>{JSON.stringify(sorting, null, 2)}</pre>
-        )} */}
       </div>
       {res.body.data.length > 0 && (
         <div>

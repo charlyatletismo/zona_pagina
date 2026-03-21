@@ -325,9 +325,6 @@ function RouteComponent() {
           No hay eventos deportivos.
         </div>
       )}
-      {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-        <pre>{JSON.stringify(sorting, null, 2)}</pre>
-      )} */}
     </div>
   );
 }

@@ -392,9 +392,6 @@ function RouteComponent() {
           No hay usuarios registrados. Crea el primero en el botón de arriba.
         </div>
       )}
-      {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-        <pre>{JSON.stringify(sorting, null, 2)}</pre>
-      )} */}
 
     </div>
   )

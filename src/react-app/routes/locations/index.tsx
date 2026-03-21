@@ -230,9 +230,6 @@ function RouteComponent() {
           No hay localidades registradas. Crea la primera en el botón de arriba.
         </div>
       )}
-      {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-        <pre>{JSON.stringify(sorting, null, 2)}</pre>
-      )} */}
 
     </div>
   )

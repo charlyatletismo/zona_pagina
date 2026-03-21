@@ -12,7 +12,6 @@ import {
   Check,
   FileUserIcon,
   FilePlus2,
-  BadgeDollarSign,
   PackageIcon,
   CircleDollarSignIcon,
 } from 'lucide-react';

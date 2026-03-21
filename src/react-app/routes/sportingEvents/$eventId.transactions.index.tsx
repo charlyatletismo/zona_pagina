@@ -472,9 +472,6 @@ function RouteComponent() {
             No hay transacciones registradas para este evento.
           </div>
         )}
-        {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-          <pre>{JSON.stringify(sorting, null, 2)}</pre>
-        )} */}
 
       </div>
     </div>

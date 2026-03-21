@@ -230,9 +230,6 @@ export const TrainingTeamsTable = ({data}: {data: z.infer<typeof ARTrainingTeamA
           No hay equipos registrados. Crea el primero en el botón de arriba.
         </div>
       )}
-      {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-        <pre>{JSON.stringify(sorting, null, 2)}</pre>
-      )} */}
 
     </div>
   )

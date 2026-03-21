@@ -256,9 +256,6 @@ function RouteComponent() {
           No hay localidades temporales a revisar
         </div>
       )}
-      {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-        <pre>{JSON.stringify(sorting, null, 2)}</pre>
-      )} */}
 
     </div>
   )

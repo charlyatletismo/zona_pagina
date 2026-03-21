@@ -283,9 +283,6 @@ function RouteComponent() {
           No te has inscripto a ningún evento deportivo aún.
         </div>
       )}
-      {/* {localStorage.getItem('ADMIN_MODE') === 'active' && (
-        <pre>{JSON.stringify(sorting, null, 2)}</pre>
-      )} */}
     </div>
   );
 }
