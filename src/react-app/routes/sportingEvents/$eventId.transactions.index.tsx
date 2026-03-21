@@ -231,7 +231,7 @@ function RouteComponent() {
         >
           <InfoIcon className='w-4 h-4' />
         </Button>
-        <Button
+        <Button asChild
           variant='outline'
           size="icon-sm"
           className='cursor-pointer'
