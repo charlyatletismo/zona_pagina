@@ -174,6 +174,33 @@ export const SportingEventTransactionForm = ({
           />
         )}
 
+        {(!showFields || showFields.includes('registration_id')) && (
+          <form.AppField
+            name="registration_id"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>ID Inscripción</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value || ""}
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  onChange={(e) => field.handleChange(
+                    e.target.value
+                      ? Number(e.target.value)
+                      : 0)}
+                  onBlur={field.handleBlur}
+                  placeholder="ID de la inscripción asociada (si corresponde)"
+                  disabled={!!transaction}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+        )}
+
         {(!showFields || showFields.includes('transaction_date')) && (
           <form.AppField
             name="transaction_date"
