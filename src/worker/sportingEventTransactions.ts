@@ -1,12 +1,16 @@
 import { Hono } from 'hono';
 import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
-import { sportingEventTransactions } from './db/schema';
+import {
+  sportingEventTransactions,
+  sportingEventRegistrations,
+  users
+} from './db/schema';
 import {
   ARSportEvTransactionSchema,
-  ARSportEvTransactionMinSchema,
+  ARSportEvTransactionMinSchemaDB,
 } from '@shared/apiRespTypes';
 import {
   newPaymentForRegistration,
@@ -28,7 +32,7 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
     const eventId = c.req.param("eventId");
     const allTransactions = await db
       .select(
-        ARSportEvTransactionMinSchema.keyof().options.reduce((acc, field) => {
+        ARSportEvTransactionMinSchemaDB.keyof().options.reduce((acc, field) => {
             acc[field] = sportingEventTransactions[field];
             return acc;
           },
@@ -38,7 +42,39 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       .from(sportingEventTransactions)
       .where(eq(sportingEventTransactions.event_id, Number(eventId)))
       .all();
-    return c.json({ data: allTransactions });
+
+    const regs = await db
+      .select({ id: sportingEventRegistrations.id, user_id: sportingEventRegistrations.user_id })
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.event_id, Number(eventId)),
+        inArray(
+          sportingEventRegistrations.id,
+          allTransactions.map(t => t.registration_id).filter((id): id is number => id !== null))
+      ))
+      .all();
+    
+    const usersData = await db
+      .select({ id: users.id, name: users.name, surname: users.surname })
+      .from(users)
+      .where(inArray(users.id, regs.map(r => r.user_id)))
+      .all();
+    
+    const regToUser = regs.reduce((acc, reg) => {
+      const user = usersData.find(u => u.id === reg.user_id);
+      if (user) {
+        acc[reg.id] = `${user.surname} ${user.name} (${reg.user_id.slice(-3)})`;
+      } else {
+        acc[reg.id] = 'Usuario desconocido';
+      }
+      return acc;
+    }, {} as Record<number, string>);
+
+    return c.json({ data: allTransactions.map(t => ({
+        ...t,
+        vendor_or_athlete: t.registration_id ? regToUser[t.registration_id as number] : t.vendor_supplier
+      }))
+    });
   })
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
