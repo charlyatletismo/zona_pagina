@@ -202,17 +202,19 @@ function RouteComponent() {
           className='cursor-pointer'
           title="Ver detalles"
         >
-          {/* TODO: Open dialog */}
-          <InfoIcon className='w-4 h-4' />
+          <Link to='/sportingEvents/$eventId/transactions/$transactionId' params={{ eventId, transactionId: props.row.original.id!.toString() }}>
+            <InfoIcon className='w-4 h-4' />
+          </Link>
         </Button>
-        <Button
+        <Button asChild
           variant='outline'
           size="icon-sm"
           className='cursor-pointer'
           title="Editar transacción"
         >
-          {/* TODO: Open dialog */}
-          <EditIcon className='w-4 h-4' />
+          <Link to='/sportingEvents/$eventId/transactions/$transactionId/edit' params={{ eventId, transactionId: props.row.original.id!.toString() }}>
+            <EditIcon className='w-4 h-4' />
+          </Link>
         </Button>
         <DeleteButton
           dgDescription="Esta acción no se puede deshacer. Esto eliminará permanentemente la transacción."

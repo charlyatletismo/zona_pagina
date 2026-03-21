@@ -24,9 +24,8 @@ function RouteComponent() {
     <FormBox
       title="Nueva Transacción del Evento Deportivo"
       description="Crea una nueva transacción asociada al evento deportivo."
-      returnText="Volver al Evento"
-      returnPath="/sportingEvents/$eventId"
-      returnParams={{ eventId: eventId }}
+      returnText="Volver atrás"
+      returnPath=".."
     >
       <SpEvTransactionGeneralForm
         eventId={Number(eventId)}
