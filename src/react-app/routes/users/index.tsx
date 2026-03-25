@@ -12,8 +12,8 @@ import { ARUserSchema } from '@shared/apiRespTypes';
 import { Button } from '@/components/ui/button';
 import {
   ActivityIcon,
-  ArrowDown,
   ArrowUp,
+  ArrowDown,
   ChevronRight,
   PlusIcon,
   SearchIcon,
@@ -36,6 +36,7 @@ import {
   GroupingState,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   getFilteredRowModel,
   getGroupedRowModel,
   getExpandedRowModel,
@@ -46,6 +47,7 @@ import {
 import { customFilterFn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import React from 'react';
+import { PaginationButtons } from '@/components/paginationButtons';
 
 
 const ARUserSchemaPartial = ARUserSchema.partial().required({
@@ -83,6 +85,10 @@ export const Route = createFileRoute('/users/')({
 function RouteComponent() {
   const { usersData } = Route.useLoaderData();
 
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  });
   const [grouping, setGrouping] = React.useState<GroupingState>([])
 
   const columnHelper = createColumnHelper<z.infer<typeof ARUserSchemaPartial>>()
@@ -213,6 +219,7 @@ function RouteComponent() {
     data: usersData || [],
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -231,8 +238,10 @@ function RouteComponent() {
     },
     globalFilterFn: customFilterFn,
     state: {
-      grouping
+      pagination,
+      grouping,
     },
+    onPaginationChange: setPagination,
     onGroupingChange: (updater) => {
       setGrouping((old) => {
         const newGrouping = typeof updater === 'function' ? updater(old) : updater;
@@ -378,7 +387,10 @@ function RouteComponent() {
             ))}
           </TableBody>
         </Table>
-        <div className='text-gray-500'>{table.getRowModel().rows.length.toLocaleString()} resultados</div>
+        <PaginationButtons
+          table={table}
+          pagination={pagination}
+        />
         </div>
       ) : (
         <div className='text-center py-10 text-gray-500 min-w-3xl max-w-full'>

@@ -71,6 +71,7 @@ import {
   GroupingState,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   getFilteredRowModel,
   getGroupedRowModel,
   getExpandedRowModel,
@@ -82,6 +83,7 @@ import { GoBackButton } from '@/components/goBackButton';
 import { customFilterFn, getMessage } from '@/lib/utils';
 import React from 'react';
 import { SpEvTransactionRegPaymentForm } from '@/components/spEvTransactionRegPayment';
+import { PaginationButtons } from '@/components/paginationButtons';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations')({
@@ -102,6 +104,10 @@ function RouteComponent() {
   const { resRegApi } = Route.useLoaderData();
   const { eventId } = Route.useParams();
   const [data, setData] = React.useState(resRegApi.body.data);
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  });
   const [grouping, setGrouping] = React.useState<GroupingState>([])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [generalActionBtnsEnabled, setGeneralActionBtnsEnabled] = React.useState({
@@ -490,6 +496,7 @@ function RouteComponent() {
     data: data,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -509,8 +516,10 @@ function RouteComponent() {
     onRowSelectionChange: setRowSelection,
     state: {
       rowSelection,
-      grouping
+      pagination,
+      grouping,
     },
+    onPaginationChange: setPagination,
     // use the row's id from the database as the row id
     getRowId: row => row.id.toString(),
     onGroupingChange: (updater) => {
@@ -851,9 +860,10 @@ function RouteComponent() {
             <span>{Object.keys(rowSelection).length} inscripciones seleccionadas</span>
           </div>
         )}
-        <div className='text-muted-foreground mt-1'>
-          {table.getPreGroupedRowModel().rows.length.toLocaleString()} resultados
-        </div>
+        <PaginationButtons
+          table={table}
+          pagination={pagination}
+        />
         </div>
       ) : (
         <div className='text-center py-10 text-muted-foreground min-w-3xl max-w-full'>

@@ -56,6 +56,7 @@ import {
 import {
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   getFilteredRowModel,
   getGroupedRowModel,
   getExpandedRowModel,
@@ -66,6 +67,7 @@ import {
 import { getTrainingTeamsData } from '@/lib/queryCache';
 import { customFilterFn, getMessage } from '@/lib/utils';
 import React from 'react';
+import { PaginationButtons } from '@/components/paginationButtons';
 
 
 const ARUserSchemaPartial = ARUserSchema.partial().required({
@@ -90,7 +92,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
       z.infer<typeof ARSportingEventSchema>
       >(`/api/sportingEvents/${params.eventId}`,
         ARSportingEventSchema);
-    const finalData = [...resRegApi.body.data];
+    const finalData = [...(resRegApi.body.data || [])];
     resUsersApi.body.data.forEach(user => {
       const found = finalData.find(reg => reg.user_id === user.id);
       if (!found) {
@@ -119,7 +121,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
           circuit_name: null,
           circuit_distance_km: null,
           circuit_competitive: null,
-          user_full_name: `${user.name} ${user.surname}`,
+          user_full_name: `${user.surname} ${user.name}`,
           user_phone: user.phone!,
           user_email: user.email!,
           user_training_team_name: trainingTeams.find(
@@ -139,6 +141,10 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
 function RouteComponent() {
   const { finalData, eventData } = Route.useLoaderData();
   const { eventId } = Route.useParams();
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  });
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [generalActionBtnsEnabled, setGeneralActionBtnsEnabled] = React.useState({
     canPay: false,
@@ -416,6 +422,7 @@ function RouteComponent() {
     data: finalData,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -436,7 +443,9 @@ function RouteComponent() {
     onRowSelectionChange: setRowSelection,
     state: {
       rowSelection,
+      pagination,
     },
+    onPaginationChange: setPagination,
     getRowId: row => row.user_id,
   });
 
@@ -655,9 +664,10 @@ function RouteComponent() {
             <span>{Object.keys(rowSelection).length} resultados seleccionados</span>
           </div>
         )}
-        <div className='text-muted-foreground mt-1'>
-          {table.getPreGroupedRowModel().rows.length.toLocaleString()} resultados
-        </div>
+        <PaginationButtons
+          table={table}
+          pagination={pagination}
+        />
         </div>
       ) : (
         <div className='text-center py-10 text-muted-foreground min-w-3xl max-w-full'>
@@ -703,20 +713,23 @@ const RegisterUsersDialog = ({
           <DialogTitle>Inscribir</DialogTitle>
           <DialogDescription>
             Se inscribirán las personas seleccionadas al circuito que elijas.
-            <div className='flex gap-2 mt-4'>
-              {eventData.circuits?.map(circuit => (
-                <div key={circuit.id} className='flex items-center gap-2 mb-2'>
-                  <Button
-                    type="button"
-                    variant={circuitId === circuit.id ? 'default' : 'outline'}
-                    className='cursor-pointer border'
-                    onClick={() => setCircuitId(circuitId === circuit.id ? null : circuit.id!)}
-                  >
-                    {circuit.name}
-                  </Button>
-                </div>
-              ))}
-            </div>
+          </DialogDescription>
+
+          <div className='flex gap-2 mt-4'>
+            {eventData.circuits?.map(circuit => (
+              <div key={circuit.id} className='flex items-center gap-2 mb-2'>
+                <Button
+                  type="button"
+                  variant={circuitId === circuit.id ? 'default' : 'outline'}
+                  className='cursor-pointer border'
+                  onClick={() => setCircuitId(circuitId === circuit.id ? null : circuit.id!)}
+                >
+                  {circuit.name}
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
             <Table className='border mt-4'>
               <TableHeader>
                 <TableRow>
@@ -736,9 +749,8 @@ const RegisterUsersDialog = ({
                 </TableRow>
               </TableBody>
             </Table>
-          </DialogDescription>
+          </div>
 
-          
           <div className='flex gap-2 justify-end mt-2'>
             <DialogClose asChild>
               <Button
@@ -815,6 +827,9 @@ const DeleteRegistrationDialog = ({
           <DialogTitle>Borrar Inscripciones</DialogTitle>
           <DialogDescription>
             Se borrarán las inscripciones seleccionadas.
+          </DialogDescription>
+
+          <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
             <Table className='border mt-4'>
               <TableHeader>
                 <TableRow>
@@ -836,8 +851,7 @@ const DeleteRegistrationDialog = ({
                 </TableRow>
               </TableBody>
             </Table>
-          </DialogDescription>
-
+          </div>
           
           <div className='flex gap-2 justify-end mt-2'>
             <DialogClose asChild>
@@ -910,7 +924,9 @@ const PayRegsDialog = ({
           <DialogTitle>Pagar montos pendientes</DialogTitle>
           <DialogDescription>
             Se le redirigirá al portal de Mercado Pago para completar el pago de los montos pendientes.
+          </DialogDescription>
 
+          <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
             <Table className='border mt-4'>
               <TableHeader>
                 <TableRow>
@@ -943,7 +959,7 @@ const PayRegsDialog = ({
                 </TableRow>
               </TableBody>
             </Table>
-          </DialogDescription>
+          </div>
 
           <div className='flex gap-2 justify-end mt-2'>
             <DialogClose asChild>

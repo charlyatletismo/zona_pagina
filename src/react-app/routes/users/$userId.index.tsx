@@ -564,39 +564,41 @@ const TransferManagedUsersDialog = ({
               Selecciona los atletas que quieras administrar.
               Luego podrás reasignarlos a otro manager o remover su management.
             </span>
+          </DialogDescription>
 
-            {(managedUsers && managedUsers.length > 0) ? (
+          {(managedUsers && managedUsers.length > 0) ? (
+            <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
               <ManagedUsersTable
-              managedUsers={managedUsers || []}
-              rowSelection={rowSelection}
-              setRowSelection={setRowSelection}
-              />
-            ) : (
-              <div className='p-4 text-center'>No hay atletas a cargo</div>
-            )}
-            
-            <div className='mt-4'>
-              <ComboBoxIdName
-                data={managers
-                  .filter(manager => manager.id !== userId)
-                  .map(
-                    manager => ({
-                      id: manager.id,
-                      name: `${manager.surname} ${manager.name}`
-                    }))
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                }
-                label="Reasignar nuevo manager"
-                name="newManager"
-                value={newManager}
-                onChange={(value) => {
-                  setNewManager(value || "");
-                }}
-                onBlur={() => {}}
-                placeholder="DNI del nuevo manager"
+                managedUsers={managedUsers || []}
+                rowSelection={rowSelection}
+                setRowSelection={setRowSelection}
               />
             </div>
-          </DialogDescription>
+          ) : (
+            <div className='p-4 text-center'>No hay atletas a cargo</div>
+          )}
+          
+          <div className='mt-4'>
+            <ComboBoxIdName
+              data={managers
+                .filter(manager => manager.id !== userId)
+                .map(
+                  manager => ({
+                    id: manager.id,
+                    name: `${manager.surname} ${manager.name}`
+                  }))
+                .sort((a, b) => a.name.localeCompare(b.name))
+              }
+              label="Reasignar nuevo manager"
+              name="newManager"
+              value={newManager}
+              onChange={(value) => {
+                setNewManager(value || "");
+              }}
+              onBlur={() => {}}
+              placeholder="DNI del nuevo manager"
+            />
+          </div>
 
           <div className='flex gap-2 justify-end mt-2'>
             <DialogClose asChild>
