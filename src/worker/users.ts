@@ -263,9 +263,10 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     const user = await db
       .select({ id: users.id, role: users.role })
       .from(users)
-      .where(eq(users.manager_id, userId))
+      .where(eq(users.id, userId))
       .get();
     if (!user) {
+      console.log(`User ${userId} not found`);
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
     if (user.role === ATHLETES_MANAGER_ROLE) {
