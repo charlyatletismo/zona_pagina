@@ -37,6 +37,7 @@ import {
   getPaidRegistrations,
   updateSpEventRegistrationKitDeliveredStatus,
   getAllUsersRegistrations,
+  getAllUsersRegistrationsSafe,
   getUserRegistrationWithEvent,
 } from "./lib/sportingEventRegistrations";
 import { buildItemId } from "./lib/utilsPayment";
@@ -361,7 +362,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
     const { registrationIds } : { registrationIds: number[] } = await c.req.json();
-    const data = await getAllUsersRegistrations(db, Number(id), managerId, registrationIds);
+    const data = await getAllUsersRegistrationsSafe(db, Number(id), managerId, registrationIds);
     if (!data || data.length !== registrationIds.length) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 403);
     }
