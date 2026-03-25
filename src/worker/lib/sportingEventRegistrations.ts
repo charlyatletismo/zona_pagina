@@ -353,6 +353,26 @@ export const getUserRegistrationWithEvent = async (
 }
 
 
+export const getAllUsersRegistrationsSafe = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  managerId?: string,
+  registrationIds?: number[]
+) => {
+  if (registrationIds && registrationIds.length > 0) {
+    const finalData = []
+    for (let index = 0; index < registrationIds.length; index += 25) {
+      const slicedRegs = registrationIds.slice(index, index + 25);
+      const data = await getAllUsersRegistrations(db, eventId, managerId, slicedRegs);
+      finalData.push(...(data || []));
+    }
+    return finalData;
+  } else {
+    return await getAllUsersRegistrations(db, eventId, managerId);
+  }
+}
+
+
 export const getAllUsersRegistrations = async (
   db: DrizzleD1Database,
   eventId: number,
@@ -368,6 +388,13 @@ export const getAllUsersRegistrations = async (
   const whereClause = [
     eq(sportingEventRegistrations.event_id, eventId),
   ];
+  if (registrationIds) {
+    whereClause.push(inArray(
+      sportingEventRegistrations.id,
+      registrationIds
+    ));
+  }
+  let registrations = []
   if (managerId) {
     const resUsers = await db
       .select({
@@ -376,35 +403,53 @@ export const getAllUsersRegistrations = async (
       .from(users)
       .where(eq(users.manager_id, managerId))
       .all();
-    whereClause.push(inArray(
-      sportingEventRegistrations.user_id,
-      resUsers.map(u => u.id as string)
-    ));
+    for (let index = 0; index < resUsers.length; index += 50) {
+      const slicedUsers = resUsers.slice(index, index + 50);
+      const regs = await db
+        .select(
+          ARSportingEventRegistrationSchema
+            .shape.registration.keyof().options
+              .reduce((acc, field) => {
+                  acc[field] = sportingEventRegistrations[field];
+                  return acc;
+                },
+                {} as SelectedFields
+              ),
+        )
+        .from(sportingEventRegistrations)
+        .where(
+          and(...[
+            ...whereClause,
+            inArray(
+              sportingEventRegistrations.user_id,
+              slicedUsers.map(u => u.id as string)
+            )
+          ])
+        )
+        .all();
+      registrations.push(...regs);
+    }
+  } else {
+    const allRegistrations = await db
+      .select(
+        ARSportingEventRegistrationSchema
+          .shape.registration.keyof().options
+            .reduce((acc, field) => {
+                acc[field] = sportingEventRegistrations[field];
+                return acc;
+              },
+              {} as SelectedFields
+            ),
+      )
+      .from(sportingEventRegistrations)
+      .where(
+        whereClause.length > 1
+        ? and(...whereClause)
+        : whereClause[0]
+      )
+      .all();
+    registrations = allRegistrations;
   }
-  if (registrationIds) {
-    whereClause.push(inArray(
-      sportingEventRegistrations.id,
-      registrationIds
-    ));
-  }
-  const registrations = await db
-    .select(
-      ARSportingEventRegistrationSchema
-        .shape.registration.keyof().options
-          .reduce((acc, field) => {
-              acc[field] = sportingEventRegistrations[field];
-              return acc;
-            },
-            {} as SelectedFields
-          ),
-    )
-    .from(sportingEventRegistrations)
-    .where(
-      whereClause.length > 1
-      ? and(...whereClause)
-      : whereClause[0]
-    )
-    .all();
   const circuits = await db
     .select({
       id: sportingEventCircuits.id,
@@ -418,25 +463,42 @@ export const getAllUsersRegistrations = async (
       // eq(sportingEventCircuits.competitive, 1)
     ))
     .all();
-  const usersData = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      surname: users.surname,
-      phone: users.phone,
-      email: users.email,
-      sex: users.sex,
-    })
-    .from(users)
-    .where(inArray(users.id, registrations.map(r => r.user_id as string)))
-    .all();
+  
+  type UserData = {
+    id: string;
+    name: string | null;
+    surname: string | null;
+    phone: string | null;
+    email: string | null;
+    sex: string | null;
+  };
+  const usersData: UserData[] = []
+  const usersIds = registrations.map(r => r.user_id as string).filter((id): id is string => id !== null && id !== undefined);
+  for (let index = 0; index < usersIds.length; index+=50) {
+    const slicedUsers = usersIds.slice(index, index + 50);
+    const usersDataDb = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+        phone: users.phone,
+        email: users.email,
+        sex: users.sex,
+      })
+      .from(users)
+      .where(inArray(users.id, slicedUsers))
+      .all();
+    usersData.push(...usersDataDb);
+  }
+  const uniqueTrainingTeamsIds = [...new Set(registrations.map(r => r.training_team_id).filter((id): id is number => id !== null))];
+  console.log("Unique training team IDs to fetch:", uniqueTrainingTeamsIds);
   const trainingTeamsData = await db
     .select({
       id: trainingTeams.id,
       name: trainingTeams.name,
     })
     .from(trainingTeams)
-    .where(inArray(trainingTeams.id, registrations.map(r => r.training_team_id as number)))
+    .where(inArray(trainingTeams.id, uniqueTrainingTeamsIds))
     .all();
 
   const a_ranges = event.age_ranges

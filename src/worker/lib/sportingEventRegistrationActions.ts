@@ -15,32 +15,38 @@ import { DataResult, NoDataResult } from './utils';
 import { getPendingToPayAmount } from './sportingEventRegistrations';
 
 
-const isAuthorizedReg = async (db: DrizzleD1Database, reqUserId: string, userId: string) => {
-  const usersRel = await db
-    .select({
-      id: users.id,
-      manager_id: users.manager_id,
-      role: users.role,
-    })
+const isAuthorizedRegMultiple = async (db: DrizzleD1Database, reqUserId: string, userIds: string[]) => {
+  const reqUser = await db
+    .select({ id: users.id, role: users.role })
     .from(users)
-    .where(inArray(users.id, [reqUserId, userId]))
-    .all();
-  const reqUserRel = usersRel.find(u => u.id === reqUserId);
-  const targetUserRel = usersRel.find(u => u.id === userId);
-  if (!reqUserRel || !targetUserRel) {
+    .where(eq(users.id, reqUserId))
+    .limit(1)
+    .get();
+  if (!reqUser) {
     return false;
   }
-  if (!authorizedOrg(reqUserRel.role)) {
-    if (!authorizedAthMan(reqUserRel.role)) {
-      return false;
-    }
-    if (targetUserRel.manager_id !== reqUserId) {
+  if (authorizedOrg(reqUser.role)) {
+    return true;
+  }
+  if (!authorizedAthMan(reqUser.role)) {
+    return false;
+  }
+  for (let index = 0; index < userIds.length; index += 50) {
+    const slicedUsers = userIds.slice(index, index + 50);
+    const minUsersData = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(
+        inArray(users.id, slicedUsers),
+        eq(users.manager_id, reqUserId)
+      ))
+      .all();
+    if (minUsersData.length === 0 || minUsersData.length !== slicedUsers.length) {
       return false;
     }
   }
   return true;
 }
-
 
 export const registerToSpEvent = async (
   db: DrizzleD1Database,
@@ -51,8 +57,8 @@ export const registerToSpEvent = async (
   circuitId: number
 ): Promise<DataResult> => {
   if (!reqIsOrganizer) {
-    const authorized = await Promise.all(userIds.map(userId => userId === reqUserId || isAuthorizedReg(db, reqUserId, userId)));
-    if (!authorized.every(a => a)) {
+    const isAuthorized = await isAuthorizedRegMultiple(db, reqUserId, userIds);
+    if (!isAuthorized) {
       return { status: 403, message: M.UNAUTHORIZED };
     }
   }
@@ -84,33 +90,49 @@ export const registerToSpEvent = async (
     return { status: 400, message: M.SPORTING_EVENT_FEE_NOT_SET};
   }
 
-  const registration = await db.select({id: sportingEventRegistrations.id})
-    .from(sportingEventRegistrations)
-    .where(and(
-      inArray(sportingEventRegistrations.user_id, userIds),
-      eq(sportingEventRegistrations.event_id, eventId),
-    ))
-    .limit(1);
-  if (registration.length > 0) {
-    return { status: 400, message: M.SPORTING_EVENT_ALREADY_REGISTERED };
+  console.log(new Date().toISOString(), "Registering users to event", eventId, "User IDs:", userIds.length);
+  for (let index = 0; index < userIds.length; index += 50) {
+    const slicedUsers = userIds.slice(index, index + 50);
+    const registrations = await db
+      .select({
+        id: sportingEventRegistrations.id,
+        user_id: sportingEventRegistrations.user_id
+      })
+      .from(sportingEventRegistrations)
+      .where(and(
+        inArray(sportingEventRegistrations.user_id, slicedUsers),
+        eq(sportingEventRegistrations.event_id, eventId),
+      ))
+      .all();
+    if (registrations.length > 0) {
+      console.log("Already registered users... Filtering out...")
+      userIds = userIds.filter(uid => !registrations.some(r => r.user_id === uid));
+    }
   }
-  const usersData = await db
-    .select({
-      id: users.id,
-      sex: users.sex,
-      date_of_birth: users.date_of_birth,
-      clothing_shirt_size: users.clothing_shirt_size,
-      special_needs: users.special_needs,
-      discount_percentage: users.discount_percentage,
-      training_team_id: users.training_team_id,
-    })
-    .from(users)
-    .where(inArray(users.id, userIds))
-    .all();
+  console.log(new Date().toISOString(), "Users to register after filtering already registered:", userIds.length);
+  const usersData = []
+  // console.log("Users to register:", userIds.length);
+  for (let index = 0; index < userIds.length; index += 50) {
+    const slicedUsers = userIds.slice(index, index + 50);
+    const usersDataDb = await db
+      .select({
+        id: users.id,
+        sex: users.sex,
+        date_of_birth: users.date_of_birth,
+        clothing_shirt_size: users.clothing_shirt_size,
+        special_needs: users.special_needs,
+        discount_percentage: users.discount_percentage,
+        training_team_id: users.training_team_id,
+      })
+      .from(users)
+      .where(inArray(users.id, slicedUsers))
+      .all();
+    usersData.push(...usersDataDb);
+  }
+  console.log(new Date().toISOString(), "Fetched users data:", usersData.length);
   if (usersData.length === 0 || usersData.length !== userIds.length) {
     return { status: 404, message: M.USER_NOT_FOUND };
   }
-
   if (usersData.some(u => !u.clothing_shirt_size)) {
     return { status: 400, message: M.USER_SHIRT_SIZE_NOT_SET };
   }
@@ -132,62 +154,77 @@ export const registerToSpEvent = async (
     return yearsDiff;
   };
 
+  const uniqueClothingSizes = [...new Set(usersData.map(u => u.clothing_shirt_size!))];
+  console.log(new Date().toISOString(), "Unique clothing sizes to reserve:", uniqueClothingSizes);
   const usersClothing = await db
     .select()
     .from(sportingEventClothing)
     .where(and(
       eq(sportingEventClothing.event_id, eventId),
-      inArray(sportingEventClothing.size, usersData.map(u => u.clothing_shirt_size!)),
+      inArray(sportingEventClothing.size, uniqueClothingSizes),
     ))
     .all();
 
-  const results = []
-  for (const userData of usersData) {
+  console.log(new Date().toISOString(), "Fetched clothing data for sizes:", usersClothing.length);
+
+  const promotional = (
+      spEvent[0].fee_amount_promotional
+      && spEvent[0].promotional_fee_end
+    )
+    ? (new Date(spEvent[0].promotional_fee_end) > new Date())
+    : false;
+
+  const dataToInsert = usersData.map(userData => ({
+    user_id: userData.id,
+    training_team_id: userData.training_team_id,
+    event_id: eventId,
+    circuit_id: circuitId,
+    age_at_registration: calculateAge(new Date(userData.date_of_birth!)),
+    discount_percentage: userData.discount_percentage || 0,
+    discount_reason:
+      userData.discount_percentage
+      ? "Descuento automático para usuario (fijado en la configuración del usuario)"
+      : null,
+    // registration_date default to now in the database
+    promotional_fee_applied: promotional ? 1 : 0,
+    // paid_amount default to zero in the database
+    status: "pending",
+    demanded_clothing_id: usersClothing.find(uc => uc.size === userData.clothing_shirt_size)?.id || null,
+    // reserved_clothing_id default to null in the database
+    // chip_id default to null in the database
+    created_by: reqUserId,
+    updated_by: reqUserId,
+  }))
+  const rIds: {id: number, user_id: string}[] = [];
+  for (let index = 0; index < dataToInsert.length; index += 7) {
+    const dataSliced = dataToInsert.slice(index, index + 7);
+    const r = await db
+      .insert(sportingEventRegistrations)
+      .values(dataSliced)
+      .returning({
+        id: sportingEventRegistrations.id,
+        user_id: sportingEventRegistrations.user_id,
+      });
+    rIds.push(...r);
+  }
+
+  const regByUserId = new Map(rIds.map(reg => [reg.user_id, reg.id]));
+  const results = usersData.map(userData => {
     const feeAmountAfterDiscount = feeAmount * (1 - (userData.discount_percentage || 0) / 100);
     const status = feeAmountAfterDiscount > 0 ? "pending" : "paid";
-
-    const promotional = (
-        spEvent[0].fee_amount_promotional
-        && spEvent[0].promotional_fee_end
-      )
-      ? (new Date(spEvent[0].promotional_fee_end) > new Date())
-      : false;
-
-    const r = await db.insert(sportingEventRegistrations).values({
-      user_id: userData.id,
-      training_team_id: userData.training_team_id,
-      event_id: eventId,
-      circuit_id: circuitId,
-      age_at_registration: calculateAge(new Date(userData.date_of_birth!)),
-      discount_percentage: userData.discount_percentage || 0,
-      discount_reason:
-        userData.discount_percentage
-        ? "Descuento automático para usuario (fijado en la configuración del usuario)"
-        : null,
-      // registration_date default to now in the database
-      promotional_fee_applied: promotional ? 1 : 0,
-      // paid_amount default to zero in the database
-      status: "pending",
-      demanded_clothing_id: usersClothing.find(uc => uc.size === userData.clothing_shirt_size)?.id || null,
-      // reserved_clothing_id default to null in the database
-      // chip_id default to null in the database
-      created_by: reqUserId,
-      updated_by: reqUserId,
-    }).returning({ id: sportingEventRegistrations.id });
-
-    if (status === 'paid') {
-      await setRegistrationAsPaid(db, r[0].id, reqUserId);
-    }
-
-    results.push({
-      id: r[0].id,
+    return {
+      id: regByUserId.get(userData.id)!,
       user_id: userData.id,
       status,
       circuit_id: circuitId,
       pending_to_pay: feeAmountAfterDiscount,
-    })
+    }
+  })
+  const paidRegs = results.filter(r => r.status === 'paid');
+  for (const reg of paidRegs) {
+    await setRegistrationAsPaid(db, reg.id, reqUserId);
   }
-
+  console.log(new Date().toISOString(), "Finished registering users to event", eventId, "Registrations created:", results.length);
   return {
     status: 200,
     message: M.SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY,
@@ -202,31 +239,45 @@ export const deleteRegistrationToSpEvent = async (
     reqIsOrganizer: boolean,
     userIds: string[]): Promise<NoDataResult> => {
   if (!reqIsOrganizer) {
-    const authorized = await Promise.all(userIds.map(userId => userId === reqUserId || isAuthorizedReg(db, reqUserId, userId)));
-    if (!authorized.every(a => a)) {
+    let now_str = new Date().toISOString();
+    console.log(now_str, "Checking authorization for deleting registrations for users:", userIds.length);
+
+    const isAuthorized = await isAuthorizedRegMultiple(db, reqUserId, userIds);
+    if (!isAuthorized) {
       return { status: 403, message: M.UNAUTHORIZED };
     }
+    now_str = new Date().toISOString();
+    console.log(now_str, "Authorization results:", isAuthorized);
   }
-  const registration = await db
-    .select({
-      id: sportingEventRegistrations.id,
-      status: sportingEventRegistrations.status
-    })
-    .from(sportingEventRegistrations)
-    .where(and(
-      inArray(sportingEventRegistrations.user_id, userIds),
-      eq(sportingEventRegistrations.event_id, eventId),
-    ))
-    .all();
-  if (registration.length === 0 || registration.length !== userIds.length) {
+  const registrations = []
+  for (let index = 0; index < userIds.length; index += 50) {
+    const slicedUsers = userIds.slice(index, index + 50);
+    const regs = await db
+      .select({
+        id: sportingEventRegistrations.id,
+        status: sportingEventRegistrations.status
+      })
+      .from(sportingEventRegistrations)
+      .where(and(
+        inArray(sportingEventRegistrations.user_id, slicedUsers),
+        eq(sportingEventRegistrations.event_id, eventId),
+      ))
+      .all();
+    registrations.push(...regs);
+  }
+  if (registrations.length === 0 || registrations.length !== userIds.length) {
     return { status: 404, message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND };
   }
-  if (registration.some(r => r.status !== 'pending') && !reqIsOrganizer) {
+  if (registrations.some(r => r.status !== 'pending') && !reqIsOrganizer) {
     return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_CANNOT_BE_DELETED };
   }
-  await db.delete(sportingEventRegistrations)
-    .where(inArray(sportingEventRegistrations.id, registration.map(r => r.id)))
-    .run();
+  for (let index = 0; index < registrations.length; index += 50) {
+    const slicedRegs = registrations.slice(index, index + 50);
+    await db.delete(sportingEventRegistrations)
+      .where(inArray(sportingEventRegistrations.id, slicedRegs.map(r => r.id)))
+      .run();
+  }
+  console.log(new Date().toISOString(), "Deleted registrations for users:", userIds.length);
   return { status: 200, message: M.SPORTING_EVENT_REGISTRATION_DELETED_SUCCESSFULLY };
 }
 
@@ -298,7 +349,7 @@ export const setRegistrationAsPaid = async (
     throw new Error("Circuit data not found for circuit_id " + registration.circuit_id);
   }
 
-  // BIB Assingment
+  // BIB Assignment
   let nextBibNumber = (latestBibFromRegistrations && latestBibFromRegistrations.bib)
     ? latestBibFromRegistrations.bib + 1
     : circuitData.bib_start;
