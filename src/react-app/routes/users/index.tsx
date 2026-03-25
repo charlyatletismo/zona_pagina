@@ -230,10 +230,13 @@ function RouteComponent() {
         role: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
         manager_full_name: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
       },
-      sorting: [
+      sorting: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE ? [
         { id: "role", desc: true },
         { id: "surname", desc: false },
-        { id: "name", desc: false }
+        { id: "name", desc: false },
+      ] : [
+        { id: "surname", desc: false },
+        { id: "name", desc: false },
       ]
     },
     globalFilterFn: customFilterFn,
