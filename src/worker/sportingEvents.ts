@@ -401,9 +401,9 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
           })
         ),
         back_urls: {
-          success: `${c.env.BASE_URL}/sportingEvents/${id}/register`,
-          failure: `${c.env.BASE_URL}/sportingEvents/${id}/register`,
-          pending: `${c.env.BASE_URL}/sportingEvents/${id}/register`,
+          success: `${c.env.BASE_URL}/sportingEvents/${id}/registerAthletes`,
+          failure: `${c.env.BASE_URL}/sportingEvents/${id}/registerAthletes`,
+          pending: `${c.env.BASE_URL}/sportingEvents/${id}/registerAthletes`,
         },
         auto_return: "approved",
         // notification_url: `${c.env.BASE_URL}/api/webhook/mercadoPago/payment`,
