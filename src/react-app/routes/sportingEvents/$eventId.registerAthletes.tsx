@@ -23,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from '@/components/ui/spinner';
 import { MercadoPagoLogo } from '@/components/icons/mercadoPago';
 import {
   Table,
@@ -152,6 +153,7 @@ function RouteComponent() {
     canDelete: false,
   });
 
+  const [loading, setLoading] = React.useState(false);
   const [error, _setError] = React.useState('');
   const [success, _setSuccess] = React.useState('');
   const setError = (msg: string) => {
@@ -493,6 +495,12 @@ function RouteComponent() {
         </div>
       )}
 
+      {loading ? (
+        <div className="my-4 bg-muted text-muted-foreground p-3 rounded-md text-sm flex gap-4 items-center">
+          <Spinner /><div>Cargando...</div>
+        </div>) : null
+      }
+
       <GoBackButton />
 
       <RegisterUsersDialog
@@ -502,6 +510,7 @@ function RouteComponent() {
         eventData={eventData}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         />
       
       <DeleteRegistrationDialog
@@ -510,6 +519,7 @@ function RouteComponent() {
         eventId={eventId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         />
 
       <PayRegsDialog
@@ -518,6 +528,7 @@ function RouteComponent() {
         eventId={eventId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         />
 
       <SeeRegistrationDetailsDialog
@@ -547,7 +558,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canRegister}
+          disabled={!generalActionBtnsEnabled.canRegister || loading}
           onClick={() => {
             setRegisterUsers(Object.keys(rowSelection).map(
                 id => finalData.find(
@@ -563,7 +574,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canPay}
+          disabled={!generalActionBtnsEnabled.canPay || loading}
           onClick={() => {
             setPayRegs(Object.keys(rowSelection).map(
                 id => finalData.find(
@@ -579,7 +590,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canDelete}
+          disabled={!generalActionBtnsEnabled.canDelete || loading}
           onClick={() => {
             setDeleteRegs(Object.keys(rowSelection).map(
                 id => finalData.find(
@@ -693,6 +704,7 @@ const RegisterUsersDialog = ({
   eventData,
   setError,
   setSuccess,
+  setLoading,
 }: {
   regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null,
   setRegs: (regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null) => void,
@@ -700,6 +712,7 @@ const RegisterUsersDialog = ({
   eventData: z.infer<typeof ARSportingEventSchema>,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
 }) => {
   const [circuitId, setCircuitId] = React.useState<number | null>(null);
 
@@ -772,12 +785,14 @@ const RegisterUsersDialog = ({
                     e.preventDefault();
                     return;
                   }
+                  setLoading(true);
                   // Lógica para registrar usuarios
                   const r = await postAuthenticated<
                     {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
                     >(`/api/sportingEvents/${eventId}/register`,
                       {userIds: regs?.map(reg => reg.user_id), circuitId: circuitId}
                     );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error registrando usuarios:', getMessage(r.body?.message, 'Error desconocido'));
                     setError('Hubo un error al registrar los usuarios. '
@@ -811,12 +826,14 @@ const DeleteRegistrationDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
 }: {
   regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null,
   setRegs: (regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null) => void,
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
 }) => {
   return (
     <Dialog open={regs !== null} onOpenChange={() => {
@@ -869,10 +886,12 @@ const DeleteRegistrationDialog = ({
                 variant="destructive"
                 className='max-w-20 cursor-pointer'
                 onClick={async () => {
+                  setLoading(true);
                   // Lógica para borrar inscripciones de usuarios
                   const r = await postAuthenticated(`/api/sportingEvents/${eventId}/unregister`,
                       {userIds: regs?.map(reg => reg.user_id)}
                     );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error borrando inscripciones:', getMessage(r.body?.message, 'Error desconocido'));
                     setError('Hubo un error al borrar las inscripciones. '
@@ -904,12 +923,14 @@ const PayRegsDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
 }: {
   regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null,
   setRegs: (regs: z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null) => void,
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
 }) => {
 
   return (
@@ -977,11 +998,13 @@ const PayRegsDialog = ({
                 variant="outline"
                 className='cursor-pointer'
                 onClick={async () => {
+                  setLoading(true);
                   // Lógica para redirigir al portal de pago de MercadoPago
                   const r = await postAuthenticated(
                     `/api/sportingEvents/${eventId}/payMultipleRegs`,
                     {registrationIds: regs?.map(r => r.id) },
                   );
+                  setLoading(false);
                   if (r.status !== 200) {
                     setError('Hubo un error al redirigir a Mercado Pago. '
                       + getMessage(r.body?.message, 'Error desconocido') );

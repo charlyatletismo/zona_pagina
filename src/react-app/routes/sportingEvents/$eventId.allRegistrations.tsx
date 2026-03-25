@@ -32,6 +32,7 @@ import {
   UngroupIcon,
 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from '@/components/ui/spinner';
 import {
   Table,
   TableBody,
@@ -117,6 +118,7 @@ function RouteComponent() {
     canReactivate: false,
   });
 
+  const [loading, setLoading] = React.useState(false);
   const [error, _setError] = React.useState('');
   const [success, _setSuccess] = React.useState('');
   const setError = (msg: string) => {
@@ -579,6 +581,12 @@ function RouteComponent() {
         </div>
       )}
 
+      {loading ? (
+        <div className="my-4 bg-muted text-muted-foreground p-3 rounded-md text-sm flex gap-4 items-center">
+          <Spinner /><div>Cargando...</div>
+        </div>) : null
+      }
+
       <GoBackButton />
 
       <AddPaymentRegDialog
@@ -594,7 +602,9 @@ function RouteComponent() {
         setRegsId={setApplyDiscountRegId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         onSuccess={(regs) => {
+          setRowSelection({});
           setData(prevData => prevData.map(reg => {
             const found = regs.find(r => r.id === reg.id)
             if (!found) return reg;
@@ -615,7 +625,9 @@ function RouteComponent() {
         setRegsId={setMarkPaidRegId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         onSuccess={(regs) => {
+          setRowSelection({});
           setData(prevData => prevData.map(reg => {
             const found = regs.find(r => r.id === reg.id)
             if (!found) return reg;
@@ -634,8 +646,8 @@ function RouteComponent() {
         setRegsId={setCancelingRegId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         onSuccess={async () => {
-          setSuccess('Inscripciones canceladas exitosamente.');
           setTimeout(() => {
             window.location.reload();
           }, 500);
@@ -648,6 +660,7 @@ function RouteComponent() {
         setRegsId={setReactivatingRegId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         onSuccess={async () => {
           setTimeout(() => {
             window.location.reload();
@@ -661,6 +674,7 @@ function RouteComponent() {
         setRegId={setTransferringRegId}
         setError={setError}
         setSuccess={setSuccess}
+        setLoading={setLoading}
         onSuccess={async () => {
           setTimeout(() => {
             window.location.reload();
@@ -701,7 +715,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canApplyDiscount}
+          disabled={!generalActionBtnsEnabled.canApplyDiscount || loading}
           onClick={() => {
             setApplyDiscountRegId(Object.keys(rowSelection).map(id => Number(id)));
           }}
@@ -712,7 +726,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canMarkPaid}
+          disabled={!generalActionBtnsEnabled.canMarkPaid || loading}
           onClick={() => {
             setMarkPaidRegId(Object.keys(rowSelection).map(id => Number(id)));
           }}
@@ -723,7 +737,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canCancel}
+          disabled={!generalActionBtnsEnabled.canCancel || loading}
           onClick={() => {
             setCancelingRegId(Object.keys(rowSelection).map(id => Number(id)));
           }}
@@ -734,7 +748,7 @@ function RouteComponent() {
         <Button
           variant="outline"
           className='cursor-pointer'
-          disabled={!generalActionBtnsEnabled.canReactivate}
+          disabled={!generalActionBtnsEnabled.canReactivate || loading}
           onClick={() => {
             setReactivatingRegId(Object.keys(rowSelection).map(id => Number(id)));
           }}
@@ -961,6 +975,7 @@ const ApplyDiscountRegDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
   onSuccess,
 }: {
   regsId: number[] | null,
@@ -968,6 +983,7 @@ const ApplyDiscountRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
   onSuccess: (regs: {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]) => void,
 }) => {
   const [discount, setDiscount] = React.useState(0);
@@ -1031,11 +1047,13 @@ const ApplyDiscountRegDialog = ({
                       return;
                     }
                     // Lógica para sacar un descuento
+                    setLoading(true);
                     const r = await postAuthenticated<
                       {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
                       >(`/api/sportingEvents/${eventId}/registrations/applyDiscount`,
                         {registrationIds: regsId, discount: 0}
                       );
+                    setLoading(false);
                     if (r.status !== 200) {
                       console.error('Error sacando el descuento:', getMessage(r.body?.message, 'Error desconocido'));
                       setError('Hubo un error al sacar el descuento. Por favor, intenta nuevamente.');
@@ -1073,11 +1091,13 @@ const ApplyDiscountRegDialog = ({
                     return;
                   }
                   // Lógica para aplicar un descuento
+                  setLoading(true);
                   const r = await postAuthenticated<
                     {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
                     >(`/api/sportingEvents/${eventId}/registrations/applyDiscount`,
                       {registrationIds: regsId, discount: discount, reason: reason}
                     );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error aplicando el descuento:', getMessage(r.body?.message, 'Error desconocido'));
                     setError('Hubo un error al aplicar el descuento. Por favor, intenta nuevamente.');
@@ -1107,6 +1127,7 @@ const MarkAsPaidRegDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
   onSuccess,
 }: {
   regsId: number[] | null,
@@ -1114,6 +1135,7 @@ const MarkAsPaidRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
   onSuccess: (regs: {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]) => void,
 }) => {
   return (
@@ -1148,12 +1170,14 @@ const MarkAsPaidRegDialog = ({
                 className='max-w-20 cursor-pointer'
                 onClick={async () => {
                   // Lógica para desestimar el monto pendiente
+                  setLoading(true);
                   const r = await postAuthenticated<
                     {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]
                     >(
                     `/api/sportingEvents/${eventId}/registrations/dismissPending`,
                     {registrationIds: regsId}
                   );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error desestimando el monto pendiente:', getMessage(r.body?.message, 'Error desconocido'));
                     setError('Hubo un error al desestimar el monto pendiente. Por favor, intenta nuevamente.');
@@ -1181,6 +1205,7 @@ const CancelRegDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
   onSuccess,
 }: {
   regsId: number[] | null,
@@ -1188,6 +1213,7 @@ const CancelRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
   onSuccess: () => void,
 }) => {
   return (
@@ -1223,15 +1249,17 @@ const CancelRegDialog = ({
                 className='max-w-20 cursor-pointer'
                 onClick={async () => {
                   // Lógica para cancelar la inscripción
+                  setLoading(true);
                   const r = await postAuthenticated(
                     `/api/sportingEvents/${eventId}/registrations/cancel`,
                     {registrationIds: regsId}
                   );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error canceling registration:', getMessage(r.body?.message, 'Error desconocido'));
                     setError('Hubo un error al cancelar la inscripción. Por favor, intenta nuevamente.');
                   } else {
-                    setSuccess('Inscripción cancelada exitosamente.');
+                    setSuccess('Inscripciones canceladas exitosamente.');
                     onSuccess();
                   }
                   setRegsId(null);
@@ -1253,6 +1281,7 @@ const ReactivatingRegDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
   onSuccess,
 }: {
   regsId: number[] | null,
@@ -1260,6 +1289,7 @@ const ReactivatingRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
   onSuccess: () => void,
 }) => {
   return (
@@ -1291,10 +1321,12 @@ const ReactivatingRegDialog = ({
                 className='max-w-20 cursor-pointer'
                 onClick={async () => {
                   // Lógica para reactivar la inscripción
+                  setLoading(true);
                   const r = await postAuthenticated(
                     `/api/sportingEvents/${eventId}/registrations/reactivate`,
                     {registrationIds: regsId}
                   );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error reactivating registration:', getMessage(r.body?.message, 'Error desconocido'));
                     setError('Hubo un error al reactivar la inscripción. Por favor, intenta nuevamente.');
@@ -1321,6 +1353,7 @@ const TransferRegDialog = ({
   eventId,
   setError,
   setSuccess,
+  setLoading,
   onSuccess,
 }: {
   regId: number | null,
@@ -1328,6 +1361,7 @@ const TransferRegDialog = ({
   eventId: string,
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
   onSuccess: () => void,
 }) => {
   const [benefUserId, setBenefUserId] = React.useState("");
@@ -1372,10 +1406,12 @@ const TransferRegDialog = ({
                     return;
                   }
                   // Lógica para transferir la inscripción
+                  setLoading(true);
                   const r = await postAuthenticated(
                     `/api/sportingEvents/${eventId}/registrations/transfer`,
                     {fromRegistrationId: regId, benefUserId: benefUserId}
                   );
+                  setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error transfiriendo inscripción:', getMessage(r.body?.message, 'Error desconocido'));
                     setError(
