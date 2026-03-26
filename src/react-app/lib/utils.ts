@@ -74,5 +74,10 @@ export const lowerAndRemoveDiacritics = (s: string) => {
 
 export const customFilterFn = (row: any, columnId: string, filterValue: string) => {
   const cellValue: string = row.getValue(columnId);
-  return lowerAndRemoveDiacritics(String(cellValue)).includes(lowerAndRemoveDiacritics(filterValue));
+  const tokens = filterValue.split(' ').filter(token => token.trim() !== '');
+  return tokens
+    .some(token =>
+      lowerAndRemoveDiacritics(String(cellValue))
+        .includes(lowerAndRemoveDiacritics(token))
+      );
 }
