@@ -607,34 +607,84 @@ export const calculatePaidBasedOnTransactions = async (
 }
 
 
-export const applyDiscountToRegistrations = async (
+const getRegistrations = async (
   db: DrizzleD1Database,
   eventId: number,
   registrationIds: number[],
-  discountPercentage: number,
-  reason: string,
-  updatedBy: string,
-): Promise<DataResult> => {
-  const registrations = await db
-    .select({
-      id: sportingEventRegistrations.id,
-      user_id: sportingEventRegistrations.user_id,
-      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
-      paid_amount: sportingEventRegistrations.paid_amount,
-      status: sportingEventRegistrations.status,
-      discount_percentage: sportingEventRegistrations.discount_percentage,
-      discount_reason: sportingEventRegistrations.discount_reason,
-    })
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.event_id, eventId),
-      inArray(sportingEventRegistrations.id, registrationIds),
-    ))
-    .all();
-  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
-    return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
+) => {
+  const registrations: {
+    id: number,
+    promotional_fee_applied: number,
+    paid_amount: number,
+    status: string,
+    discount_percentage: number,
+  }[] = [];
+  for (let index = 0; index < registrationIds.length; index += 50) {
+    const slicedRegs = registrationIds.slice(index, index + 50);
+    const regs = await db
+      .select({
+        id: sportingEventRegistrations.id,
+        promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
+        paid_amount: sportingEventRegistrations.paid_amount,
+        status: sportingEventRegistrations.status,
+        discount_percentage: sportingEventRegistrations.discount_percentage,
+      })
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.event_id, eventId),
+        inArray(sportingEventRegistrations.id, slicedRegs),
+      ))
+      .all();
+    if (regs.length === 0 || regs.length !== slicedRegs.length) {
+      return null;
+    }
+    registrations.push(...regs);
   }
+  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+    return null;
+  }
+  return registrations;
+}
 
+
+const getRegistrationsMin = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  registrationIds: number[],
+) => {
+  const registrations: {
+    id: number,
+    status: string,
+  }[] = [];
+  for (let index = 0; index < registrationIds.length; index += 50) {
+    const slicedRegs = registrationIds.slice(index, index + 50);
+    const regs = await db
+      .select({
+        id: sportingEventRegistrations.id,
+        status: sportingEventRegistrations.status,
+      })
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.event_id, eventId),
+        inArray(sportingEventRegistrations.id, slicedRegs),
+      ))
+      .all();
+    if (regs.length === 0 || regs.length !== slicedRegs.length) {
+      return null;
+    }
+    registrations.push(...regs);
+  }
+  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+    return null;
+  }
+  return registrations;
+}
+
+
+const getEventData = async (
+  db: DrizzleD1Database,
+  eventId: number,
+) => {
   const eventData = await db
     .select({
       fee_amount: sportingEvents.fee_amount,
@@ -645,52 +695,74 @@ export const applyDiscountToRegistrations = async (
     .where(eq(sportingEvents.id, eventId))
     .limit(1)
     .get();
+  return eventData;
+}
+
+
+export const applyDiscountToRegistrations = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  registrationIds: number[],
+  discountPercentage: number,
+  reason: string,
+  updatedBy: string,
+): Promise<DataResult> => {
+  const registrations = await getRegistrations(db, eventId, registrationIds);
+  if (registrations === null) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
+  }
+
+  const eventData = await getEventData(db, eventId);
   if (!eventData) {
     return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
+
   const applyDiscount = Math.max(0, Math.min(100, discountPercentage));
-  const results = []
-  for (const registration of registrations) {
-    const {
-      pending_to_pay
-    } = getPendingToPayAmount(
-      eventData,
-      {
-        ...registration,
-        promotional_fee_applied: registration.promotional_fee_applied === 1,
-        discount_percentage: applyDiscount,
-      }
-    );
+  for (let index = 0; index < registrationIds.length; index += 50) {
+    const slicedRegs = registrationIds.slice(index, index + 50);
     await db.update(sportingEventRegistrations)
       .set({
         discount_percentage: applyDiscount,
         discount_reason: applyDiscount > 0
           ? (reason || `Descuento manual aplicado por ${updatedBy.slice(-3)}`)
           : null,
-        paid_amount: registration.paid_amount,
         updated_at: new Date().toISOString(),
         updated_by: updatedBy,
       })
-      .where(eq(
+      .where(inArray(
         sportingEventRegistrations.id,
-        registration.id
+        slicedRegs
       ));
+  }
+  const results = registrations.map(r => {
+    const {
+      pending_to_pay
+    } = getPendingToPayAmount(
+      eventData,
+      {
+        ...r,
+        promotional_fee_applied: r.promotional_fee_applied === 1,
+        discount_percentage: applyDiscount,
+      }
+    );
     if (pending_to_pay <= 0) {
-      await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
-      results.push({
-        id: registration.id,
+      return {
+        id: r.id,
         status: 'paid',
         discount: applyDiscount,
         pending: 0,
-      })
-    } else {
-      results.push({
-        id: registration.id,
-        status: 'pending',
-        discount: applyDiscount,
-        pending: pending_to_pay,
-      })
+      }
     }
+    return {
+      id: r.id,
+      status: 'pending',
+      discount: applyDiscount,
+      pending: pending_to_pay,
+    }
+  })
+  const paid = results.filter(r => r.status === 'paid');
+  for (const registration of paid) {
+    await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
   }
   return {
     status: 200,
@@ -706,85 +778,29 @@ export const dismissPendingAmountsRegistrations = async (
   registrationIds: number[],
   updatedBy: string,
 ): Promise<DataResult> => {
-  const registrations = await db
-    .select({
-      id: sportingEventRegistrations.id,
-      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
-      paid_amount: sportingEventRegistrations.paid_amount,
-      status: sportingEventRegistrations.status,
-      discount_percentage: sportingEventRegistrations.discount_percentage,
-    })
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.event_id, eventId),
-      inArray(sportingEventRegistrations.id, registrationIds),
-    ))
-    .all();
-  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+  const registrations = await getRegistrations(db, eventId, registrationIds);
+  if (registrations === null) {
     return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
   }
 
-  const eventData = await db
-    .select({
-      fee_amount: sportingEvents.fee_amount,
-      fee_amount_promotional: sportingEvents.fee_amount_promotional,
-      promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
-    })
-    .from(sportingEvents)
-    .where(eq(sportingEvents.id, eventId))
-    .limit(1)
-    .get();
+  const eventData = await getEventData(db, eventId);
   if (!eventData) {
     return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
 
-  const result = []
-  for (const registration of registrations) {
-    if (registration.status === 'paid') {
-      result.push({
-        id: registration.id,
-        status: 'paid',
-        discount: registration.discount_percentage,
-        pending: 0,
-      })
-      continue;
-    }
-    // const {
-    //   current_fee_amount,
-    // } = getPendingToPayAmount(
-    //   eventData,
-    //   {
-    //     ...registration,
-    //     promotional_fee_applied: registration.promotional_fee_applied === 1,
-    //   }
-    // );
-    // const pending = current_fee_amount - registration.paid_amount;
-    // const completeDiscount = 100 * pending / current_fee_amount;
-    // await db.update(sportingEventRegistrations)
-    //   .set({
-    //     discount_percentage: completeDiscount,
-    //     discount_reason: completeDiscount > 0
-    //       ? `Descuento aplicado por ${updatedBy.slice(-3)}, se desestimó el monto pendiente`
-    //       : null,
-    //     updated_at: new Date().toISOString(),
-    //     updated_by: updatedBy,
-    //   })
-    //   .where(eq(
-    //     sportingEventRegistrations.id,
-    //     registration.id
-    //   ));
+  const notpaid = registrations.filter(r => r.status !== 'paid');
+  for (const registration of notpaid) {
     await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
-    result.push({
-      id: registration.id,
-      status: 'paid',
-      discount: registration.discount_percentage,
-      pending: 0,
-    })
   }
   return {
     status: 200,
     message: M.SPORTING_EVENT_REGISTRATIONS_DISMISSED_PENDING_AMOUNTS_SUCCESSFULLY,
-    data: result,
+    data: registrations.map(r => ({
+      id: r.id,
+      status: 'paid',
+      discount: r.discount_percentage,
+      pending: 0,
+    })),
   }
 }
 
@@ -795,22 +811,13 @@ export const cancelRegistrations = async (
   registrationIds: number[],
   updatedBy: string,
 ): Promise<DataResult> => {
-  const registrations = await db
-    .select({
-      id: sportingEventRegistrations.id,
-      status: sportingEventRegistrations.status,
-    })
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.event_id, eventId),
-      inArray(sportingEventRegistrations.id, registrationIds),
-    ))
-    .all();
-  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+  const registrations = await getRegistrationsMin(db, eventId, registrationIds);
+  if (!registrations) {
     return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
   }
 
-  for (const registration of registrations) {
+  for (let index = 0; index < registrationIds.length; index += 50) {
+    const slicedRegs = registrationIds.slice(index, index + 50);
     await db.update(sportingEventRegistrations)
       .set({
         status: 'cancelled',
@@ -820,9 +827,9 @@ export const cancelRegistrations = async (
         updated_at: new Date().toISOString(),
         updated_by: updatedBy,
       })
-      .where(eq(
+      .where(inArray(
         sportingEventRegistrations.id,
-        registration.id
+        slicedRegs
       ));
   }
   return {
@@ -838,67 +845,59 @@ export const reactivateRegistrations = async (
   registrationIds: number[],
   updatedBy: string,
 ): Promise<DataResult> => {
-  const registrations = await db
-    .select({
-      id: sportingEventRegistrations.id,
-      promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
-      paid_amount: sportingEventRegistrations.paid_amount,
-      status: sportingEventRegistrations.status,
-      discount_percentage: sportingEventRegistrations.discount_percentage,
-    })
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.event_id, eventId),
-      inArray(sportingEventRegistrations.id, registrationIds),
-    ))
-    .all();
-  if (registrations.length === 0 || registrations.length !== registrationIds.length) {
+  const registrations = await getRegistrations(db, eventId, registrationIds);
+  if (registrations === null) {
     return { status: 404, message: M.SPORTING_EVENT_REGISTRATIONS_NOT_FOUND };
   }
 
-  const eventData = await db
-    .select({
-      fee_amount: sportingEvents.fee_amount,
-      fee_amount_promotional: sportingEvents.fee_amount_promotional,
-      promotional_fee_payment_due_date: sportingEvents.promotional_fee_payment_due_date,
-    })
-    .from(sportingEvents)
-    .where(eq(sportingEvents.id, eventId))
-    .limit(1)
-    .get();
+  const eventData = await getEventData(db, eventId);
   if (!eventData) {
     return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
 
-  for (const registration of registrations) {
-    if (!['cancelled', 'expired'].includes(registration.status)) {
-      continue;
-    }
-    const {
-      pending_to_pay,
-    } = getPendingToPayAmount(
-      eventData,
-      {
-        ...registration,
-        status: 'pending',
-        promotional_fee_applied: registration.promotional_fee_applied === 1,
-      }
-    );
-    if (pending_to_pay > 0) {
-      await db.update(sportingEventRegistrations)
-        .set({
+  const cancelledOrExpired = registrations
+    .filter(r => ['cancelled', 'expired'].includes(r.status))
+    .map(r => {
+      const {
+        pending_to_pay,
+      } = getPendingToPayAmount(
+        eventData,
+        {
+          ...r,
           status: 'pending',
-          updated_at: new Date().toISOString(),
-          updated_by: updatedBy,
-        })
-        .where(eq(
-          sportingEventRegistrations.id,
-          registration.id
-        ));
-    }
-    else {
-      await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
-    }
+          promotional_fee_applied: r.promotional_fee_applied === 1,
+        }
+      );
+      if (pending_to_pay > 0) {
+        return {
+          id: r.id,
+          status: 'pending',
+          pending_to_pay,
+        }
+      }
+      return {
+        id: r.id,
+        status: 'paid',
+        pending_to_pay: 0,
+      }
+    });
+  const pending = cancelledOrExpired.filter(r => r.status === 'pending');
+  for (let index = 0; index < pending.length; index += 50) {
+    const slicedPending = pending.slice(index, index + 50);
+    await db.update(sportingEventRegistrations)
+      .set({
+        status: 'pending',
+        updated_at: new Date().toISOString(),
+        updated_by: updatedBy,
+      })
+      .where(inArray(
+        sportingEventRegistrations.id,
+        slicedPending.map(r => r.id)
+      ));
+  }
+  const paid = cancelledOrExpired.filter(r => r.status === 'paid');
+  for (const registration of paid) {
+    await setRegistrationAsPaid(db, registration.id, updatedBy, 0);
   }
   return {
     status: 200,
