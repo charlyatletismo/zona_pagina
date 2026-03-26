@@ -13,7 +13,7 @@ import z from 'zod';
 
 
 const SearchSchema = z.object({
-  user_id: z.string().min(4, 'Ingrese al menos 4 dígitos del DNI').optional(),
+  user_id: z.string().min(3, 'Ingrese al menos 3 dígitos del DNI').optional(),
   bib_number: z.number().positive('El número de dorsal debe ser positivo').optional(),
 }).refine((data) => data.user_id || data.bib_number, {
   message: 'Ingrese al menos un criterio de búsqueda (DNI o número de dorsal)',
