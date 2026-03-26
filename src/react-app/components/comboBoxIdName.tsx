@@ -15,7 +15,7 @@ import {
   CommandItem,
 } from "@/components/ui/command"
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn, lowerAndRemoveDiacritics } from '@/lib/utils';
 
 
 export const ComboBoxIdName = ({
@@ -47,13 +47,6 @@ export const ComboBoxIdName = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-
-  const lowerAndRemoveDiacritics = (s: string) => {
-    // Normalize the string to the NFD form, separating base characters from diacritics.
-    // The 'g' flag ensures global replacement (all occurrences).
-    // The 'u' flag enables Unicode property escapes like \p{Diacritic}.
-    return s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-  }
 
   return (
     <div className="space-y-2">
