@@ -767,6 +767,11 @@ const SportingEventForm = (
                   Haga clic en los botones de arriba para agregar tipos de indumentaria.
                   </div>
               )}
+              {freezeClothing && (
+                <div className='text-sm text-gray-500 italic mt-4'>
+                  Por favor, agregue la indumentaria del evento en el apartado de Indumentaria
+                </div>
+              )}
               {field.state.value &&
                 getClothesByType(field.state.value).map(({ key: ctype, data: items }) => (
                 <div key={ctype} className="border rounded-md p-4">
