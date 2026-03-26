@@ -12,6 +12,8 @@ import {
   ArrowUp,
   ArrowDown,
   SearchIcon,
+  EditIcon,
+  InfoIcon,
 } from 'lucide-react';
 import {
   Table,
@@ -33,7 +35,6 @@ import {
 import { customFilterFn } from '@/lib/utils';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
-import { EditIcon, InfoIcon } from 'lucide-react';
 
 
 export const SpBSchema = SportingEventBasicInfoSchema.extend({
