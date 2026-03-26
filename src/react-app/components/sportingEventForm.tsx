@@ -63,6 +63,7 @@ const SportingEventForm = (
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
   const [moreOptions, setMoreOptions] = useState(false);
+  const [freezeClothing, setFreezeClothing] = useState(!!data?.id);
 
   const form = useAppForm({
     defaultValues: data,
@@ -729,6 +730,7 @@ const SportingEventForm = (
                         //   console.log('Initializing clothing array');
                         //   field.handleChange([])
                         // };
+                        setFreezeClothing(false);
                         if (field.state.value?.some(item => item.clothing_type === ctype)) {
                           // Remove existing clothing of this type
                           console.log('Removing clothing type:', ctype);
@@ -745,7 +747,10 @@ const SportingEventForm = (
                         );
                         field.handleChange([...(field.state.value || []), ...newItems]);
                       }}
-                      disabled={field.state.value ? !field.state.value?.some(item => item.clothing_type === ctype) : false}
+                      disabled={
+                        field.state.value
+                        ? !field.state.value?.some(item => item.clothing_type === ctype)
+                        : false}
                     >
                       {ctype === 'tshirt'
                         ? 'Remeras'
@@ -789,6 +794,7 @@ const SportingEventForm = (
                                   onChange={(e) => {
                                     subField.handleChange(e.target.value ? parseInt(e.target.value) : 0);
                                   }}
+                                  disabled={freezeClothing}
                                 />
                               )}
                             />
