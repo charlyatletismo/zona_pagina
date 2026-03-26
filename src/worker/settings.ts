@@ -94,7 +94,7 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       .where(
         and(
           eq(users.role, 'athletes_manager'),
-          like(users.id, `%${partialId}%`)
+          like(users.id, `%${partialId}`)
         )
       )
        .limit(10)

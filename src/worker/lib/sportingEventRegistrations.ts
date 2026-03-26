@@ -557,7 +557,7 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
   const whereClause = and(
     eq(sportingEventRegistrations.event_id, eventId),
     eq(sportingEventRegistrations.status, 'paid'),
-    partialUserId ? like(sportingEventRegistrations.user_id, `%${partialUserId}%`) : undefined,
+    partialUserId ? like(sportingEventRegistrations.user_id, `%${partialUserId}`) : undefined,
     bib ? eq(sportingEventRegistrations.bib_number, Number(bib)) : undefined,
   );
   const registrations = await db

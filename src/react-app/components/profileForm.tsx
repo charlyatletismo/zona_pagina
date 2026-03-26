@@ -638,7 +638,7 @@ export const ProfileForm = ({
                   }
                 }}
                 onBlur={field.handleBlur}
-                placeholder="DNI del manager"
+                placeholder="DNI o últimos 3 dígitos"
                 borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
               />
               {!field.state.meta.isValid && (
