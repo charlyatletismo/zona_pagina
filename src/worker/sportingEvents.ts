@@ -31,6 +31,7 @@ import {
   mainSportingEventsList,
   allSportingEventsList,
   getUserRegisteredSpEvents,
+  getManagedUsersRegisteredSpEvents,
 } from "./lib/sportingEventList";
 import {
   getUserRegistration,
@@ -60,6 +61,12 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     const db = drizzle(c.env.DB);
     const userId: string = c.get('jwtPayload').id;
     const res = await getUserRegisteredSpEvents(db, userId);
+    return c.json({ data: res });
+  })
+  .get("/myManagedUsersEvents", async (c) => {
+    const db = drizzle(c.env.DB);
+    const managerId: string = c.get('jwtPayload').id;
+    const res = await getManagedUsersRegisteredSpEvents(db, managerId);
     return c.json({ data: res });
   })
   .get("/:id", async (c) => {

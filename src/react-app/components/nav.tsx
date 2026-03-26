@@ -29,7 +29,7 @@ const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
 const LINK_USERS = { to: '/users', label: 'Usuarios' };
 const LINK_MANAGE = { to: '/manage', label: 'Gestión' };
 const LINK_MY_EVENTS = { to: '/sportingEvents/myEvents', label: 'Mis Eventos' };
-// const LINK_ATHLETE_STATS = { to: '/athlete/stats', label: 'Estadísticas' };
+const LINK_MY_MANAGED_USERS_EVENTS = { to: '/sportingEvents/myManagedUsersEvents', label: 'Eventos con inscripciones' };
 const LINKS_BY_ROLE: Record<string, Array<{ to: string; label: string }>> = {
   "": [
     LINK_HOME,
@@ -38,14 +38,13 @@ const LINKS_BY_ROLE: Record<string, Array<{ to: string; label: string }>> = {
   ],
   [roles.ATHLETE_ROLE]: [
     LINK_HOME,
-    // LINK_ATHLETE_STATS,
     LINK_MY_EVENTS,
   ],
   [roles.ATHLETES_MANAGER_ROLE]: [
     LINK_HOME,
     LINK_USERS,
-    // LINK_ATHLETE_STATS,
     LINK_MY_EVENTS,
+    LINK_MY_MANAGED_USERS_EVENTS,
   ],
   [roles.ADMIN_ROLE]: [
     LINK_HOME,
