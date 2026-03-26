@@ -23,7 +23,7 @@ import { Route as LocationsIndexRouteImport } from './routes/locations/index'
 import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
 import { Route as TrainingTeamsCheckTemporaryRouteImport } from './routes/trainingTeams/checkTemporary'
-import { Route as SportingEventsRegisteredRouteImport } from './routes/sportingEvents/registered'
+import { Route as SportingEventsMyEventsRouteImport } from './routes/sportingEvents/myEvents'
 import { Route as SportingEventsHistoryRouteImport } from './routes/sportingEvents/history'
 import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
 import { Route as SportingEventsChipsRouteImport } from './routes/sportingEvents/chips'
@@ -120,12 +120,11 @@ const TrainingTeamsCheckTemporaryRoute =
     path: '/trainingTeams/checkTemporary',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SportingEventsRegisteredRoute =
-  SportingEventsRegisteredRouteImport.update({
-    id: '/sportingEvents/registered',
-    path: '/sportingEvents/registered',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const SportingEventsMyEventsRoute = SportingEventsMyEventsRouteImport.update({
+  id: '/sportingEvents/myEvents',
+  path: '/sportingEvents/myEvents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SportingEventsHistoryRoute = SportingEventsHistoryRouteImport.update({
   id: '/sportingEvents/history',
   path: '/sportingEvents/history',
@@ -275,7 +274,7 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/chips': typeof SportingEventsChipsRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/history': typeof SportingEventsHistoryRoute
-  '/sportingEvents/registered': typeof SportingEventsRegisteredRoute
+  '/sportingEvents/myEvents': typeof SportingEventsMyEventsRoute
   '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/users/create': typeof UsersCreateRoute
@@ -316,7 +315,7 @@ export interface FileRoutesByTo {
   '/sportingEvents/chips': typeof SportingEventsChipsRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/history': typeof SportingEventsHistoryRoute
-  '/sportingEvents/registered': typeof SportingEventsRegisteredRoute
+  '/sportingEvents/myEvents': typeof SportingEventsMyEventsRoute
   '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/users/create': typeof UsersCreateRoute
@@ -358,7 +357,7 @@ export interface FileRoutesById {
   '/sportingEvents/chips': typeof SportingEventsChipsRoute
   '/sportingEvents/create': typeof SportingEventsCreateRoute
   '/sportingEvents/history': typeof SportingEventsHistoryRoute
-  '/sportingEvents/registered': typeof SportingEventsRegisteredRoute
+  '/sportingEvents/myEvents': typeof SportingEventsMyEventsRoute
   '/trainingTeams/checkTemporary': typeof TrainingTeamsCheckTemporaryRoute
   '/trainingTeams/create': typeof TrainingTeamsCreateRoute
   '/users/create': typeof UsersCreateRoute
@@ -401,7 +400,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/chips'
     | '/sportingEvents/create'
     | '/sportingEvents/history'
-    | '/sportingEvents/registered'
+    | '/sportingEvents/myEvents'
     | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/users/create'
@@ -442,7 +441,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/chips'
     | '/sportingEvents/create'
     | '/sportingEvents/history'
-    | '/sportingEvents/registered'
+    | '/sportingEvents/myEvents'
     | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/users/create'
@@ -483,7 +482,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/chips'
     | '/sportingEvents/create'
     | '/sportingEvents/history'
-    | '/sportingEvents/registered'
+    | '/sportingEvents/myEvents'
     | '/trainingTeams/checkTemporary'
     | '/trainingTeams/create'
     | '/users/create'
@@ -525,7 +524,7 @@ export interface RootRouteChildren {
   SportingEventsChipsRoute: typeof SportingEventsChipsRoute
   SportingEventsCreateRoute: typeof SportingEventsCreateRoute
   SportingEventsHistoryRoute: typeof SportingEventsHistoryRoute
-  SportingEventsRegisteredRoute: typeof SportingEventsRegisteredRoute
+  SportingEventsMyEventsRoute: typeof SportingEventsMyEventsRoute
   TrainingTeamsCheckTemporaryRoute: typeof TrainingTeamsCheckTemporaryRoute
   TrainingTeamsCreateRoute: typeof TrainingTeamsCreateRoute
   UsersCreateRoute: typeof UsersCreateRoute
@@ -651,11 +650,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainingTeamsCheckTemporaryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sportingEvents/registered': {
-      id: '/sportingEvents/registered'
-      path: '/sportingEvents/registered'
-      fullPath: '/sportingEvents/registered'
-      preLoaderRoute: typeof SportingEventsRegisteredRouteImport
+    '/sportingEvents/myEvents': {
+      id: '/sportingEvents/myEvents'
+      path: '/sportingEvents/myEvents'
+      fullPath: '/sportingEvents/myEvents'
+      preLoaderRoute: typeof SportingEventsMyEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/history': {
@@ -845,7 +844,7 @@ const rootRouteChildren: RootRouteChildren = {
   SportingEventsChipsRoute: SportingEventsChipsRoute,
   SportingEventsCreateRoute: SportingEventsCreateRoute,
   SportingEventsHistoryRoute: SportingEventsHistoryRoute,
-  SportingEventsRegisteredRoute: SportingEventsRegisteredRoute,
+  SportingEventsMyEventsRoute: SportingEventsMyEventsRoute,
   TrainingTeamsCheckTemporaryRoute: TrainingTeamsCheckTemporaryRoute,
   TrainingTeamsCreateRoute: TrainingTeamsCreateRoute,
   UsersCreateRoute: UsersCreateRoute,

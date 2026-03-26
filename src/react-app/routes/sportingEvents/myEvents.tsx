@@ -41,7 +41,7 @@ const SpBSchema = SportingEventBasicInfoSchema.extend({
 })
 
 
-export const Route = createFileRoute('/sportingEvents/registered')({
+export const Route = createFileRoute('/sportingEvents/myEvents')({
   component: RouteComponent,
   beforeLoad: unprotectedCheck(),
   loader: async () => {
