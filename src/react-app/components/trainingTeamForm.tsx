@@ -243,7 +243,7 @@ export const TrainingTeamForm = ({
                       setUserAutoFill("found");
                       form.setFieldValue(
                         'coach_name',
-                        capitalizeStr(`${res.body.data.name} ${res.body.data.surname}`));
+                        capitalizeStr(`${res.body.data.surname} ${res.body.data.name}`));
                     } else {
                       setUserAutoFill("not found");
                     }

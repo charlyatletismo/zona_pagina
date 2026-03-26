@@ -103,7 +103,7 @@ export const ProfileCard = ({
       <GridCell
         icon={User}
         label="Nombre Completo"
-        value={`${profile.name || ''} ${profile.surname || ''}`.trim()}
+        value={`${profile.surname || ''} ${profile.name || ''}`.trim()}
       />
 
       <GridCell
@@ -210,7 +210,7 @@ export const ProfileCard = ({
         <GridCell
           icon={UserCog}
           label="Manager"
-          value={`${manager.name || ''} ${manager.surname || ''}`.trim()}
+          value={`${manager.surname || ''} ${manager.name || ''}`.trim()}
           link={`/users/${manager.id}`}
         />
       )}

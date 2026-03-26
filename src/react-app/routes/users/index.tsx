@@ -72,7 +72,7 @@ export const Route = createFileRoute('/users/')({
       const manager = managersData.find(m => m.id === user.manager_id);
       return {
         ...user,
-        manager_full_name: manager ? `${manager.name} ${manager.surname}` : null,
+        manager_full_name: manager ? `${manager.surname} ${manager.name}` : null,
         training_team_name: trainingTeam ? trainingTeam.name : null,
       }
     });
@@ -102,15 +102,15 @@ function RouteComponent() {
       enableHiding: true,
       enableGrouping: false,
     }),
-    columnHelper.accessor('name', {
-      header: 'Nombre',
+    columnHelper.accessor('surname', {
+      header: 'Apellido',
       cell: info => info.getValue(),
       footer: props => props.column.id,
       enableSorting: true,
       enableGrouping: false,
     }),
-    columnHelper.accessor('surname', {
-      header: 'Apellido',
+    columnHelper.accessor('name', {
+      header: 'Nombre',
       cell: info => info.getValue(),
       footer: props => props.column.id,
       enableSorting: true,

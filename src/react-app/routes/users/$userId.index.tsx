@@ -228,7 +228,7 @@ function RouteComponent() {
         <div className="p-6 border-b flex gap-5 justify-between items-center">
           <h2 className="text-2xl font-bold">{
             userApiRes.body.data
-            ? `${userApiRes.body.data.name} ${userApiRes.body.data.surname}`
+            ? `${userApiRes.body.data.surname} ${userApiRes.body.data.name}`
             : 'Falla en la carga del perfil'}
           </h2>
         </div>

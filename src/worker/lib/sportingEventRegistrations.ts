@@ -534,7 +534,7 @@ export const getAllUsersRegistrations = async (
       circuit_name: circuit?.name,
       circuit_distance_km: circuit?.distance_km,
       circuit_competitive: circuitIsCompetitive,
-      user_full_name: user ? `${user.name} ${user.surname}` : null,
+      user_full_name: user ? `${user.surname} ${user.name}` : null,
       user_phone: user?.phone || null,
       user_email: user?.email || null,
       user_training_team_name: trainingTeamsData.find(t => t.id === regParsed.training_team_id)?.name || null,
@@ -583,11 +583,14 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
     .where(inArray(users.id, registrations.map(r => r.user_id as string)))
     .all();
 
-  const regs = registrations.map(r => ({
-    ...r,
-    clothing_size: clothingParsed.find(c => c.id === r.reserved_clothing_id)?.size || null,
-    full_name: `${usersData.find(u => u.id === r.user_id)?.name || ''} ${usersData.find(u => u.id === r.user_id)?.surname || ''}`.trim(),
-  }))
+  const regs = registrations.map(r => {
+    const u = usersData.find(u => u.id === r.user_id);
+    return {
+      ...r,
+      clothing_size: clothingParsed.find(c => c.id === r.reserved_clothing_id)?.size || null,
+      full_name: `${u?.surname || ''} ${u?.name || ''}`.trim(),
+    }
+  })
   return regs;
 }
 
