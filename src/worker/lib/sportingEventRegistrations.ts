@@ -491,7 +491,7 @@ export const getAllUsersRegistrations = async (
     usersData.push(...usersDataDb);
   }
   const uniqueTrainingTeamsIds = [...new Set(registrations.map(r => r.training_team_id).filter((id): id is number => id !== null))];
-  console.log("Unique training team IDs to fetch:", uniqueTrainingTeamsIds);
+  // console.log("Unique training team IDs to fetch:", uniqueTrainingTeamsIds);
   const trainingTeamsData = await db
     .select({
       id: trainingTeams.id,
