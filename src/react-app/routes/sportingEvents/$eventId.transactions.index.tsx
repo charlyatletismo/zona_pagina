@@ -77,7 +77,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/transactions/')({
         z.array(ARSportEvTransactionMinSchema));
     return { resTrApi };
   },
-  staleTime: 5,
+  staleTime: 1000 * 60 * 5,
 })
 
 
