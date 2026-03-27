@@ -284,7 +284,7 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
       { onDelete: 'set null',
         onUpdate: 'cascade' }
       ),
-  age_at_registration: int().notNull(),
+  age_at_event_date: int().notNull(),
 
   discount_percentage: int().notNull().default(0), // for special discounts
   discount_reason: text({ length: 256 }),
