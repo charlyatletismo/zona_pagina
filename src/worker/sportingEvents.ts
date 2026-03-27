@@ -41,6 +41,10 @@ import {
   getAllUsersRegistrationsSafe,
   getUserRegistrationWithEvent,
 } from "./lib/sportingEventRegistrations";
+import {
+  getClothingStats,
+  addClothingToSpEvent,
+} from "./lib/sportingEventClothing";
 import { buildItemId } from "./lib/utilsPayment";
 import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";
@@ -84,6 +88,28 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     const { id } = c.req.param();
     const res = await getSpEventMin(db, Number(id));
     return c.json(res, res.status);
+  })
+  .get("/:id/clothing", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const result = await getClothingStats(db, Number(id));
+    return c.json({ data: result });
+  })
+  .post("/:id/addClothing", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { data }: { data: {
+      size: string,
+      purchased_quantity: number,
+    }[] } = await c.req.json();
+    const res = await addClothingToSpEvent(db, Number(id), data);
+    return c.json({ message: res.message }, res.status);
   })
   .post("/:id/register", async (c) => {
     const db = drizzle(c.env.DB);

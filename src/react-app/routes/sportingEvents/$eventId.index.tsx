@@ -14,6 +14,7 @@ import {
   FilePlus2,
   PackageIcon,
   CircleDollarSignIcon,
+  ShirtIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -211,6 +212,12 @@ function RouteComponent() {
             </Link>
           </Button>
 
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/clothing" params={{ eventId }}>
+              <ShirtIcon className="w-4 h-4" />
+              Indumentaria
+            </Link>
+          </Button>
         </div>
       )}
 

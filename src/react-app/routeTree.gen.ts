@@ -45,6 +45,7 @@ import { Route as SportingEventsEventIdRegisterAthletesRouteImport } from './rou
 import { Route as SportingEventsEventIdKitDeliveryRouteImport } from './routes/sportingEvents/$eventId.kitDelivery'
 import { Route as SportingEventsEventIdEditPhotoAndGalleryRouteImport } from './routes/sportingEvents/$eventId.editPhotoAndGallery'
 import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
+import { Route as SportingEventsEventIdClothingRouteImport } from './routes/sportingEvents/$eventId.clothing'
 import { Route as SportingEventsEventIdAllRegistrationsRouteImport } from './routes/sportingEvents/$eventId.allRegistrations'
 import { Route as SportingEventsEventIdTransactionsIndexRouteImport } from './routes/sportingEvents/$eventId.transactions.index'
 import { Route as SportingEventsEventIdTransactionsCreateRouteImport } from './routes/sportingEvents/$eventId.transactions.create'
@@ -240,6 +241,12 @@ const SportingEventsEventIdEditRoute =
     path: '/sportingEvents/$eventId/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SportingEventsEventIdClothingRoute =
+  SportingEventsEventIdClothingRouteImport.update({
+    id: '/sportingEvents/$eventId/clothing',
+    path: '/sportingEvents/$eventId/clothing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SportingEventsEventIdAllRegistrationsRoute =
   SportingEventsEventIdAllRegistrationsRouteImport.update({
     id: '/sportingEvents/$eventId/allRegistrations',
@@ -292,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/trainingTeams/': typeof TrainingTeamsIndexRoute
   '/users/': typeof UsersIndexRoute
   '/sportingEvents/$eventId/allRegistrations': typeof SportingEventsEventIdAllRegistrationsRoute
+  '/sportingEvents/$eventId/clothing': typeof SportingEventsEventIdClothingRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/editPhotoAndGallery': typeof SportingEventsEventIdEditPhotoAndGalleryRoute
   '/sportingEvents/$eventId/kitDelivery': typeof SportingEventsEventIdKitDeliveryRoute
@@ -334,6 +342,7 @@ export interface FileRoutesByTo {
   '/trainingTeams': typeof TrainingTeamsIndexRoute
   '/users': typeof UsersIndexRoute
   '/sportingEvents/$eventId/allRegistrations': typeof SportingEventsEventIdAllRegistrationsRoute
+  '/sportingEvents/$eventId/clothing': typeof SportingEventsEventIdClothingRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/editPhotoAndGallery': typeof SportingEventsEventIdEditPhotoAndGalleryRoute
   '/sportingEvents/$eventId/kitDelivery': typeof SportingEventsEventIdKitDeliveryRoute
@@ -377,6 +386,7 @@ export interface FileRoutesById {
   '/trainingTeams/': typeof TrainingTeamsIndexRoute
   '/users/': typeof UsersIndexRoute
   '/sportingEvents/$eventId/allRegistrations': typeof SportingEventsEventIdAllRegistrationsRoute
+  '/sportingEvents/$eventId/clothing': typeof SportingEventsEventIdClothingRoute
   '/sportingEvents/$eventId/edit': typeof SportingEventsEventIdEditRoute
   '/sportingEvents/$eventId/editPhotoAndGallery': typeof SportingEventsEventIdEditPhotoAndGalleryRoute
   '/sportingEvents/$eventId/kitDelivery': typeof SportingEventsEventIdKitDeliveryRoute
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/trainingTeams/'
     | '/users/'
     | '/sportingEvents/$eventId/allRegistrations'
+    | '/sportingEvents/$eventId/clothing'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/editPhotoAndGallery'
     | '/sportingEvents/$eventId/kitDelivery'
@@ -463,6 +474,7 @@ export interface FileRouteTypes {
     | '/trainingTeams'
     | '/users'
     | '/sportingEvents/$eventId/allRegistrations'
+    | '/sportingEvents/$eventId/clothing'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/editPhotoAndGallery'
     | '/sportingEvents/$eventId/kitDelivery'
@@ -505,6 +517,7 @@ export interface FileRouteTypes {
     | '/trainingTeams/'
     | '/users/'
     | '/sportingEvents/$eventId/allRegistrations'
+    | '/sportingEvents/$eventId/clothing'
     | '/sportingEvents/$eventId/edit'
     | '/sportingEvents/$eventId/editPhotoAndGallery'
     | '/sportingEvents/$eventId/kitDelivery'
@@ -548,6 +561,7 @@ export interface RootRouteChildren {
   TrainingTeamsIndexRoute: typeof TrainingTeamsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
   SportingEventsEventIdAllRegistrationsRoute: typeof SportingEventsEventIdAllRegistrationsRoute
+  SportingEventsEventIdClothingRoute: typeof SportingEventsEventIdClothingRoute
   SportingEventsEventIdEditRoute: typeof SportingEventsEventIdEditRoute
   SportingEventsEventIdEditPhotoAndGalleryRoute: typeof SportingEventsEventIdEditPhotoAndGalleryRoute
   SportingEventsEventIdKitDeliveryRoute: typeof SportingEventsEventIdKitDeliveryRoute
@@ -818,6 +832,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SportingEventsEventIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sportingEvents/$eventId/clothing': {
+      id: '/sportingEvents/$eventId/clothing'
+      path: '/sportingEvents/$eventId/clothing'
+      fullPath: '/sportingEvents/$eventId/clothing'
+      preLoaderRoute: typeof SportingEventsEventIdClothingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sportingEvents/$eventId/allRegistrations': {
       id: '/sportingEvents/$eventId/allRegistrations'
       path: '/sportingEvents/$eventId/allRegistrations'
@@ -878,6 +899,7 @@ const rootRouteChildren: RootRouteChildren = {
   UsersIndexRoute: UsersIndexRoute,
   SportingEventsEventIdAllRegistrationsRoute:
     SportingEventsEventIdAllRegistrationsRoute,
+  SportingEventsEventIdClothingRoute: SportingEventsEventIdClothingRoute,
   SportingEventsEventIdEditRoute: SportingEventsEventIdEditRoute,
   SportingEventsEventIdEditPhotoAndGalleryRoute:
     SportingEventsEventIdEditPhotoAndGalleryRoute,

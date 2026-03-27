@@ -179,6 +179,24 @@ export const ARSportingEventGallerySchema = SportingEventSchema.pick({
 });
 
 
+////////////////////////////////////////////////////////////////
+//                /api/sportingEvents/clothing                //
+////////////////////////////////////////////////////////////////
+
+
+export const ARClothingStatsSchema = z.object({
+  id: SportingEventClothingSchema.shape.id,
+  clothing_type: SportingEventClothingSchema.shape.clothing_type,
+  size: SportingEventClothingSchema.shape.size,
+  q_purchased: z.number(),
+  q_demanded: z.number(),
+  q_potential_lacking: z.number(),
+  q_reserved: z.number(),
+  q_paid_demanded: z.number(),
+  q_lacking: z.number(),
+})
+
+
 //////////////////////////////////////////////////////////////////////////////////
 //                     /api/sportingEvents/:id/registration                     //
 //////////////////////////////////////////////////////////////////////////////////
