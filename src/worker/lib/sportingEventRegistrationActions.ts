@@ -179,7 +179,7 @@ export const registerToSpEvent = async (
     training_team_id: userData.training_team_id,
     event_id: eventId,
     circuit_id: circuitId,
-    age_at_registration: calculateAge(new Date(userData.date_of_birth!)),
+    age_at_event_date: calculateAge(new Date(userData.date_of_birth!)),
     discount_percentage: userData.discount_percentage || 0,
     discount_reason:
       userData.discount_percentage

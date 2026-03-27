@@ -25,7 +25,7 @@ export const userRegisteredInEvent = async (
 ) => {
   const registration = await db.select({
       circuit_id: sportingEventRegistrations.circuit_id,
-      age_at_registration: sportingEventRegistrations.age_at_registration,
+      age_at_event_date: sportingEventRegistrations.age_at_event_date,
       status: sportingEventRegistrations.status,
       promotional_fee_applied: sportingEventRegistrations.promotional_fee_applied,
       paid_amount: sportingEventRegistrations.paid_amount,
@@ -209,7 +209,7 @@ const buildUserRegistration = (
     : [];
   const category = getCategory(
     a_ranges,
-    registration.age_at_registration,
+    registration.age_at_event_date,
     userSex,
     circuit_km !== null ? true : null, // TODO: maybe change this logic
     circuit_km
@@ -515,7 +515,7 @@ export const getAllUsersRegistrations = async (
     const circuitIsCompetitive = circuit ? circuit.competitive === 1 : null;
     const category = getCategory(
       a_ranges,
-      regParsed.age_at_registration,
+      regParsed.age_at_event_date,
       user?.sex ?? null,
       circuitIsCompetitive,
       circuit?.distance_km || null

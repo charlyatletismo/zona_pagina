@@ -272,7 +272,7 @@ export const SportingEventRegistrationSchema = z.object({
   training_team_id: TrainingTeamSchema.shape.id.nullable(),
   event_id: SportingEventSchema.shape.id,
   circuit_id: SportingEventCircuitSchema.shape.id,
-  age_at_registration: z.number(),
+  age_at_event_date: z.number(),
   discount_percentage: z.number(),
   discount_reason: z.string().max(256).nullable(),
   registration_date: z.date(),

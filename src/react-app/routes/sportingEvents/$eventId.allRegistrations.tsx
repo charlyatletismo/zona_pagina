@@ -314,7 +314,7 @@ function RouteComponent() {
             <div className='space-y-1 text-xs'>
               <p><b>Circuito</b> {info.row.original.circuit_name} ({info.row.original.circuit_distance_km}km)</p>
               <p><b>Competitivo</b> {info.row.original.circuit_competitive ? 'Sí' : 'No'}</p>
-              <p><b>Edad al inscribirse</b> {info.row.original.age_at_registration}</p>
+              <p><b>Edad a la fecha del evento</b> {info.row.original.age_at_event_date}</p>
             </div>
           </PopoverContent>
         </Popover>

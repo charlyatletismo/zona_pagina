@@ -104,7 +104,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
           training_team_id: user.training_team_id!,
           event_id: Number(params.eventId),
           // circuit_id: -1,
-          age_at_registration: 0,
+          age_at_event_date: 0,
           discount_percentage: 0,
           discount_reason: null,
           registration_date: new Date(),
@@ -353,7 +353,7 @@ function RouteComponent() {
             <div className='space-y-1 text-xs'>
               <p><b>Circuito</b> {info.row.original.circuit_name} ({info.row.original.circuit_distance_km}km)</p>
               <p><b>Competitivo</b> {info.row.original.circuit_competitive ? 'Sí' : 'No'}</p>
-              <p><b>Edad al inscribirse</b> {info.row.original.age_at_registration}</p>
+              <p><b>Edad a la fecha del evento</b> {info.row.original.age_at_event_date}</p>
             </div>
           </PopoverContent>
         </Popover>
@@ -1078,7 +1078,7 @@ export const SeeRegistrationDetailsDialog = ({
                 })}
               </div>
               <div className='font-light'>
-                Edad al inscribirse: {reg?.age_at_registration}
+                Edad a la fecha del evento: {reg?.age_at_event_date}
               </div>
               <div className='font-light'>
                 Equipo de entrenamiento: {reg?.user_training_team_name || 'Sin equipo'}
