@@ -1,6 +1,6 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
-import { lt, gte, desc, eq, inArray } from 'drizzle-orm';
+import { lt, gte, desc, eq, inArray, and } from 'drizzle-orm';
 import { users, sportingEvents, sportingEventRegistrations } from '../db/schema';
 import { SportingEventBasicInfoSchema } from '@shared/apiRespTypes';
 import z from 'zod';
@@ -21,7 +21,10 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
   const activeEvents = await db
     .select(SELECT_QUERY)
     .from(sportingEvents)
-    .where(gte(sportingEvents.date, yesterday.toISOString()))
+    .where(and(
+      gte(sportingEvents.date, yesterday.toISOString()),
+      eq(sportingEvents.hidden, 0)
+    ))
     .orderBy(desc(sportingEvents.date));
 
   const comingSoonEvents = [];
@@ -47,7 +50,10 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
   const pastEvents = await db
     .select(SELECT_QUERY)
     .from(sportingEvents)
-    .where(lt(sportingEvents.date, yesterday.toISOString()))
+    .where(and(
+      lt(sportingEvents.date, yesterday.toISOString()),
+      eq(sportingEvents.hidden, 0)
+    ))
     .orderBy(desc(sportingEvents.date))
     .limit(5);
   const pastEventsParsed = z.array(SportingEventBasicInfoSchema)
@@ -61,7 +67,7 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
   }
 }
 
-export const allSportingEventsList = async (db: DrizzleD1Database) => {
+export const allSportingEventsList = async (db: DrizzleD1Database, authOrg: boolean) => {
   const SELECT_QUERY = SportingEventBasicInfoSchema
     .keyof().options
     .reduce((acc, field) => {
@@ -73,7 +79,10 @@ export const allSportingEventsList = async (db: DrizzleD1Database) => {
   const events = []
   while (true) {
     const batch = await db
-      .select(SELECT_QUERY)
+      .select({
+        ...SELECT_QUERY,
+        hidden: sportingEvents.hidden,
+      })
       .from(sportingEvents)
       .orderBy(desc(sportingEvents.date))
       .limit(100)
@@ -85,6 +94,9 @@ export const allSportingEventsList = async (db: DrizzleD1Database) => {
     if (batch.length < 100) {
       break;
     }
+  }
+  if (!authOrg) {
+    return events.filter(e => e.hidden === 0);
   }
   return events;
 }

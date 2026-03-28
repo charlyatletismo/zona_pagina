@@ -20,6 +20,24 @@ import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { DataResult, NoDataResult } from './utils';
 
 
+export const getSpIsHidden = async (
+  db: DrizzleD1Database,
+  eventId: number
+) => {
+  const event = await db
+    .select({ hidden: sportingEvents.hidden })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .limit(1)
+    .get();
+  if (!event) {
+    return null;
+  }
+  return event.hidden === 1;
+}
+
+
+
 export const getSpEventMin = async (
     db: DrizzleD1Database,
     eventId: number): Promise<DataResult> => {
@@ -216,6 +234,7 @@ export const addSpEvent = async (
     fee_payment_due_date: data.fee_payment_due_date?.toISOString() || null,
     promotional_fee_end: data.promotional_fee_end?.toISOString() || null,
     promotional_fee_payment_due_date: data.promotional_fee_payment_due_date?.toISOString() || null,
+    hidden: data.hidden ? 1 : 0,
     created_by: userId,
     updated_by: userId,
     created_at: new Date().toISOString(),
@@ -363,6 +382,7 @@ export const updateSpEvent = async (
       fee_payment_due_date: finalData.fee_payment_due_date?.toISOString() || null,
       promotional_fee_end: finalData.promotional_fee_end?.toISOString() || null,
       promotional_fee_payment_due_date: finalData.promotional_fee_payment_due_date?.toISOString() || null,
+      hidden: finalData.hidden ? 1 : 0,
       updated_by: userId,
       updated_at: new Date().toISOString(),
     })

@@ -147,6 +147,7 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   promotional_fee_payment_due_date: z.coerce.date<string>().nullable().optional(),
   created_at: z.coerce.date<string>().nullable().optional(),
   updated_at: z.coerce.date<string>().nullable().optional(),
+  hidden: z.coerce.boolean<number>().default(false).optional(),
   circuits: z.array(SportingEventCircuitSchema.extend({
     competitive: z.coerce.boolean<number>().optional(),
   })).nullable().optional(),

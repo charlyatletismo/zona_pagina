@@ -1285,6 +1285,32 @@ const SportingEventForm = (
           )}
         />
 
+        <form.AppField
+          name="hidden"
+          children={(field) => (
+            <div className='space-y-2 md:col-span-2'>
+              <div className='flex items-center gap-2'>
+                <field.Switch
+                  id={field.name}
+                  name={field.name}
+                  checked={field.state.value || false}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <field.Label htmlFor={field.name}>
+                  Mantener el evento oculto (en modo borrador)
+                </field.Label>
+              </div>
+              <div className='text-sm text-gray-500 italic'>
+                Si activás esta opción, el evento no será visible para los usuarios regulares.
+                Podés usar esta función para mantener el evento en modo borrador mientras
+                terminás de configurar toda la información y los detalles del mismo. Recordá
+                desactivar esta opción antes de publicar el evento para que los usuarios
+                puedan verlo e inscribirse.
+              </div>
+            </div>
+          )}
+        />
+
         {data && data.id && (
           <div>
             <hr className="my-6" />

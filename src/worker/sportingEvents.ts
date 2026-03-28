@@ -6,6 +6,7 @@ import {
   authorizedOrg
 } from '@shared/roles';
 import {
+  getSpIsHidden,
   getSpEvent,
   addSpEvent,
   updateSpEvent,
@@ -58,7 +59,10 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
   })
   .get("/all", async (c) => {
     const db = drizzle(c.env.DB);
-    const res = await allSportingEventsList(db);
+    const res = await allSportingEventsList(
+      db,
+      authorizedOrg(c.get('jwtPayload')?.role),
+    );
     return c.json({ data: res });
   })
   .get("/myEvents", async (c) => {
@@ -76,6 +80,10 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
   .get("/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
+    const isHidden = await getSpIsHidden(db, Number(id));
+    if (isHidden && !authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+    }
     const userId: string | null = c.get('jwtPayload')?.id || null;
     const res = await getSpEvent(db, Number(id), userId);
     if (res.status !== 200) {
@@ -86,6 +94,10 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
   .get("/exists/:id", async (c) => {
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
+    const isHidden = await getSpIsHidden(db, Number(id));
+    if (isHidden && !authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+    }
     const res = await getSpEventMin(db, Number(id));
     return c.json(res, res.status);
   })
