@@ -6,6 +6,8 @@ import { Instagram } from '@/components/icons/instagram';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { Navigation } from '@/components/nav';
 import { NotFound } from '@/components/notFound';
+import { Pending } from '@/components/pending';
+import { ErrorComp } from '@/components/error';
 import { useTheme } from '@/components/themeProvider';
 import React from 'react';
 
@@ -97,5 +99,7 @@ const RootLayout = () => {
 
 export const Route = createRootRoute({ 
   component: RootLayout,
-  notFoundComponent: NotFound
+  notFoundComponent: NotFound,
+  pendingComponent: Pending,
+  errorComponent: ErrorComp,
 })
