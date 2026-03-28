@@ -22,7 +22,7 @@ import { M } from "./lib/messages";
 
 export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .use(async (c, next) => {
-    if (c.req.method !== 'GET' && !authorizedOrg(c.get('jwtPayload')?.role)) {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
       return c.json({ message: M.UNAUTHORIZED }, 403);
     }
     await next();
