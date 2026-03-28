@@ -47,7 +47,7 @@ function RouteComponent() {
   return (
     <SportingEventsMinTable
       data={data}
-      title="Eventos de los usuarios gestionados"
+      title="Todos los eventos deportivos"
     />
   )
 }
