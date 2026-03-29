@@ -1,20 +1,30 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import z from 'zod';
-import { Button } from '@/components/ui/button'
-import { Edit, CogIcon, IdCard, AlertCircle, ArrowUpIcon, ArrowDownIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Edit,
+  CogIcon,
+  IdCard,
+  AlertCircle,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  UserRoundXIcon,
+  ArrowLeftRightIcon,
+} from 'lucide-react'
 import authCheck from '@/lib/authCheck';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls'
 import { ARUserSchema, ARUserMinSchema } from '@shared/apiRespTypes';
 import { ProfileCard } from '@/components/profileCard';
-import { ADMIN_ROLE, ORGANIZER_ROLE, ATHLETES_MANAGER_ROLE, ATHLETE_ROLE, authorizedOrg } from '@shared/roles';
+import {
+  ADMIN_ROLE,
+  ORGANIZER_ROLE,
+  ATHLETES_MANAGER_ROLE,
+  ATHLETE_ROLE,
+  authorizedOrg
+} from '@shared/roles';
 import { customFilterFn, getMessage } from '@/lib/utils';
 import { RolDescriptions } from '@shared/lang';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -80,6 +90,7 @@ function RouteComponent() {
   const { userApiRes, managedUsers, managers } = Route.useLoaderData();
   const [changeRole, setChangeRole] = React.useState<string | null>(null);
   const [transferManagedUsersDialog, setTransferManagedUsersDialog] = React.useState<z.infer<typeof ARUserMinSchema>[] | null>(null);
+  const [openBanDialog, setOpenBanDialog] = React.useState<boolean>(false);
   
   const [error, _setError] = React.useState('');
   const [success, _setSuccess] = React.useState('');
@@ -128,70 +139,72 @@ function RouteComponent() {
     <div className="px-4 py-8 w-full md:max-w-4xl mx-auto">
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
+        <div className="bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
           <AlertCircle className="w-4 h-4" />
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm mb-3">
+        <div className="bg-green-500/10 text-green-600 p-3 rounded-md text-sm mb-3">
           {success}
         </div>
       )}
 
       {orgLevelEdit ? (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 justify-center mb-6 p-4 border-b'>
+          <div className={'text-center text-sm h-full '
+            + 'flex flex-col justify-center items-center '
+            + 'border rounded-lg '
+            + (userApiRes.body.data.role === ATHLETE_ROLE
+              ? 'border-green-500 text-green-500'
+              : userApiRes.body.data.role === ATHLETES_MANAGER_ROLE
+                ? 'border-blue-500 text-blue-500'
+                : userApiRes.body.data.role === ORGANIZER_ROLE
+                  ? 'border-orange-500 text-orange-500'
+                  : "border-sky-500 text-sky-500"
+            )}
+          >
+            <span>{getMessage(RolDescriptions[userApiRes.body.data.role || ''], userApiRes.body.data.role)}</span>
+          </div>
+          <Button asChild variant="outline">
+            <Link to="/users/$userId/edit" params={{ userId }}>
+              <Edit className="w-4 h-4" />
+              Editar
+            </Link>
+          </Button>
           <Button asChild variant="outline">
             <Link to="/users/$userId/changeId" params={{ userId }}>
               <IdCard className="w-4 h-4" />
               Cambiar DNI
             </Link>
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={
-                  userApiRes.body.data.role === ADMIN_ROLE ? "destructive" :
-                    userApiRes.body.data.role === ORGANIZER_ROLE ? "default" :
-                      "outline"
-                }
-                className='cursor-pointer'
-              >
-                <CogIcon className="h-4 w-4" />
-                {getMessage(RolDescriptions[userApiRes.body.data.role || ''], userApiRes.body.data.role)}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="start">
-              {/* <DropdownMenuItem onClick={() => handleRoleChange(userApiRes.body.data.id, ATHLETE_ROLE)}>Atleta</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRoleChange(userApiRes.body.data.id, ORGANIZER_ROLE)}>Organizador</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleRoleChange(userApiRes.body.data.id, ATHLETES_MANAGER_ROLE)}>Manager</DropdownMenuItem> */}
-              <DropdownMenuItem onClick={() => {
-                if (managedUsers.length > 0) {
-                  setError(
-                    'No se puede cambiar el rol porque este usuario tiene atletas a cargo. '
-                    + 'Por favor, reasigna los atletas a cargo antes de cambiar el rol.'
-                  );
-                  return;
-                }
-                setChangeRole(userApiRes.body.data.role!)
-              }}>
-                Cambiar Rol
-              </DropdownMenuItem>
-              {userApiRes.body.data.role === ATHLETES_MANAGER_ROLE && (
-                <DropdownMenuItem onClick={() => {
-                  setTransferManagedUsersDialog(managedUsers)
-                }}>
-                  Editar Atletas a Cargo
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button asChild variant="outline">
-            <Link to="/users/$userId/edit" params={{ userId }}>
-              <Edit className="w-4 h-4" />
-              Editar
-            </Link>
+          <Button variant="outline" className='cursor-pointer' onClick={() => {
+            if (managedUsers.length > 0) {
+              setError(
+                'No se puede cambiar el rol porque este usuario tiene atletas a cargo. '
+                + 'Por favor, reasigna los atletas a cargo antes de cambiar el rol.'
+              );
+              return;
+            }
+            setChangeRole(userApiRes.body.data.role!)
+          }}>
+            <CogIcon className="h-4 w-4" />
+            Cambiar Rol
+          </Button>
+          {userApiRes.body.data.role === ATHLETES_MANAGER_ROLE && (
+            <Button variant="outline" className='cursor-pointer' onClick={() => {
+              setTransferManagedUsersDialog(managedUsers);
+            }}>
+              <ArrowLeftRightIcon className="w-4 h-4" />
+              Editar Atl. a Cargo
+            </Button>
+          )}
+          <Button variant="outline" className='cursor-pointer' onClick={() => {
+            setOpenBanDialog(true);
+          }}>
+            <UserRoundXIcon className="w-4 h-4" />
+            {userApiRes.body.data.banned ? 'Desbloquear' : 'Bloquear'}
           </Button>
         </div>
       ) : (
@@ -218,6 +231,16 @@ function RouteComponent() {
         setManagedUsers={setTransferManagedUsersDialog}
         managers={managers}
         userId={userApiRes.body.data.id}
+        setError={setError}
+        setSuccess={setSuccess}
+      />
+
+      <BanUserDialog
+        open={openBanDialog}
+        setOpen={setOpenBanDialog}
+        userId={userApiRes.body.data.id}
+        banned={userApiRes.body.data.banned}
+        role={userApiRes.body.data.role || ''}
         setError={setError}
         setSuccess={setSuccess}
       />
@@ -656,6 +679,99 @@ const TransferManagedUsersDialog = ({
                 }}
               >
                 Transferir
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+const BanUserDialog = ({
+  open,
+  setOpen,
+  userId,
+  banned,
+  role,
+  setError,
+  setSuccess,
+} : {
+  open: boolean,
+  setOpen: (open: boolean) => void,
+  userId: string,
+  banned: boolean,
+  role: string,
+  setError: (message: string) => void,
+  setSuccess: (message: string) => void,
+}) => {
+  const [banReason, setBanReason] = React.useState<string>("");
+  return (
+    <Dialog open={open} onOpenChange={() => {
+      setBanReason("");
+      setOpen(false);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>{banned ? 'Desbloquear' : 'Bloquear'} usuario</DialogTitle>
+          <DialogDescription>
+            ¿Estás seguro de que deseas {banned ? 'desbloquear' : 'bloquear'} este usuario?
+
+            {role === ATHLETES_MANAGER_ROLE && (
+              <span className='block mt-2 text-sm text-destructive'>
+                Advertencia: Este usuario es un manager de atletas. {banned ? 'Desbloquearlo ' : 'Bloquearlo '}
+                hará que todos los atletas a su cargo dejen de tenerlo de manager.
+                Quizás sea deseable transferirlos a otro manager antes de proceder.
+              </span>
+            )}
+          </DialogDescription>
+
+          {!banned && (
+            <div className='flex flex-col gap-2 mt-4'>
+              <span className='text-sm'>Razón del bloqueo (opcional, max 512 caracteres):</span>
+              <Input
+                value={banReason}
+                onChange={(e) => setBanReason(e.target.value)}
+                maxLength={512}
+                placeholder='Ejemplo: Incumplimiento de normas, comportamiento inapropiado, etc.'
+              />
+            </div>
+          )}
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className='max-w-30 cursor-pointer'
+                onClick={async () => {
+                  const apiUrl = banned ? `/api/users/${userId}/unban` : `/api/users/${userId}/ban`;
+                  const body = banned ? {} : { reason: banReason };
+                  const res = await postAuthenticated(apiUrl, body);
+                  if (res.status === 200) {
+                    setSuccess(`Usuario ${banned ? 'desbloqueado' : 'bloqueado'} exitosamente.`);
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 500);
+                    setBanReason("");
+                    setOpen(false);
+                  } else {
+                    setError(`Error al ${banned ? 'desbloquear' : 'bloquear'} el usuario: `
+                      + `${getMessage(res.body?.message, 'Error desconocido')}`);
+                  }
+                }}
+              >
+                {banned ? 'Desbloquear' : 'Bloquear'}
               </Button>
             </DialogClose>
           </div>

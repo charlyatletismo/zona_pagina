@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { Env, Variables } from './index';
 import { drizzle } from 'drizzle-orm/d1';
-import { users } from './db/schema';
+import { sportingEventRegistrations, users } from './db/schema';
 import { eq, and, not, InferInsertModel, inArray } from 'drizzle-orm';
 import {
   ADMIN_ROLE,
@@ -365,4 +365,86 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
     return c.json({ message: M.USER_ID_UPDATED_SUCCESSFULLY });
+  })
+  .post("/:id/ban", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const userId = c.req.param("id");
+    const { reason } : { reason: string } = await c.req.json();
+    const user = await db
+      .select({
+        role: users.role,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .get();
+    if (!user) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    if (user.role === ADMIN_ROLE) {
+      return c.json({ message: M.USER_CANNOT_BAN_ADMIN }, 400);
+    }
+    if (user.role === ATHLETES_MANAGER_ROLE) {
+      const r2 = await db
+        .select({id: users.id})
+        .from(users)
+        .where(eq(users.manager_id, userId))
+        .get();
+      if (r2) {
+        await db
+          .update(users)
+          .set({
+            manager_id: null,
+            updated_at: new Date().toISOString(),
+          })
+          .where(eq(users.manager_id, userId))
+          .run();
+      }
+    }
+    await db
+      .update(sportingEventRegistrations)
+      .set({
+        status: "cancelled",
+        updated_at: new Date().toISOString(),
+      })
+      .where(and(
+        eq(sportingEventRegistrations.user_id, userId),
+        eq(sportingEventRegistrations.status, "pending")
+      ))
+      .run();
+    const res = await db
+      .update(users)
+      .set({
+        banned: 1,
+        ban_reason: reason,
+        updated_at: new Date().toISOString()
+      })
+      .where(eq(users.id, userId))
+      .run();
+    if (res.meta.changes === 0) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    return c.json({ message: M.USER_BANNED_SUCCESSFULLY });
+  })
+  .post("/:id/unban", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const userId = c.req.param("id");
+    const res = await db
+      .update(users)
+      .set({
+        banned: 0,
+        ban_reason: null,
+        updated_at: new Date().toISOString()
+      })
+      .where(eq(users.id, userId))
+      .run();
+    if (res.meta.changes === 0) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    return c.json({ message: M.USER_UNBANNED_SUCCESSFULLY });
   });
