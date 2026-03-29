@@ -118,7 +118,9 @@ export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
         name: user.name,
         role: user.role,
         requireProfileUpdate,
-        language: user.language
+        language: user.language,
+        banned: user.banned === 1,
+        banReason: user.ban_reason,
       }
     });
   })

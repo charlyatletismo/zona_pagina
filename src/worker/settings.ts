@@ -111,13 +111,15 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     }
     return c.json({ data: res });
   })
-  .get("/banned", async (c) => {
+  .get("/updates", async (c) => {
     const db = drizzle(c.env.DB);
     const userId = c.get('jwtPayload').id;
+    const userRole = c.get('jwtPayload').role;
     const user = await db
       .select({
         banned: users.banned,
         ban_reason: users.ban_reason,
+        role: users.role,
       })
       .from(users)
       .where(eq(users.id, userId))
@@ -125,8 +127,11 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     if (!user) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
+    if (user.role !== userRole) {
+      return c.json({ force_login: true, }, 403);
+    }
     return c.json({ data: {
       banned: user.banned === 1,
-      ban_reason: user.ban_reason
+      ban_reason: user.ban_reason,
     } });
   });

@@ -8,7 +8,7 @@ import { getAuthenticated } from '@/lib/apiCalls';
 import z from 'zod';
 import { ARAllSportingEventSchema } from '@shared/apiRespTypes';
 import { SportingEventCard } from '@/components/sportingEventCard';
-import { checkBanned } from '@/lib/checks';
+import { checkUpdates } from '@/lib/checks';
 
 
 export const Route = createFileRoute('/')({
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/')({
     const res = await getAuthenticated<
       z.infer<typeof ARAllSportingEventSchema>
       >('/api/sportingEvents', ARAllSportingEventSchema);
-    await checkBanned();
+    await checkUpdates();
     return { res }
   },
   staleTime: 1000 * 60 * 5,

@@ -12,9 +12,11 @@ interface UserInfo {
   name: string;
   requireProfileUpdate: boolean;
   language?: string;
+  banned?: boolean;
+  banReason?: string;
 }
 
-export const setUserInfo = ({token, role, id, name, requireProfileUpdate, language}: UserInfo) => {
+export const setUserInfo = ({token, role, id, name, requireProfileUpdate, language, banned, banReason}: UserInfo) => {
   localStorage.setItem('JWT_TOKEN', token);
   localStorage.setItem('USER_ROLE', role);
   localStorage.setItem('USER_ID', id);
@@ -24,6 +26,8 @@ export const setUserInfo = ({token, role, id, name, requireProfileUpdate, langua
   if (role === 'admin') {
     localStorage.setItem('ADMIN_MODE', 'active');
   }
+  localStorage.setItem('BANNED', banned ? 'true' : 'false');
+  localStorage.setItem('BAN_REASON', banReason || '');
 }
 
 export const clearUserInfo = () => {
@@ -34,6 +38,8 @@ export const clearUserInfo = () => {
   localStorage.removeItem('USER_LANGUAGE');
   localStorage.removeItem('REQUIRE_PROFILE_UPDATE');
   localStorage.removeItem('ADMIN_MODE');
+  localStorage.removeItem('BANNED');
+  localStorage.removeItem('BAN_REASON');
 }
 
 export const getLang = (): string => {

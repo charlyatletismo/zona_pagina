@@ -27,7 +27,7 @@ import { getLang } from "@/lib/utils";
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
-import { checkBanned } from '@/lib/checks';
+import { checkUpdates } from '@/lib/checks';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +50,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
     const res = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventSchema
       >>(`/api/sportingEvents/${params.eventId}`, ARSportingEventSchema);
-    await checkBanned();
+    await checkUpdates();
     return { res };
   },
   staleTime: 1000 * 60 * 5,

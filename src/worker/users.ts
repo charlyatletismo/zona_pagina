@@ -64,7 +64,13 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     // if (!authorizedOrg(c.get('jwtPayload')?.role)) {
     //   return c.json({ message: M.UNAUTHORIZED }, 403);
     // }
-    const newUserData = ARUserSchema.safeParse(await c.req.json());
+    const newUserData = ARUserSchema.omit({
+      banned: true,
+      ban_reason: true,
+      temp_code: true,
+      created_at: true,
+      updated_at: true,
+    }).safeParse(await c.req.json());
     if (!newUserData.success) {
       return c.json({ message: M.USER_INVALID_DATA }, 400);
     }

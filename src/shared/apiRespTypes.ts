@@ -61,9 +61,10 @@ export const ARSettingsSchema = SettingsSchema.extend({
   date_of_birth: z.coerce.date().nullable()
 });
 
-export const ARBanStatusSchema = z.object({
-  banned: z.boolean(),
-  ban_reason: z.string().nullable(),
+export const ARUpdatesStatusSchema = z.object({
+  banned: z.boolean().optional(),
+  ban_reason: z.string().nullable().optional(),
+  force_login: z.boolean().optional(),
 })
 
 
@@ -84,6 +85,8 @@ export const ARUserSchema = UserSchema.extend({
   clothing_shirt_size: UserSchema.shape.clothing_shirt_size.nullable(),
   location: UserSchema.shape.location.nullable(),
   location_address: UserSchema.shape.location_address.nullable(),
+  banned: z.coerce.boolean<number>().default(false),
+  ban_reason: z.coerce.string().nullable().optional(),
   created_at: z.coerce.date<string>().optional(),
   updated_at: z.coerce.date<string>().optional(),
 })

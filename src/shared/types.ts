@@ -112,6 +112,10 @@ export const UserSchema = z.object({
     .min(6, 'El código temporal debe tener 6 caracteres')
     .max(6, 'El código temporal debe tener 6 caracteres')
     .nullable().optional(),
+  banned: z.boolean().default(false).optional(),
+  ban_reason: z.string()
+    .max(512, 'La razón del bloqueo no puede exceder los 512 caracteres')
+    .nullable().optional(),
   role: z.enum(ALL_ROLES, 'El rol del usuario no es válido').optional(),
   created_at: z.date().optional(),
   updated_at: z.date().optional(),
