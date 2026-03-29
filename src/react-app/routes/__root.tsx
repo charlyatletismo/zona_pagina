@@ -40,6 +40,16 @@ const RootLayout = () => {
 
   return (
   <div className="flex flex-col min-h-screen">
+
+    {localStorage.getItem('BANNED') === 'true' && (
+      <div className="bg-red-700/70 py-1 px-5 text-white" role="alert">
+        <strong className="font-bold">Tu cuenta ha sido bloqueada.</strong>
+        {localStorage.getItem('BAN_REASON') && (
+          <span className=""> Razón: {localStorage.getItem('BAN_REASON')}</span>
+        )}
+      </div>
+    )}
+
     <div className="relative bg-primary/5">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-10 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary rounded-full blur-3xl"></div>

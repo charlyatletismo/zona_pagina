@@ -61,6 +61,11 @@ export const ARSettingsSchema = SettingsSchema.extend({
   date_of_birth: z.coerce.date().nullable()
 });
 
+export const ARBanStatusSchema = z.object({
+  banned: z.boolean(),
+  ban_reason: z.string().nullable(),
+})
+
 
 ////////////////////////////////////////////////////////
 //                     /api/users                     //

@@ -6,12 +6,16 @@ import { users, userUpdates } from './db/schema';
 import { eq, like, and } from 'drizzle-orm';
 import { M } from './lib/messages';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
+import { userIsBanned } from "./lib/checks";
 
 
 export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
     const userId = c.get('jwtPayload').id;
+    if (await userIsBanned(db, userId)) {
+      return c.json({ message: M.USER_BANNED }, 403);
+    }
     const user = await db
       .select(
         ARSettingsSchema.keyof().options.reduce((acc, field) => {
@@ -32,6 +36,9 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
   .post("/", async (c) => {
     const db = drizzle(c.env.DB);
     const userId: string = c.get('jwtPayload').id;
+    if (await userIsBanned(db, userId)) {
+      return c.json({ message: M.USER_BANNED }, 403);
+    }
     const body = await c.req.json();
 
     const updates = ARSettingsSchema.omit({ id: true }).safeParse(body);
@@ -103,4 +110,23 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
     return c.json({ data: res });
+  })
+  .get("/banned", async (c) => {
+    const db = drizzle(c.env.DB);
+    const userId = c.get('jwtPayload').id;
+    const user = await db
+      .select({
+        banned: users.banned,
+        ban_reason: users.ban_reason,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .get();
+    if (!user) {
+      return c.json({ message: M.USER_NOT_FOUND }, 404);
+    }
+    return c.json({ data: {
+      banned: user.banned === 1,
+      ban_reason: user.ban_reason
+    } });
   });

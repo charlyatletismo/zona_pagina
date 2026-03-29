@@ -78,7 +78,7 @@ export const Navigation = () => {
               </button>
             </NavigationMenuItem> */}
 
-        {localStorage.getItem('JWT_TOKEN') && (
+        {(localStorage.getItem('JWT_TOKEN') && localStorage.getItem("BANNED") !== "true") && (
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
               <Link to="/settings" className={navClass}>

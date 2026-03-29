@@ -2,12 +2,13 @@ import { redirect, ParsedLocation } from '@tanstack/react-router';
 import { ADMIN_ROLE } from '@shared/roles';
 
 
-const authCheck = (roles: string[] = []) => {
+const authCheck = (roles: string[] = [], mustNotBeBanned: boolean = false) => {
   return async ({ location }: { location: ParsedLocation }) => {
     const notAuthenticated = !localStorage.getItem('JWT_TOKEN');
     const role = localStorage.getItem('USER_ROLE');
     const notAuthorized = roles.length > 0 && !roles.includes(role || '') && role !== ADMIN_ROLE;
     const requireProfileUpdate = localStorage.getItem('REQUIRE_PROFILE_UPDATE') === 'true';
+    const isBanned = localStorage.getItem('BANNED') === 'true';
 
     if (notAuthenticated) {
       throw redirect({
@@ -26,6 +27,10 @@ const authCheck = (roles: string[] = []) => {
     } else if (requireProfileUpdate && location.pathname !== '/settings/profile') {
       throw redirect({
         to: '/settings/profile',
+      })
+    } else if (mustNotBeBanned && isBanned) {
+      throw redirect({
+        to: '/',
       })
     }
   }

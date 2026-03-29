@@ -27,6 +27,7 @@ import { getLang } from "@/lib/utils";
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
+import { checkBanned } from '@/lib/checks';
 import React from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +50,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/')({
     const res = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventSchema
       >>(`/api/sportingEvents/${params.eventId}`, ARSportingEventSchema);
+    await checkBanned();
     return { res };
   },
   staleTime: 1000 * 60 * 5,
@@ -532,6 +534,17 @@ const RegisterButton = (
         disabled
       >
         Inscripto en otro circuito
+      </Button>
+    );
+  }
+  if (localStorage.getItem('BANNED') === "true") {
+    return (
+      <Button
+        className={classDisabled}
+        size="sm"
+        disabled
+      >
+        Cuenta bloqueada
       </Button>
     );
   }

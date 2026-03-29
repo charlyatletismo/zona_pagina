@@ -46,6 +46,9 @@ import {
   getClothingStats,
   addClothingToSpEvent,
 } from "./lib/sportingEventClothing";
+import {
+  userIsBanned
+} from "./lib/checks";
 import { buildItemId } from "./lib/utilsPayment";
 import { ARSportingEventSchema } from "@shared/apiRespTypes";
 import { M } from "./lib/messages";
@@ -135,6 +138,9 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       return c.json({ message: M.SPORTING_EVENT_USER_ID_REQUIRED }, 400);
     }
     const reqUserId: string = c.get('jwtPayload')?.id;
+    if (await userIsBanned(db, reqUserId)) {
+      return c.json({ message: M.USER_BANNED }, 403);
+    }
     const res = await registerToSpEvent(
       db,
       Number(id),

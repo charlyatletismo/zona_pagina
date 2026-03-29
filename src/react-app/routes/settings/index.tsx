@@ -11,7 +11,7 @@ import { GoBackButton } from '@/components/goBackButton';
 
 export const Route = createFileRoute('/settings/')({
   component: RouteComponent,
-  beforeLoad: authCheck(),
+  beforeLoad: authCheck([], true),
   loader: async () => {
     const res = await getAuthenticatedThrow<
       z.infer<typeof ARSettingsSchema>

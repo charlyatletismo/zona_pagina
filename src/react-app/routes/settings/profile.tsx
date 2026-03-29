@@ -9,7 +9,7 @@ import { FormBox } from '@/components/formBox';
 
 export const Route = createFileRoute('/settings/profile')({
   component: RouteComponent,
-  beforeLoad: authCheck(),
+  beforeLoad: authCheck([], true),
   loader: async () => {
     const profileApi = await getAuthenticatedThrow<
       z.infer<typeof ARSettingsSchema>

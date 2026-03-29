@@ -99,6 +99,10 @@ export const M = {
     [ES]: "La talla de remera del usuario no está establecida",
     [EN]: "User shirt size not set"
   },
+  USER_BANNED: {
+    [ES]: "Usuario baneado",
+    [EN]: "User banned"
+  },
   USERS_UNAVAILABLE: {
     [ES]: "Lista de usuarios no disponible",
     [EN]: "Users list unavailable"
