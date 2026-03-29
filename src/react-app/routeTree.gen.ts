@@ -30,7 +30,6 @@ import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvent
 import { Route as SportingEventsChipsRouteImport } from './routes/sportingEvents/chips'
 import { Route as SportingEventsActiveRouteImport } from './routes/sportingEvents/active'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
-import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as LocationsCreateRouteImport } from './routes/locations/create'
 import { Route as LocationsCheckTemporaryRouteImport } from './routes/locations/checkTemporary'
 import { Route as LocationsLocationIdRouteImport } from './routes/locations/$locationId'
@@ -158,11 +157,6 @@ const SettingsProfileRoute = SettingsProfileRouteImport.update({
   path: '/settings/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
-  id: '/settings/notifications',
-  path: '/settings/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LocationsCreateRoute = LocationsCreateRouteImport.update({
   id: '/locations/create',
   path: '/locations/create',
@@ -282,7 +276,6 @@ export interface FileRoutesByFullPath {
   '/locations/$locationId': typeof LocationsLocationIdRoute
   '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
   '/locations/create': typeof LocationsCreateRoute
-  '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/active': typeof SportingEventsActiveRoute
   '/sportingEvents/chips': typeof SportingEventsChipsRoute
@@ -325,7 +318,6 @@ export interface FileRoutesByTo {
   '/locations/$locationId': typeof LocationsLocationIdRoute
   '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
   '/locations/create': typeof LocationsCreateRoute
-  '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/active': typeof SportingEventsActiveRoute
   '/sportingEvents/chips': typeof SportingEventsChipsRoute
@@ -369,7 +361,6 @@ export interface FileRoutesById {
   '/locations/$locationId': typeof LocationsLocationIdRoute
   '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
   '/locations/create': typeof LocationsCreateRoute
-  '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/sportingEvents/active': typeof SportingEventsActiveRoute
   '/sportingEvents/chips': typeof SportingEventsChipsRoute
@@ -414,7 +405,6 @@ export interface FileRouteTypes {
     | '/locations/$locationId'
     | '/locations/checkTemporary'
     | '/locations/create'
-    | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/active'
     | '/sportingEvents/chips'
@@ -457,7 +447,6 @@ export interface FileRouteTypes {
     | '/locations/$locationId'
     | '/locations/checkTemporary'
     | '/locations/create'
-    | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/active'
     | '/sportingEvents/chips'
@@ -500,7 +489,6 @@ export interface FileRouteTypes {
     | '/locations/$locationId'
     | '/locations/checkTemporary'
     | '/locations/create'
-    | '/settings/notifications'
     | '/settings/profile'
     | '/sportingEvents/active'
     | '/sportingEvents/chips'
@@ -544,7 +532,6 @@ export interface RootRouteChildren {
   LocationsLocationIdRoute: typeof LocationsLocationIdRoute
   LocationsCheckTemporaryRoute: typeof LocationsCheckTemporaryRoute
   LocationsCreateRoute: typeof LocationsCreateRoute
-  SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SportingEventsActiveRoute: typeof SportingEventsActiveRoute
   SportingEventsChipsRoute: typeof SportingEventsChipsRoute
@@ -727,13 +714,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/notifications': {
-      id: '/settings/notifications'
-      path: '/settings/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof SettingsNotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/locations/create': {
       id: '/locations/create'
       path: '/locations/create'
@@ -880,7 +860,6 @@ const rootRouteChildren: RootRouteChildren = {
   LocationsLocationIdRoute: LocationsLocationIdRoute,
   LocationsCheckTemporaryRoute: LocationsCheckTemporaryRoute,
   LocationsCreateRoute: LocationsCreateRoute,
-  SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SportingEventsActiveRoute: SportingEventsActiveRoute,
   SportingEventsChipsRoute: SportingEventsChipsRoute,
