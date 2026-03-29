@@ -239,7 +239,7 @@ function RouteComponent() {
         open={openBanDialog}
         setOpen={setOpenBanDialog}
         userId={userApiRes.body.data.id}
-        banned={userApiRes.body.data.banned}
+        banned={userApiRes.body.data.banned!}
         role={userApiRes.body.data.role || ''}
         setError={setError}
         setSuccess={setSuccess}

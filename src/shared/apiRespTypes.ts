@@ -85,7 +85,7 @@ export const ARUserSchema = UserSchema.extend({
   clothing_shirt_size: UserSchema.shape.clothing_shirt_size.nullable(),
   location: UserSchema.shape.location.nullable(),
   location_address: UserSchema.shape.location_address.nullable(),
-  banned: z.coerce.boolean<number>().default(false),
+  banned: z.coerce.boolean<number>().default(false).optional(),
   ban_reason: z.coerce.string().nullable().optional(),
   created_at: z.coerce.date<string>().optional(),
   updated_at: z.coerce.date<string>().optional(),
