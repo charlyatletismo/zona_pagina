@@ -75,7 +75,7 @@ function Index() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 pb-16 space-y-16">
+      <div className="container mx-auto px-4 pb-16 space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {sections.map((section) => (
           section.items.length > 0 && (
             <section key={section.title}>

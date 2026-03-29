@@ -31,7 +31,7 @@ function RouteComponent() {
         </p>
       </div>
     </div>
-    <div className='grid gap-2 justify-center'>
+    <div className='grid gap-2 justify-center animate-in fade-in slide-in-from-bottom-4 duration-500'>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl lg:max-w-7xl mx-auto px-4'>
         <CardGrid
           icon={<AlarmClockIcon />}
