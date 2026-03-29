@@ -501,7 +501,7 @@ function RouteComponent() {
 }
 
 
-const RegisterButton = (
+export const RegisterButton = (
   { handleRegister,
     circuitId,
     registering,
