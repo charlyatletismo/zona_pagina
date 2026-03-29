@@ -16,6 +16,9 @@ import { getPendingToPayAmount } from './sportingEventRegistrations';
 
 
 const isAuthorizedRegMultiple = async (db: DrizzleD1Database, reqUserId: string, userIds: string[]) => {
+  if (userIds.length === 1 && userIds[0] === reqUserId) {
+    return true;
+  }
   const reqUser = await db
     .select({ id: users.id, role: users.role })
     .from(users)
