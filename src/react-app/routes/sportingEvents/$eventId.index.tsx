@@ -65,6 +65,8 @@ function RouteComponent() {
     (data && data.registration_start && data.registration_end)
     ? (now >= data.registration_start && now <= data.registration_end)
     : false;
+  const promotionEnd = data && data.promotional_fee_end ? new Date(data.promotional_fee_end) : null;
+  const isPromotional = promotionEnd && now <= promotionEnd;
   const [registering, setRegistering] = React.useState(-1);
   const [success, setSuccess] = React.useState('');
   const [error, setError] = React.useState('');
@@ -309,6 +311,25 @@ function RouteComponent() {
           <CalendarIcon className="w-5 h-5" />
           <span>{new Date(data.date).toLocaleDateString()}</span>
         </div>
+        {/* Fee */}
+        {(data.fee_amount !== null || data.fee_amount_promotional !== null) && (
+          <div className="mt-4">
+            {(data.fee_amount_promotional && isPromotional) ? (
+              <div className="text-2xl font-semibold text-primary">
+                {data.fee_amount_promotional.toLocaleString('es-ES', { style: 'currency', currency: 'ARS' })}
+                {data.fee_amount && (
+                  <span className="text-sm text-muted-foreground line-through ml-2">
+                    {data.fee_amount.toLocaleString('es-ES', { style: 'currency', currency: 'ARS' })}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="text-2xl font-semibold text-primary">
+                {data.fee_amount?.toLocaleString('es-ES', { style: 'currency', currency: 'ARS' })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

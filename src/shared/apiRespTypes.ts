@@ -122,6 +122,7 @@ export const SportingEventBasicInfoSchema = SportingEventSchema.pick({
   registration_end: true,
   location: true,
   location_address: true,
+  photo_id: true,
 }).required({
   id: true,
 }).extend({
