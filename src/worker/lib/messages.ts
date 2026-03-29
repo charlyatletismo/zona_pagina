@@ -155,6 +155,18 @@ export const M = {
     [ES]: "No se puede cambiar el rol de un usuario que tiene usuarios a cargo. Por favor, reasigna o elimina a los usuarios a cargo primero.",
     [EN]: "Cannot change role of a user that has managed users. Please reassign or remove managed users first."
   },
+  USER_BANNED_SUCCESSFULLY: {
+    [ES]: "Usuario baneado correctamente",
+    [EN]: "User banned successfully"
+  },
+  USER_UNBANNED_SUCCESSFULLY: {
+    [ES]: "Usuario desbaneado correctamente",
+    [EN]: "User unbanned successfully"
+  },
+  USER_CANNOT_BAN_ADMIN: {
+    [ES]: "No se puede banear a un usuario con rol de administrador",
+    [EN]: "Cannot ban a user with admin role"
+  },
 
   // -------------------------- SPORTING EVENTS --------------------------
   SPORTING_EVENT_NOT_FOUND: {
