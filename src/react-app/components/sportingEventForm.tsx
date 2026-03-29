@@ -63,7 +63,7 @@ const SportingEventForm = (
   const [newLocation, setNewLocation] = useState(false);
   const [loadedLocations, setLoadedLocations] = useState(locations);
   const [moreOptions, setMoreOptions] = useState(false);
-  const [freezeClothing, setFreezeClothing] = useState(!!data?.id);
+  const [freezeClothing, setFreezeClothing] = useState((!!data?.clothing) && data.clothing.length > 0);
 
   const form = useAppForm({
     defaultValues: data,

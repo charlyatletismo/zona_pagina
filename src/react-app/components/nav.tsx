@@ -28,6 +28,7 @@ const LINK_SERVICES = { to: '/services', label: 'Servicios' };
 const LINK_ABOUT = { to: '/about', label: 'Nosotros' };
 const LINK_USERS = { to: '/users', label: 'Usuarios' };
 const LINK_MANAGE = { to: '/manage', label: 'Gestión' };
+const LINK_ACTIVE_EVENTS = { to: '/sportingEvents/active', label: 'Eventos Activos' };
 const LINK_MY_EVENTS = { to: '/sportingEvents/myEvents', label: 'Mis Eventos' };
 const LINK_MY_MANAGED_USERS_EVENTS = { to: '/sportingEvents/myManagedUsersEvents', label: 'Eventos con inscripciones' };
 const LINKS_BY_ROLE: Record<string, Array<{ to: string; label: string }>> = {
@@ -53,7 +54,7 @@ const LINKS_BY_ROLE: Record<string, Array<{ to: string; label: string }>> = {
   [roles.ORGANIZER_ROLE]: [
     LINK_HOME,
     LINK_MANAGE,
-    LINK_MY_EVENTS,
+    LINK_ACTIVE_EVENTS,
   ],
 }
 
