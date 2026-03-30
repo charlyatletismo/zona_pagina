@@ -3,7 +3,7 @@ import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import {
   CalendarPlus,
-  FileText,
+  // FileText,
   ListCollapseIcon,
   History,
   // Tag,
@@ -36,7 +36,7 @@ function RouteComponent() {
         { to: "/sportingEvents/create", icon: CalendarPlus, label: "Crear Nuevo Evento", description: "Configurar un nuevo evento deportivo." },
         { to: "/sportingEvents/active", icon: ListCollapseIcon, label: "Eventos Activos", description: "Ver todos los eventos deportivos actuales." },
         { to: "/sportingEvents/history", icon: History, label: "Historial de Eventos", description: "Ver todos los eventos deportivos pasados y actuales." },
-        { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
+        // { to: "/sportingEvents/reports", icon: FileText, label: "Reportes Financieros", description: "Ver reportes y estados financieros de eventos finalizados en su totalidad." },
         { to: "/sportingEvents/chips", icon: CpuIcon, label: "Chips", description: "Gestionar chips y dispositivos de cronometraje." },
         // { to: "/sportingEvents/downloadRufus", icon: Download, label: "Datos para Rufus", description: "Descargar inscripciones consolidadas." },
         // { to: "/sportingEvents/uploadResults", icon: Upload, label: "Subir Resultados", description: "Cargar los resultados del evento finalizado." },
