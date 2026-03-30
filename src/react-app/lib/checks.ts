@@ -5,6 +5,10 @@ import z from 'zod';
 
 
 export const checkUpdates = async () => {
+  if (!localStorage.getItem('JWT_TOKEN')) {
+    // No token, user is not logged in
+    return;
+  }
   const resUpdates = await getAuthenticatedThrow<
     z.infer<typeof ARUpdatesStatusSchema>
     >(`/api/settings/updates`, ARUpdatesStatusSchema);
