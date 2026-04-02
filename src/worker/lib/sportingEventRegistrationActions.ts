@@ -390,6 +390,7 @@ export const setRegistrationAsPaid = async (
       .from(sportingEventRegistrations)
       .where(and(
         eq(sportingEventRegistrations.status, 'paid'),
+        eq(sportingEventRegistrations.event_id, registration.event_id!),
         isNotNull(sportingEventRegistrations.chip_id)
       ))
       .orderBy(desc(sportingEventRegistrations.chip_id))
