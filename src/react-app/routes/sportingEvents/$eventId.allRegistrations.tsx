@@ -30,6 +30,8 @@ import {
   EllipsisIcon,
   GroupIcon,
   UngroupIcon,
+  // DownloadIcon,
+  DownloadCloudIcon,
 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from '@/components/ui/spinner';
@@ -99,6 +101,44 @@ export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations'
   },
   staleTime: 0, // force reload every time
 })
+
+
+const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>[]) => {
+  const header = [
+    'bib',
+    'chip',
+    'name',
+    'lastname',
+    'sex',
+    'dob', // Date Of Birth dd/MM/yyyy
+    'yob', // Year of Birth
+    'category',
+    // 'group',
+    'country',
+    'city',
+    // 'team',
+    // 'club',
+    // 'email',
+    // 'phone',
+    'course',
+  ];
+  const rows = data.filter(reg => reg.status === 'paid').map(reg => [
+    reg.bib_number,
+    reg.chip_id,
+    reg.user_name,
+    reg.user_surname,
+    reg.user_sex,
+    reg.user_date_of_birth ? new Date(reg.user_date_of_birth).toLocaleDateString('es-AR') : '',
+    reg.user_date_of_birth ? new Date(reg.user_date_of_birth).getFullYear() : '',
+    reg.category,
+    reg.user_location ? reg.user_location.split(",").slice(-1)[0].trim() : '', // take last part of location as country
+    reg.user_location,
+    reg.circuit_name,
+  ]);
+  const csvContent = [header, ...rows].map(e => e.join(";")).join("\n");
+  return csvContent;
+}
+
 
 
 function RouteComponent() {
@@ -696,22 +736,32 @@ function RouteComponent() {
             </div>
           )}
         </div>
-        {/* <div className='flex gap-2 flex-col sm:flex-row mb-8 sm:mb-0'>
-          <Button variant='outline'>
-            <Link to='/locations/create' className='flex gap-2 items-center w-full justify-center'>
-              <PlusIcon className='w-4 h-4' />
-              Crear Ubicación
-            </Link>
+        <div className='flex gap-2 flex-col sm:flex-row mb-8 sm:mb-0'>
+          <Button
+            variant='outline'
+            className='cursor-pointer'
+            onClick={() => {
+              const csvContent = getCsvRufus(resRegApi.body.data);
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.setAttribute('href', url);
+              link.setAttribute('download', `inscripciones_evento_${eventId}.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
+            <DownloadCloudIcon className='w-4 h-4' />
+            Rufus
           </Button>
-          <Button variant='outline'>
-            <Link to='/locations/checkTemporary' className='flex gap-2 items-center w-full justify-center'>
-              <FileScanIcon className='w-4 h-4' />
-              Ub. Temporales
-            </Link>
-          </Button>
-        </div> */}
+          {/* <Button variant='outline'>
+            <DownloadIcon className='w-4 h-4' />
+            Full
+          </Button> */}
+        </div>
       </div>
-      <div className='mb-4 flex gap-2'>
+      <div className='mb-4 flex flex-col md:flex-row gap-2'>
         <Button
           variant="outline"
           className='cursor-pointer'

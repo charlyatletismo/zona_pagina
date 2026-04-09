@@ -94,7 +94,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
       >(`/api/sportingEvents/${params.eventId}`,
         ARSportingEventSchema);
     const finalData = [...(resRegApi.body.data || [])];
-    resUsersApi.body.data.forEach(user => {
+    resUsersApi.body.data.forEach((user: z.infer<typeof ARUserSchemaPartial>) => {
       const found = finalData.find(reg => reg.user_id === user.id);
       if (!found) {
         // Not registered user, add to the list with default values
@@ -125,6 +125,11 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
           user_full_name: `${user.surname} ${user.name}`,
           user_phone: user.phone!,
           user_email: user.email!,
+          user_name: user.name!,
+          user_surname: user.surname!,
+          user_sex: user.sex!,
+          user_date_of_birth: user.date_of_birth!,
+          user_location: user.location!,
           user_training_team_name: trainingTeams.find(
             team => team.id === user.training_team_id)?.name || '',
           demanded_clothing_size: user.clothing_shirt_size!,

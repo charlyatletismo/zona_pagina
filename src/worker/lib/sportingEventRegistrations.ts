@@ -471,6 +471,8 @@ export const getAllUsersRegistrations = async (
     phone: string | null;
     email: string | null;
     sex: string | null;
+    date_of_birth: string | null;
+    location: string | null;
   };
   const usersData: UserData[] = []
   const usersIds = registrations.map(r => r.user_id as string).filter((id): id is string => id !== null && id !== undefined);
@@ -484,6 +486,8 @@ export const getAllUsersRegistrations = async (
         phone: users.phone,
         email: users.email,
         sex: users.sex,
+        date_of_birth: users.date_of_birth,
+        location: users.location,
       })
       .from(users)
       .where(inArray(users.id, slicedUsers))
@@ -538,6 +542,11 @@ export const getAllUsersRegistrations = async (
       user_phone: user?.phone || null,
       user_email: user?.email || null,
       user_training_team_name: trainingTeamsData.find(t => t.id === regParsed.training_team_id)?.name || null,
+      user_name: user?.name || null,
+      user_surname: user?.surname || null,
+      user_sex: user?.sex || null,
+      user_date_of_birth: user?.date_of_birth || null,
+      user_location: user?.location || null,
       demanded_clothing_size: clothingParsed.find(c => c.id === regParsed.demanded_clothing_id)?.size || null,
       reserved_clothing_size: clothingParsed.find(c => c.id === regParsed.reserved_clothing_id)?.size || null,
       pending_to_pay,
