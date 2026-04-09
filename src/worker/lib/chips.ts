@@ -1,5 +1,5 @@
 import { DrizzleD1Database } from "drizzle-orm/d1";
-import { eq, desc, and, gte, lte, asc } from "drizzle-orm";
+import { eq, and, gte, lte, asc } from "drizzle-orm";
 import { chips } from "../db/schema";
 
 
@@ -14,8 +14,8 @@ export const getNextChipId = async (db: DrizzleD1Database, chip_id: string | nul
       })
       .from(chips)
       .orderBy(
-        desc(chips.prefix),
-        desc(chips.padding_n),
+        asc(chips.prefix),
+        asc(chips.padding_n),
         asc(chips.start),
       )
       .limit(1)
@@ -62,8 +62,8 @@ export const getNextChipId = async (db: DrizzleD1Database, chip_id: string | nul
     })
     .from(chips)
     .orderBy(
-      desc(chips.prefix),
-      desc(chips.padding_n),
+      asc(chips.prefix),
+      asc(chips.padding_n),
       asc(chips.start),
     )
     .all();
