@@ -150,6 +150,8 @@ export const sportingEvents = sqliteTable("sporting_events", {
   rules: text({ length: 2048 }),
   disclaimer_of_liability: text({ length: 4096 }),
   award_prizes: text({ length: 1024 }),
+  mercadopago_enabled: int().notNull().default(0),
+  bank_alias: text({ length: 64 }), // for bank transfers
   fee_amount: real(),
   fee_currency: text({ length: 3 }).default('ARS'),
   // due date for payment
@@ -316,6 +318,11 @@ export const sportingEventRegistrations = sqliteTable("sporting_event_registrati
       ),
   chip_id: text({ length: 32 }),
   bib_number: int(),
+  event_team_leader_id: text({ length: USER_ID_MAX_LENGTH })
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
 
   // Kit = bib + chip + clothing
   kit_delivered: int().notNull().default(0),
