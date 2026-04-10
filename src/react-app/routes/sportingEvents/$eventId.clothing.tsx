@@ -6,7 +6,6 @@ import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import {
   AlertCircle,
   ShirtIcon,
-  CircleQuestionMarkIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GoBackButton } from '@/components/goBackButton';
@@ -30,8 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { HelpTooltip } from '@/components/helpTooltip';
 import z from 'zod';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { SHIRT_SIZES } from '@shared/types';
 import { getMessage } from '@/lib/utils';
 
@@ -192,20 +191,6 @@ const TableHeadCellFlex = ({
         {tooltipContent ? <HelpTooltip content={tooltipContent} /> : null}
       </div>
     </TableHead>
-  )
-}
-
-
-const HelpTooltip = ({ content }: { content: string }) => {
-  return (
-    <Popover>
-      <PopoverTrigger className='cursor-pointer hover:text-primary'>
-        <CircleQuestionMarkIcon className='w-4 h-4' />
-      </PopoverTrigger>
-      <PopoverContent className='bg-background p-3 rounded-md border'>
-        <p className='text-sm'>{content}</p>
-      </PopoverContent>
-    </Popover>
   )
 }
 
