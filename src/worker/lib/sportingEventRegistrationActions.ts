@@ -168,7 +168,7 @@ export const registerToSpEvent = async (
     ))
     .all();
 
-  console.log(new Date().toISOString(), "Fetched clothing data for sizes:", usersClothing.length);
+  // console.log(new Date().toISOString(), "Fetched clothing data for sizes:", usersClothing.length);
 
   const promotional = (
       spEvent[0].fee_amount_promotional
@@ -1000,4 +1000,48 @@ export const transferRegistration = async (
     status: 200,
     message: M.SPORTING_EVENT_REGISTRATION_TRANSFERRED_SUCCESSFULLY,
   }
+}
+
+
+export const updateSpEventRegClothingReserved = async (
+  db: DrizzleD1Database,
+  event_id: number,
+  registrationId: number,
+  clothingSize: string | null
+) => {
+  const clothing = await db
+    .select({
+      id: sportingEventClothing.id,
+      size: sportingEventClothing.size,
+      purchased_quantity: sportingEventClothing.purchased_quantity,
+    })
+    .from(sportingEventClothing)
+    .where(eq(sportingEventClothing.event_id, event_id))
+    .all();
+  if (!clothing) {
+    return null;
+  }
+  const clothingFound = clothing.find(c => c.size === clothingSize);
+  if (!clothingFound || clothingFound.purchased_quantity === 0) {
+    return null;
+  }
+  // Clothing reservation
+  const alreadyReservedClothing = await db
+    .select({id: sportingEventRegistrations.id})
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.event_id, event_id),
+      eq(sportingEventRegistrations.reserved_clothing_id, clothingFound.id),
+    ))
+    .all();
+  if (alreadyReservedClothing.length >= clothingFound.purchased_quantity) {
+    return null;
+  }
+
+  await db
+    .update(sportingEventRegistrations)
+    .set({ reserved_clothing_id: clothingFound.id })
+    .where(eq(sportingEventRegistrations.id, registrationId))
+    .run();
+  return clothingFound.id;
 }

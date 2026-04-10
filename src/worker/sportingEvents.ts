@@ -27,6 +27,7 @@ import {
   cancelRegistrations,
   reactivateRegistrations,
   transferRegistration,
+  updateSpEventRegClothingReserved,
 } from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
@@ -321,6 +322,25 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     const delivered = flag === 'true';
     await updateSpEventRegistrationKitDeliveredStatus(db, Number(id), Number(regId), delivered);
     return c.json({ message: M.SPORTING_EVENT_REGISTRATION_KIT_DELIVERY_STATUS_UPDATED_SUCCESSFULLY });
+  })
+  .post("/:id/registrations/assignAnotherClothingSize", async (c) => {
+    if (!authorizedOrg(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const { registrationId, size } : { registrationId: number, size: string } = await c.req.json();
+    if (!registrationId) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_ID_REQUIRED }, 400);
+    }
+    if (!size) {
+      return c.json({ message: M.SPORTING_EVENT_CLOTHING_INVALID_DATA }, 400);
+    }
+    const res = await updateSpEventRegClothingReserved(db, Number(id), registrationId, size);
+    if (!res) {
+      return c.json({ message: M.SPORTING_EVENT_CLOTHING_UNAVAILABLE }, 400);
+    }
+    return c.json({ data: { clothingId: res } });
   })
   .get("/:id/allRegistrations", async (c) => {
     if (!authorizedAthMan(c.get('jwtPayload').role)) {

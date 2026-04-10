@@ -225,6 +225,10 @@ export const M = {
     [ES]: "La ropa del evento deportivo no es válida",
     [EN]: "Invalid sporting event clothing data"
   },
+  SPORTING_EVENT_CLOTHING_UNAVAILABLE: {
+    [ES]: "La ropa del evento deportivo no está disponible",
+    [EN]: "Sporting event clothing is unavailable"
+  },
   SPORTING_EVENT_CLOTHING_UPDATED_SUCCESSFULLY: {
     [ES]: "Ropa del evento deportivo actualizada correctamente",
     [EN]: "Sporting event clothing updated successfully"

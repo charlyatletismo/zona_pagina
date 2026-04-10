@@ -6,12 +6,24 @@ import {
   postAuthenticated
 } from '@/lib/apiCalls';
 import {
+  SHIRT_SIZES,
+} from '@shared/types';
+import {
   ARSportingEventRegistrationFlatSchema,
 } from '@shared/apiRespTypes';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+} from '@/components/ui/select';
 import {
   PackageIcon,
   PackageOpenIcon,
@@ -25,6 +37,7 @@ import {
   CircleCheckIcon,
   CircleDollarSignIcon,
   SearchIcon,
+  ShirtIcon,
   AlertCircle,
   PercentCircleIcon,
   EllipsisIcon,
@@ -180,6 +193,7 @@ function RouteComponent() {
   const [cancelingRegId, setCancelingRegId] = React.useState<number[] | null>(null);
   const [reactivatingRegId, setReactivatingRegId] = React.useState<number[] | null>(null);
   const [transferringRegId, setTransferringRegId] = React.useState<number | null>(null);
+  const [anotherSizeRegId, setAnotherSizeRegId] = React.useState<number | null>(null);
 
 
   const statusBadges: Record<string, { text: string, color: string }> = {
@@ -388,7 +402,15 @@ function RouteComponent() {
     columnHelper.accessor('demanded_clothing_size', {
       header: 'Talle',
       cell: info => (
-        <div>
+        <div
+          className={
+            info.row.getIsGrouped() ? '' :
+            info.row.original.status !== 'paid'
+            ? ''
+            : info.row.original.reserved_clothing_size
+              ? 'rounded min-w-5 w-fit text-center bg-green-500/50'
+              : 'rounded min-w-5 w-fit text-center bg-yellow-500/50'}
+        >
           {info.row.original.reserved_clothing_size || info.getValue()}
         </div>
       ),
@@ -525,7 +547,16 @@ function RouteComponent() {
               }}>
                 <PkgAnimation kit_delivered={props.row.original.kit_delivered} />
               </DropdownMenuItem>
-
+              {props.row.original.status === 'paid' &&
+                <DropdownMenuItem
+                  onClick={() => {
+                    setAnotherSizeRegId(props.row.original.id);
+                  }}
+                >
+                  <ShirtIcon className='w-4 h-4' />
+                  Reservar otro talle
+                </DropdownMenuItem>
+              }
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -719,6 +750,27 @@ function RouteComponent() {
           setTimeout(() => {
             window.location.reload();
           }, 500);
+        }}
+      />
+
+      <AnotherClothingSizeRegDialog
+        eventId={eventId}
+        regId={anotherSizeRegId}
+        setRegId={setAnotherSizeRegId}
+        setError={setError}
+        setSuccess={setSuccess}
+        setLoading={setLoading}
+        onSuccess={async (size_id: number, size: string) => {
+          setRowSelection({});
+          setData(prevData => prevData.map(reg => {
+            if (reg.id !== anotherSizeRegId) return reg;
+            return {
+              ...reg,
+              reserved_clothing_id: size_id,
+              reserved_clothing_size: ARSportingEventRegistrationFlatSchema
+                .shape.reserved_clothing_size.parse(size),
+            }
+          }));
         }}
       />
 
@@ -1472,6 +1524,108 @@ const TransferRegDialog = ({
                     onSuccess();
                   }
                   setBenefUserId('');
+                  setRegId(null);
+                }}
+              >
+                Confirmar
+              </Button>
+              </DialogClose>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+
+const AnotherClothingSizeRegDialog = ({
+  regId,
+  setRegId,
+  eventId,
+  setError,
+  setSuccess,
+  setLoading,
+  onSuccess,
+}: {
+  regId: number | null,
+  setRegId: (regId: number | null) => void,
+  eventId: string,
+  setError: (msg: string) => void,
+  setSuccess: (msg: string) => void,
+  setLoading: (loading: boolean) => void,
+  onSuccess: (size_id: number, size: string) => void,
+}) => {
+  const [size, setSize] = React.useState("");
+
+  return (
+    <Dialog open={regId !== null} onOpenChange={() => {
+      setSize('');
+      setRegId(null);
+    }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Asignar otro talle</DialogTitle>
+          <DialogDescription>
+            Se le reservará un talle diferente al solicitado en la inscripción seleccionada.
+          </DialogDescription>
+
+          <Select
+            name="size"
+            value={size || ''}
+            onValueChange={(e) => {
+              setSize(e);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Talle</SelectLabel>
+                {SHIRT_SIZES.map((cSize) => (
+                  <SelectItem key={cSize} value={cSize}>{cSize}</SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <div className='flex gap-2 justify-end mt-2'>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className='max-w-20 cursor-pointer'
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="default"
+                className='max-w-20 cursor-pointer'
+                onClick={async (e) => {
+                  if (!size) {
+                    e.preventDefault();
+                    return;
+                  }
+                  // Lógica para asignar otro talle al demandado
+                  setLoading(true);
+                  const r = await postAuthenticated(
+                    `/api/sportingEvents/${eventId}/registrations/assignAnotherClothingSize`,
+                    {registrationId: regId, size: size}
+                  );
+                  setLoading(false);
+                  if (r.status !== 200) {
+                    console.error('Error asignando otro talle:', getMessage(r.body?.message, 'Error desconocido'));
+                    setError(
+                      'Hubo un error al asignar otro talle. '
+                      + getMessage(r.body?.message, 'Error desconocido'));
+                  } else {
+                    setSuccess('Talle asignado exitosamente.');
+                    onSuccess(r.body.data.clothingId, size);
+                  }
+                  setSize('');
                   setRegId(null);
                 }}
               >
