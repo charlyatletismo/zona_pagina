@@ -3,137 +3,109 @@ INSERT INTO
     id,
     locality,
     province,
-    country,
-    latitude,
-    longitude
+    country
   )
 VALUES (
     'Villa Constitución, Santa Fe, Argentina',
     'Villa Constitución',
     'Santa Fe',
-    'Argentina',
-    -33.2275605,
-    -60.3302311
+    'Argentina'
   ),
   (
     'Empalme Villa Constitución, Santa Fe, Argentina',
     'Empalme Villa Constitución',
     'Santa Fe',
-    'Argentina',
-    -33.2610580,
-    -60.3796213
+    'Argentina'
   ),
   (
     'San Nicolás de los Arroyos, Buenos Aires, Argentina',
     'San Nicolás de los Arroyos',
     'Buenos Aires',
-    'Argentina',
-    -33.3302747,
-    -60.2088286
+    'Argentina'
   ),
   (
     'Rosario, Santa Fe, Argentina',
     'Rosario',
     'Santa Fe',
-    'Argentina',
-    -32.9435990,
-    -60.6496834
+    'Argentina'
   ),
   (
     'Arroyo Seco, Santa Fe, Argentina',
     'Arroyo Seco',
     'Santa Fe',
-    'Argentina',
-    -33.1546917,
-    -60.5040639
+    'Argentina'
   ),
   (
     'La Vanguardia, Santa Fe, Argentina',
     'La Vanguardia',
     'Santa Fe',
-    'Argentina',
-    -33.3573867,
-    -60.6578199
+    'Argentina'
   ),
   (
     'Theobald, Santa Fe, Argentina',
     'Theobald',
     'Santa Fe',
-    'Argentina',
-    -33.3076271,
-    -60.3118147
+    'Argentina'
   ),
   (
     'Soldini, Santa Fe, Argentina',
     'Soldini',
     'Santa Fe',
-    'Argentina',
-    -33.0270394, 
-    -60.7563872
+    'Argentina'
   ),
   (
     'Funes, Santa Fe, Argentina',
     'Funes',
     'Santa Fe',
-    'Argentina',
-    -32.9230521,
-    -60.7946843
+    'Argentina'
   ),
   (
     'Pérez, Santa Fe, Argentina',
     'Pérez',
     'Santa Fe',
-    'Argentina',
-    -33.0012165,
-    -60.7767905
+    'Argentina'
   ),
   (
     'Granadero Baigorria, Santa Fe, Argentina',
     'Granadero Baigorria',
     'Santa Fe',
-    'Argentina',
-    -32.8504323,
-    -60.7059380
+    'Argentina'
   ),
   (
     'Santa Teresa, Santa Fe, Argentina',
     'Santa Teresa',
     'Santa Fe',
-    'Argentina',
-    -33.4381370,
-    -60.7938350
+    'Argentina'
   ),
   (
     'Uranga, Santa Fe, Argentina',
     'Uranga',
     'Santa Fe',
-    'Argentina',
-    -33.2657987,
-    -60.7046183
+    'Argentina'
   ),
   (
     'Pergamino, Buenos Aires, Argentina',
     'Pergamino',
     'Buenos Aires',
-    'Argentina',
-    -33.9070770,
-    -60.5736386
+    'Argentina'
   ),
   (
     'Ramallo, Buenos Aires, Argentina',
     'Ramallo',
     'Buenos Aires',
-    'Argentina',
-    -33.4843400,
-    -60.0053042
+    'Argentina'
+  ),
+  (
+    'Venado Tuerto, Santa Fe, Argentina',
+    'Venado Tuerto',
+    'Santa Fe',
+    'Argentina'
   ),
   (
     'temporary_location',
     'Temporary Location',
     'Temporary Province',
-    'Temporary Country',
-    NULL,
-    NULL
+    'Temporary Country'
   );
 
 
