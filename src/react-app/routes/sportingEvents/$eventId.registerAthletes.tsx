@@ -384,7 +384,7 @@ function RouteComponent() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
             <DropdownMenuGroup>
-              {props.row.original.pending_to_pay > 0 && (
+              {(props.row.original.pending_to_pay > 0 && eventData.mercadopago_enabled) && (
                 <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
                   setPayRegs([props.row.original]);
                 }}>
@@ -576,7 +576,7 @@ function RouteComponent() {
           <CircleArrowUpIcon className='w-4 h-4 text-blue-500' />
           Inscribir
         </Button>
-        <Button
+        {eventData.mercadopago_enabled && (<Button
           variant="outline"
           className='cursor-pointer'
           disabled={!generalActionBtnsEnabled.canPay || loading}
@@ -591,7 +591,7 @@ function RouteComponent() {
         >
           <MercadoPagoLogo className='w-6 h-6' />
           Pagar
-        </Button>
+        </Button>)}
         <Button
           variant="outline"
           className='cursor-pointer'
