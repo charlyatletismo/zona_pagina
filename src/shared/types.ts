@@ -231,6 +231,8 @@ export const SportingEventSchema = z.object({
   rules: z.string().max(2048).nullable().optional(),
   disclaimer_of_liability: z.string().max(4096).nullable().optional(),
   award_prizes: z.string().max(1024).nullable().optional(),
+  mercadopago_enabled: z.boolean().default(false).optional(),
+  bank_alias: z.string().max(64).nullable().optional(),
   fee_amount: z.number().nullable().optional(),
   fee_currency: z.string().max(3).nullable().optional(),
   fee_payment_due_date: z.date().nullable().optional(),

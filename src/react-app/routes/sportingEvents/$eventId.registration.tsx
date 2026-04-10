@@ -9,6 +9,7 @@ import { trainingTeamsData } from '@/lib/queryCache'
 import z from 'zod';
 import {
   ARSportingEventRegistrationSchema,
+  ARSportingEventPaymentMethodsSchema,
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { DeleteButton } from '@/components/deleteButton';
@@ -38,10 +39,16 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
   loader: async ({ params }) => {
     const res = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventRegistrationSchema>
-      >(`/api/sportingEvents/${params.eventId}/registration`);
+      >(`/api/sportingEvents/${params.eventId}/registration`,
+        ARSportingEventRegistrationSchema);
+    const resEvent = await getAuthenticatedThrow<
+      z.infer<typeof ARSportingEventPaymentMethodsSchema>
+      >(`/api/sportingEvents/${params.eventId}/paymentMethodsInfo`,
+        ARSportingEventPaymentMethodsSchema);
     return {
       res,
       eventId: params.eventId,
+      paymentMethods: resEvent.body.data,
       trainingTeam: trainingTeamsData.data.find(
         team => team.id === res.body?.data.registration.training_team_id
       ) || null,
@@ -52,7 +59,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
 
 
 function RouteComponent() {
-  const { res, eventId, trainingTeam } = Route.useLoaderData();
+  const { res, eventId, trainingTeam, paymentMethods } = Route.useLoaderData();
   const data = res.body.data;
   const navigate = useNavigate();
   
@@ -193,7 +200,7 @@ function RouteComponent() {
                       data.registration.reserved_clothing_id === 0 ? (
                         "Declinaste la indumentaria"
                       ) : data.registration.status === "paid" ? (
-                        "No se pudo reservar un talle. El organizador ya fue informado y se pondrá en contacto contigo."
+                        "No se pudo reservar un talle. Pronto se te reservará. El organizador se pondrá en contacto contigo en caso de ser necesario."
                       ) : data.registration.status === "cancelled" ? (
                         "No reservada"
                       ) : data.registration.status === "expired" ? (
@@ -365,79 +372,83 @@ function RouteComponent() {
               <div className='mb-2'>
                 Para completar tu inscripción, debés abonar el saldo pendiente.
               </div>
-              <Button
-                onClick={async () => {
-                  const res = await postAuthenticated(`/api/sportingEvents/${eventId}/pay`);
-                  if (res.status === 200) {
-                    const mpLink = res.body.data.init_point;
-                    console.log("response", res);
-                    console.log("Redirigiendo a MercadoPago con link:", mpLink);
-                    if (mpLink) {
-                      // redirect to MP
-                      window.location.href = mpLink;
+              {paymentMethods.mercadopago_enabled && (
+                <Button
+                  onClick={async () => {
+                    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/pay`);
+                    if (res.status === 200) {
+                      const mpLink = res.body.data.init_point;
+                      console.log("response", res);
+                      console.log("Redirigiendo a MercadoPago con link:", mpLink);
+                      if (mpLink) {
+                        // redirect to MP
+                        window.location.href = mpLink;
+                      } else {
+                        alert('No se recibió un link de pago válido. Por favor, intenta nuevamente o contacta al organizador.');
+                      }
                     } else {
-                      alert('No se recibió un link de pago válido. Por favor, intenta nuevamente o contacta al organizador.');
+                      alert(`Error al iniciar el proceso de pago: ${getMessage(res.body?.message, 'Error desconocido')}`);
                     }
-                  } else {
-                    alert(`Error al iniciar el proceso de pago: ${getMessage(res.body?.message, 'Error desconocido')}`);
-                  }
-                }}
-                variant={'outline'}
-                className='h-auto py-2 mb-3 cursor-pointer mx-auto
-                  flex items-center gap-2
-                  bg-sky-50 hover:bg-sky-100
-                  border-sky-200 hover:border-sky-300
-                  text-sky-900 hover:text-sky-700
-                  dark:bg-sky-600/10 dark:hover:bg-sky-700/10
-                  dark:border-sky-700/50 dark:hover:border-sky-700
-                  dark:text-sky-300 dark:hover:text-sky-100
-                  '
-              >
-                <MercadoPagoLogo className='size-8' />
-                Pagar con Mercado Pago
-              </Button>
-              <div className='mb-2'>También se aceptan transferencias al siguiente alias (click para copiar)</div>
-              <Button
-                className='mb-3 cursor-pointer'
-                variant={'outline'}
-                onClick={() => {
-                  navigator.clipboard.writeText('mi.alias.mp');
-                  const copyIcon = document.getElementById('clipboard-copy');
-                  const copiedIcon = document.getElementById('clipboard-copied');
-                  if (copyIcon && copiedIcon) {
-                    copyIcon.style.display = 'none';
-                    copiedIcon.style.display = 'inline-block';
-                    setTimeout(() => {
-                      copyIcon.style.display = 'inline-block';
-                      copiedIcon.style.display = 'none';
-                    }, 2000);
-                  }
-                }}
-              >
-                <div className='border-r-2'>
-                  <div id="clipboard-copy" style={{display: 'inline-block' }}>
-                    <Copy className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                  </div>
-                  <div id="clipboard-copied" style={{display: 'none'}}>
-                    <Check className="w-5 h-5 inline-block mr-2 text-gray-500" />
-                  </div>
-                </div>
-                mi.alias.mp
-              </Button>
-              <div className='mb-2'>Enviar comprobante de transferencia por WhatsApp</div>
-              <Button
-                variant={'outline'}
-                asChild
-              >
-                <a
-                  href="https://wa.me/5493400660640?text=Hola,%20quiero%20enviar%20el%20comprobante%20de%20pago%20para%20mi%20inscripción%20al%20evento."
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  }}
+                  variant={'outline'}
+                  className='h-auto py-2 mb-3 cursor-pointer mx-auto
+                    flex items-center gap-2
+                    bg-sky-50 hover:bg-sky-100
+                    border-sky-200 hover:border-sky-300
+                    text-sky-900 hover:text-sky-700
+                    dark:bg-sky-600/10 dark:hover:bg-sky-700/10
+                    dark:border-sky-700/50 dark:hover:border-sky-700
+                    dark:text-sky-300 dark:hover:text-sky-100
+                    '
                 >
-                  <Whatsapp />
-                  Enviar
-                </a>
-              </Button>
+                  <MercadoPagoLogo className='size-8' />
+                  Pagar con Mercado Pago
+                </Button>
+              )}
+              {paymentMethods.bank_alias !== null && (<div>
+                <div className='mb-2'>Se aceptan transferencias al siguiente alias (click para copiar)</div>
+                <Button
+                  className='mb-3 cursor-pointer'
+                  variant={'outline'}
+                  onClick={() => {
+                    navigator.clipboard.writeText(paymentMethods.bank_alias!);
+                    const copyIcon = document.getElementById('clipboard-copy');
+                    const copiedIcon = document.getElementById('clipboard-copied');
+                    if (copyIcon && copiedIcon) {
+                      copyIcon.style.display = 'none';
+                      copiedIcon.style.display = 'inline-block';
+                      setTimeout(() => {
+                        copyIcon.style.display = 'inline-block';
+                        copiedIcon.style.display = 'none';
+                      }, 2000);
+                    }
+                  }}
+                >
+                  <div className='border-r-2'>
+                    <div id="clipboard-copy" style={{display: 'inline-block' }}>
+                      <Copy className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                    </div>
+                    <div id="clipboard-copied" style={{display: 'none'}}>
+                      <Check className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                    </div>
+                  </div>
+                  {paymentMethods.bank_alias}
+                </Button>
+                <div className='mb-2'>Enviar comprobante de transferencia por WhatsApp</div>
+                <Button
+                  variant={'outline'}
+                  asChild
+                >
+                  <a
+                    href="https://wa.me/5493400660640?text=Hola,%20quiero%20enviar%20el%20comprobante%20de%20pago%20para%20mi%20inscripción%20al%20evento."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Whatsapp />
+                    Enviar
+                  </a>
+                </Button>
+              </div>)}
             </div>
             )}
             {data.registration.status === 'pending' && (

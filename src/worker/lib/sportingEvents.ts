@@ -37,6 +37,25 @@ export const getSpIsHidden = async (
 }
 
 
+export const getSpEventPaymentMethods = async (
+  db: DrizzleD1Database,
+  eventId: number,
+) => {
+  const event = await db
+    .select({
+      mercadopago_enabled: sportingEvents.mercadopago_enabled,
+      bank_alias: sportingEvents.bank_alias,
+    })
+    .from(sportingEvents)
+    .where(eq(sportingEvents.id, eventId))
+    .limit(1)
+    .get();
+  if (!event) {
+    return null;
+  }
+  return event;
+}
+
 
 export const getSpEventMin = async (
     db: DrizzleD1Database,
@@ -231,6 +250,7 @@ export const addSpEvent = async (
     date: data.date.toISOString(),
     registration_start: data.registration_start?.toISOString() || null,
     registration_end: data.registration_end?.toISOString() || null,
+    mercadopago_enabled: data.mercadopago_enabled ? 1 : 0,
     fee_payment_due_date: data.fee_payment_due_date?.toISOString() || null,
     promotional_fee_end: data.promotional_fee_end?.toISOString() || null,
     promotional_fee_payment_due_date: data.promotional_fee_payment_due_date?.toISOString() || null,
@@ -379,6 +399,7 @@ export const updateSpEvent = async (
       date: finalData.date.toISOString(),
       registration_start: finalData.registration_start?.toISOString() || null,
       registration_end: finalData.registration_end?.toISOString() || null,
+      mercadopago_enabled: finalData.mercadopago_enabled ? 1 : 0,
       fee_payment_due_date: finalData.fee_payment_due_date?.toISOString() || null,
       promotional_fee_end: finalData.promotional_fee_end?.toISOString() || null,
       promotional_fee_payment_due_date: finalData.promotional_fee_payment_due_date?.toISOString() || null,

@@ -272,6 +272,10 @@ export const M = {
     [ES]: "Faltan campos obligatorios en el pago de la inscripción del evento deportivo",
     [EN]: "Missing required fields in sporting event registration payment"
   },
+  SPORTING_EVENT_REGISTRATION_PAYMENT_METHOD_NOT_AVAILABLE: {
+    [ES]: "El método de pago no está disponible para la inscripción del evento deportivo",
+    [EN]: "Payment method not available for sporting event registration"
+  },
   SPORTING_EVENT_REGISTRATION_CREATED_SUCCESSFULLY: {
     [ES]: "Inscripción del evento deportivo creada con éxito",
     [EN]: "Sporting event registration created successfully"

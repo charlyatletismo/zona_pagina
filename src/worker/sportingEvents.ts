@@ -12,6 +12,7 @@ import {
   updateSpEvent,
   delSpEvent,
   getSpEventMin,
+  getSpEventPaymentMethods,
 } from "./lib/sportingEvents";
 import {
   deleteSpEventPhoto,
@@ -104,6 +105,15 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     }
     const res = await getSpEventMin(db, Number(id));
     return c.json(res, res.status);
+  })
+  .get("/:id/paymentMethodsInfo", async (c) => {
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const result = await getSpEventPaymentMethods(db, Number(id));
+    if (!result) {
+      return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+    }
+    return c.json({ data: result });
   })
   .get("/:id/clothing", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {
@@ -360,6 +370,13 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     const db = drizzle(c.env.DB);
     const userId = c.get('jwtPayload').id;
     const { id } = c.req.param();
+    const evPaymentMethodsInfo = await getSpEventPaymentMethods(db, Number(id));
+    if (!evPaymentMethodsInfo) {
+      return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+    }
+    if (evPaymentMethodsInfo.mercadopago_enabled === 0) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_METHOD_NOT_AVAILABLE }, 400);
+    }
     const data = await getUserRegistrationWithEvent(db, Number(id), userId);
     if (!data || !data.registration) {
       return c.json({ message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND }, 403);
@@ -432,6 +449,13 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     }
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
+    const evPaymentMethodsInfo = await getSpEventPaymentMethods(db, Number(id));
+    if (!evPaymentMethodsInfo) {
+      return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+    }
+    if (evPaymentMethodsInfo.mercadopago_enabled === 0) {
+      return c.json({ message: M.SPORTING_EVENT_REGISTRATION_PAYMENT_METHOD_NOT_AVAILABLE }, 400);
+    }
     const { registrationIds } : { registrationIds: number[] } = await c.req.json();
     const data = await getAllUsersRegistrationsSafe(db, Number(id), managerId, registrationIds);
     if (!data || data.length !== registrationIds.length) {

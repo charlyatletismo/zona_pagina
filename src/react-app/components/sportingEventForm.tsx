@@ -19,6 +19,7 @@ import { DeleteButton } from './deleteButton';
 import { LocationForm } from './locationForm';
 import { SCHEDULE_TEMPLATE_IDS } from '@shared/schedules';
 import { FormErrorsCard } from './formErrorsCard';
+import { HelpTooltip } from './helpTooltip';
 
 
 const getClothesByType = (
@@ -367,6 +368,55 @@ const SportingEventForm = (
           <hr className='md:col-span-2' />
 
           <div className="md:col-span-2 text-lg font-semibold my-auto">Tarifas</div>
+
+          <form.AppField
+            name="mercadopago_enabled"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>
+                  Habilitar MercadoPago
+                  <HelpTooltip content={
+                    "Para cambiar de cuenta de MP a la que llegan los fondos debe "
+                    + "ir a Mercado Pago, y con su cuenta de empresa crear una aplicación y "
+                    + "generar las credenciales API (Secret Key y Access Token) "
+                    + "y luego ingresar esos datos en las variables de entorno "
+                    + "correspondientes de Cloudflare y hacer un nuevo deploy del proyecto."}
+                    />
+                </field.Label>
+                <field.Switch
+                  id={field.name}
+                  name={field.name}
+                  checked={field.state.value || false}
+                  onCheckedChange={(e) => field.handleChange(e)}
+                />
+                <div className='text-xs'>La cuenta de Mercado Pago puede ser DISTINTA que la cuenta del alias.</div>
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+
+          <form.AppField
+            name="bank_alias"
+            children={(field) => (
+              <div className='space-y-2'>
+                <field.Label htmlFor={field.name}>Alias Bancario para Transferencias</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value || ''}
+                  onChange={(e) => field.handleChange(e.target.value || null)}
+                  onBlur={field.handleBlur}
+                  placeholder="alias.bancario"
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
 
           <form.AppField
             name="fee_amount"

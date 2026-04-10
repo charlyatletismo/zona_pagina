@@ -151,6 +151,7 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   date: z.coerce.date<string>(),
   registration_start: z.coerce.date<string>().nullable().optional(),
   registration_end: z.coerce.date<string>().nullable().optional(),
+  mercadopago_enabled: z.coerce.boolean<number>().default(false).optional(),
   fee_payment_due_date: z.coerce.date<string>().nullable().optional(),
   promotional_fee_end: z.coerce.date<string>().nullable().optional(),
   promotional_fee_payment_due_date: z.coerce.date<string>().nullable().optional(),
@@ -187,6 +188,12 @@ export const ARSportingEventGallerySchema = SportingEventSchema.pick({
     created_at: z.coerce.date<string>(),
   })).nullable().optional(),
 });
+
+
+export const ARSportingEventPaymentMethodsSchema = ARSportingEventSchema.pick({
+  mercadopago_enabled: true,
+  bank_alias: true,
+}).required()
 
 
 ////////////////////////////////////////////////////////////////
