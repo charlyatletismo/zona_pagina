@@ -1,0 +1,1 @@
+ALTER TABLE `sporting_event_circuits` ADD `teams_enabled` integer DEFAULT 0 NOT NULL;

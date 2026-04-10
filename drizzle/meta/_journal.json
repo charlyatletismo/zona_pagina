@@ -15,6 +15,13 @@
       "when": 1775824608333,
       "tag": "0001_tiresome_harrier",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1775850903985,
+      "tag": "0002_rapid_screwball",
+      "breakpoints": true
     }
   ]
 }
