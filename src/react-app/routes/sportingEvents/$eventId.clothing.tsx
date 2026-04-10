@@ -137,15 +137,11 @@ function RouteComponent() {
               tooltipContent="Cantidad que potencialmente podría faltar, calculada como la diferencia entre lo demandado y lo comprado."
             />
             <TableHeadCellFlex
-              title="Demand. pagado"
-              tooltipContent="Cantidad demandada que ha sido pagada."
-            />
-            <TableHeadCellFlex
               title="Reservado"
             />
             <TableHeadCellFlex
               title="Faltante"
-              tooltipContent="Cantidad faltante, se calcula como la diferencia entre lo demandado que ha sido pagado y lo reservado."
+              tooltipContent="Cantidad de inscripciones pagas a las cuales no se les pudieron reservar la indumentaria."
             />
           </TableRow>
         </TableHeader>
@@ -165,7 +161,6 @@ function RouteComponent() {
                       ? 'bg-amber-100/60'
                       : ''
               )}>{c.q_potential_lacking}</TableCell>
-              <TableCell className='text-center'>{c.q_paid_demanded}</TableCell>
               <TableCell className='text-center'>{c.q_reserved}</TableCell>
               <TableCell className={'text-center ' + 
                 (c.q_lacking > 5

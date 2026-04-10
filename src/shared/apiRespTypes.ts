@@ -202,7 +202,6 @@ export const ARClothingStatsSchema = z.object({
   q_demanded: z.number(),
   q_potential_lacking: z.number(),
   q_reserved: z.number(),
-  q_paid_demanded: z.number(),
   q_lacking: z.number(),
 })
 

@@ -1,4 +1,4 @@
-import { and, asc, count, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, eq, isNotNull, isNull } from 'drizzle-orm';
 import {
   sportingEventClothing,
   sportingEventRegistrations,
@@ -48,10 +48,11 @@ export const getClothingStats = async (db: DrizzleD1Database, eventId: number) =
     .where(and(
       eq(sportingEventRegistrations.event_id, eventId),
       eq(sportingEventRegistrations.status, "paid"),
+      isNotNull(sportingEventRegistrations.reserved_clothing_id),
     ))
     .groupBy(sportingEventRegistrations.reserved_clothing_id)
     .all();
-  const paidDemanded = await db
+  const lacking = await db
     .select({
       demanded_clothing_id: sportingEventRegistrations.demanded_clothing_id,
       count: count(sportingEventClothing.id),
@@ -60,10 +61,11 @@ export const getClothingStats = async (db: DrizzleD1Database, eventId: number) =
     .where(and(
       eq(sportingEventRegistrations.event_id, eventId),
       eq(sportingEventRegistrations.status, "paid"),
+      isNull(sportingEventRegistrations.reserved_clothing_id),
     ))
     .groupBy(sportingEventRegistrations.demanded_clothing_id)
     .all();
-  const paidDemandedMap = new Map(paidDemanded.map(item => [item.demanded_clothing_id, item.count]));
+  const lackingMap = new Map(lacking.map(item => [item.demanded_clothing_id, item.count]));
   const reservedMap = new Map(reserved.map(item => [item.reserved_clothing_id, item.count]));
   const demandedMap = new Map(demanded.map(item => [item.demanded_clothing_id, item.count]));
   const clothingFull = clothing.map(c => {
@@ -75,8 +77,7 @@ export const getClothingStats = async (db: DrizzleD1Database, eventId: number) =
       q_demanded: demandedMap.get(c.id) || 0,
       q_potential_lacking: Math.max(0, (demandedMap.get(c.id) || 0) - (c.purchased_quantity || 0)),
       q_reserved: reservedMap.get(c.id) || 0,
-      q_paid_demanded: paidDemandedMap.get(c.id) || 0,
-      q_lacking: (paidDemandedMap.get(c.id) || 0) - (reservedMap.get(c.id) || 0),
+      q_lacking: lackingMap.get(c.id) || 0,
     };
   });
   return clothingFull;
