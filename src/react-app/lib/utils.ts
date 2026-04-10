@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { rankItem } from "@tanstack/match-sorter-utils";
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -79,11 +81,11 @@ export const lowerAndRemoveDiacritics = (s: string) => {
 }
 
 export const customFilterFn = (row: any, columnId: string, filterValue: string) => {
-  const cellValue: string = row.getValue(columnId);
-  const tokens = filterValue.split(' ').filter(token => token.trim() !== '');
-  return tokens
-    .some(token =>
-      lowerAndRemoveDiacritics(String(cellValue))
-        .includes(lowerAndRemoveDiacritics(token))
-      );
+  /* **** Fuzzy filter **** */
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), filterValue)
+  // Store the ranking info
+  // addMeta(itemRank)
+  // Return if the item should be filtered in/out
+  return itemRank.passed
 }
