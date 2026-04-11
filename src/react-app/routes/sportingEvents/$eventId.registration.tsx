@@ -10,6 +10,7 @@ import z from 'zod';
 import {
   ARSportingEventRegistrationSchema,
   ARSportingEventPaymentMethodsSchema,
+  ARSportingEventMinSchema,
 } from '@shared/apiRespTypes';
 import { Whatsapp } from '@/components/icons/whatsapp';
 import { DeleteButton } from '@/components/deleteButton';
@@ -21,7 +22,9 @@ import {
   // MapPin,
   Users2,
   Ruler,
+  Trash2,
   AlertCircle,
+  EditIcon,
   CircleXIcon,
   PercentCircle,
   BadgeDollarSignIcon,
@@ -30,6 +33,7 @@ import {
   Cpu,
   SquareChartGanttIcon,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import React from 'react';
 
 
@@ -41,14 +45,18 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
       z.infer<typeof ARSportingEventRegistrationSchema>
       >(`/api/sportingEvents/${params.eventId}/registration`,
         ARSportingEventRegistrationSchema);
-    const resEvent = await getAuthenticatedThrow<
+    const resEventPaymentMethods = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventPaymentMethodsSchema>
       >(`/api/sportingEvents/${params.eventId}/paymentMethodsInfo`,
         ARSportingEventPaymentMethodsSchema);
+    const resEvent = await getAuthenticatedThrow<
+      z.infer<typeof ARSportingEventMinSchema>
+      >(`/api/sportingEvents/exists/${params.eventId}`, ARSportingEventMinSchema)
     return {
       res,
       eventId: params.eventId,
-      paymentMethods: resEvent.body.data,
+      eventMinData: resEvent.body.data,
+      paymentMethods: resEventPaymentMethods.body.data,
       trainingTeam: trainingTeamsData.data.find(
         team => team.id === res.body?.data.registration.training_team_id
       ) || null,
@@ -59,12 +67,27 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registration')({
 
 
 function RouteComponent() {
-  const { res, eventId, trainingTeam, paymentMethods } = Route.useLoaderData();
+  const { res, eventId, eventMinData, trainingTeam, paymentMethods } = Route.useLoaderData();
   const data = res.body.data;
   const navigate = useNavigate();
+
+  const [editingTeam, setEditingTeam] = React.useState(false);
+  const [teamMemberId, setTeamMemberId] = React.useState('');
   
-  const [error, setError] = React.useState('');
-  const [success, setSuccess] = React.useState('');
+  const [error, _setError] = React.useState('');
+  const [success, _setSuccess] = React.useState('');
+  const setError = (msg: string) => {
+    _setError(msg)
+    setTimeout(() => {
+      _setError('');
+    }, 2000);
+  };
+  const setSuccess = (msg: string) => {
+    _setSuccess(msg)
+    setTimeout(() => {
+      _setSuccess('');
+    }, 3000);
+  };
 
   if (res.status !== 200 || !data) {
     return (
@@ -136,6 +159,122 @@ function RouteComponent() {
           <CalendarIcon className="w-5 h-5" />
           <span>Registrado el {new Date(data.registration.registration_date).toLocaleDateString()}</span>
         </div>
+        {(data.registration.status !== 'expired'
+          && data.registration.status !== 'cancelled'
+          && data.event_team_members !== null) && (
+          <div>
+            {editingTeam ? (
+              <div className='flex items-center justify-between gap-2 border w-xl mx-auto mt-4 px-4 py-2 rounded-md'>
+                <Input
+                  value={teamMemberId}
+                  placeholder='DNI del usuario inscripto'
+                  onChange={(e) => setTeamMemberId(e.target.value)}
+                  />
+                <Button
+                  variant={'outline'}
+                  size={'sm'}
+                  className='cursor-pointer'
+                  onClick={async () => {
+                    // Add member to team
+                    const res = await postAuthenticated(`/api/sportingEvents/${eventId}/registrations/makeTeam`, {
+                      reqId: data.registration.user_id, destId: teamMemberId,
+                    });
+                    if (res.status === 200) {
+                      setSuccess('Miembro agregado correctamente');
+                      setTeamMemberId('');
+                      // Refresh data
+                      window.location.reload();
+                    } else {
+                      setError(`Error al crear el equipo: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                    }
+                  }}
+                >
+                  Unirme
+                </Button>
+                <Button
+                  variant={'outline'}
+                  size={'sm'}
+                  className='cursor-pointer'
+                  onClick={() => {
+                    setEditingTeam(false);
+                    setTeamMemberId('');
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            ) : (
+              <div className='flex items-center justify-between gap-2 border w-xl mx-auto mt-4 px-4 py-2 rounded-md'>
+                {(data.event_team_members && data.event_team_members.length > 0) ? (
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground mt-1">
+                    <div className='flex items-center gap-2'>
+                      <Users2 className="w-5 h-5" />
+                      <div>Miembros del equipo</div>
+                    </div>
+                    <div className='flex'>
+                      {data.event_team_members.map(member => (
+                        <div
+                          className='underline decoration-dotted decoration-primary text-foreground rounded m-1'
+                          key={member.id}>
+                            {member.full_name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 text-muted-foreground mt-1">
+                    <Users2 className="w-5 h-5" />
+                    <span>Sin equipo</span>
+                  </div>
+                )}
+                <div className='flex gap-1'>
+                  <Button
+                    variant={'outline'}
+                    size={'sm'}
+                    className='cursor-pointer'
+                    onClick={() => {
+                      // Edit event team
+                      setEditingTeam(true);
+                    }}
+                    disabled={
+                      // Only allow editing team if the event date isn't within 15 days or less
+                      (
+                        new Date(eventMinData.date).getTime()
+                        - new Date().getTime()
+                      ) < 15 * 24 * 60 * 60 * 1000
+                    }
+                    >
+                    <EditIcon className='w-4 h-4 mr-1' />
+                    Editar
+                  </Button>
+                  {data.event_team_members && data.event_team_members.length > 0 && (
+                    <Button
+                      variant={'outline'}
+                      size={'sm'}
+                      className='cursor-pointer'
+                      onClick={async () => {
+                        // Add member to team
+                        const res = await postAuthenticated(`/api/sportingEvents/${eventId}/registrations/makeTeam`, {
+                          reqId: data.registration.user_id, destId: null,
+                        });
+                        if (res.status === 200) {
+                          setSuccess('Equipo borrado exitosamente');
+                          setTeamMemberId('');
+                          // Refresh data
+                          window.location.reload();
+                        } else {
+                          setError(`Error al borrar el equipo: ${getMessage(res.body?.message, 'Error desconocido')}`);
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
 
@@ -471,7 +610,6 @@ function RouteComponent() {
                     if (res.status === 200) {
                       setSuccess('Inscripción eliminada correctamente');
                       setTimeout(() => {
-                        setSuccess('');
                         navigate({to: `/sportingEvents/${eventId}`, reloadDocument: true});
                       }, 1500);
                     } else {

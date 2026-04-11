@@ -179,6 +179,7 @@ const buildUserRegistration = (
   clothing: z.infer<typeof SpClothingMinSchema>[],
   circuit_km: number | null,
   userSex: string | null,
+  eventTeamMembers: { id: string; full_name: string }[] | null,
   demandedClothingRemaining?: number,
 ) => {
   const {
@@ -215,8 +216,16 @@ const buildUserRegistration = (
     circuit_km
   );
 
+  let status = registration.status;
+  if (registration.status === 'pending'
+    && event.fee_payment_due_date
+    && new Date() > new Date(event.fee_payment_due_date)
+    && pending_to_pay > 0) {
+    status = 'expired';
+  }
+
   return {
-    registration,
+    registration: {...registration, status},
     demanded_clothing,
     reserved_clothing,
     payment: {
@@ -229,9 +238,10 @@ const buildUserRegistration = (
       current_fee_is_promotional,
       discount_amount: discount_amount,
       paid_amount: registration.paid_amount,
-      pending_to_pay: pending_to_pay,
+      pending_to_pay: status === 'expired' ? 0 : pending_to_pay,
     },
     category,
+    event_team_members: eventTeamMembers,
   };
 }
 
@@ -300,22 +310,52 @@ const getUserRegistrationFull = async (
     .get();
 
   const circuit = await db
-    .select({ distance_km: sportingEventCircuits.distance_km })
+    .select({
+      distance_km: sportingEventCircuits.distance_km,
+      teams_enabled: sportingEventCircuits.teams_enabled,
+      competitive: sportingEventCircuits.competitive,
+    })
     .from(sportingEventCircuits)
     .where(and(
       eq(sportingEventCircuits.id, registration.circuit_id as number),
-      eq(sportingEventCircuits.competitive, 1)
     ))
     .limit(1)
     .get();
-  const circuit_km = circuit ? circuit.distance_km : null;
+  const circuit_km = circuit?.competitive === 1 ? circuit?.distance_km : null;
+
+  let eventTeamMembers: { id: string; full_name: string }[] | null = circuit?.teams_enabled === 1
+    ? []
+    : null;
+  if (regParsed.event_team_leader_id) {
+    const evTeamMembers = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+      })
+      .from(users)
+      .innerJoin(
+        sportingEventRegistrations,
+        eq(users.id, sportingEventRegistrations.user_id),
+      )
+      .where(and(
+        eq(sportingEventRegistrations.event_id, eventId),
+        eq(sportingEventRegistrations.event_team_leader_id, regParsed.event_team_leader_id),
+      ))
+      .all();
+    eventTeamMembers = evTeamMembers.map(m => ({
+      id: m.id,
+      full_name: `${m.surname} ${m.name}`
+    }));
+  }
   return buildUserRegistration(
     regParsed,
     event,
     clothing,
     circuit_km,
     userData?.sex ?? null,
-    demandedClothingRemaining
+    eventTeamMembers,
+    demandedClothingRemaining,
   );
 }
 

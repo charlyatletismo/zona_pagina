@@ -1153,6 +1153,7 @@ const SportingEventForm = (
                       competitive: firstOne, // we make the first circuit competitive by default
                       bib_number_start,
                       bib_number_end,
+                      teams_enabled: false, // we make the teams_enabled false by default
                     })
                   }}
                 >
@@ -1291,6 +1292,25 @@ const SportingEventForm = (
                           {!subField.state.meta.isValid && (
                             <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
                           )}
+                        </div>
+                      )}
+                    />
+
+                    <form.AppField
+                      name={`circuits[${index}].teams_enabled`}
+                      children={(subField) => (
+                        <div className='flex items-center gap-1'>
+                          <subField.Switch
+                            id={subField.name}
+                            name={subField.name}
+                            checked={subField.state.value || false}
+                            onCheckedChange={(e) => {
+                              subField.handleChange(e)
+                            }}
+                          />
+                          <subField.Label htmlFor={subField.name}>
+                            {subField.state.value ? "Equipos habilitados" : "Equipos no habilitados"}
+                          </subField.Label>
                         </div>
                       )}
                     />

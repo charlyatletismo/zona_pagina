@@ -77,7 +77,7 @@ import {
   DialogTitle,
   // DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverTrigger,
@@ -134,6 +134,7 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     // 'email',
     // 'phone',
     'course',
+    'event_team_leader_id'
   ];
   const rows = data.filter(reg => reg.status === 'paid').map(reg => [
     reg.bib_number,
@@ -147,6 +148,7 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     reg.user_location ? reg.user_location.split(",").slice(-1)[0].trim() : '', // take last part of location as country
     reg.user_location,
     reg.circuit_name,
+    reg.event_team_leader_id ? reg.event_team_leader_id : '',
   ]);
   const csvContent = [header, ...rows].map(e => e.join(";")).join("\n");
   return csvContent;

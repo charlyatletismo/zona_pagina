@@ -162,6 +162,7 @@ export const SportingEventCircuitSchema = z.object({
   competitive: z.boolean().optional(),
   bib_number_start: z.number().min(0, 'El número de bib debe ser positivo').optional(),
   bib_number_end: z.number().min(0, 'El número de bib debe ser positivo').optional(),
+  teams_enabled: z.boolean().default(false).optional(),
 });
 
 
@@ -294,6 +295,7 @@ export const SportingEventRegistrationSchema = z.object({
     .max(32, "El ID del chip no puede exceder los 32 caracteres")
     .nullable(),
   bib_number: z.number().nullable(),
+  event_team_leader_id: UserSchema.shape.id.nullable(),
   kit_delivered: z.boolean().default(false),
   created_at: z.date(),
   created_by: UserSchema.shape.id,

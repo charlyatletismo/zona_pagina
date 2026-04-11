@@ -118,6 +118,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
           reserved_clothing_id: null,
           chip_id: null,
           bib_number: null,
+          event_team_leader_id: null,
           kit_delivered: false,
           updated_at: new Date(),
           category: null,

@@ -160,6 +160,7 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   hidden: z.coerce.boolean<number>().default(false).optional(),
   circuits: z.array(SportingEventCircuitSchema.extend({
     competitive: z.coerce.boolean<number>().optional(),
+    teams_enabled: z.coerce.boolean<number>().default(false).optional(),
   })).nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
     date_start: z.coerce.date<string>(),
@@ -242,6 +243,10 @@ export const ARSportingEventRegistrationSchema = z.object({
     purchased_quantity: true,
   }).nullable(),
   reserved_clothing: SpClothingMinSchema.nullable(),
+  event_team_members: z.array(z.object({
+    id: UserSchema.shape.id,
+    full_name: z.string(),
+  })).nullable(),
   // circuit: SportingEventCircuitSchema.pick({
   //   id: true,
   //   name: true,

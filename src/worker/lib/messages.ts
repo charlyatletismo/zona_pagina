@@ -373,6 +373,31 @@ export const M = {
     [EN]: "Beneficiary sporting event registration is cancelled"
   },
   
+  // -------------------------- SPORTING EVENT REGISTRATIONS EVENT TEAMS --------------------------
+  SPORTING_EVENT_REGISTRATION_NOT_IN_AN_EVENT_TEAM: {
+    [ES]: "La inscripción del evento deportivo no está en un equipo del evento",
+    [EN]: "Sporting event registration is not in an event team"
+  },
+  SPORTING_EVENT_REGISTRATION_REMOVED_FROM_TEAM_SUCCESSFULLY: {
+    [ES]: "Inscripción del evento deportivo removida del equipo correctamente",
+    [EN]: "Sporting event registration removed from team successfully"
+  },
+  SPORTING_EVENT_REGISTRATION_ALREADY_IN_ANOTHER_EVENT_TEAM: {
+    [ES]: "La inscripción del evento deportivo ya está en otro equipo",
+    [EN]: "Sporting event registration already in another event team"
+  },
+  SPORTING_EVENT_REGISTRATION_EVENT_TEAM_MEMBERS_CANNOT_BE_IN_SAME_CIRCUIT: {
+    [ES]: "Los miembros del equipo de inscripción al evento deportivo no pueden estar en el mismo circuito",
+    [EN]: "Sporting event registration team members cannot be in the same circuit"
+  },
+  SPORTING_EVENT_REGISTRATION_EVENT_TEAM_MEMBERS_MUST_BE_IN_TEAMS_ENABLED_CIRCUITS: {
+    [ES]: "Los miembros del equipo de inscripción al evento deportivo deben estar en circuitos habilitados para equipos",
+    [EN]: "Sporting event registration team members must be in teams enabled circuits"
+  },
+  SPORTING_EVENT_REGISTRATION_ADDED_TO_TEAM_SUCCESSFULLY: {
+    [ES]: "Inscripción del evento deportivo agregada al equipo correctamente",
+    [EN]: "Sporting event registration added to team successfully"
+  },
 
   // -------------------------- SPORTING EVENT TRANSACTIONS --------------------------
   SPORTING_EVENT_TRANSACTION_NOT_FOUND: {

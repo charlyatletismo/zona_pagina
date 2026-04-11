@@ -1048,3 +1048,125 @@ export const updateSpEventRegClothingReserved = async (
     .run();
   return clothingFound.id;
 }
+
+
+const deleteExistingTeam = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  teamLeaderId: string,
+) => {
+  const membersReg = await db
+    .select({ id: sportingEventRegistrations.id })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      eq(sportingEventRegistrations.event_team_leader_id, teamLeaderId),
+    ))
+    .all();
+  await db.update(sportingEventRegistrations)
+    .set({ event_team_leader_id: null })
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      inArray(sportingEventRegistrations.id, membersReg.map(m => m.id)),
+    ))
+    .run();
+}
+
+
+export const makeTeamSpEventRegistration = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  reqId: string,
+  destId: string | null,
+): Promise<DataResult> => {
+  if (destId === null) {
+    const reqReg = await db
+      .select({
+        event_team_leader_id: sportingEventRegistrations.event_team_leader_id,
+      })
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.user_id, reqId),
+        eq(sportingEventRegistrations.event_id, eventId),
+      ))
+      .limit(1)
+      .get();
+    if (!reqReg) {
+      return { status: 404, message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND };
+    }
+    if (!reqReg.event_team_leader_id) {
+      return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_NOT_IN_AN_EVENT_TEAM };
+    }
+    await deleteExistingTeam(db, eventId, reqReg.event_team_leader_id);
+    return {
+      status: 200,
+      message: M.SPORTING_EVENT_REGISTRATION_REMOVED_FROM_TEAM_SUCCESSFULLY,
+    };
+  }
+  const destReg = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      circuit_id: sportingEventRegistrations.circuit_id,
+      event_team_leader_id: sportingEventRegistrations.event_team_leader_id,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.user_id, destId),
+      eq(sportingEventRegistrations.event_id, eventId),
+    ))
+    .limit(1)
+    .get();
+  if (!destReg) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND };
+  }
+  if (destReg.event_team_leader_id) {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_ALREADY_IN_ANOTHER_EVENT_TEAM };
+  }
+
+  const reqReg = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      circuit_id: sportingEventRegistrations.circuit_id,
+      event_team_leader_id: sportingEventRegistrations.event_team_leader_id,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.user_id, reqId),
+      eq(sportingEventRegistrations.event_id, eventId),
+    ))
+    .limit(1)
+    .get();
+  if (!reqReg) {
+    return { status: 404, message: M.SPORTING_EVENT_REGISTRATION_NOT_FOUND };
+  }
+  if (reqReg.circuit_id === destReg.circuit_id) {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_EVENT_TEAM_MEMBERS_CANNOT_BE_IN_SAME_CIRCUIT };
+  }
+
+  const teamCircuits = await db
+    .select({ teams_enabled: sportingEventCircuits.teams_enabled })
+    .from(sportingEventCircuits)
+    .where(and(
+      eq(sportingEventCircuits.event_id, eventId),
+      inArray(sportingEventCircuits.id, [reqReg.circuit_id!, destReg.circuit_id!])
+    ))
+    .all();
+  if (teamCircuits.some(tc => !tc.teams_enabled)) {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_EVENT_TEAM_MEMBERS_MUST_BE_IN_TEAMS_ENABLED_CIRCUITS };
+  }
+
+  if (reqReg.event_team_leader_id) {
+    await deleteExistingTeam(db, eventId, reqReg.event_team_leader_id);
+  }
+  await db.update(sportingEventRegistrations)
+    .set({ event_team_leader_id: reqId })
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      inArray(sportingEventRegistrations.id, [reqReg.id, destReg.id])
+    ))
+    .run();
+  return {
+    status: 200,
+    message: M.SPORTING_EVENT_REGISTRATION_ADDED_TO_TEAM_SUCCESSFULLY,
+  };
+}

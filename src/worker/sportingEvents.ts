@@ -29,6 +29,7 @@ import {
   reactivateRegistrations,
   transferRegistration,
   updateSpEventRegClothingReserved,
+  makeTeamSpEventRegistration,
 } from "./lib/sportingEventRegistrationActions";
 import {
   mainSportingEventsList,
@@ -322,6 +323,21 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
       return c.json({ message: r.message }, r.status);
     }
     return c.json({ message: r.message });
+  })
+  .post("/:id/registrations/makeTeam", async (c) => {
+    // Make team with another registered user in the same event
+    const { reqId, destId } : { reqId: string, destId: string } = await c.req.json();
+    const reqUserId = c.get('jwtPayload').id;
+    if (reqId !== reqUserId && !authorizedAthMan(c.get('jwtPayload').role)) {
+      return c.json({ message: M.UNAUTHORIZED }, 403);
+    }
+    const db = drizzle(c.env.DB);
+    const { id } = c.req.param();
+    const res = await makeTeamSpEventRegistration(db, Number(id), reqId, destId);
+    if (res.status !== 200) {
+      return c.json({ message: res.message }, 400);
+    }
+    return c.json({ message: res.message });
   })
   .post("/:id/registrations/:regId/deliveredKit/:flag", async (c) => {
     if (!authorizedOrg(c.get('jwtPayload').role)) {

@@ -219,6 +219,7 @@ export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
   competitive: int().notNull().default(1), // 1 for competitive circuit, 0 for non-competitive (general category)
   bib_number_start: int().notNull(),
   bib_number_end: int().notNull(),
+  teams_enabled: int().notNull().default(0), // if true, allows registering in teams between circuits
 });
 
 

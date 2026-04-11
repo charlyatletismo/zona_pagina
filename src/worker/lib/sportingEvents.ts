@@ -269,6 +269,7 @@ export const addSpEvent = async (
         competitive: circuit.competitive ? 1 : 0,
         bib_number_start: circuit.bib_number_start || 0,
         bib_number_end: circuit.bib_number_end || 0,
+        teams_enabled: circuit.teams_enabled ? 1 : 0,
       }))
     );
   }
@@ -428,6 +429,7 @@ export const updateSpEvent = async (
       bib_number_end: true,
     }).extend({
       competitive: z.coerce.number<boolean>().optional(),
+      teams_enabled: z.coerce.number<boolean>().optional(),
     })
   );
   // Insert new circuits
@@ -440,6 +442,7 @@ export const updateSpEvent = async (
       .set({
         ...circuit,
         competitive: circuit.competitive ? 1 : 0,
+        teams_enabled: circuit.teams_enabled ? 1 : 0,
       })
       .where(eq(sportingEventCircuits.id, circuit.id!))
       .run();
