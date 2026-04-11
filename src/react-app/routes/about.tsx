@@ -29,7 +29,7 @@ function About() {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Una startup apasionada por el atletismo que organiza maratones y eventos deportivos excepcionales.
+            Un equipo apasionado por el atletismo que organiza eventos deportivos excepcionales.
           </p>
         </div>
       </div>
@@ -42,8 +42,8 @@ function About() {
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
               Zona Atletismo nació de la pasión por el deporte y el deseo de crear experiencias inolvidables para corredores de todos los niveles.
-              Fundada por un pequeño equipo de entusiastas del atletismo, nuestra startup se dedica principalmente a la organización de maratones
-              y eventos deportivos que inspiran y motivan a la comunidad atlética.
+              Fundada por un pequeño grupo de entusiastas del atletismo, nuestro equipo se dedica principalmente a la organización de
+              eventos deportivos que inspiran y motivan a la comunidad atlética.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Creemos que el atletismo no solo es un deporte, sino una forma de vida que une a las personas, desafía límites y celebra logros.
@@ -84,8 +84,8 @@ function About() {
           <h2 className="text-3xl font-bold mb-8 text-center">Nuestro Equipo</h2>
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              Detrás de Zona Atletismo hay un equipo pequeño pero dedicado de profesionales apasionados por el atletismo.
-              Cada miembro aporta su experiencia única, desde la organización de eventos hasta el apoyo técnico y logístico.
+              Detrás de Zona Atletismo hay un equipo pequeño pero dedicado de jueces de atletismo apasionados por este deporte.
+              Cada miembro aporta su experiencia en reglamentación, fiscalización y organización, además del apoyo técnico y logístico.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Aunque somos un equipo compacto, nuestra red de colaboradores y voluntarios nos permite llevar a cabo eventos
@@ -101,16 +101,17 @@ function About() {
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <h3 className="text-2xl font-semibold text-primary">Maratones</h3>
+                <h3 className="text-2xl font-semibold text-primary">Eventos Deportivos</h3>
                 <p className="text-muted-foreground">
-                  Organizamos maratones completos de 42.195 km, medias maratones y carreras de distancias variadas.
+                  Organizamos competencias, carreras de calle o pista de variadas distancias (maratón, media maratón, 10K, 5K, etc.) y
+                  también carreras de múltiples disciplinas (duatlón, triatlón, aguas abiertas, etc.).
                   Nuestros eventos están diseñados para desafiar y celebrar el espíritu competitivo de los corredores.
                 </p>
               </div>
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold text-primary">Eventos Especiales</h3>
                 <p className="text-muted-foreground">
-                  Además de maratones, creamos eventos temáticos, carreras benéficas y competiciones que unen deporte,
+                  Además de competencias, creamos eventos temáticos, carreras benéficas y competiciones que unen deporte,
                   diversión y causas nobles. Cada evento es único y refleja nuestra creatividad e innovación.
                 </p>
               </div>
@@ -118,14 +119,14 @@ function About() {
                 <h3 className="text-2xl font-semibold text-primary">Apoyo Integral</h3>
                 <p className="text-muted-foreground">
                   Ofrecemos servicios completos de organización, incluyendo cronometraje electrónico, avituallamiento,
-                  seguridad y cobertura mediática. Nos aseguramos de que cada corredor tenga la mejor experiencia posible.
+                  seguridad y cobertura audiovisual. Nos aseguramos de que cada corredor tenga la mejor experiencia posible.
                 </p>
               </div>
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold text-primary">Comunidad</h3>
                 <p className="text-muted-foreground">
-                  Construimos y nutrimos una comunidad de atletas apasionados. A través de nuestros eventos,
-                  workshops y redes sociales, conectamos a corredores de todas las edades y niveles.
+                  Construimos y nutrimos una comunidad de atletas apasionados. A través de nuestros eventos
+                  y redes sociales, conectamos a corredores de todas las edades y niveles.
                 </p>
               </div>
             </div>
@@ -137,7 +138,7 @@ function About() {
           <h2 className="text-3xl font-bold mb-4">Únete a Nuestra Comunidad</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             ¿Listo para vivir la emoción del atletismo? Participa en nuestros próximos eventos o contáctanos
-            si quieres organizar tu propio maratón.
+            si quieres organizar uno propio.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
