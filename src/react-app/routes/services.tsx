@@ -34,21 +34,15 @@ function RouteComponent() {
     <div className='grid gap-2 justify-center animate-in fade-in slide-in-from-bottom-4 duration-500'>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl lg:max-w-7xl mx-auto px-4'>
         <CardGrid
+          icon={<BadgeCheckIcon />}
+          title="Infraestructura y equipamiento"
+          description="Proveemos y gestionamos el equipamiento necesario, como sistemas de cronometraje y relojes, carpas y señalización."
+        />
+
+        <CardGrid
           icon={<AlarmClockIcon />}
           title="Cronometraje"
           description="Medimos de manera precisa el tiempo de cada corredor en cada carrera con chips electrónicos."
-        />
-
-        <CardGrid
-          icon={<ChartArea />}
-          title="Estadísticas"
-          description="Cada corredor puede acceder a sus estadísticas personales y evaluar su rendimiento."
-        />
-
-        <CardGrid
-          icon={<CameraIcon />}
-          title="Cobertura y difusión"
-          description="Documentación fotográfica y videográfica profesional de eventos deportivos para redes sociales y medios."
         />
 
         <CardGrid
@@ -58,27 +52,33 @@ function RouteComponent() {
         />
 
         <CardGrid
-          icon={<PenToolIcon />}
-          title="Diseño e imagen"
-          description="Creamos materiales visuales atractivos como carteles, camisetas y medallas personalizadas."
-        />
-
-        <CardGrid
-          icon={<Accessibility />}
-          title="Inclusión y accesibilidad"
-          description="Nos aseguramos de que todos los participantes, independientemente de sus capacidades, puedan disfrutar del evento."
-        />
-
-        <CardGrid
           icon={<BikeIcon />}
           title="Eventos multideportivos"
           description="Organizamos y gestionamos eventos que combinan varias disciplinas deportivas, como los duatlones."
         />
 
         <CardGrid
-          icon={<BadgeCheckIcon />}
-          title="Infraestructura y equipamiento"
-          description="Proveemos y gestionamos el equipamiento necesario, como sistemas de cronometraje y relojes, carpas y señalización."
+          icon={<PenToolIcon />}
+          title="Diseño e imagen"
+          description="Creamos materiales visuales atractivos como carteles, camisetas y medallas personalizadas."
+        />
+
+        <CardGrid
+          icon={<CameraIcon />}
+          title="Cobertura y difusión"
+          description="Documentación fotográfica y videográfica profesional de eventos deportivos para redes sociales y medios."
+        />
+
+        <CardGrid
+          icon={<ChartArea />}
+          title="Estadísticas"
+          description="Cada corredor puede acceder a sus estadísticas personales y evaluar su rendimiento."
+        />
+
+        <CardGrid
+          icon={<Accessibility />}
+          title="Inclusión y accesibilidad"
+          description="Nos aseguramos de que todos los participantes, independientemente de sus capacidades, puedan disfrutar del evento."
         />
 
       </div>
