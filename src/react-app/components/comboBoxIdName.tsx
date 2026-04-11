@@ -31,6 +31,7 @@ export const ComboBoxIdName = ({
   valKey,
   valKeyDesc,
   valKeySetter = () => {},
+  searchId = false,
 }: {
   data: {id: string, name: string}[],
   label: string,
@@ -44,6 +45,7 @@ export const ComboBoxIdName = ({
   valKey?: string,
   valKeyDesc?: string,
   valKeySetter?: (value: string) => void,
+  searchId?: boolean,
 }) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -135,9 +137,9 @@ export const ComboBoxIdName = ({
                 {data.map((element) => (
                   <CommandItem
                     key={element.id}
-                    value={element.id}
-                    onSelect={(value) => {
-                      onChange(value);
+                    value={searchId ? element.id : element.name}
+                    onSelect={() => {
+                      onChange(element.id);
                       setOpen(false);
                       onBlur();
                     }}

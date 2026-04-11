@@ -640,6 +640,7 @@ export const ProfileForm = ({
                 onBlur={field.handleBlur}
                 placeholder="DNI o últimos 3 dígitos"
                 borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                searchId={true}
               />
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
