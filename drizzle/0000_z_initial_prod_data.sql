@@ -102,6 +102,126 @@ VALUES (
     'Argentina'
   ),
   (
+    'Pérez, Santa Fe, Argentina',
+    'Pérez',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Alcorta, Santa Fe, Argentina',
+    'Alcorta',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Pavón, Santa Fe, Argentina',
+    'Pavón',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Máximo Paz, Santa Fe, Argentina',
+    'Máximo Paz',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Villa Gobernador Gálvez, Santa Fe, Argentina',
+    'Villa Gobernador Gálvez',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Fray Luis Beltrán, Santa Fe, Argentina',
+    'Fray Luis Beltrán',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Capitán Bermúdez, Santa Fe, Argentina',
+    'Capitán Bermúdez',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Ibarlucea, Santa Fe, Argentina',
+    'Ibarlucea',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Álvarez, Santa Fe, Argentina',
+    'Álvarez',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Pueblo Esther, Santa Fe, Argentina',
+    'Pueblo Esther',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Firmat, Santa Fe, Argentina',
+    'Firmat',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Cañada de Gómez, Santa Fe, Argentina',
+    'Cañada de Gómez',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Roldán, Santa Fe, Argentina',
+    'Roldán',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Fighiera, Santa Fe, Argentina',
+    'Fighiera',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Timbúes, Santa Fe, Argentina',
+    'Timbúes',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Puerto General San Martín, Santa Fe, Argentina',
+    'Puerto General San Martín',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Carcarañá, Santa Fe, Argentina',
+    'Carcarañá',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Armstrong, Santa Fe, Argentina',
+    'Armstrong',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'Casilda, Santa Fe, Argentina',
+    'Casilda',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
+    'San Lorenzo, Santa Fe, Argentina',
+    'San Lorenzo',
+    'Santa Fe',
+    'Argentina'
+  ),
+  (
     'temporary_location',
     'Temporary Location',
     'Temporary Province',
