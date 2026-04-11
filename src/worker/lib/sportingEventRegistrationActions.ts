@@ -1,5 +1,5 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
-import { eq, inArray, and, isNotNull, desc, gt } from 'drizzle-orm';
+import { eq, inArray, and, isNotNull, desc, gt, gte, lte } from 'drizzle-orm';
 import {
   users,
   sportingEvents,
@@ -326,17 +326,6 @@ export const setRegistrationAsPaid = async (
       reserved_clothing_id: registration.reserved_clothing_id,
     };
   }
-  const latestBibFromRegistrations = await db
-    .select({ bib: sportingEventRegistrations.bib_number })
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.status, 'paid'),
-      eq(sportingEventRegistrations.circuit_id, registration.circuit_id!),
-      isNotNull(sportingEventRegistrations.bib_number)
-    ))
-    .orderBy(desc(sportingEventRegistrations.bib_number))
-    .limit(1)
-    .get();
   const circuitData = await db
     .select({
       competitive: sportingEventCircuits.competitive,
@@ -352,6 +341,19 @@ export const setRegistrationAsPaid = async (
     throw new Error("Circuit data not found for circuit_id " + registration.circuit_id);
   }
 
+  const latestBibFromRegistrations = await db
+    .select({ bib: sportingEventRegistrations.bib_number })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.status, 'paid'),
+      gte(sportingEventRegistrations.bib_number, circuitData.bib_start),
+      lte(sportingEventRegistrations.bib_number, circuitData.bib_end),
+      isNotNull(sportingEventRegistrations.bib_number),
+      eq(sportingEventRegistrations.event_id, registration.event_id!)
+    ))
+    .orderBy(desc(sportingEventRegistrations.bib_number))
+    .limit(1)
+    .get();
   // BIB Assignment
   let nextBibNumber = (latestBibFromRegistrations && latestBibFromRegistrations.bib)
     ? latestBibFromRegistrations.bib + 1
@@ -371,6 +373,7 @@ export const setRegistrationAsPaid = async (
       .where(and(
         eq(sportingEventRegistrations.status, 'paid'),
         isNotNull(sportingEventRegistrations.bib_number),
+        eq(sportingEventRegistrations.event_id, registration.event_id!),
         gt(sportingEventRegistrations.bib_number, maxBibForCircuit!.end) // only consider bib numbers that exceed the normal range
       ))
       .orderBy(desc(sportingEventRegistrations.bib_number))
