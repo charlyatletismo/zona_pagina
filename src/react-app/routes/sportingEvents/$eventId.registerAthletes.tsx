@@ -19,6 +19,8 @@ import {
   SearchIcon,
   CircleArrowUpIcon,
   Trash2Icon,
+  CopyIcon,
+  CheckIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -556,6 +558,38 @@ function RouteComponent() {
             </div>
           )}
         </div>
+        {eventData.bank_alias !== null && (
+          <div className='flex flex-col justify-center gap-2'>
+            <div className='text-sm text-center'>Alias para transferencias</div>
+            <Button
+              className='cursor-pointer'
+              variant={'outline'}
+              onClick={() => {
+                navigator.clipboard.writeText(eventData.bank_alias!);
+                const copyIcon = document.getElementById('clipboard-copy');
+                const copiedIcon = document.getElementById('clipboard-copied');
+                if (copyIcon && copiedIcon) {
+                  copyIcon.style.display = 'none';
+                  copiedIcon.style.display = 'inline-block';
+                  setTimeout(() => {
+                    copyIcon.style.display = 'inline-block';
+                    copiedIcon.style.display = 'none';
+                  }, 2000);
+                }
+              }}
+            >
+              <div className='border-r-2'>
+                <div id="clipboard-copy" style={{display: 'inline-block' }}>
+                  <CopyIcon className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                </div>
+                <div id="clipboard-copied" style={{display: 'none'}}>
+                  <CheckIcon className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                </div>
+              </div>
+              {eventData.bank_alias}
+            </Button>
+          </div>
+        )}
       </div>
 
 
