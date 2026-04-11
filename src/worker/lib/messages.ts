@@ -374,6 +374,10 @@ export const M = {
   },
   
   // -------------------------- SPORTING EVENT REGISTRATIONS EVENT TEAMS --------------------------
+  SPORTING_EVENT_REGISTRATION_EVENT_TEAMS_CANT_BE_MODIFIED: {
+    [ES]: "Los equipos de inscripción al evento deportivo no pueden ser modificados",
+    [EN]: "Sporting event registration teams cannot be modified"
+  },
   SPORTING_EVENT_REGISTRATION_NOT_IN_AN_EVENT_TEAM: {
     [ES]: "La inscripción del evento deportivo no está en un equipo del evento",
     [EN]: "Sporting event registration is not in an event team"
