@@ -507,7 +507,7 @@ export const ProfileForm = ({
               <field.PhoneInput
                 label="Celular de contacto de emergencia"
                 name={field.name}
-                value={field.state.value || ''}
+                value={field.state.value || '54_9_'}
                 onChange={field.handleChange}
                 onBlur={field.handleBlur}
                 borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
