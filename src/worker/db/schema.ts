@@ -231,7 +231,8 @@ export const sportingEventSchedules = sqliteTable("sporting_event_schedules", {
       { onDelete: 'cascade',
         onUpdate: 'cascade' }
       ),
-  date: text().notNull(), // ISO string
+  date_start: text().notNull(), // ISO string
+  date_end: text(), // ISO string
   title: text({ length: 128 }).notNull(),
   description: text({ length: 512 }),
   location: text({ length: 256 })

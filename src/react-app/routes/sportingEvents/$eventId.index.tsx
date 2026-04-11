@@ -23,7 +23,7 @@ import {
   ORGANIZER_ROLE,
 } from '@shared/roles';
 import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
-import { getLang } from "@/lib/utils";
+import { getLang, formatPeriod } from "@/lib/utils";
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { RegistrationStatusDescriptions } from '@shared/lang';
 import { getMessage } from '@/lib/utils';
@@ -375,7 +375,7 @@ function RouteComponent() {
                   {data.schedules.map((schedule) => (
                     <div key={schedule.id} className="mb-2 border-l-4 border-primary pl-4">
                         <h3 className="text-lg font-medium mb-1">{schedule.title}</h3>
-                        <div className="text-sm text-muted-foreground mb-2">{schedule.date?.toLocaleString()}</div>
+                        <div className="text-sm text-muted-foreground mb-2">{formatPeriod(schedule.date_start, schedule.date_end)}</div>
                         {schedule.description && (
                           <p className="text-muted-foreground whitespace-pre-wrap">{schedule.description}</p>
                         )}

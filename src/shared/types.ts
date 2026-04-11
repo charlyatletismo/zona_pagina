@@ -168,7 +168,8 @@ export const SportingEventCircuitSchema = z.object({
 export const SportingEventScheduleSchema = z.object({
   id: z.number().optional(),
   event_id: z.number().optional(),
-  date: z.date(),
+  date_start: z.date(),
+  date_end: z.date(),
   title: z.string().min(1, 'Debe ingresar un título para el hito'),
   description: z.string().nullable().optional(),
   location: LocationSchema.shape.id.nullable().optional(),

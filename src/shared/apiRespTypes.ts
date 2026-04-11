@@ -162,7 +162,8 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
     competitive: z.coerce.boolean<number>().optional(),
   })).nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
-    date: z.coerce.date<string>(),
+    date_start: z.coerce.date<string>(),
+    date_end: z.coerce.date<string>(),
     notify_at: z.coerce.date<string>().nullable().optional(),
   })).nullable().optional(),
 });

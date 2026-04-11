@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { DeleteButton } from './deleteButton';
 import { LocationForm } from './locationForm';
-import { SCHEDULE_TEMPLATE_IDS } from '@shared/schedules';
+// import { SCHEDULE_TEMPLATE_IDS } from '@shared/schedules';
 import { FormErrorsCard } from './formErrorsCard';
 import { HelpTooltip } from './helpTooltip';
 
@@ -879,7 +879,8 @@ const SportingEventForm = (
                   onClick={() => {
                     field.pushValue({
                       title: '',
-                      date: field.form.state.values?.date || new Date(),
+                      date_start: field.form.state.values?.date || new Date(),
+                      date_end: field.form.state.values?.date || new Date(),
                     })
                   }}
                 >
@@ -916,7 +917,7 @@ const SportingEventForm = (
                       <div className='space-y-2 grid grid-cols-1 sm:grid-cols-2 gap-2'>
                         <form.AppField
                           name={`schedules[${index}].title`}
-                          children={(subField) => (
+                          children={(subField) => (<div className='sm:col-span-2 grid grid-cols-1 sm:grid-cols-2'>
                             <div className='space-y-2'>
                               <subField.Label htmlFor={subField.name}>Título</subField.Label>
                               <subField.Input
@@ -934,14 +935,33 @@ const SportingEventForm = (
                                 <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
                               )}
                             </div>
+                          </div>)}
+                        />
+
+                        <form.AppField
+                          name={`schedules[${index}].date_start`}
+                          children={(subField) => (
+                            <div className='space-y-2'>
+                              <subField.Label htmlFor={subField.name}>Fecha y hora de inicio del hito</subField.Label>
+                              <field.DateTimePicker
+                                name={subField.name}
+                                borderColor={!subField.state.meta.isValid ? 'border-destructive' : ''}
+                                value={subField.state.value}
+                                onChange={subField.handleChange}
+                                onBlur={subField.handleBlur}
+                              />
+                              {!subField.state.meta.isValid && (
+                                <div className='ml-auto text-xs text-destructive'>* {subField.state.meta.errors[0]?.message} </div>
+                              )}
+                            </div>
                           )}
                         />
 
                         <form.AppField
-                          name={`schedules[${index}].date`}
+                          name={`schedules[${index}].date_end`}
                           children={(subField) => (
                             <div className='space-y-2'>
-                              <subField.Label htmlFor={subField.name}>Fecha y hora del hito</subField.Label>
+                              <subField.Label htmlFor={subField.name}>Fecha y hora de fin del hito</subField.Label>
                               <field.DateTimePicker
                                 name={subField.name}
                                 borderColor={!subField.state.meta.isValid ? 'border-destructive' : ''}
@@ -1013,7 +1033,7 @@ const SportingEventForm = (
                           )}
                         />
 
-                        <form.AppField
+                        {/* <form.AppField
                           name={`schedules[${index}].notification_template_id`}
                           children={(field) => (
                             <div className="space-y-2 md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1089,7 +1109,7 @@ const SportingEventForm = (
                               )}
                             </div>
                           )}
-                        />
+                        /> */}
 
                         <div>
                         </div>

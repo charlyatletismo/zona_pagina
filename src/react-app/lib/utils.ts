@@ -89,3 +89,52 @@ export const customFilterFn = (row: any, columnId: string, filterValue: string) 
   // Return if the item should be filtered in/out
   return itemRank.passed
 }
+
+const formatDate = (date: Date): string => {
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+};
+
+const formatTime = (date: Date): string => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+  const hour12 = hours % 12 || 12;
+  if (minutes === 0) {
+    return `${hour12} ${ampm}`;
+  } else {
+    return `${hour12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  }
+};
+
+export const formatPeriod = (start: Date, end?: Date | null | undefined): string => {
+  if (!end) {
+    const lang = getLang();
+    const dateStr = formatDate(start);
+    const timeStr = formatTime(start);
+    if (lang === 'es') {
+      return `${dateStr} a las ${timeStr}`;
+    } else {
+      return `${dateStr} at ${timeStr}`;
+    }
+  }
+  const lang = getLang();
+  const sameDay = start.toDateString() === end.toDateString();
+  const dateStr = formatDate(start);
+  const time1 = formatTime(start);
+  const time2 = formatTime(end);
+  if (lang === 'es') {
+    if (sameDay) {
+      return `${dateStr} desde las ${time1} hasta las ${time2}`;
+    } else {
+      const date2Str = formatDate(end);
+      return `Desde el ${dateStr} a las ${time1} hasta el ${date2Str} a las ${time2}`;
+    }
+  } else {
+    if (sameDay) {
+      return `${dateStr} from ${time1} to ${time2}`;
+    } else {
+      const date2Str = formatDate(end);
+      return `From ${dateStr} at ${time1} to ${date2Str} at ${time2}`;
+    }
+  }
+};

@@ -105,7 +105,7 @@ export const getSpEvent = async (
     .select()
     .from(sportingEventSchedules)
     .where(eq(sportingEventSchedules.event_id, eventId))
-    .orderBy(asc(sportingEventSchedules.date));
+    .orderBy(asc(sportingEventSchedules.date_start));
   const athletesRegistered = await db
     .select()
     .from(sportingEventRegistrations)
@@ -278,7 +278,8 @@ export const addSpEvent = async (
       schedules.map(schedule => ({
         ...schedule,
         event_id: result[0].id,
-        date: schedule.date.toISOString(),
+        date_start: schedule.date_start.toISOString(),
+        date_end: schedule.date_end?.toISOString() || null,
         notify_at: schedule.notify_at?.toISOString() || null,
       }))
     );
@@ -468,7 +469,8 @@ export const updateSpEvent = async (
     await db.insert(sportingEventSchedules).values(tempSchedules.map(
       schedule => ({
         ...schedule,
-        date: schedule.date.toISOString(),
+        date_start: schedule.date_start.toISOString(),
+        date_end: schedule.date_end?.toISOString() || null,
         notify_at: schedule.notify_at?.toISOString() || null,
       })
     ));
@@ -478,7 +480,8 @@ export const updateSpEvent = async (
     await db.update(sportingEventSchedules)
       .set({
         ...schedule,
-        date: schedule.date?.toISOString(),
+        date_start: schedule.date_start.toISOString(),
+        date_end: schedule.date_end?.toISOString() || null,
         notify_at: schedule.notify_at?.toISOString() || null,
       })
       .where(eq(sportingEventSchedules.id, schedule.id!))
