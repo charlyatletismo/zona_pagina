@@ -333,6 +333,19 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     }
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
+    if (reqId !== reqUserId && !authorizedOrg(c.get('jwtPayload').role)) {
+      const evData = await getSpEventMin(db, Number(id));
+      if (!evData || evData.status !== 200) {
+        return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
+      }
+      const now = new Date();
+      const evDate = new Date((evData.data as { date: string }).date);
+      // if it is 15 days or less to the event,
+      // athletes nor athlete managers cannot make/modify teams
+      if (evDate.getTime() - now.getTime() <= 15 * 24 * 60 * 60 * 1000) {
+        return c.json({ message: M.SPORTING_EVENT_REGISTRATION_EVENT_TEAMS_CANT_BE_MODIFIED }, 403);
+      }
+    }
     const res = await makeTeamSpEventRegistration(db, Number(id), reqId, destId);
     if (res.status !== 200) {
       return c.json({ message: res.message }, 400);
