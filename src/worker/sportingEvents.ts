@@ -333,7 +333,9 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
     }
     const db = drizzle(c.env.DB);
     const { id } = c.req.param();
+    let managerId = null;
     if (reqId !== reqUserId && !authorizedOrg(c.get('jwtPayload').role)) {
+      managerId = reqUserId;
       const evData = await getSpEventMin(db, Number(id));
       if (!evData || evData.status !== 200) {
         return c.json({ message: M.SPORTING_EVENT_NOT_FOUND }, 404);
@@ -346,7 +348,7 @@ export const sportingEventsRoute = new Hono<{ Bindings: Env, Variables: Variable
         return c.json({ message: M.SPORTING_EVENT_REGISTRATION_EVENT_TEAMS_CANT_BE_MODIFIED }, 403);
       }
     }
-    const res = await makeTeamSpEventRegistration(db, Number(id), reqId, destId);
+    const res = await makeTeamSpEventRegistration(db, Number(id), reqId, destId, managerId);
     if (res.status !== 200) {
       return c.json({ message: res.message }, 400);
     }

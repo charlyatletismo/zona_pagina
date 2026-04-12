@@ -1078,7 +1078,14 @@ export const makeTeamSpEventRegistration = async (
   eventId: number,
   reqId: string,
   destId: string | null,
+  managerId: string | null,
 ): Promise<DataResult> => {
+  if (managerId) {
+    const isAuthorized = await isAuthorizedRegMultiple(db, managerId, [reqId]);
+    if (!isAuthorized) {
+      return { status: 403, message: M.UNAUTHORIZED };
+    }
+  }
   if (destId === null) {
     const reqReg = await db
       .select({
