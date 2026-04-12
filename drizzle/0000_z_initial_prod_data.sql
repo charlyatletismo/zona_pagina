@@ -102,12 +102,6 @@ VALUES (
     'Argentina'
   ),
   (
-    'Pérez, Santa Fe, Argentina',
-    'Pérez',
-    'Santa Fe',
-    'Argentina'
-  ),
-  (
     'Alcorta, Santa Fe, Argentina',
     'Alcorta',
     'Santa Fe',
