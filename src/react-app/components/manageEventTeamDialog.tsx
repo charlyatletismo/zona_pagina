@@ -80,7 +80,7 @@ export const ManageEventTeamRegDialog = ({
                     setLoading(false);
                     if (r.status !== 200) {
                       console.error('Error eliminando el equipo:', getMessage(r.body?.message, 'Error desconocido'));
-                      setError('Hubo un error al eliminar el equipo. Por favor, intenta nuevamente.');
+                      setError(`Hubo un error al eliminar el equipo. ${getMessage(r.body?.message, 'Error desconocido')}`);
                     } else {
                       setSuccess('Equipo eliminado exitosamente.');
                       window.location.reload();
@@ -122,7 +122,7 @@ export const ManageEventTeamRegDialog = ({
                   setLoading(false);
                   if (r.status !== 200) {
                     console.error('Error formando el equipo:', getMessage(r.body?.message, 'Error desconocido'));
-                    setError('Hubo un error al formar el equipo. Por favor, intenta nuevamente.');
+                    setError(`Hubo un error al formar el equipo. ${getMessage(r.body?.message, 'Error desconocido')}`);
                   } else {
                     setSuccess('Equipo formado exitosamente.');
                     window.location.reload();
