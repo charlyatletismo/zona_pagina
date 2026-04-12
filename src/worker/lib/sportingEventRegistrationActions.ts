@@ -1103,6 +1103,9 @@ export const makeTeamSpEventRegistration = async (
       message: M.SPORTING_EVENT_REGISTRATION_REMOVED_FROM_TEAM_SUCCESSFULLY,
     };
   }
+  if (reqId === destId) {
+    return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_CANNOT_MAKE_TEAM_TO_SELF };
+  }
   const destReg = await db
     .select({
       id: sportingEventRegistrations.id,

@@ -386,6 +386,10 @@ export const M = {
     [ES]: "Inscripción del evento deportivo removida del equipo correctamente",
     [EN]: "Sporting event registration removed from team successfully"
   },
+  SPORTING_EVENT_REGISTRATION_CANNOT_MAKE_TEAM_TO_SELF: {
+    [ES]: "No se puede hacer equipo con uno mismo en la inscripción del evento deportivo",
+    [EN]: "Cannot make team to self in sporting event registration"
+  },
   SPORTING_EVENT_REGISTRATION_ALREADY_IN_ANOTHER_EVENT_TEAM: {
     [ES]: "La inscripción del evento deportivo ya está en otro equipo",
     [EN]: "Sporting event registration already in another event team"
