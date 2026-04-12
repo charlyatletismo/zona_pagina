@@ -298,6 +298,7 @@ export const ARSportingEventRegistrationFlatSchema = ARSportingEventRegistration
   circuit_name: z.string().nullable(),
   circuit_distance_km: z.number().nullable(),
   circuit_competitive: z.coerce.boolean().nullable(),
+  circuit_teams_enabled: z.coerce.boolean().nullable(),
   user_full_name: z.string(),
   user_phone: z.string().nullable(),
   user_email: z.string().nullable(),

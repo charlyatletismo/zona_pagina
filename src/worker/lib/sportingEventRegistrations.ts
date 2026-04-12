@@ -496,6 +496,7 @@ export const getAllUsersRegistrations = async (
       name: sportingEventCircuits.name,
       distance_km: sportingEventCircuits.distance_km,
       competitive: sportingEventCircuits.competitive,
+      teams_enabled: sportingEventCircuits.teams_enabled,
     })
     .from(sportingEventCircuits)
     .where(and(
@@ -578,6 +579,7 @@ export const getAllUsersRegistrations = async (
       circuit_name: circuit?.name,
       circuit_distance_km: circuit?.distance_km,
       circuit_competitive: circuitIsCompetitive,
+      circuit_teams_enabled: circuit ? circuit.teams_enabled === 1 : null,
       user_full_name: user ? `${user.surname} ${user.name}` : null,
       user_phone: user?.phone || null,
       user_email: user?.email || null,

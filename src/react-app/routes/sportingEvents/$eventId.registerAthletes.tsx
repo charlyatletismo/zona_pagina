@@ -125,6 +125,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
           circuit_name: null,
           circuit_distance_km: null,
           circuit_competitive: null,
+          circuit_teams_enabled: null,
           user_full_name: `${user.surname} ${user.name}`,
           user_phone: user.phone!,
           user_email: user.email!,
