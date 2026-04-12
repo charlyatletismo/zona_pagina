@@ -4,7 +4,6 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.worker.tsbuildinfo",
 		"types": ["vite/client", "./worker-configuration.d.ts"],
 		"baseUrl": ".",
-		"ignoreDeprecations": "6.0",
 		"paths": {
 			"@shared/*": ["./src/shared/*"]
 		}
