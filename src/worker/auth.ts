@@ -38,24 +38,19 @@ export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       .run();
 
     // FIXME: Remove skip sending Whatsapp message for test users
-    if ([
-        "42556386",
-        "34525736",
-        "28880983",
-        "00000001",
-        "00000002",
-        "00000003",
-        "00000004",
-        "00000005"].includes(user.id)) {
-      console.log("Test user - skipping Whatsapp message sending");
-      return c.json({
-        message: {
-          "en": "Temp code set for test user",
-          "es": "Código temporal establecido para usuario de prueba"
-        },
-        data: { tempCode }
-      });
-    }
+    // if ([
+    //     "42556386",
+    //     "34525736",
+    //     "28880983"].includes(user.id)) {
+    //   console.log("Test user - skipping Whatsapp message sending");
+    //   return c.json({
+    //     message: {
+    //       "en": "Temp code set for test user",
+    //       "es": "Código temporal establecido para usuario de prueba"
+    //     },
+    //     data: { tempCode }
+    //   });
+    // }
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {
       console.error("response", JSON.stringify(response));
