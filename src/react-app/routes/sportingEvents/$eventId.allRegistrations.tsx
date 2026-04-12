@@ -100,6 +100,7 @@ import { customFilterFn, getMessage } from '@/lib/utils';
 import React from 'react';
 import { SpEvTransactionRegPaymentForm } from '@/components/spEvTransactionRegPayment';
 import { PaginationButtons } from '@/components/paginationButtons';
+import { JoinAthletesInEvTeamButton } from '@/components/joinAthletesInEvTeamButton';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations')({
@@ -185,6 +186,7 @@ function RouteComponent() {
     canMarkPaid: false,
     canApplyDiscount: false,
     canReactivate: false,
+    canJoinEvTeam: false,
   });
 
   const [loading, setLoading] = React.useState(false);
@@ -627,6 +629,7 @@ function RouteComponent() {
         canMarkPaid: false,
         canApplyDiscount: false,
         canReactivate: false,
+        canJoinEvTeam: false,
       });
       return;
     }
@@ -634,6 +637,19 @@ function RouteComponent() {
     let canMarkPaid = true;
     let canApplyDiscount = true;
     let canReactivate = true;
+    let canJoinEvTeam = true;
+
+    // Only enable if exactly 2 rows are selected
+    if (Object.keys(rowSelection).length === 2) {
+      const selectedRows = Object.keys(rowSelection).map(key => table.getRow(key));
+      const circuitIds = selectedRows.map(row => row.original.circuit_id);
+      const circuitTeamsEnabled = selectedRows.every(row => row.original.circuit_teams_enabled);
+      const sameCircuit = circuitIds.every(id => id === circuitIds[0]);
+      canJoinEvTeam = canJoinEvTeam && circuitTeamsEnabled && !sameCircuit;
+    } else {
+      canJoinEvTeam = false;
+    }
+
     Object.keys(rowSelection).forEach((key) => {
       const row = table.getRow(key);
       canCancel = canCancel && ["pending", "paid"].includes(row.original.status);
@@ -647,6 +663,7 @@ function RouteComponent() {
       canMarkPaid,
       canApplyDiscount,
       canReactivate,
+      canJoinEvTeam,
     });
   }, [
     table,
@@ -899,6 +916,18 @@ function RouteComponent() {
           <ArrowUpCircleIcon className='w-4 h-4 text-blue-500' />
           Reactivar
         </Button>
+        <JoinAthletesInEvTeamButton
+          disabled={!generalActionBtnsEnabled.canJoinEvTeam || loading}
+          selectedRegs={Object.keys(rowSelection).map(
+            id => data.find(
+              r => r.id.toString() === id
+            )!
+          )}
+          eventId={eventId}
+          setError={setError}
+          setSuccess={setSuccess}
+          setLoading={setLoading}
+        />
       </div>
       {resRegApi.body.data.length > 0 && (table.getRowModel().rows.length > 0 ? (
         <div>

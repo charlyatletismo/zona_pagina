@@ -21,6 +21,7 @@ import {
   Trash2Icon,
   CopyIcon,
   CheckIcon,
+  Users2Icon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +51,7 @@ import {
   DialogTitle,
   // DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverTrigger,
@@ -71,6 +72,8 @@ import { getTrainingTeamsData } from '@/lib/queryCache';
 import { customFilterFn, getMessage } from '@/lib/utils';
 import React from 'react';
 import { PaginationButtons } from '@/components/paginationButtons';
+import { ManageEventTeamRegDialog } from '@/components/manageEventTeamDialog';
+import { JoinAthletesInEvTeamButton } from '@/components/joinAthletesInEvTeamButton';
 
 
 const ARUserSchemaPartial = ARUserSchema.partial().required({
@@ -160,6 +163,7 @@ function RouteComponent() {
     canPay: false,
     canRegister: false,
     canDelete: false,
+    canJoinEvTeam: false,
   });
 
   const [loading, setLoading] = React.useState(false);
@@ -182,6 +186,7 @@ function RouteComponent() {
   const [registerUsers, setRegisterUsers] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null>(null);
   const [deleteRegs, setDeleteRegs] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema>[] | null>(null);
   const [seeDetailReg, setSeeDetailReg] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema> | null>(null);
+  const [manageEventTeamReg, setManageEventTeamReg] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema> | null>(null);
 
   const statusBadges: Record<string, { text: string, color: string }> = {
     'not_registered': { text: 'No registrado', color: 'border border-blue-400 text-blue-500' },
@@ -421,6 +426,14 @@ function RouteComponent() {
                   Borrar
                 </DropdownMenuItem>
               )}
+              {props.row.original.circuit_teams_enabled && (
+                <DropdownMenuItem className="cursor-pointer group" onClick={async () => {
+                  setManageEventTeamReg(props.row.original);
+                }}>
+                  <Users2Icon className='w-4 h-4 text-green-500' />
+                  {props.row.original.event_team_leader_id ? 'Gestionar equipo' : 'Asignar compañero'}
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -467,12 +480,26 @@ function RouteComponent() {
         canPay: false,
         canRegister: false,
         canDelete: false,
+        canJoinEvTeam: false,
       });
       return;
     }
     let canPay = true;
     let canRegister = true;
     let canDelete = true;
+    let canJoinEvTeam = true; 
+
+    // Only enable if exactly 2 rows are selected
+    if (Object.keys(rowSelection).length === 2) {
+      const selectedRows = Object.keys(rowSelection).map(key => table.getRow(key));
+      const circuitIds = selectedRows.map(row => row.original.circuit_id);
+      const circuitTeamsEnabled = selectedRows.every(row => row.original.circuit_teams_enabled);
+      const sameCircuit = circuitIds.every(id => id === circuitIds[0]);
+      canJoinEvTeam = canJoinEvTeam && circuitTeamsEnabled && !sameCircuit;
+    } else {
+      canJoinEvTeam = false;
+    }
+
     Object.keys(rowSelection).forEach((key) => {
       const row = table.getRow(key);
       canPay = canPay && row.original.pending_to_pay > 0;
@@ -483,6 +510,7 @@ function RouteComponent() {
       canPay,
       canRegister,
       canDelete,
+      canJoinEvTeam,
     });
   }, [
     table,
@@ -544,6 +572,15 @@ function RouteComponent() {
         reg={seeDetailReg}
         setReg={setSeeDetailReg}
         statusBadges={statusBadges}
+      />
+
+      <ManageEventTeamRegDialog
+        reg={manageEventTeamReg}
+        setReg={setManageEventTeamReg}
+        eventId={eventId}
+        setError={setError}
+        setSuccess={setSuccess}
+        setLoading={setLoading}
       />
 
       <div className='flex flex-col sm:flex-row sm:justify-between'>
@@ -644,6 +681,19 @@ function RouteComponent() {
           <Trash2Icon className='w-4 h-4 text-red-500' />
           Borrar
         </Button>
+        <JoinAthletesInEvTeamButton
+          disabled={!generalActionBtnsEnabled.canJoinEvTeam || loading}
+          selectedRegs={Object.keys(rowSelection).map(
+            id => finalData.find(
+              r => r.user_id.toString() === id
+            )!
+          )}
+          eventId={eventId}
+          setError={setError}
+          setSuccess={setSuccess}
+          setLoading={setLoading}
+        />
+
       </div>
 
       {finalData.length > 0 && (table.getRowModel().rows.length > 0 ? (
