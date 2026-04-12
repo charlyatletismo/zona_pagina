@@ -186,7 +186,6 @@ function RouteComponent() {
     canMarkPaid: false,
     canApplyDiscount: false,
     canReactivate: false,
-    canJoinEvTeam: false,
   });
 
   const [loading, setLoading] = React.useState(false);
@@ -629,7 +628,6 @@ function RouteComponent() {
         canMarkPaid: false,
         canApplyDiscount: false,
         canReactivate: false,
-        canJoinEvTeam: false,
       });
       return;
     }
@@ -637,18 +635,6 @@ function RouteComponent() {
     let canMarkPaid = true;
     let canApplyDiscount = true;
     let canReactivate = true;
-    let canJoinEvTeam = true;
-
-    // Only enable if exactly 2 rows are selected
-    if (Object.keys(rowSelection).length === 2) {
-      const selectedRows = Object.keys(rowSelection).map(key => table.getRow(key));
-      const circuitIds = selectedRows.map(row => row.original.circuit_id);
-      const circuitTeamsEnabled = selectedRows.every(row => row.original.circuit_teams_enabled);
-      const sameCircuit = circuitIds.every(id => id === circuitIds[0]);
-      canJoinEvTeam = canJoinEvTeam && circuitTeamsEnabled && !sameCircuit;
-    } else {
-      canJoinEvTeam = false;
-    }
 
     Object.keys(rowSelection).forEach((key) => {
       const row = table.getRow(key);
@@ -663,7 +649,6 @@ function RouteComponent() {
       canMarkPaid,
       canApplyDiscount,
       canReactivate,
-      canJoinEvTeam,
     });
   }, [
     table,
@@ -917,7 +902,7 @@ function RouteComponent() {
           Reactivar
         </Button>
         <JoinAthletesInEvTeamButton
-          disabled={!generalActionBtnsEnabled.canJoinEvTeam || loading}
+          disabled={Object.keys(rowSelection).length !== 2 || loading}
           selectedRegs={Object.keys(rowSelection).map(
             id => data.find(
               r => r.id.toString() === id

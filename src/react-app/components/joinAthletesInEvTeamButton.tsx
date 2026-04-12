@@ -41,6 +41,19 @@ export const JoinAthletesInEvTeamButton = ({
           setError('No se pudieron encontrar las inscripciones seleccionadas.');
           return;
         }
+        const circuitIds = selectedRegs.map(reg => reg.circuit_id);
+        const sameCircuit = circuitIds.every(id => id === circuitIds[0]);
+        if (sameCircuit) {
+          setLoading(false);
+          setError('Los atletas seleccionados pertenecen al mismo circuito. Para formar un equipo, deben pertenecer a circuitos diferentes.');
+          return;
+        }
+        const circuitTeamsEnabled = selectedRegs.every(reg => reg.circuit_teams_enabled);
+        if (!circuitTeamsEnabled) {
+          setLoading(false);
+          setError('Los atletas seleccionados no tienen habilitada la opción de formar equipos en sus circuitos.');
+          return;
+        }
         let reqId: string, destId: string;
         if (selectedReg1.event_team_leader_id !== null && selectedReg2.event_team_leader_id !== null) {
           if (selectedReg1.event_team_leader_id === selectedReg2.event_team_leader_id) {
