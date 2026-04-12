@@ -713,17 +713,10 @@ function RouteComponent() {
         setError={setError}
         setSuccess={setSuccess}
         setLoading={setLoading}
-        onSuccess={(regs) => {
-          setRowSelection({});
-          setData(prevData => prevData.map(reg => {
-            const found = regs.find(r => r.id === reg.id)
-            if (!found) return reg;
-            return {
-              ...reg,
-              status: found.status,
-              pending_to_pay: found.pending,
-            }
-          }));
+        onSuccess={() => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         }}
         />
 
@@ -1286,7 +1279,7 @@ const MarkAsPaidRegDialog = ({
   setError: (msg: string) => void,
   setSuccess: (msg: string) => void,
   setLoading: (loading: boolean) => void,
-  onSuccess: (regs: {id: number, status: 'pending' | 'paid', discount: number, pending: number}[]) => void,
+  onSuccess: () => void,
 }) => {
   return (
     <Dialog open={regsId !== null} onOpenChange={() => {
@@ -1333,7 +1326,7 @@ const MarkAsPaidRegDialog = ({
                     setError('Hubo un error al desestimar el monto pendiente. Por favor, intenta nuevamente.');
                   } else {
                     setSuccess('Monto pendiente desestimado exitosamente.');
-                    onSuccess(r.body.data);
+                    onSuccess();
                   }
                   setRegsId(null);
                 }}
