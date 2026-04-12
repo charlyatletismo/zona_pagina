@@ -43,7 +43,7 @@ import {
   EllipsisIcon,
   GroupIcon,
   UngroupIcon,
-  // DownloadIcon,
+  DownloadIcon,
   DownloadCloudIcon,
 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
@@ -154,6 +154,20 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
   return csvContent;
 }
 
+
+const getCsvAllRegistrations = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>[], paid: boolean = false) => {
+  const finalData = paid ? data.filter(reg => reg.status === 'paid') : data;
+  const header = ARSportingEventRegistrationFlatSchema.keyof().options;
+  const rows = finalData.map(reg => header.map(field => {
+    const value = reg[field as keyof typeof reg];
+    if (value instanceof Date) {
+      return value.toLocaleDateString('es-AR');
+    }
+    return value !== undefined && value !== null ? value.toString() : '';
+  }));
+  const csvContent = [header, ...rows].map(e => e.join(";")).join("\n");
+  return csvContent;
+}
 
 
 function RouteComponent() {
@@ -800,7 +814,7 @@ function RouteComponent() {
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.setAttribute('href', url);
-              link.setAttribute('download', `inscripciones_evento_${eventId}.csv`);
+              link.setAttribute('download', `inscripciones_evento_${eventId}_rufus.csv`);
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -809,10 +823,42 @@ function RouteComponent() {
             <DownloadCloudIcon className='w-4 h-4' />
             Rufus
           </Button>
-          {/* <Button variant='outline'>
+          <Button
+            variant='outline'
+            className='cursor-pointer'
+            onClick={() => {
+              const csvContent = getCsvAllRegistrations(resRegApi.body.data, true);
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.setAttribute('href', url);
+              link.setAttribute('download', `inscripciones_evento_${eventId}_pagas.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            >
             <DownloadIcon className='w-4 h-4' />
-            Full
-          </Button> */}
+            Pago
+          </Button>
+          <Button
+            variant='outline'
+            className='cursor-pointer'
+            onClick={() => {
+              const csvContent = getCsvAllRegistrations(resRegApi.body.data);
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.setAttribute('href', url);
+              link.setAttribute('download', `inscripciones_evento_${eventId}_todas.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            >
+            <DownloadIcon className='w-4 h-4' />
+            Todo
+          </Button>
         </div>
       </div>
       <div className='mb-4 flex flex-col md:flex-row gap-2'>
