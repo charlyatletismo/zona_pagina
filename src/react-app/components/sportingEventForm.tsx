@@ -1355,6 +1355,27 @@ const SportingEventForm = (
         <hr />
 
         <form.AppField
+          name="external_register_url"
+          children={(field) => (
+            <div className='space-y-2 md:col-span-2'>
+              <field.Label htmlFor={field.name}>URL para inscripciones externas</field.Label>
+              <field.Input
+                id={field.name}
+                name={field.name}
+                value={field.state.value || ''}
+                onChange={(e) => field.handleChange(e.target.value)}
+                onBlur={field.handleBlur}
+                placeholder="https://www.example.com/inscripciones"
+                className={!field.state.meta.isValid ? 'border-destructive' : ''}
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
+        <form.AppField
           name="results_url"
           children={(field) => (
             <div className='space-y-2 md:col-span-2'>

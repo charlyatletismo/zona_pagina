@@ -242,6 +242,7 @@ export const SportingEventSchema = z.object({
   promotional_fee_end: z.date().nullable().optional(),
   promotional_fee_payment_due_date: z.date().nullable().optional(),
   age_ranges: z.string().max(64).nullable().optional(),
+  external_register_url: z.string().max(512).nullable().optional(),
   results_url: z.string().max(512).nullable().optional(),
   hidden: z.boolean().default(false).optional(),
   created_by: UserSchema.shape.id.nullable().optional(),

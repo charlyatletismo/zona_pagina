@@ -1,0 +1,1 @@
+ALTER TABLE `sporting_events` ADD `external_register_url` text(512);

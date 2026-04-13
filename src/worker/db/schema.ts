@@ -163,6 +163,8 @@ export const sportingEvents = sqliteTable("sporting_events", {
   // due date for payment with promotional fee
   promotional_fee_payment_due_date: text({ length: 64 }),
   age_ranges: text({ length: 64 }), // e.g., "18,30,40,50+" means 18-29, 30-39, 40-49, 50 and above
+  // if the event registration is handled outside the system, e.g., on a third-party platform
+  external_register_url: text({ length: 512 }),
   results_url: text({ length: 512 }), // URL to published results after the event
   // if true, the event is not visible to regular users
   // (for draft events)

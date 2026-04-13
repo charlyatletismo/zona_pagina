@@ -15,6 +15,8 @@ import {
   PackageIcon,
   CircleDollarSignIcon,
   ShirtIcon,
+  CopyIcon,
+  CheckIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -466,7 +468,7 @@ function RouteComponent() {
                   {data.circuits.map((circuit) => (
                     <div key={circuit.id} className="p-1">
                       <h4 className="mb-2 border-l-2 border-primary pl-4">{circuit.name}</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{circuit.description || 'Sin descripción'}</p>
+                      {/* <p className="text-sm text-muted-foreground mt-1">{circuit.description || 'Sin descripción'}</p> */}
                       <p className="text-sm text-muted-foreground mt-1">Distancia: {circuit.distance_km} km</p>
                       {circuit.map_url && (
                         <a
@@ -491,6 +493,57 @@ function RouteComponent() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+            {(openToRegister && data.external_register_url !== null) && (
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-2">Inscribirse</h3>
+                <a
+                  href={data.external_register_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  
+                >
+                  <Button
+                    variant="default"
+                    className='w-full cursor-pointer'
+                  >
+                    Ir a Formulario de Google
+                  </Button>
+                </a>
+              </div>
+            )}
+            {(openToRegister && data.bank_alias !== null) && (
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-2">Alias para transferencias</h3>
+                <div className='text-sm mb-2'>Hacer click para copiar</div>
+                <Button
+                  className='cursor-pointer'
+                  variant={'outline'}
+                  onClick={() => {
+                    navigator.clipboard.writeText(data.bank_alias!);
+                    const copyIcon = document.getElementById('clipboard-copy');
+                    const copiedIcon = document.getElementById('clipboard-copied');
+                    if (copyIcon && copiedIcon) {
+                      copyIcon.style.display = 'none';
+                      copiedIcon.style.display = 'inline-block';
+                      setTimeout(() => {
+                        copyIcon.style.display = 'inline-block';
+                        copiedIcon.style.display = 'none';
+                      }, 2000);
+                    }
+                  }}
+                >
+                  <div className='border-r-2'>
+                    <div id="clipboard-copy" style={{display: 'inline-block' }}>
+                      <CopyIcon className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                    </div>
+                    <div id="clipboard-copied" style={{display: 'none'}}>
+                      <CheckIcon className="w-5 h-5 inline-block mr-2 text-gray-500" />
+                    </div>
+                  </div>
+                  {data.bank_alias}
+                </Button>
               </div>
             )}
           </div>
