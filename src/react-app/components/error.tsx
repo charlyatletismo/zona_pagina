@@ -23,12 +23,6 @@ export function ErrorComp({ error, info, reset }: ErrorCompProps) {
           {error.message || 'Algo salió mal. Haz click para intentar de nuevo o vuelve al inicio.'}
         </p>
 
-        <div className="max-w-md mx-auto px-4 mt-4 p-4 bg-muted/50 border border-muted rounded-md">
-          <p className="text-sm text-muted-foreground text-center">
-            💡 Si experimentas problemas en dispositivos móviles, te recomendamos usar una computadora por ahora. La aplicación está en versión beta con mejoras continuas. ¡Gracias por tu paciencia!
-          </p>
-        </div>
-
         {info?.componentStack && (
           <details className="text-left max-w-md mx-auto px-4">
             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-muted-foreground/70">
