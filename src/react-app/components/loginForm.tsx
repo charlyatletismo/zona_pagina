@@ -272,16 +272,7 @@ export const LoginDynamicForm = () => {
                 disabled={!canSubmit || isPristine || isSubmitting}
                 className='mr-2 mt-2'
               >
-                {isSubmitting ? (
-                  <>
-                    <Spinner className="mr-2 h-4 w-4" />
-                    ...
-                  </>
-                ) : (
-                  <>
-                    Enviar
-                  </>
-                )}
+                Enviar
               </form.Button>
             </form.AppForm>
           )}

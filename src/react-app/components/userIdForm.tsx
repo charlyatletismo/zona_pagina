@@ -125,17 +125,8 @@ export const UserIdForm = ({
               disabled={!canSubmit || isPristine || isSubmitting}
               className='mr-2 mt-5'
             >
-              {isSubmitting ? (
-                <>
-                  <Spinner className="mr-2 h-4 w-4" />
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Guardar
-                </>
-              )}
+              <Save className="mr-2 h-4 w-4" />
+              Guardar
             </form.Button>
             <form.Button
               type="reset"
@@ -146,10 +137,8 @@ export const UserIdForm = ({
                 form.reset();
               }}
             >
-              <>
-                <ListRestartIcon className="mr-2 h-4 w-4" />
-                Reset
-              </>
+              <ListRestartIcon className="mr-2 h-4 w-4" />
+              Reset
             </form.Button>
           </form.AppForm>
         )}

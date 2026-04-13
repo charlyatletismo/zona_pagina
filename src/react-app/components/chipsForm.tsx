@@ -225,12 +225,7 @@ export const ChipsForm = ({
                   ? ' bg-green-500 hover:bg-green-600'
                   : '')}
             >
-              {isSubmitting ? (
-                <>
-                  <Spinner className="mr-2 h-4 w-4" />
-                  ...
-                </>
-              ) : (chipsData && chipsData.id) ? (
+              {(chipsData && chipsData.id) ? (
                 <>
                   <Save className="mr-2 h-4 w-4" />
                   Guardar
@@ -251,10 +246,8 @@ export const ChipsForm = ({
                 form.reset();
               }}
             >
-              <>
-                <ListRestartIcon className="mr-2 h-4 w-4" />
-                Reset
-              </>
+              <ListRestartIcon className="mr-2 h-4 w-4" />
+              Reset
             </form.Button>
           </form.AppForm>
         )}
