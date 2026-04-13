@@ -41,7 +41,7 @@ export const PhoneInput = ({
         </span>
         <Input
           id={name + "_countryCode"}
-          name={name}
+          name={name + "_countryCode"}
           placeholder="54"
           maxLength={3}
           value={(value || '').split("_")[0] || ''}
