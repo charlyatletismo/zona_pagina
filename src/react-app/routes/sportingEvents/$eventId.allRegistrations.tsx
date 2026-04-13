@@ -135,6 +135,7 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     // 'email',
     // 'phone',
     'course',
+    'age',
     'event_team_leader_id'
   ];
   const rows = data.filter(reg => reg.status === 'paid').map(reg => [
@@ -149,6 +150,7 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     reg.user_location ? reg.user_location.split(",").slice(-1)[0].trim() : '', // take last part of location as country
     reg.user_location,
     reg.circuit_name,
+    reg.age_at_event_date,
     reg.event_team_leader_id ? reg.event_team_leader_id : '',
   ]);
   const csvContent = [header, ...rows].map(e => e.join(";")).join("\n");
