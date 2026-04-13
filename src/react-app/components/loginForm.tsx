@@ -56,8 +56,6 @@ export const LoginDynamicForm = () => {
       onBlur: LoginFormSchema,
     },
     onSubmit: async ({ value }) => {
-      // Scroll to top of the page when form is submitted
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       if (value.phone === '54_9_' || !value.phone) {
         setError('Por favor, ingrese un número de teléfono antes de enviar el formulario.')
         return;
@@ -230,6 +228,7 @@ export const LoginDynamicForm = () => {
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                    disabled={statusMode !== 'register'}
                   />
                   {!field.state.meta.isValid && (
                     <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
@@ -253,6 +252,7 @@ export const LoginDynamicForm = () => {
                     required={true}
                     maxLength={6}
                     placeholder='código de 6 dígitos'
+                    disabled={statusMode !== 'codeSent'}
                   />
                   {!field.state.meta.isValid && (
                     <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
