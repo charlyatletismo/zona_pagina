@@ -147,8 +147,8 @@ export const sportingEvents = sqliteTable("sporting_events", {
   location_lat: real(),
   location_long: real(),
   event_type: text({ length: 32 }).notNull(), // marathon, half_marathon, duathlon, trail, cycling, etc.
-  rules: text({ length: 2048 }),
-  disclaimer_of_liability: text({ length: 4096 }),
+  rules: text({ length: 16384 }), // detailed rules and regulations for the event
+  disclaimer_of_liability: text({ length: 8192 }),
   award_prizes: text({ length: 1024 }),
   mercadopago_enabled: int().notNull().default(0),
   bank_alias: text({ length: 64 }), // for bank transfers
