@@ -26,13 +26,13 @@ export const LoginDynamicForm = () => {
     _setError(msg)
     setTimeout(() => {
       _setError('');
-    }, 2000);
+    }, 5000);
   };
   const setSuccess = (msg: string) => {
     _setSuccess(msg)
     setTimeout(() => {
       _setSuccess('');
-    }, 3000);
+    }, 5000);
   };
 
   const title = {
