@@ -10,6 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
+import { Route as Test9RouteImport } from './routes/test9'
+import { Route as Test8RouteImport } from './routes/test8'
+import { Route as Test7RouteImport } from './routes/test7'
+import { Route as Test6RouteImport } from './routes/test6'
+import { Route as Test5RouteImport } from './routes/test5'
+import { Route as Test4RouteImport } from './routes/test4'
+import { Route as Test3RouteImport } from './routes/test3'
+import { Route as Test2RouteImport } from './routes/test2'
+import { Route as Test11RouteImport } from './routes/test11'
+import { Route as Test10RouteImport } from './routes/test10'
+import { Route as Test1RouteImport } from './routes/test1'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ManageRouteImport } from './routes/manage'
 import { Route as LoginRouteImport } from './routes/login'
@@ -53,6 +64,61 @@ import { Route as SportingEventsEventIdTransactionsTransactionIdIndexRouteImport
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
   path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test9Route = Test9RouteImport.update({
+  id: '/test9',
+  path: '/test9',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test8Route = Test8RouteImport.update({
+  id: '/test8',
+  path: '/test8',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test7Route = Test7RouteImport.update({
+  id: '/test7',
+  path: '/test7',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test6Route = Test6RouteImport.update({
+  id: '/test6',
+  path: '/test6',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test5Route = Test5RouteImport.update({
+  id: '/test5',
+  path: '/test5',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test4Route = Test4RouteImport.update({
+  id: '/test4',
+  path: '/test4',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test3Route = Test3RouteImport.update({
+  id: '/test3',
+  path: '/test3',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test2Route = Test2RouteImport.update({
+  id: '/test2',
+  path: '/test2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test11Route = Test11RouteImport.update({
+  id: '/test11',
+  path: '/test11',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test10Route = Test10RouteImport.update({
+  id: '/test10',
+  path: '/test10',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Test1Route = Test1RouteImport.update({
+  id: '/test1',
+  path: '/test1',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -272,6 +338,17 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/manage': typeof ManageRoute
   '/services': typeof ServicesRoute
+  '/test1': typeof Test1Route
+  '/test10': typeof Test10Route
+  '/test11': typeof Test11Route
+  '/test2': typeof Test2Route
+  '/test3': typeof Test3Route
+  '/test4': typeof Test4Route
+  '/test5': typeof Test5Route
+  '/test6': typeof Test6Route
+  '/test7': typeof Test7Route
+  '/test8': typeof Test8Route
+  '/test9': typeof Test9Route
   '/unauthorized': typeof UnauthorizedRoute
   '/locations/$locationId': typeof LocationsLocationIdRoute
   '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
@@ -314,6 +391,17 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/manage': typeof ManageRoute
   '/services': typeof ServicesRoute
+  '/test1': typeof Test1Route
+  '/test10': typeof Test10Route
+  '/test11': typeof Test11Route
+  '/test2': typeof Test2Route
+  '/test3': typeof Test3Route
+  '/test4': typeof Test4Route
+  '/test5': typeof Test5Route
+  '/test6': typeof Test6Route
+  '/test7': typeof Test7Route
+  '/test8': typeof Test8Route
+  '/test9': typeof Test9Route
   '/unauthorized': typeof UnauthorizedRoute
   '/locations/$locationId': typeof LocationsLocationIdRoute
   '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
@@ -357,6 +445,17 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/manage': typeof ManageRoute
   '/services': typeof ServicesRoute
+  '/test1': typeof Test1Route
+  '/test10': typeof Test10Route
+  '/test11': typeof Test11Route
+  '/test2': typeof Test2Route
+  '/test3': typeof Test3Route
+  '/test4': typeof Test4Route
+  '/test5': typeof Test5Route
+  '/test6': typeof Test6Route
+  '/test7': typeof Test7Route
+  '/test8': typeof Test8Route
+  '/test9': typeof Test9Route
   '/unauthorized': typeof UnauthorizedRoute
   '/locations/$locationId': typeof LocationsLocationIdRoute
   '/locations/checkTemporary': typeof LocationsCheckTemporaryRoute
@@ -401,6 +500,17 @@ export interface FileRouteTypes {
     | '/login'
     | '/manage'
     | '/services'
+    | '/test1'
+    | '/test10'
+    | '/test11'
+    | '/test2'
+    | '/test3'
+    | '/test4'
+    | '/test5'
+    | '/test6'
+    | '/test7'
+    | '/test8'
+    | '/test9'
     | '/unauthorized'
     | '/locations/$locationId'
     | '/locations/checkTemporary'
@@ -443,6 +553,17 @@ export interface FileRouteTypes {
     | '/login'
     | '/manage'
     | '/services'
+    | '/test1'
+    | '/test10'
+    | '/test11'
+    | '/test2'
+    | '/test3'
+    | '/test4'
+    | '/test5'
+    | '/test6'
+    | '/test7'
+    | '/test8'
+    | '/test9'
     | '/unauthorized'
     | '/locations/$locationId'
     | '/locations/checkTemporary'
@@ -485,6 +606,17 @@ export interface FileRouteTypes {
     | '/login'
     | '/manage'
     | '/services'
+    | '/test1'
+    | '/test10'
+    | '/test11'
+    | '/test2'
+    | '/test3'
+    | '/test4'
+    | '/test5'
+    | '/test6'
+    | '/test7'
+    | '/test8'
+    | '/test9'
     | '/unauthorized'
     | '/locations/$locationId'
     | '/locations/checkTemporary'
@@ -528,6 +660,17 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ManageRoute: typeof ManageRoute
   ServicesRoute: typeof ServicesRoute
+  Test1Route: typeof Test1Route
+  Test10Route: typeof Test10Route
+  Test11Route: typeof Test11Route
+  Test2Route: typeof Test2Route
+  Test3Route: typeof Test3Route
+  Test4Route: typeof Test4Route
+  Test5Route: typeof Test5Route
+  Test6Route: typeof Test6Route
+  Test7Route: typeof Test7Route
+  Test8Route: typeof Test8Route
+  Test9Route: typeof Test9Route
   UnauthorizedRoute: typeof UnauthorizedRoute
   LocationsLocationIdRoute: typeof LocationsLocationIdRoute
   LocationsCheckTemporaryRoute: typeof LocationsCheckTemporaryRoute
@@ -572,6 +715,83 @@ declare module '@tanstack/react-router' {
       path: '/unauthorized'
       fullPath: '/unauthorized'
       preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test9': {
+      id: '/test9'
+      path: '/test9'
+      fullPath: '/test9'
+      preLoaderRoute: typeof Test9RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test8': {
+      id: '/test8'
+      path: '/test8'
+      fullPath: '/test8'
+      preLoaderRoute: typeof Test8RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test7': {
+      id: '/test7'
+      path: '/test7'
+      fullPath: '/test7'
+      preLoaderRoute: typeof Test7RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test6': {
+      id: '/test6'
+      path: '/test6'
+      fullPath: '/test6'
+      preLoaderRoute: typeof Test6RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test5': {
+      id: '/test5'
+      path: '/test5'
+      fullPath: '/test5'
+      preLoaderRoute: typeof Test5RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test4': {
+      id: '/test4'
+      path: '/test4'
+      fullPath: '/test4'
+      preLoaderRoute: typeof Test4RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test3': {
+      id: '/test3'
+      path: '/test3'
+      fullPath: '/test3'
+      preLoaderRoute: typeof Test3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test2': {
+      id: '/test2'
+      path: '/test2'
+      fullPath: '/test2'
+      preLoaderRoute: typeof Test2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test11': {
+      id: '/test11'
+      path: '/test11'
+      fullPath: '/test11'
+      preLoaderRoute: typeof Test11RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test10': {
+      id: '/test10'
+      path: '/test10'
+      fullPath: '/test10'
+      preLoaderRoute: typeof Test10RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test1': {
+      id: '/test1'
+      path: '/test1'
+      fullPath: '/test1'
+      preLoaderRoute: typeof Test1RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -856,6 +1076,17 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ManageRoute: ManageRoute,
   ServicesRoute: ServicesRoute,
+  Test1Route: Test1Route,
+  Test10Route: Test10Route,
+  Test11Route: Test11Route,
+  Test2Route: Test2Route,
+  Test3Route: Test3Route,
+  Test4Route: Test4Route,
+  Test5Route: Test5Route,
+  Test6Route: Test6Route,
+  Test7Route: Test7Route,
+  Test8Route: Test8Route,
+  Test9Route: Test9Route,
   UnauthorizedRoute: UnauthorizedRoute,
   LocationsLocationIdRoute: LocationsLocationIdRoute,
   LocationsCheckTemporaryRoute: LocationsCheckTemporaryRoute,
