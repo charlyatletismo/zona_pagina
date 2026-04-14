@@ -1,6 +1,6 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { SelectedFields } from 'drizzle-orm/sqlite-core';
-import { lt, gte, desc, eq, inArray, and } from 'drizzle-orm';
+import { lt, gte, desc, eq, inArray, and, asc } from 'drizzle-orm';
 import { users, sportingEvents, sportingEventRegistrations } from '../db/schema';
 import { SportingEventBasicInfoSchema } from '@shared/apiRespTypes';
 import z from 'zod';
@@ -25,7 +25,7 @@ export const mainSportingEventsList = async (db: DrizzleD1Database) => {
       gte(sportingEvents.date, yesterday.toISOString()),
       eq(sportingEvents.hidden, 0)
     ))
-    .orderBy(desc(sportingEvents.date));
+    .orderBy(asc(sportingEvents.date));
 
   const comingSoonEvents = [];
   const openRegistrationEvents = [];
