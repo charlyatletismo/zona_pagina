@@ -118,6 +118,7 @@ export const LoginDynamicForm = () => {
         }
         setSuccess(getMessage(res.body?.message, 'Registro exitoso'));
         setStatusMode('codeSent');
+        form.setFieldValue('code', '');
       } else {
         setError('Estado desconocido. Por favor, refresque la página.');
       }
