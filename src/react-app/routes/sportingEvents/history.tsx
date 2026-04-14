@@ -21,7 +21,9 @@ export const Route = createFileRoute('/sportingEvents/history')({
     }
     const data = res.body.data.map(event => {
       let status: string;
-      if (event.registration_start && event.registration_end) {
+      if (event.date && now > new Date(event.date)) {
+        status = "past";
+      } else if (event.registration_start && event.registration_end) {
         const start = new Date(event.registration_start);
         const end = new Date(event.registration_end);
         if (now >= start && now <= end) {
