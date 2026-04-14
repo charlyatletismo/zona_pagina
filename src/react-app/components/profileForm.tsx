@@ -285,30 +285,21 @@ export const ProfileForm = ({
             <div className='space-y-2'>
               <field.Label htmlFor={field.name}>Sexo</field.Label>
               <div className='flex items-center'>
-                <field.Select
+                <field.SelectCustom
+                  id={field.name}
                   name={field.name}
+                  options={[
+                    { value: 'M', label: 'Hombre' },
+                    { value: 'F', label: 'Mujer' },
+                  ]}
                   value={field.state.value || ""}
-                  onValueChange={(e: string) => {
+                  onChange={(e: string) => {
                     field.handleChange(e);
                     field.handleBlur();
                   }}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      field.handleBlur();
-                    }
-                  }}
-                >
-                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Sexo</field.SelectLabel>
-                      <field.SelectItem value="M">Hombre</field.SelectItem>
-                      <field.SelectItem value="F">Mujer</field.SelectItem>
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
+                  onBlur={field.handleBlur}
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                />
               </div>
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* Debe seleccionar uno</div>
@@ -420,31 +411,18 @@ export const ProfileForm = ({
             <div className='space-y-2'>
               <field.Label htmlFor={field.name}>Talle de remera</field.Label>
               <div className='flex items-center'>
-                <field.Select
+                <field.SelectCustom
+                  id={field.name}
                   name={field.name}
+                  options={SHIRT_SIZES.map(size => ({ value: size, label: size }))}
                   value={field.state.value || ""}
-                  onValueChange={(e) => {
+                  onChange={(e: string) => {
                     field.handleChange(e as typeof SHIRT_SIZES[number]);
                     field.handleBlur();
                   }}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      field.handleBlur();
-                    }
-                  }}
-                >
-                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Talle de remera</field.SelectLabel>
-                      {UserSchema.shape.clothing_shirt_size.options.map((size) => (
-                        <field.SelectItem key={size} value={size}>{size}</field.SelectItem>
-                      ))}
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
+                  onBlur={field.handleBlur}
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                />
               </div>
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>

@@ -3,15 +3,7 @@ import {
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { SelectCustom } from '@/components/selectCustom';
 
 
 export const PaginationButtons = <TData,>({
@@ -74,25 +66,16 @@ export const PaginationButtons = <TData,>({
         >
           {'>>'}
         </Button>
-        <Select
+        <SelectCustom
+          id="pageSize"
           name="pageSize"
+          options={[10, 20, 30, 40, 50].map((pageSize) => ({ value: pageSize.toString(), label: pageSize.toString() }))}
           value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(e) => {
+          onChange={(e) => {
             table.setPageSize(Number(e))
           }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Tamaño de página</SelectLabel>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>{pageSize}</SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          width='w-20'
+        />
       </div>
     </div>
   )

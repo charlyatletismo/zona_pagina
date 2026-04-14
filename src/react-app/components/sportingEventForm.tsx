@@ -212,10 +212,18 @@ const SportingEventForm = (
             children={(field) => (
               <div className="space-y-2">
                 <field.Label htmlFor={field.name}>Tipo de Evento</field.Label>
-                <field.Select
+                <field.SelectCustom
+                  id={field.name}
                   name={field.name}
+                  options={
+                    SportingEventSchema.shape.event_type.options.map((evtype) => ({
+                      label: SportingEventTypesEnumDescriptions[evtype][getLang()],
+                      value: evtype
+                    }))
+                  }
                   value={field.state.value || ""}
-                  onValueChange={(e) => {
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  onChange={(e) => {
                     const r = SportingEventSchema.shape.event_type.safeParse(e)
                     if (r.success) {
                       field.handleChange(r.data);
@@ -224,24 +232,8 @@ const SportingEventForm = (
                     }
                     field.handleBlur();
                   }}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      field.handleBlur();
-                    }
-                  }}
-                >
-                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Tipo de Evento</field.SelectLabel>
-                      {SportingEventSchema.shape.event_type.options.map((evtype) => (
-                        <field.SelectItem key={evtype} value={evtype}>{SportingEventTypesEnumDescriptions[evtype][getLang()]}</field.SelectItem>
-                      ))}
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
+                  onBlur={field.handleBlur}
+                />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}

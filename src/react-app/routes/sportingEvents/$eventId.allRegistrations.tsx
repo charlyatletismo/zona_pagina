@@ -15,15 +15,7 @@ import z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectLabel,
-  SelectItem,
-} from '@/components/ui/select';
+import { SelectCustom } from '@/components/selectCustom';
 import {
   PackageIcon,
   PackageOpenIcon,
@@ -1626,25 +1618,13 @@ const AnotherClothingSizeRegDialog = ({
             Se le reservará un talle diferente al solicitado en la inscripción seleccionada.
           </DialogDescription>
 
-          <Select
-            name="size"
-            value={size || ''}
-            onValueChange={(e) => {
-              setSize(e);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Talle</SelectLabel>
-                {SHIRT_SIZES.map((cSize) => (
-                  <SelectItem key={cSize} value={cSize}>{cSize}</SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <SelectCustom
+            id='size'
+            name='size'
+            options={SHIRT_SIZES.map(cSize => ({value: cSize, label: cSize}))}
+            value={size}
+            onChange={(e) => setSize(e)}
+          />
 
           <div className='flex gap-2 justify-end mt-2'>
             <DialogClose asChild>

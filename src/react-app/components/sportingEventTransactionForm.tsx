@@ -245,34 +245,24 @@ export const SportingEventTransactionForm = ({
                     : null
                   }
                 </field.Label>
-                <field.Select
+                <field.SelectCustom
+                  id={field.name}
                   name={field.name}
+                  options={categoriesOptions.map((c) => ({
+                    value: c,
+                    label: TransactionCategoryDesc[c][getLang()] || c,
+                  }))}
                   value={field.state.value || ""}
-                  onValueChange={(e: CategoryValue) => {
-                    field.handleChange(e);
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  onChange={(e) => {
+                    field.handleChange(e as CategoryValue);
                     field.handleBlur();
                     // Set transaction_type based on category
-                    const transaction_type = TransactionTypeByCategory[e];
+                    const transaction_type = TransactionTypeByCategory[e as CategoryValue];
                     form.setFieldValue('transaction_type', transaction_type);
                   }}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      field.handleBlur();
-                    }
-                  }}
-                >
-                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Categoría</field.SelectLabel>
-                      {categoriesOptions.map((evtype) => (
-                        <field.SelectItem key={evtype} value={evtype}>{TransactionCategoryDesc[evtype][getLang()]}</field.SelectItem>
-                      ))}
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
+                  onBlur={field.handleBlur}
+                />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}
@@ -287,32 +277,22 @@ export const SportingEventTransactionForm = ({
             children={(field) => (
               <div className="space-y-2">
                 <field.Label htmlFor={field.name}>Tipo</field.Label>
-                <field.Select
+                <field.SelectCustom
+                  id={field.name}
                   name={field.name}
+                  options={SportingEventTransactionSchema.shape.transaction_type.options.map((t) => ({
+                    value: t,
+                    label: TransactionTypeDesc[t][getLang()] || t,
+                  }))}
                   value={field.state.value || ""}
                   disabled={true}
-                  onValueChange={(e: TransactionTypeValue) => {
-                    field.handleChange(e);
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  onChange={(e) => {
+                    field.handleChange(e as TransactionTypeValue);
                     field.handleBlur();
                   }}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      field.handleBlur();
-                    }
-                  }}
-                >
-                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Tipo</field.SelectLabel>
-                      {SportingEventTransactionSchema.shape.transaction_type.options.map((evtype) => (
-                        <field.SelectItem key={evtype} value={evtype}>{TransactionTypeDesc[evtype][getLang()]}</field.SelectItem>
-                      ))}
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
+                  onBlur={field.handleBlur}
+                />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}
@@ -362,31 +342,21 @@ export const SportingEventTransactionForm = ({
             children={(field) => (
               <div className="space-y-2">
                 <field.Label htmlFor={field.name}>Método de Pago</field.Label>
-                <field.Select
+                <field.SelectCustom
+                  id={field.name}
                   name={field.name}
+                  options={SportingEventTransactionSchema.shape.payment_method.options.map((pm) => ({
+                    value: pm,
+                    label: TransactionPaymentMethodDesc[pm][getLang()] || pm,
+                  }))}
                   value={field.state.value || ""}
-                  onValueChange={(e: PaymentMethodValue) => {
-                    field.handleChange(e);
+                  borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                  onChange={(e) => {
+                    field.handleChange(e as PaymentMethodValue);
                     field.handleBlur();
                   }}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      field.handleBlur();
-                    }
-                  }}
-                >
-                  <field.SelectTrigger className={"w-full " + (!field.state.meta.isValid ? 'border-destructive' : '')}>
-                    <field.SelectValue placeholder="..." />
-                  </field.SelectTrigger>
-                  <field.SelectContent>
-                    <field.SelectGroup>
-                      <field.SelectLabel>Método de pago</field.SelectLabel>
-                      {SportingEventTransactionSchema.shape.payment_method.options.map((pm) => (
-                        <field.SelectItem key={pm} value={pm}>{TransactionPaymentMethodDesc[pm][getLang()]}</field.SelectItem>
-                      ))}
-                    </field.SelectGroup>
-                  </field.SelectContent>
-                </field.Select>
+                  onBlur={field.handleBlur}
+                />
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}

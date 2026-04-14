@@ -32,6 +32,7 @@ import { ComboBoxIdName } from '@/components/comboBoxIdName';
 import { DatePicker } from '@/components/datePicker';
 import { DateTimePicker } from '@/components/datetimePicker';
 import { Switch } from '@/components/ui/switch';
+import { SelectCustom } from '@/components/selectCustom';
 
 
 const { fieldContext, formContext } = createFormHookContexts()
@@ -56,6 +57,8 @@ export const { useAppForm } = createFormHook({
     SelectLabel,
     SelectTrigger,
     SelectValue,
+
+    SelectCustom,
 
     Command,
     CommandEmpty,
