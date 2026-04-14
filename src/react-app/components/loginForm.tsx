@@ -217,10 +217,10 @@ export const LoginDynamicForm = () => {
               )}
             />
 
-            {statusMode === 'register' && (<form.AppField
+            <form.AppField
               name="user_id"
               children={(field) => (
-                <div className="space-y-2">
+                <div className={"space-y-2 " + (statusMode === 'register' ? '' : 'hidden')}>
                   <field.Label htmlFor={field.name}>DNI</field.Label>
                   <field.Input
                     id={field.name}
@@ -236,12 +236,12 @@ export const LoginDynamicForm = () => {
                   )}
                 </div>
               )}
-            />)}
+            />
 
-            {statusMode === 'codeSent' && (<form.AppField
+            <form.AppField
               name="code"
               children={(field) => (
-                <div className="space-y-2">
+                <div className={"space-y-2 " + (statusMode === 'codeSent' ? '' : 'hidden')}>
                   <field.Label htmlFor={field.name}>Código de verificación</field.Label>
                   <field.Input
                     id={field.name}
@@ -260,7 +260,7 @@ export const LoginDynamicForm = () => {
                   )}
                 </div>
               )}
-            />)}
+            />
 
           </div>
 
