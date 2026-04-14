@@ -46,7 +46,7 @@ export const SportingEventsMinTable = ({
   data,
   title,
   emptyMessage = "No hay eventos deportivos para mostrar.",
-  dateSortingDesc = false,
+  dateSortingDesc = true,
 }: {
   data: z.infer<typeof SpBSchema>[],
   title: string,

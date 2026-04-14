@@ -53,6 +53,7 @@ function RouteComponent() {
       data={data}
       title="Eventos deportivos activos"
       emptyMessage='No hay eventos deportivos activos.'
+      dateSortingDesc={false}
     />
   )
 }
