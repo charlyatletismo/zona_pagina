@@ -20,24 +20,6 @@ const RootLayout = () => {
     setResolvedTheme(theme)
   }, [theme]);
 
-  // const [theme, setTheme] = React.useState(() => {
-  //   if (typeof window !== 'undefined') {
-  //     return localStorage.getItem('theme') || 'light'
-  //   }
-  //   return 'light'
-  // })
-
-  // React.useEffect(() => {
-  //   const root = window.document.documentElement
-  //   root.classList.remove('light', 'dark')
-  //   root.classList.add(theme)
-  //   localStorage.setItem('theme', theme)
-  // }, [theme])
-
-  // const toggleTheme = () => {
-  //   setTheme(theme === 'light' ? 'dark' : 'light')
-  // }
-
   return (
   <div className="flex flex-col min-h-screen">
 
@@ -96,11 +78,6 @@ const RootLayout = () => {
           </a>
         </div>
         <p className="relative z-10 text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Zona Atletismo. Todos los derechos reservados.</p>
-        {/* <a className="flex items-center justify-center gap-2 text-gray-600 hover:text-black" href="https://goran.com.ar/" target="_blank" rel="noopener noreferrer">
-          <Laptop size={22} className='pt-1' />
-          <span className="py-2">Powered by gorandp</span>
-          <Code2 size={22} className='pt-1' />
-        </a> */}
     </footer>
     <TanStackRouterDevtools />
   </div>
