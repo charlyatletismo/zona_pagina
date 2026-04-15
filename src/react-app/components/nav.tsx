@@ -40,6 +40,8 @@ const LINKS_BY_ROLE: Record<string, Array<{ to: string; label: string }>> = {
   [roles.ATHLETE_ROLE]: [
     LINK_HOME,
     LINK_MY_EVENTS,
+    LINK_SERVICES,
+    LINK_ABOUT,
   ],
   [roles.ATHLETES_MANAGER_ROLE]: [
     LINK_HOME,
