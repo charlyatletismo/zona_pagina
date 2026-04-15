@@ -615,6 +615,7 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
     .select({
       id: sportingEventRegistrations.id,
       user_id: sportingEventRegistrations.user_id,
+      circuit_id: sportingEventRegistrations.circuit_id,
       bib_number: sportingEventRegistrations.bib_number,
       chip_id: sportingEventRegistrations.chip_id,
       reserved_clothing_id: sportingEventRegistrations.reserved_clothing_id,
@@ -623,6 +624,10 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
     .from(sportingEventRegistrations)
     .where(whereClause)
     .all();
+  
+  if (!registrations || registrations.length === 0) {
+    return [];
+  }
   
   const usersData = await db
     .select({
@@ -633,13 +638,26 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
     .from(users)
     .where(inArray(users.id, registrations.map(r => r.user_id as string)))
     .all();
+  
+  const circuitsData = await db
+    .select({
+      id: sportingEventCircuits.id,
+      name: sportingEventCircuits.name,
+    })
+    .from(sportingEventCircuits)
+    .where(
+      inArray(sportingEventCircuits.id, registrations.map(r => r.circuit_id as number))
+    )
+    .all();
 
   const regs = registrations.map(r => {
     const u = usersData.find(u => u.id === r.user_id);
+    const c = circuitsData.find(c => c.id === r.circuit_id);
     return {
       ...r,
       clothing_size: clothingParsed.find(c => c.id === r.reserved_clothing_id)?.size || null,
       full_name: `${u?.surname || ''} ${u?.name || ''}`.trim(),
+      circuit_name: c?.name || null,
     }
   })
   return regs;

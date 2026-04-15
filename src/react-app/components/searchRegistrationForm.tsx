@@ -23,16 +23,24 @@ const SearchSchema = z.object({
 export const SearchRegistrationForm = ({
   eventId,
   setData,
+  partialUserIdEnabled = true,
+  bibEnabled = true,
+  showButtons = true,
+  autoReset = false,
 }: {
   eventId: number;
   setData: (data: z.infer<typeof ARSportingEventRegistrationMinSchema>[]) => void;
+  partialUserIdEnabled?: boolean;
+  bibEnabled?: boolean;
+  showButtons?: boolean;
+  autoReset?: boolean;
 }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const form = useAppForm({
     validators: {
-      onBlur: SearchSchema,
+      onChange: SearchSchema,
     },
     onSubmit: async ({ value }: { value: z.infer<typeof SearchSchema> }) => {
       setError('');
@@ -51,6 +59,10 @@ export const SearchRegistrationForm = ({
         setTimeout(() => {
           setError('');
         }, 1500);
+        if (autoReset) {
+          form.reset();
+        }
+        setData([]);
         return;
       }
       if (res.body?.data?.length === 0) {
@@ -58,6 +70,9 @@ export const SearchRegistrationForm = ({
         setTimeout(() => {
           setError('');
         }, 1500);
+        if (autoReset) {
+          form.reset();
+        }
         setData([]);
         return;
       }
@@ -65,6 +80,9 @@ export const SearchRegistrationForm = ({
       setTimeout(() => {
         setSuccess('');
       }, 1000);
+      if (autoReset) {
+        form.reset();
+      }
       setData(res.body.data || []);
     }
   });
@@ -103,55 +121,63 @@ export const SearchRegistrationForm = ({
         )}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className={"grid grid-cols-1 gap-6 " + (partialUserIdEnabled && bibEnabled ? "sm:grid-cols-2" : "")}>
 
-        <form.AppField
-          name="user_id"
-          children={(field) => (
-            <div className="space-y-2">
-              <field.Label htmlFor={field.name}>DNI (últimos 3 dígitos)</field.Label>
-              <field.Input
-                id={field.name}
-                name={field.name}
-                value={field.state.value ?? ''}
-                onChange={(e) => field.handleChange(e.target.value || undefined)}
-                onBlur={field.handleBlur}
-                className={!field.state.meta.isValid ? 'border-destructive' : ''}
-              />
-              {!field.state.meta.isValid && (
-                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
-              )}
-            </div>
-          )}
-        />
+        {partialUserIdEnabled && (
+          <form.AppField
+            name="user_id"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>DNI (últimos 3 dígitos)</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value ?? ''}
+                  onChange={(e) => field.handleChange(e.target.value || undefined)}
+                  onBlur={field.handleBlur}
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+        )}
 
-        <form.AppField
-          name="bib_number"
-          children={(field) => (
-            <div className="space-y-2">
-              <field.Label htmlFor={field.name}>Número de dorsal</field.Label>
-              <field.Input
-                id={field.name}
-                name={field.name}
-                value={field.state.value ?? ''}
-                onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : undefined)}
-                onBlur={field.handleBlur}
-                className={!field.state.meta.isValid ? 'border-destructive' : ''}
-              />
-              {!field.state.meta.isValid && (
-                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
-              )}
-            </div>
-          )}
-        />
+        {bibEnabled && (
+          <form.AppField
+            name="bib_number"
+            children={(field) => (
+              <div className="space-y-2">
+                <field.Label htmlFor={field.name}>Número de dorsal</field.Label>
+                <field.Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value ?? ''}
+                  onChange={(e) => {
+                    if (isNaN(Number(e.target.value))) return;
+                    field.handleChange(Number(e.target.value) || undefined);
+                  }}
+                  onBlur={field.handleBlur}
+                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                />
+                {!field.state.meta.isValid && (
+                  <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+                )}
+              </div>
+            )}
+          />
+        )}
 
       </div>
-      <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting, state.isPristine]}
-        children={([canSubmit, isSubmitting, isPristine]) => (
-          <form.AppForm>
-            <form.Button
-              type="submit"
+      {showButtons && (
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting, state.isPristine]}
+          children={([canSubmit, isSubmitting, isPristine]) => (
+            <form.AppForm>
+              <form.Button
+                type="submit"
               disabled={!canSubmit || isPristine || isSubmitting}
               className='mr-2 mt-5'
             >
@@ -174,6 +200,7 @@ export const SearchRegistrationForm = ({
           </form.AppForm>
         )}
       />
+      )}
     </form>
   )
 };

@@ -39,6 +39,7 @@ import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportin
 import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
 import { Route as UsersUserIdChangeIdRouteImport } from './routes/users/$userId.changeId'
 import { Route as TrainingTeamsTrainingTeamIdEditRouteImport } from './routes/trainingTeams/$trainingTeamId.edit'
+import { Route as SportingEventsEventIdShowRegistrationsRouteImport } from './routes/sportingEvents/$eventId.showRegistrations'
 import { Route as SportingEventsEventIdRegistrationRouteImport } from './routes/sportingEvents/$eventId.registration'
 import { Route as SportingEventsEventIdRegisterAthletesRouteImport } from './routes/sportingEvents/$eventId.registerAthletes'
 import { Route as SportingEventsEventIdKitDeliveryRouteImport } from './routes/sportingEvents/$eventId.kitDelivery'
@@ -205,6 +206,12 @@ const TrainingTeamsTrainingTeamIdEditRoute =
     path: '/trainingTeams/$trainingTeamId/edit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SportingEventsEventIdShowRegistrationsRoute =
+  SportingEventsEventIdShowRegistrationsRouteImport.update({
+    id: '/sportingEvents/$eventId/showRegistrations',
+    path: '/sportingEvents/$eventId/showRegistrations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SportingEventsEventIdRegistrationRoute =
   SportingEventsEventIdRegistrationRouteImport.update({
     id: '/sportingEvents/$eventId/registration',
@@ -298,6 +305,7 @@ export interface FileRoutesByFullPath {
   '/sportingEvents/$eventId/kitDelivery': typeof SportingEventsEventIdKitDeliveryRoute
   '/sportingEvents/$eventId/registerAthletes': typeof SportingEventsEventIdRegisterAthletesRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
+  '/sportingEvents/$eventId/showRegistrations': typeof SportingEventsEventIdShowRegistrationsRoute
   '/trainingTeams/$trainingTeamId/edit': typeof TrainingTeamsTrainingTeamIdEditRoute
   '/users/$userId/changeId': typeof UsersUserIdChangeIdRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
@@ -340,6 +348,7 @@ export interface FileRoutesByTo {
   '/sportingEvents/$eventId/kitDelivery': typeof SportingEventsEventIdKitDeliveryRoute
   '/sportingEvents/$eventId/registerAthletes': typeof SportingEventsEventIdRegisterAthletesRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
+  '/sportingEvents/$eventId/showRegistrations': typeof SportingEventsEventIdShowRegistrationsRoute
   '/trainingTeams/$trainingTeamId/edit': typeof TrainingTeamsTrainingTeamIdEditRoute
   '/users/$userId/changeId': typeof UsersUserIdChangeIdRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
@@ -383,6 +392,7 @@ export interface FileRoutesById {
   '/sportingEvents/$eventId/kitDelivery': typeof SportingEventsEventIdKitDeliveryRoute
   '/sportingEvents/$eventId/registerAthletes': typeof SportingEventsEventIdRegisterAthletesRoute
   '/sportingEvents/$eventId/registration': typeof SportingEventsEventIdRegistrationRoute
+  '/sportingEvents/$eventId/showRegistrations': typeof SportingEventsEventIdShowRegistrationsRoute
   '/trainingTeams/$trainingTeamId/edit': typeof TrainingTeamsTrainingTeamIdEditRoute
   '/users/$userId/changeId': typeof UsersUserIdChangeIdRoute
   '/users/$userId/edit': typeof UsersUserIdEditRoute
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/kitDelivery'
     | '/sportingEvents/$eventId/registerAthletes'
     | '/sportingEvents/$eventId/registration'
+    | '/sportingEvents/$eventId/showRegistrations'
     | '/trainingTeams/$trainingTeamId/edit'
     | '/users/$userId/changeId'
     | '/users/$userId/edit'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/kitDelivery'
     | '/sportingEvents/$eventId/registerAthletes'
     | '/sportingEvents/$eventId/registration'
+    | '/sportingEvents/$eventId/showRegistrations'
     | '/trainingTeams/$trainingTeamId/edit'
     | '/users/$userId/changeId'
     | '/users/$userId/edit'
@@ -511,6 +523,7 @@ export interface FileRouteTypes {
     | '/sportingEvents/$eventId/kitDelivery'
     | '/sportingEvents/$eventId/registerAthletes'
     | '/sportingEvents/$eventId/registration'
+    | '/sportingEvents/$eventId/showRegistrations'
     | '/trainingTeams/$trainingTeamId/edit'
     | '/users/$userId/changeId'
     | '/users/$userId/edit'
@@ -554,6 +567,7 @@ export interface RootRouteChildren {
   SportingEventsEventIdKitDeliveryRoute: typeof SportingEventsEventIdKitDeliveryRoute
   SportingEventsEventIdRegisterAthletesRoute: typeof SportingEventsEventIdRegisterAthletesRoute
   SportingEventsEventIdRegistrationRoute: typeof SportingEventsEventIdRegistrationRoute
+  SportingEventsEventIdShowRegistrationsRoute: typeof SportingEventsEventIdShowRegistrationsRoute
   TrainingTeamsTrainingTeamIdEditRoute: typeof TrainingTeamsTrainingTeamIdEditRoute
   UsersUserIdChangeIdRoute: typeof UsersUserIdChangeIdRoute
   UsersUserIdEditRoute: typeof UsersUserIdEditRoute
@@ -777,6 +791,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainingTeamsTrainingTeamIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sportingEvents/$eventId/showRegistrations': {
+      id: '/sportingEvents/$eventId/showRegistrations'
+      path: '/sportingEvents/$eventId/showRegistrations'
+      fullPath: '/sportingEvents/$eventId/showRegistrations'
+      preLoaderRoute: typeof SportingEventsEventIdShowRegistrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sportingEvents/$eventId/registration': {
       id: '/sportingEvents/$eventId/registration'
       path: '/sportingEvents/$eventId/registration'
@@ -887,6 +908,8 @@ const rootRouteChildren: RootRouteChildren = {
     SportingEventsEventIdRegisterAthletesRoute,
   SportingEventsEventIdRegistrationRoute:
     SportingEventsEventIdRegistrationRoute,
+  SportingEventsEventIdShowRegistrationsRoute:
+    SportingEventsEventIdShowRegistrationsRoute,
   TrainingTeamsTrainingTeamIdEditRoute: TrainingTeamsTrainingTeamIdEditRoute,
   UsersUserIdChangeIdRoute: UsersUserIdChangeIdRoute,
   UsersUserIdEditRoute: UsersUserIdEditRoute,

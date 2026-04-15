@@ -289,6 +289,7 @@ export const ARSportingEventRegistrationMinSchema = SportingEventRegistrationSch
   full_name: z.string(),
   clothing_size: SportingEventClothingSchema.shape.size.nullable(),
   kit_delivered: z.coerce.boolean<number>(),
+  circuit_name: z.string().nullable(),
 })
 
 
