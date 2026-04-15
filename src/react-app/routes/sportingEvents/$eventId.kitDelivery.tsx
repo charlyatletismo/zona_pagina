@@ -146,7 +146,11 @@ function RouteComponent() {
       title="Entrega de Kits"
       description="Marcá como entregado los kits a los inscriptos que tienen paga su inscripción."
     >
-      <SearchRegistrationForm eventId={Number(eventId)} setData={setData} />
+      <SearchRegistrationForm
+        eventId={Number(eventId)}
+        setData={setData}
+        autoReset={true}
+        />
 
       {data.length > 0 && (
         <div className='flex flex-col gap-2 p-6 pt-0'>
