@@ -618,11 +618,12 @@ export const RegisterButton = (
     return (
       <Button
         className={
-          registering > 0 ?
+          'cursor-pointer ' +
+          (registering > 0 ?
           registering !== circuitId
             ? classDisabled
             : 'w-full mt-2'
-          : 'w-full mt-2'
+          : 'w-full mt-2')
           }
         size="sm"
         onClick={() => handleRegister(circuitId)}
