@@ -620,6 +620,7 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
       chip_id: sportingEventRegistrations.chip_id,
       reserved_clothing_id: sportingEventRegistrations.reserved_clothing_id,
       kit_delivered: sportingEventRegistrations.kit_delivered,
+      age_at_event_date: sportingEventRegistrations.age_at_event_date,
     })
     .from(sportingEventRegistrations)
     .where(whereClause)
@@ -628,21 +629,24 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
   if (!registrations || registrations.length === 0) {
     return [];
   }
-  
+
   const usersData = await db
     .select({
       id: users.id,
       name: users.name,
       surname: users.surname,
+      sex: users.sex,
     })
     .from(users)
     .where(inArray(users.id, registrations.map(r => r.user_id as string)))
     .all();
-  
+
   const circuitsData = await db
     .select({
       id: sportingEventCircuits.id,
       name: sportingEventCircuits.name,
+      competitive: sportingEventCircuits.competitive,
+      distance_km: sportingEventCircuits.distance_km,
     })
     .from(sportingEventCircuits)
     .where(
@@ -650,14 +654,30 @@ export const getPaidRegistrations = async (db: DrizzleD1Database, eventId: numbe
     )
     .all();
 
+  const a_ranges = evData.event.age_ranges
+    ? evData.event.age_ranges.split(',')
+      .map(r => Number(r.trim()))
+      .sort((a,b) => a-b)
+    : [];
+
   const regs = registrations.map(r => {
     const u = usersData.find(u => u.id === r.user_id);
     const c = circuitsData.find(c => c.id === r.circuit_id);
+    const category = getCategory(
+      a_ranges,
+      r.age_at_event_date,
+      u?.sex ?? null,
+      c ? c.competitive === 1 : null,
+      c?.distance_km || null
+    );
+
+
     return {
       ...r,
       clothing_size: clothingParsed.find(c => c.id === r.reserved_clothing_id)?.size || null,
       full_name: `${u?.surname || ''} ${u?.name || ''}`.trim(),
       circuit_name: c?.name || null,
+      category,
     }
   })
   return regs;

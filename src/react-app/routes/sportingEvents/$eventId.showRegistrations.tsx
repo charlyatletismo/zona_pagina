@@ -93,6 +93,10 @@ function RouteComponent() {
                       <span className="text-foreground">{registration.circuit_name}</span>
                     </div>
                     <div className="flex items-center gap-2">
+                      <span className="font-medium text-muted-foreground">Categoría:</span>
+                      <span className="text-foreground">{registration.category}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
                       <span className="font-medium text-muted-foreground">Dorsal:</span>
                       <span className="text-foreground font-mono">{registration.bib_number}</span>
                     </div>

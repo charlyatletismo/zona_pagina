@@ -287,9 +287,10 @@ export const ARSportingEventRegistrationMinSchema = SportingEventRegistrationSch
   kit_delivered: true,
 }).extend({
   full_name: z.string(),
+  circuit_name: z.string().nullable(),
+  category: z.string().nullable(),
   clothing_size: SportingEventClothingSchema.shape.size.nullable(),
   kit_delivered: z.coerce.boolean<number>(),
-  circuit_name: z.string().nullable(),
 })
 
 
