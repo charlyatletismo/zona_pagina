@@ -41,8 +41,8 @@ function RouteComponent() {
   }, [theme]);
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col min-h-screen">
-      <div className="relative z-10 flex flex-wrap justify-center sm:justify-between items-center border-b border-dotted border-primary/20 bg-linear-to-r from-primary/10 via-background to-primary/10">
-        <div>
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 justify-center sm:justify-between items-center border-b border-dotted border-primary/20 bg-linear-to-r from-primary/10 via-background to-primary/10">
+        <div className='flex justify-center sm:justify-start'>
           <img 
             src={
               resolvedTheme === 'light'
@@ -53,7 +53,7 @@ function RouteComponent() {
             className="max-w-xs h-20 mr-2 py-3 mx-3"
             />
         </div>
-        <div className="text-center bg-background rounded-lg p-4">
+        <div className="text-center rounded-lg p-4">
           <h1 className="text-4xl font-bold mb-2">{eventData.title}</h1>
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <CalendarIcon className="w-5 h-5" />
@@ -61,7 +61,7 @@ function RouteComponent() {
           </div>
         </div>
         {eventData.photo_id ? (
-            <div className="overflow-hidden">
+            <div className="flex justify-center sm:justify-end overflow-hidden">
               <img
                   src={`https://imagedelivery.net/x1piYdlDlmNQ_iTYafCcEQ/${eventData.photo_id}/public`}
                   alt={eventData.title || ''}
@@ -72,7 +72,7 @@ function RouteComponent() {
           }
       </div>
       <div className='mx-auto w-full max-w-4xl p-4'>
-        <div className='mx-auto w-fit min-w-sm'>
+        <div className='mx-auto w-fit sm:min-w-sm'>
           <SearchRegistrationForm
             eventId={eventData.id!}
             setData={setData}
