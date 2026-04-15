@@ -224,6 +224,13 @@ function RouteComponent() {
               Indumentaria
             </Link>
           </Button>
+
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/showRegistrations" params={{ eventId }}>
+              <FileUserIcon className="w-4 h-4" />
+              Mostrar inscrip.
+            </Link>
+          </Button>
         </div>
       )}
 
