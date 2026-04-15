@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router';
-// LogInIcon
-import { LogOutIcon } from 'lucide-react';
+import { LogInIcon, LogOutIcon } from 'lucide-react';
 import { Settings } from 'lucide-react';
 // import React from 'react';
 import {
@@ -99,14 +98,11 @@ export const Navigation = () => {
               }} className={navClass + " cursor-pointer"}>
                 <LogOutIcon className='w-4 h-4 text-foreground' />
               </a>
-            ) :
-              null
-            // (
-            //   <Link to="/login" className={navClass}>
-            //     <LogInIcon className='w-4 h-4 text-foreground' />
-            //   </Link>
-            // )
-            }
+            ) : (
+              <Link to="/login" className={navClass}>
+                <LogInIcon className='w-4 h-4 text-foreground' />
+              </Link>
+            )}
           </NavigationMenuLink>
         </NavigationMenuItem>
 

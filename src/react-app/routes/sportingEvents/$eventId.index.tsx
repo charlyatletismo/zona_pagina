@@ -65,12 +65,10 @@ function RouteComponent() {
   const [data, setData] = React.useState(res.body?.data || null);
   const currentRole: string = localStorage.getItem('USER_ROLE') || '';
   const now = new Date();
-  const openToRegisterTrue =
+  const openToRegister =
     (data && data.registration_start && data.registration_end)
     ? (now >= data.registration_start && now <= data.registration_end)
     : false;
-  // FIXME: temporalmente deshabilitamos las inscripciones online, hasta que solucionemos el error de login
-  const openToRegister = data.hidden ? openToRegisterTrue : false;
   const promotionEnd = data && data.promotional_fee_end ? new Date(data.promotional_fee_end) : null;
   const isPromotional = promotionEnd && now <= promotionEnd;
   const [registering, setRegistering] = React.useState(-1);
@@ -497,7 +495,7 @@ function RouteComponent() {
                 </div>
               </div>
             )}
-            {(openToRegisterTrue && data.external_register_url !== null) && (
+            {(openToRegister && data.external_register_url !== null) && (
               <div className="border-t pt-4">
                 <h3 className="font-semibold mb-2">Inscribirse</h3>
                 <a
@@ -515,7 +513,7 @@ function RouteComponent() {
                 </a>
               </div>
             )}
-            {(openToRegisterTrue && data.bank_alias !== null) && (
+            {(openToRegister && data.bank_alias !== null) && (
               <div className="border-t pt-4">
                 <h3 className="font-semibold mb-2">Alias para transferencias</h3>
                 <div className='text-sm mb-2'>Hacer click para copiar</div>
