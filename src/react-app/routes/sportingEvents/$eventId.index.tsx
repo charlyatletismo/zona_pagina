@@ -412,6 +412,19 @@ function RouteComponent() {
                   </div>
               </section>
           )}
+
+          {/* Disclaimer of Liability */}
+          {data.disclaimer_of_liability && (
+              <section>
+                  <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                      <FileTextIcon className="w-6 h-6 text-primary" />
+                      Descargo de Responsabilidad
+                  </h2>
+                  <div className="prose max-w-none whitespace-pre-wrap">
+                      {data.disclaimer_of_liability}
+                  </div>
+              </section>
+          )}
         </div>
 
         {/* Sidebar - Right Column */}
