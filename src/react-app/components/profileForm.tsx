@@ -88,7 +88,7 @@ export const ProfileForm = ({
       id: '',
       name: '',
       surname: '',
-      phone: '',
+      phone: '54_9_',
       email: '',
       emergency_contact_name: '',
       emergency_contact_phone: '',
