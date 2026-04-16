@@ -92,7 +92,7 @@ export const ProfileForm = ({
       email: '',
       emergency_contact_name: '',
       emergency_contact_phone: '',
-      manager_id: defaultManagerId || '',
+      manager_id: defaultManagerId || null,
     },
     validators: {
       onBlur: UserSchema,
