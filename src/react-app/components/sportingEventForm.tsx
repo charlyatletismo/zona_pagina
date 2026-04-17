@@ -1172,7 +1172,6 @@ const SportingEventForm = (
                               name={subField.name}
                               checked={subField.state.value || false}
                               onCheckedChange={(e) => {
-                                console.log("oncheckedchange", e)
                                 subField.handleChange(e)
                               }}
                             />
