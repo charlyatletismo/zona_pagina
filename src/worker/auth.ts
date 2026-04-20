@@ -128,24 +128,35 @@ export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       return c.json({ message: M.AUTH_USER_ID_REQUIRED }, 400);
     }
     const db = drizzle(c.env.DB);
-    // check if phone already exists
-    const user = await db.select({id: users.id})
+    // check if user with given phone or ID already exists
+    const user = await db.select({
+        id: users.id,
+        name: users.name,
+      })
       .from(users)
       .where(or(eq(users.phone, phone), eq(users.id, user_id)))
       .limit(1)
       .get();
-    if (user) {
+    if (user && user.name !== null) {
       // user already exists
       return c.json({ message: M.USER_ALREADY_EXISTS }, 400);
     }
     // create user with temp 6-digit code
     const tempCode = genCode();
-    await db.insert(users).values({
-      id: user_id,
-      phone,
-      temp_code: tempCode,
-      role: 'athlete',
-    }).run();
+    if (user && user.name === null) {
+      // new account that was created with a wrong number
+      await db.update(users)
+        .set({ phone, temp_code: tempCode })
+        .where(eq(users.id, user_id))
+        .run();
+    } else {
+      await db.insert(users).values({
+        id: user_id,
+        phone,
+        temp_code: tempCode,
+        role: 'athlete',
+      }).run();
+    }
     const response = await sendCodeViaWhatsappTemplate(c.env, phone, tempCode);
     if (response.error) {
       console.error("response", JSON.stringify(response));
