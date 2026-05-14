@@ -43,6 +43,13 @@
       "when": 1776087296183,
       "tag": "0005_giant_network",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1778765436287,
+      "tag": "0006_glamorous_tinkerer",
+      "breakpoints": true
     }
   ]
 }

@@ -114,7 +114,11 @@ export const users = sqliteTable("users", {
 // This is done only for sensitive fields: email, phone, address, emergency contacts
 export const userUpdates = sqliteTable("user_updates", {
   id: int().primaryKey({ autoIncrement: true }),
-  user_id: text({ length: USER_ID_MAX_LENGTH }).notNull().references(() => users.id),
+  user_id: text({ length: USER_ID_MAX_LENGTH }).notNull()
+    .references(() => users.id,
+      { onDelete: 'set null',
+        onUpdate: 'cascade' }
+      ),
   field_name: text({ length: 64 }).notNull(),
   old_value: text(),
   new_value: text(),
