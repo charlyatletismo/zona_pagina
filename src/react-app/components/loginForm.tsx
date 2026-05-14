@@ -226,7 +226,11 @@ export const LoginDynamicForm = () => {
                     id={field.name}
                     name={field.name}
                     value={field.state.value || ''}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => {
+                      const num = Number(e.target.value);
+                      if (isNaN(num)) return;
+                      field.handleChange(e.target.value.replace(".", "").trim());
+                    }}
                     onBlur={field.handleBlur}
                     className={!field.state.meta.isValid ? 'border-destructive' : ''}
                     disabled={statusMode !== 'register'}
