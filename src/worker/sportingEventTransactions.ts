@@ -43,25 +43,38 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       .where(eq(sportingEventTransactions.event_id, Number(eventId)))
       .all();
 
-    const regs = await db
-      .select({ id: sportingEventRegistrations.id, user_id: sportingEventRegistrations.user_id })
-      .from(sportingEventRegistrations)
-      .where(and(
-        eq(sportingEventRegistrations.event_id, Number(eventId)),
-        inArray(
-          sportingEventRegistrations.id,
-          allTransactions.map(t => t.registration_id).filter((id): id is number => id !== null))
-      ))
-      .all();
+    const regs = []
+    const regsIds = allTransactions.map(t => t.registration_id).filter((id): id is number => id !== null)
+    for (let index = 0; index < regsIds.length; index += 25) {
+      const slicedRegs = regsIds.slice(index, index + 25);
+      const regsBatch = await db
+        .select({ id: sportingEventRegistrations.id, user_id: sportingEventRegistrations.user_id })
+        .from(sportingEventRegistrations)
+        .where(and(
+          eq(sportingEventRegistrations.event_id, Number(eventId)),
+          inArray(
+            sportingEventRegistrations.id,
+            slicedRegs
+          )
+        ))
+        .all();
+      regs.push(...(regsBatch || []))
+    }
 
-    const usersData = await db
-      .select({ id: users.id, name: users.name, surname: users.surname })
-      .from(users)
-      .where(or(
-        inArray(users.id, regs.map(r => r.user_id)),
-        inArray(users.id, allTransactions.map(t => t.user_id).filter((id): id is string => id !== null && id !== undefined))
-      ))
-      .all();
+    const usersData = []
+    const userIds = allTransactions.map(t => t.user_id).filter((id): id is string => id !== null && id !== undefined)
+    for (let index = 0; index < userIds.length; index += 25) {
+      const slicedUserIds = userIds.slice(index, index + 25);
+      const usersDataBatch = await db
+        .select({ id: users.id, name: users.name, surname: users.surname })
+        .from(users)
+        .where(or(
+          inArray(users.id, regs.map(r => r.user_id)),
+          inArray(users.id, slicedUserIds)
+        ))
+        .all();
+      usersData.push(...(usersDataBatch || []));
+    }
     const userIdToName = usersData.reduce((acc, user) => {
       acc[user.id] = `${user.surname} ${user.name} (${user.id.slice(-3)})`;
       return acc;
