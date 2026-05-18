@@ -71,6 +71,11 @@ function RouteComponent() {
     : false;
   const promotionEnd = data && data.promotional_fee_end ? new Date(data.promotional_fee_end) : null;
   const isPromotional = promotionEnd && now <= promotionEnd;
+  const registrationStatus = data?.user_registration_status?.registration_status || 'not_registered';
+  const isRegistered = registrationStatus !== 'not_registered';
+  const registrationStatusDescription = getRegistrationStatusDescription(
+    data?.user_registration_status?.registration_status || null
+  );
   const [registering, setRegistering] = React.useState(-1);
   const [success, setSuccess] = React.useState('');
   const [error, setError] = React.useState('');
@@ -234,59 +239,42 @@ function RouteComponent() {
         </div>
       )}
 
-      {
-        data.user_registration_status
-        && data.user_registration_status.registration_status !== 'not_registered'
-        &&
-        <div className="text-white text-center rounded-md mb-3 flex justify-center md:justify-start flex-wrap">
-          <div className='px-1 py-2 my-auto'>
-            <Badge
-              className='py-1 px-2 bg-green-500 dark:bg-green-700'
+      {isRegistered && (
+        <div className="mb-5 overflow-hidden rounded-2xl border border-emerald-200/70 bg-linear-to-r from-emerald-500/15 via-background to-sky-500/10">
+          <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="rounded-full bg-emerald-500/15 p-2 text-emerald-700">
+                <Check className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-semibold text-foreground">Inscripto</h3>
+                  <Badge variant="secondary" className="bg-white/70 text-emerald-700">
+                    {registrationStatusDescription}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Tu inscripción ya está registrada. Podés revisar el estado y los datos asociados desde el detalle.
+                </p>
+              </div>
+            </div>
+            <ButtonPing
+              size='sm'
+              padding='px-0 py-1'
+              pingType={registrationStatus === 'pending' ? 1 : 2}
             >
-              <Check className="h-1 w-1 my-auto" /> <b>Inscripto</b>
-            </Badge>
-          </div>
-          <div className='px-1 py-1 my-auto'>
-            <Badge
-              className='py-1 px-2 bg-blue-500 dark:bg-blue-600'
-            >
-              <b>Circuito</b> {data.circuits?.find(c => c.id === data.user_registration_status?.circuit_id)?.name || ''}
-            </Badge>
-          </div>
-          <div className='px-1 py-1 my-auto'>
-            <Badge
-              className={
-                'py-1 px-2 '
-                + {
-                  'paid': 'bg-green-500 dark:bg-green-600',
-                  'cancelled': 'bg-red-500 dark:bg-red-600',
-                  'pending': 'bg-yellow-500 dark:bg-yellow-600',
-                  'expired': 'bg-gray-500 dark:bg-gray-600',
-                  '': 'bg-gray-500 dark:bg-gray-600',
-                }[data.user_registration_status.registration_status || '']
-              }
-            >
-              <b>Estado</b> {getRegistrationStatusDescription(data.user_registration_status?.registration_status || null)}
-            </Badge>
-          </div>
-
-          <div className='px-1 py-2 my-auto'>
-              <ButtonPing
-                size='sm'
-                padding='px-0 py-1'
-                pingType={
-                  (data.user_registration_status.registration_status || '') === 'pending'
-                    ? 1
-                    : 2}
+              <Link
+                className='inline-flex items-center gap-2 rounded-lg px-5 py-1.5'
+                to='/sportingEvents/$eventId/registration'
+                params={{ eventId }}
               >
-              <Link className='px-5' to='/sportingEvents/$eventId/registration' params={{ eventId }}>
-                <FileUserIcon className="inline-block w-4 h-4 mr-2" />
+                <FileUserIcon className="h-4 w-4" />
                 Detalles de inscripción
               </Link>
             </ButtonPing>
           </div>
         </div>
-      }
+      )}
 
       <div className="flex justify-between items-center mb-4">
         <GoBackButton />
