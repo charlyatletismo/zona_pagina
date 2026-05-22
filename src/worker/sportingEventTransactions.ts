@@ -63,13 +63,14 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
 
     const usersData = []
     const userIds = allTransactions.map(t => t.user_id).filter((id): id is string => id !== null && id !== undefined)
-    for (let index = 0; index < userIds.length; index += 25) {
-      const slicedUserIds = userIds.slice(index, index + 25);
+    const userIds2 = regs.map(r => r.user_id)
+    const uniqueUserIds = Array.from(new Set([...userIds, ...userIds2]));
+    for (let index = 0; index < uniqueUserIds.length; index += 25) {
+      const slicedUserIds = uniqueUserIds.slice(index, index + 25);
       const usersDataBatch = await db
         .select({ id: users.id, name: users.name, surname: users.surname })
         .from(users)
         .where(or(
-          inArray(users.id, regs.map(r => r.user_id)),
           inArray(users.id, slicedUserIds)
         ))
         .all();
