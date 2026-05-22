@@ -19,6 +19,7 @@ import {
   ArrowUp,
   ArrowDown,
   BadgeDollarSign,
+  DownloadIcon,
   AlertCircle,
   InfoIcon,
   EditIcon,
@@ -65,6 +66,57 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import { getMessage, getLang } from '@/lib/utils';
+
+
+const csvEscape = (value: unknown) => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  const text = value instanceof Date
+    ? value.toLocaleString('es-AR')
+    : String(value);
+
+  if (text.includes('"') || text.includes(';') || text.includes('\n') || text.includes('\r')) {
+    return `"${text.split('"').join('""')}"`;
+  }
+
+  return text;
+};
+
+const getTransactionsCsv = (
+  transactions: z.infer<typeof ARSportEvTransactionMinSchema>[]
+) => {
+  const header = [
+    'id',
+    'transaction_date',
+    'transaction_type',
+    'category',
+    'payment_method',
+    'amount',
+    'registration_id',
+    'user_id',
+    'vendor_supplier',
+    'vendor_or_athlete',
+  ];
+
+  const rows = transactions.map(transaction => [
+    transaction.id,
+    transaction.transaction_date,
+    transaction.transaction_type,
+    transaction.category,
+    transaction.payment_method,
+    transaction.amount,
+    transaction.registration_id,
+    transaction.user_id,
+    transaction.vendor_supplier,
+    transaction.vendor_or_athlete,
+  ]);
+
+  return [header, ...rows]
+    .map(row => row.map(csvEscape).join(';'))
+    .join('\n');
+};
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/transactions/')({
@@ -365,8 +417,29 @@ function RouteComponent() {
       </div>
 
       <div className='flex flex-col gap-2'>
-        <div>
+        <div className='flex justify-between'>
           <h2 className='text-lg font-semibold mb-2'>Transacciones</h2>
+          <div className='flex gap-2'>
+            <Button
+              variant="outline"
+              className='cursor-pointer'
+              onClick={() => {
+                const csvContent = getTransactionsCsv(data);
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `transacciones_evento_${eventId}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+              }}
+            >
+              <DownloadIcon className="w-4 h-4" />
+              CSV
+            </Button>
+          </div>
         </div>
         {/* <div className='flex gap-2 items-center mb-4 max-w-sm relative'>
           <SearchIcon className='w-4 h-4 text-gray-400 absolute right-2' />
