@@ -96,7 +96,12 @@ function RouteComponent() {
     .reduce((sum, tr) => sum + tr.amount, 0)
   const totalBalance = totalInflow - totalOutflow;
 
-  const [error, _setError] = React.useState('');
+  const [error, _setError] = React.useState(
+    resTrApi.status === 200
+      ? ''
+      : ('Error al traer las transacciones: '
+        + getMessage(resTrApi.body?.message, 'Error desconocido'))
+  );
   const [success, _setSuccess] = React.useState('');
   const setError = (msg: string) => {
     _setError(msg)
