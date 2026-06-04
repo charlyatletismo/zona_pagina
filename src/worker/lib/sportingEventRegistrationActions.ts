@@ -72,12 +72,14 @@ export const registerToSpEvent = async (
   if (spEvent.length === 0) {
     return { status: 404, message: M.SPORTING_EVENT_NOT_FOUND };
   }
-  if (spEvent[0].registration_start
+  if (!reqIsOrganizer
+    && spEvent[0].registration_start
     && new Date(spEvent[0].registration_start) > new Date()
   ) {
     return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_NOT_STARTED };
   }
-  if (spEvent[0].registration_end
+  if (!reqIsOrganizer
+    && spEvent[0].registration_end
     && new Date(spEvent[0].registration_end) < new Date()
   ) {
     return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_ENDED };
