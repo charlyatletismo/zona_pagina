@@ -27,6 +27,8 @@ export const SearchRegistrationForm = ({
   bibEnabled = true,
   showButtons = true,
   autoReset = false,
+  showLabels = true,
+  showSearchButton = false,
 }: {
   eventId: number;
   setData: (data: z.infer<typeof ARSportingEventRegistrationMinSchema>[]) => void;
@@ -34,6 +36,8 @@ export const SearchRegistrationForm = ({
   bibEnabled?: boolean;
   showButtons?: boolean;
   autoReset?: boolean;
+  showLabels?: boolean;
+  showSearchButton?: boolean;
 }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -128,15 +132,23 @@ export const SearchRegistrationForm = ({
             name="user_id"
             children={(field) => (
               <div className="space-y-2">
-                <field.Label htmlFor={field.name}>DNI (últimos 3 dígitos)</field.Label>
-                <field.Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value ?? ''}
-                  onChange={(e) => field.handleChange(e.target.value || undefined)}
-                  onBlur={field.handleBlur}
-                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
-                />
+                {showLabels && <field.Label htmlFor={field.name}>DNI (al menos 3 dígitos)</field.Label>}
+                <div className="relative">
+                  {showSearchButton && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none bg-primary w-16 h-full rounded-r-lg flex items-center justify-center">
+                      <SearchIcon className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <field.Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value ?? ''}
+                    onChange={(e) => field.handleChange(e.target.value || undefined)}
+                    onBlur={field.handleBlur}
+                    className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                    placeholder="Ej: 5678 (para DNI 12345678)"
+                  />
+                </div>
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}
@@ -150,18 +162,26 @@ export const SearchRegistrationForm = ({
             name="bib_number"
             children={(field) => (
               <div className="space-y-2">
-                <field.Label htmlFor={field.name}>Número de dorsal</field.Label>
-                <field.Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value ?? ''}
-                  onChange={(e) => {
-                    if (isNaN(Number(e.target.value))) return;
-                    field.handleChange(Number(e.target.value) || undefined);
-                  }}
-                  onBlur={field.handleBlur}
-                  className={!field.state.meta.isValid ? 'border-destructive' : ''}
-                />
+                {showLabels && <field.Label htmlFor={field.name}>Número de dorsal</field.Label>}
+                <div className="relative">
+                  {showSearchButton && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none bg-primary w-16 h-full rounded-r-lg flex items-center justify-center">
+                      <SearchIcon className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <field.Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value ?? ''}
+                    onChange={(e) => {
+                      if (isNaN(Number(e.target.value))) return;
+                      field.handleChange(Number(e.target.value) || undefined);
+                    }}
+                    onBlur={field.handleBlur}
+                    className={!field.state.meta.isValid ? 'border-destructive' : ''}
+                    placeholder="Ejemplo: 12"
+                  />
+                </div>
                 {!field.state.meta.isValid && (
                   <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
                 )}
