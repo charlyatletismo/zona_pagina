@@ -122,7 +122,7 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     // 'group',
     'country',
     'city',
-    // 'team',
+    'team',
     // 'club',
     // 'email',
     // 'phone',
@@ -141,6 +141,7 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     reg.category,
     reg.user_location ? reg.user_location.split(",").slice(-1)[0].trim() : '', // take last part of location as country
     reg.user_location,
+    reg.user_training_team_name || '',
     reg.circuit_name,
     reg.age_at_event_date,
     reg.event_team_leader_id ? reg.event_team_leader_id : '',
