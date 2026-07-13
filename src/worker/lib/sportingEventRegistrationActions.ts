@@ -7,7 +7,10 @@ import {
   sportingEventRegistrations,
   sportingEventClothing,
   sportingEventTransactions
-} from '../db/schema'
+} from '../db/schema';
+import {
+  SHIRT_NOT_INCLUDED,
+} from '@shared/types';
 import { M } from './messages';
 import { authorizedOrg, authorizedAthMan } from '@shared/roles';
 import { getNextChipId } from './chips';
@@ -1027,20 +1030,31 @@ export const updateSpEventRegClothingReserved = async (
     return null;
   }
   const clothingFound = clothing.find(c => c.size === clothingSize);
-  if (!clothingFound || clothingFound.purchased_quantity === 0) {
+  if (!clothingFound) {
     return null;
   }
-  // Clothing reservation
-  const alreadyReservedClothing = await db
-    .select({id: sportingEventRegistrations.id})
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.event_id, event_id),
-      eq(sportingEventRegistrations.reserved_clothing_id, clothingFound.id),
-    ))
-    .all();
-  if (alreadyReservedClothing.length >= clothingFound.purchased_quantity) {
-    return null;
+  if (clothingSize !== SHIRT_NOT_INCLUDED) {
+    // SHIRT_NOT_INCLUDED is a special value that indicates that
+    // the user does not want to reserve any clothing, so we don't
+    // need to check for availability in that case.
+    // Since this is a reserved clothing, we need to check if the
+    // remaining quantity of the clothing is enough to reserve it
+    // for this registration
+    if (clothingFound.purchased_quantity === 0) {
+      return null;
+    }
+    // Clothing reservation
+    const alreadyReservedClothing = await db
+      .select({id: sportingEventRegistrations.id})
+      .from(sportingEventRegistrations)
+      .where(and(
+        eq(sportingEventRegistrations.event_id, event_id),
+        eq(sportingEventRegistrations.reserved_clothing_id, clothingFound.id),
+      ))
+      .all();
+    if (alreadyReservedClothing.length >= clothingFound.purchased_quantity) {
+      return null;
+    }
   }
 
   await db
