@@ -295,8 +295,6 @@ export const addSpEvent = async (
     );
   }
 
-  // TODO categories
-
   return {
     status: 200,
     data: result[0].id,
@@ -501,12 +499,12 @@ export const updateSpEvent = async (
     .select()
     .from(sportingEventClothing)
     .where(eq(sportingEventClothing.event_id, eventId));
-    const resClothing = await crudArray<z.infer<typeof SportingEventClothingSchema>>(eventId, clothing, dbClothing);
-    const finalClothingSchema = z.array(
-      SportingEventClothingSchema.omit({id: true}).required({
-        event_id: true,
-      })
-    );
+  const resClothing = await crudArray<z.infer<typeof SportingEventClothingSchema>>(eventId, clothing, dbClothing);
+  const finalClothingSchema = z.array(
+    SportingEventClothingSchema.omit({id: true}).required({
+      event_id: true,
+    })
+  );
   // Insert new clothing
   if (resClothing.insert.length > 0) {
     await db.insert(sportingEventClothing).values(
@@ -525,8 +523,6 @@ export const updateSpEvent = async (
       .where(inArray(sportingEventClothing.id, resClothing.delete))
       .run();
   }
-
-  // TODO categories
 
   return { status: 200, message: M.SPORTING_EVENT_UPDATED_SUCCESSFULLY };
 }
