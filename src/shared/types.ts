@@ -13,7 +13,13 @@ const maxDateOfBirth = new Date(
   now.getDate()
 );
 export const CLOTHING_TYPES = ['tshirt', 'tanktop'] as const;
-export const SHIRT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
+export const SHIRT_NOT_INCLUDED = 'N/A' as const;
+export const SHIRT_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as const;
+export const SHIRT_SIZES_AND_NOT_INCLUDED = [...SHIRT_SIZES, SHIRT_NOT_INCLUDED] as const;
+type ShirtSize = (typeof SHIRT_SIZES)[number];
+export const isShirtSize = (size: string): size is ShirtSize => {
+  return SHIRT_SIZES.includes(size as ShirtSize);
+}
 // FIXME: No sé si hace falta // Update maxDateOfBirth every day
 // setInterval(() => {
 //   const now = new Date();
@@ -188,7 +194,7 @@ export const SportingEventClothingSchema = z.object({
   id: z.number().optional(),
   event_id: z.number().optional(),
   clothing_type: z.enum(CLOTHING_TYPES, 'Tipo de prenda no válida'),
-  size: z.enum(SHIRT_SIZES, 'Talla no válida'),
+  size: z.enum(SHIRT_SIZES_AND_NOT_INCLUDED, 'Talla no válida'),
   purchased_quantity: z.number().default(0).optional(),
 })
 
