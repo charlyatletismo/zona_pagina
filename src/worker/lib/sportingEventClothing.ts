@@ -2,7 +2,9 @@ import { and, asc, count, eq, isNotNull, isNull } from 'drizzle-orm';
 import {
   sportingEventClothing,
   sportingEventRegistrations,
-} from '../db/schema'
+  users,
+} from '../db/schema';
+import { isShirtSize, SHIRT_NOT_INCLUDED } from '@shared/types';
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { NoDataResult } from './utils';
 import { M } from './messages';
@@ -84,6 +86,113 @@ export const getClothingStats = async (db: DrizzleD1Database, eventId: number) =
 }
 
 
+const checkAndAddNewClothingSizesToSpEvent = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  data: {
+    size: string,
+    purchased_quantity: number,
+  }[],
+): Promise<boolean | null> => {
+  const clothing = await db
+    .select()
+    .from(sportingEventClothing)
+    .where(eq(sportingEventClothing.event_id, eventId))
+    .all();
+
+  if (!clothing || clothing.length === 0) {
+    // No clothing yet, user must add clothing type and initial
+    // data in event creation/edition
+    return null;
+  }
+
+  const clothingType = clothing[0].clothing_type;
+
+  // check if not included size is present in the db data, if not,
+  // add it to db. This is for backwards compatibility, if the
+  // event was created before the "not included" size was added,
+  // we need to add it to the db
+  if (!clothing.find(item => item.size === SHIRT_NOT_INCLUDED)) {
+    await db
+      .insert(sportingEventClothing)
+      .values({
+        event_id: eventId,
+        clothing_type: clothingType,
+        size: SHIRT_NOT_INCLUDED,
+        purchased_quantity: 0,
+      }).returning({
+        id: sportingEventClothing.id,
+      });
+  }
+
+  const newSizes = data.filter(
+    (item) =>
+    (!clothing.find(c => c.size === item.size)
+      && isShirtSize(item.size))
+  );
+  if (newSizes.length === 0) {
+    return false;
+  }
+  const createdClothing = []
+  for (const newSize of newSizes) {
+    const r = await db
+      .insert(sportingEventClothing)
+      .values({
+        event_id: eventId,
+        clothing_type: clothingType,
+        size: newSize.size,
+        purchased_quantity: 0,
+      }).returning({
+        id: sportingEventClothing.id,
+      });
+    console.log(`New size ${newSize.size} added for event ${eventId}`);
+    createdClothing.push({
+      id: r[0].id,
+      size: newSize.size,
+    })
+  }
+
+  const regsToUpdateDemandedClothing = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      user_id: sportingEventRegistrations.user_id,
+    })
+    .from(sportingEventRegistrations)
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      isNull(sportingEventRegistrations.demanded_clothing_id),
+    ))
+    .all();
+
+  for (const reg of regsToUpdateDemandedClothing) {
+    const userData = await db
+      .select({
+        id: users.id,
+        clothing_shirt_size: users.clothing_shirt_size,
+      })
+      .from(users)
+      .where(eq(users.id, reg.user_id))
+      .all();
+    if (!userData || userData.length === 0) {
+      console.error(`User data not found for registration ${reg.id}`);
+      continue;
+    }
+    const userShirtSize = userData[0].clothing_shirt_size;
+    const newClothing = createdClothing.find(c => c.size === userShirtSize);
+    if (!newClothing) {
+      console.log(`No new clothing found for user ${reg.user_id} with size ${userShirtSize}`);
+      continue;
+    }
+    await db
+      .update(sportingEventRegistrations)
+      .set({ demanded_clothing_id: newClothing.id })
+      .where(eq(sportingEventRegistrations.id, reg.id));
+  }
+
+  return true;
+}
+
+
 export const addClothingToSpEvent = async (
   db: DrizzleD1Database,
   eventId: number,
@@ -92,6 +201,18 @@ export const addClothingToSpEvent = async (
     purchased_quantity: number,
   }[]
 ): Promise<NoDataResult> => {
+  const createdNewClothing = await checkAndAddNewClothingSizesToSpEvent(
+    db, eventId, data);
+
+  if (createdNewClothing === null) {
+    // No clothing yet, user must add clothing type and initial
+    // data in event creation/edition
+    return {
+      status: 400,
+      message: M.SPORTING_EVENT_CLOTHING_NOT_INITIALIZED,
+    };
+  }
+
   const clothing = await db
     .select()
     .from(sportingEventClothing)
@@ -106,10 +227,12 @@ export const addClothingToSpEvent = async (
         purchased_quantity: existing.purchased_quantity + item.purchased_quantity,
         new_purchase_quantity: item.purchased_quantity,
       }
-    } else {
-      console.error(`Size ${item.size} not found for event ${eventId}, skipping...`);
-      return null;
     }
+    // invalid size, check if it's valid
+    if (!isShirtSize(item.size)) {
+      console.error(`Size ${item.size} is not valid, skipping...`);
+    }
+    return null;
   }).filter(e => e !== null);
 
   for (const update of updates) {
