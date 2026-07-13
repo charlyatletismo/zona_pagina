@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/table';
 import { HelpTooltip } from '@/components/helpTooltip';
 import z from 'zod';
-import { SHIRT_SIZES } from '@shared/types';
+import { SHIRT_SIZES, SHIRT_NOT_INCLUDED } from '@shared/types';
 import { getMessage } from '@/lib/utils';
 
 export const Route = createFileRoute('/sportingEvents/$eventId/clothing')({
@@ -145,7 +145,8 @@ function RouteComponent() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {resClothing.body.data.map((c) => (
+          {resClothing.body.data.map((c) =>
+            c.size !== SHIRT_NOT_INCLUDED ? (
             <TableRow key={c.id}>
               {/* <TableCell className='text-center'>{c.clothing_type}</TableCell> */}
               <TableCell className='text-center'>{c.size}</TableCell>
@@ -169,7 +170,18 @@ function RouteComponent() {
                     : ''
               )}>{c.q_lacking}</TableCell>
             </TableRow>
-          ))}
+            ) : (
+            <TableRow key={c.id}>
+              {/* <TableCell className='text-center'>{c.clothing_type}</TableCell> */}
+              <TableCell className='text-center'>{c.size}</TableCell>
+              <TableCell className='text-center bg-blue-500/20'>-</TableCell>
+              <TableCell className='text-center'>-</TableCell>
+              <TableCell className='text-center'>-</TableCell>
+              <TableCell className='text-center'>{c.q_reserved}</TableCell>
+              <TableCell className='text-center'>-</TableCell>
+            </TableRow>
+            )
+          )}
         </TableBody>
       </Table>
     </div>

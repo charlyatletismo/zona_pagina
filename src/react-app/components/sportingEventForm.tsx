@@ -9,7 +9,8 @@ import {
   SportingEventSchema,
   SportingEventClothingSchema,
   CLOTHING_TYPES,
-} from '@shared/types'
+  SHIRT_NOT_INCLUDED,
+} from '@shared/types';
 import {
   SportingEventTypesEnumDescriptions,
 } from '@shared/lang';
@@ -826,7 +827,7 @@ const SportingEventForm = (
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                     {items.map((clothingItem, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className={"space-y-2" + (clothingItem.size === SHIRT_NOT_INCLUDED ? " hidden" : "")}>
                         <div className="text-sm font-medium">{clothingItem.size}</div>
                         <div className="flex items-center gap-2">
                           <div className='flex flex-col'>
