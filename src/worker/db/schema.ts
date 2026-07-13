@@ -264,6 +264,9 @@ export const sportingEventClothing = sqliteTable("sporting_event_clothing", {
       { onDelete: 'cascade',
         onUpdate: 'cascade' }
       ),
+  // Clothing type is at this level because maybe we want to allow
+  // in the future different types of clothing for the same event
+  // (e.g., t-shirts and shorts)
   clothing_type: text({ length: 64 }).notNull(), // "tshirt" (remera) or "tanktop" (musculosa)
   size: text({ length: 8 }).notNull(), // e.g., "XS", "S", "M", "L", "XL", "XXL"
   purchased_quantity: int().notNull().default(0),
