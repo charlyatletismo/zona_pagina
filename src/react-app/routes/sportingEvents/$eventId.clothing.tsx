@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import React from 'react';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
@@ -6,6 +6,7 @@ import { getAuthenticatedThrow, postAuthenticated } from '@/lib/apiCalls';
 import {
   AlertCircle,
   ShirtIcon,
+  Edit,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GoBackButton } from '@/components/goBackButton';
@@ -31,7 +32,7 @@ import {
 } from '@/components/ui/table';
 import { HelpTooltip } from '@/components/helpTooltip';
 import z from 'zod';
-import { SHIRT_SIZES } from '@shared/types';
+import { SHIRT_SIZES, SHIRT_NOT_INCLUDED } from '@shared/types';
 import { getMessage } from '@/lib/utils';
 
 export const Route = createFileRoute('/sportingEvents/$eventId/clothing')({
@@ -49,6 +50,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/clothing')({
 
 function RouteComponent() {
   const { resClothing } = Route.useLoaderData();
+  const { eventId } = Route.useParams();
 
   const [addClothingOpen, setAddClothingOpen] = React.useState(false);
 
@@ -67,6 +69,39 @@ function RouteComponent() {
       _setSuccess('');
     }, 5000);
   };
+
+  if (resClothing.status !== 200) {
+    return (
+      <div className='max-w-2xl my-2 p-5 mx-auto'>
+        <GoBackButton />
+        <div className="my-4 bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className='mx-2'><AlertCircle className="w-4 h-4" /></div>
+          Error al cargar la indumentaria del evento deportivo. {getMessage(resClothing.body.message, "", " ")}
+        </div>
+      </div>
+    )
+  }
+
+  if (resClothing.body.data.length === 0) {
+    return (
+      <div className='max-w-2xl my-2 p-5 mx-auto'>
+        <GoBackButton />
+        <div className="my-4 bg-amber-500/10 text-amber-600 p-3 rounded-md text-sm flex items-center gap-2">
+          <div className='mx-2'><AlertCircle className="w-4 h-4" /></div>
+          La indumentaria del evento deportivo no está inicializada. Por favor, indica el
+          tipo de indumentaria y las cantidades iniciales en la edición del evento.
+        </div>
+        <div className='flex gap-2 justify-center mt-2'>
+          <Button asChild variant="outline">
+            <Link to="/sportingEvents/$eventId/edit" params={{ eventId }}>
+              <Edit className="w-4 h-4" />
+              Editar evento
+            </Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className='max-w-full my-2 p-5 mx-auto'>
@@ -94,7 +129,7 @@ function RouteComponent() {
       <AddClothingDialog
         open={addClothingOpen}
         setOpen={setAddClothingOpen}
-        eventId={Route.useParams().eventId}
+        eventId={eventId}
         setError={setError}
         setSuccess={setSuccess}
         setLoading={setLoading}
@@ -145,7 +180,8 @@ function RouteComponent() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {resClothing.body.data.map((c) => (
+          {resClothing.body.data.map((c) =>
+            c.size !== SHIRT_NOT_INCLUDED ? (
             <TableRow key={c.id}>
               {/* <TableCell className='text-center'>{c.clothing_type}</TableCell> */}
               <TableCell className='text-center'>{c.size}</TableCell>
@@ -169,7 +205,18 @@ function RouteComponent() {
                     : ''
               )}>{c.q_lacking}</TableCell>
             </TableRow>
-          ))}
+            ) : (
+            <TableRow key={c.id}>
+              {/* <TableCell className='text-center'>{c.clothing_type}</TableCell> */}
+              <TableCell className='text-center'>{c.size}</TableCell>
+              <TableCell className='text-center bg-blue-500/20'>-</TableCell>
+              <TableCell className='text-center'>-</TableCell>
+              <TableCell className='text-center'>-</TableCell>
+              <TableCell className='text-center'>{c.q_reserved}</TableCell>
+              <TableCell className='text-center'>-</TableCell>
+            </TableRow>
+            )
+          )}
         </TableBody>
       </Table>
     </div>

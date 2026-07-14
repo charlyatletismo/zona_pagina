@@ -18,6 +18,9 @@ import {
 } from '@shared/types';
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { DataResult, NoDataResult } from './utils';
+import {
+  updateRegistrationsClothingForNewClothing,
+} from './sportingEventClothing';
 
 
 export const getSpIsHidden = async (
@@ -295,8 +298,6 @@ export const addSpEvent = async (
     );
   }
 
-  // TODO categories
-
   return {
     status: 200,
     data: result[0].id,
@@ -501,16 +502,27 @@ export const updateSpEvent = async (
     .select()
     .from(sportingEventClothing)
     .where(eq(sportingEventClothing.event_id, eventId));
-    const resClothing = await crudArray<z.infer<typeof SportingEventClothingSchema>>(eventId, clothing, dbClothing);
-    const finalClothingSchema = z.array(
-      SportingEventClothingSchema.omit({id: true}).required({
-        event_id: true,
-      })
-    );
+  const resClothing = await crudArray<z.infer<typeof SportingEventClothingSchema>>(eventId, clothing, dbClothing);
+  const finalClothingSchema = z.array(
+    SportingEventClothingSchema.omit({id: true}).required({
+      event_id: true,
+    })
+  );
   // Insert new clothing
   if (resClothing.insert.length > 0) {
-    await db.insert(sportingEventClothing).values(
-      finalClothingSchema.parse(resClothing.insert));
+    const r = await db.insert(sportingEventClothing)
+      .values(
+        finalClothingSchema.parse(resClothing.insert))
+      .returning({
+        id: sportingEventClothing.id,
+        size: sportingEventClothing.size,
+        purchased_quantity: sportingEventClothing.purchased_quantity,
+      });
+    // Update registrations for new clothing and
+    // users demanded clothing is null, we need to update their demanded_clothing_id
+    await updateRegistrationsClothingForNewClothing(
+      db, eventId, r
+    );
   }
   // Update existing clothing
   for (const cloth of resClothing.update) {
@@ -525,8 +537,6 @@ export const updateSpEvent = async (
       .where(inArray(sportingEventClothing.id, resClothing.delete))
       .run();
   }
-
-  // TODO categories
 
   return { status: 200, message: M.SPORTING_EVENT_UPDATED_SUCCESSFULLY };
 }

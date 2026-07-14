@@ -6,7 +6,7 @@ import {
   postAuthenticated
 } from '@/lib/apiCalls';
 import {
-  SHIRT_SIZES,
+  SHIRT_SIZES_AND_NOT_INCLUDED,
 } from '@shared/types';
 import {
   ARSportingEventRegistrationFlatSchema,
@@ -1622,7 +1622,7 @@ const AnotherClothingSizeRegDialog = ({
           <SelectCustom
             id='size'
             name='size'
-            options={SHIRT_SIZES.map(cSize => ({value: cSize, label: cSize}))}
+            options={SHIRT_SIZES_AND_NOT_INCLUDED.map(cSize => ({value: cSize, label: cSize}))}
             value={size}
             onChange={(e) => setSize(e)}
           />

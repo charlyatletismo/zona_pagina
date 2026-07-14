@@ -39,13 +39,14 @@ shirt_sizes = [
     "L",
     "XL",
     "XXL",
+    "XXXL",
 ]
 
 
 def generate_shirt_size():
     # Normal distribution around M/L (index 2-3)
     size_index = int(random.gauss(2.5, 1.0))  # mean 2.5 (between M and L), std dev 1
-    size_index = max(0, min(5, size_index))  # clamp to 0-5
+    size_index = max(0, min(len(shirt_sizes) - 1, size_index))  # clamp to valid range
     return shirt_sizes[size_index]
 
 

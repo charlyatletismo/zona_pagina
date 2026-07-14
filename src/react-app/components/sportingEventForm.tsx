@@ -9,7 +9,8 @@ import {
   SportingEventSchema,
   SportingEventClothingSchema,
   CLOTHING_TYPES,
-} from '@shared/types'
+  SHIRT_NOT_INCLUDED,
+} from '@shared/types';
 import {
   SportingEventTypesEnumDescriptions,
 } from '@shared/lang';
@@ -748,6 +749,7 @@ const SportingEventForm = (
           />
         </div>
 
+        <hr className='md:col-span-2' />
 
         <form.AppField
           name="clothing"
@@ -756,28 +758,29 @@ const SportingEventForm = (
             <div className="space-y-4 md:col-span-2">
               <div className='flex flex-col sm:flex-row justify-between mt-6 mb-2'>
                 <div className="text-lg font-semibold my-auto">Indumentaria</div>
-                <div className='flex gap-2 flex-col sm:flex-row'>
+                <div className='flex gap-2 flex-col sm:flex-row items-center'>
                   {CLOTHING_TYPES.map((ctype) => (
                     <form.Button
-                      variant={
-                        field.state.value
-                          ? field.state.value?.some(item => item.clothing_type === ctype)
-                            ? 'secondary'
-                            : 'outline'
-                          : 'outline'
+                      variant='outline'
+                      className={
+                        (field.state.value
+                         && field.state.value?.some(item => item.clothing_type === ctype))
+                          ? 'border-primary dark:border-primary'
+                          : ''
                       }
                       type="button"
                       onClick={() => {
-                        // if (!field.state.value) {
-                        //   console.log('Initializing clothing array');
-                        //   field.handleChange([])
-                        // };
-                        setFreezeClothing(false);
                         if (field.state.value?.some(item => item.clothing_type === ctype)) {
-                          // Remove existing clothing of this type
-                          console.log('Removing clothing type:', ctype);
-                          const filteredItems = field.state.value.filter(item => item.clothing_type !== ctype);
-                          field.handleChange(filteredItems.length === 0 ? null : filteredItems);
+                          return;
+                        }
+                        if (field.state.value && field.state.value.length > 0) {
+                          // Change clothing type of existing items to the new type
+                          console.log('Changing clothing type from', field.state.value[0].clothing_type, 'to', ctype);
+                          const newItems = field.state.value.map(item => ({
+                            ...item,
+                            clothing_type: ctype,
+                          }));
+                          field.handleChange(newItems);
                           return;
                         }
                         console.log('Adding clothing type:', ctype);
@@ -789,10 +792,6 @@ const SportingEventForm = (
                         );
                         field.handleChange([...(field.state.value || []), ...newItems]);
                       }}
-                      disabled={
-                        field.state.value
-                        ? !field.state.value?.some(item => item.clothing_type === ctype)
-                        : false}
                     >
                       {ctype === 'tshirt'
                         ? 'Remeras'
@@ -801,6 +800,16 @@ const SportingEventForm = (
                           : capitalizeStr(ctype)}
                     </form.Button>
                   ))}
+                  {field.state.value && field.state.value.length > 0 && (
+                    <DeleteButton
+                      dgDescription="Borra la indumentaria configurada en el evento, dejando sin indumentaria demandada ni reservada en todas las inscripciones."
+                      onConfirm={async () => {
+                        // Remove existing clothing
+                        setFreezeClothing(false);
+                        field.handleChange(null);
+                      }}
+                    />
+                  )}
                 </div>
               </div>
               {!field.state.value && (
@@ -826,7 +835,7 @@ const SportingEventForm = (
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                     {items.map((clothingItem, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className={"space-y-2" + (clothingItem.size === SHIRT_NOT_INCLUDED ? " hidden" : "")}>
                         <div className="text-sm font-medium">{clothingItem.size}</div>
                         <div className="flex items-center gap-2">
                           <div className='flex flex-col'>
@@ -857,6 +866,7 @@ const SportingEventForm = (
           )}
         />
 
+        <hr className='md:col-span-2' />
 
         <form.AppField
           name="schedules"
@@ -1114,6 +1124,7 @@ const SportingEventForm = (
           )}
         />
 
+        <hr className='md:col-span-2' />
 
         <form.AppField
           name="circuits"
@@ -1491,6 +1502,10 @@ const SportingEventForm = (
                 onClick={(event) => {
                   event.preventDefault();
                   form.reset();
+                  if (form.state.values?.clothing
+                      && form.state.values.clothing.length > 0) {
+                    setFreezeClothing(true);
+                  }
                 }}
               >
                 <ListRestartIcon className="mr-2 h-4 w-4" />
