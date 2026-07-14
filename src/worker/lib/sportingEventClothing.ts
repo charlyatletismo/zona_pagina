@@ -112,7 +112,10 @@ const checkAndAddNewClothingSizesToSpEvent = async (
   // add it to db. This is for backwards compatibility, if the
   // event was created before the "not included" size was added,
   // we need to add it to the db
-  if (!clothing.find(item => item.size === SHIRT_NOT_INCLUDED)) {
+  if (
+    !data.find(item => item.size === SHIRT_NOT_INCLUDED)
+    && !clothing.find(item => item.size === SHIRT_NOT_INCLUDED)
+  ) {
     await db
       .insert(sportingEventClothing)
       .values({
@@ -133,24 +136,19 @@ const checkAndAddNewClothingSizesToSpEvent = async (
   if (newSizes.length === 0) {
     return false;
   }
-  const createdClothing = []
-  for (const newSize of newSizes) {
-    const r = await db
-      .insert(sportingEventClothing)
-      .values({
+  const createdClothing = await db
+    .insert(sportingEventClothing)
+    .values(newSizes.map(newSize => ({
         event_id: eventId,
         clothing_type: clothingType,
         size: newSize.size,
         purchased_quantity: 0,
-      }).returning({
-        id: sportingEventClothing.id,
-      });
-    console.log(`New size ${newSize.size} added for event ${eventId}`);
-    createdClothing.push({
-      id: r[0].id,
-      size: newSize.size,
-    })
-  }
+      })))
+    .returning({
+      id: sportingEventClothing.id,
+      size: sportingEventClothing.size,
+    });
+  console.log(`New sizes ${newSizes.map(ns => ns.size).join(', ')} added for event ${eventId}`);
 
   const regsToUpdateDemandedClothing = await db
     .select({
@@ -180,7 +178,7 @@ const checkAndAddNewClothingSizesToSpEvent = async (
     const userShirtSize = userData[0].clothing_shirt_size;
     const newClothing = createdClothing.find(c => c.size === userShirtSize);
     if (!newClothing) {
-      console.log(`No new clothing found for user ${reg.user_id} with size ${userShirtSize}`);
+      console.debug(`No new clothing found for user ${reg.user_id} with size ${userShirtSize}`);
       continue;
     }
     await db
