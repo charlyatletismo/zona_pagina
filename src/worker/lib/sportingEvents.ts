@@ -18,6 +18,9 @@ import {
 } from '@shared/types';
 import { ARSportingEventSchema } from '@shared/apiRespTypes';
 import { DataResult, NoDataResult } from './utils';
+import {
+  updateRegistrationsClothingForNewClothing,
+} from './sportingEventClothing';
 
 
 export const getSpIsHidden = async (
@@ -507,8 +510,19 @@ export const updateSpEvent = async (
   );
   // Insert new clothing
   if (resClothing.insert.length > 0) {
-    await db.insert(sportingEventClothing).values(
-      finalClothingSchema.parse(resClothing.insert));
+    const r = await db.insert(sportingEventClothing)
+      .values(
+        finalClothingSchema.parse(resClothing.insert))
+      .returning({
+        id: sportingEventClothing.id,
+        size: sportingEventClothing.size,
+        purchased_quantity: sportingEventClothing.purchased_quantity,
+      });
+    // Update registrations for new clothing and
+    // users demanded clothing is null, we need to update their demanded_clothing_id
+    await updateRegistrationsClothingForNewClothing(
+      db, eventId, r
+    );
   }
   // Update existing clothing
   for (const cloth of resClothing.update) {

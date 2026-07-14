@@ -1,4 +1,4 @@
-import { and, asc, count, eq, isNotNull, isNull } from 'drizzle-orm';
+import { and, asc, count, eq, isNotNull, isNull, inArray } from 'drizzle-orm';
 import {
   sportingEventClothing,
   sportingEventRegistrations,
@@ -86,6 +86,69 @@ export const getClothingStats = async (db: DrizzleD1Database, eventId: number) =
 }
 
 
+export const updateRegistrationsClothingForNewClothing = async (
+  db: DrizzleD1Database,
+  eventId: number,
+  newClothings: {
+    id: number,
+    size: string,
+    purchased_quantity?: number,
+  }[],
+): Promise<void> => {
+  // Update registrations that have demanded_clothing_id = null
+  const regsToUpdateDemandedClothing = await db
+    .select({
+      id: sportingEventRegistrations.id,
+      user_id: sportingEventRegistrations.user_id,
+      reserved_clothing_id: sportingEventRegistrations.reserved_clothing_id,
+      status: sportingEventRegistrations.status,
+      clothing_shirt_size: users.clothing_shirt_size,
+    })
+    .from(sportingEventRegistrations)
+    .innerJoin(users, eq(users.id, sportingEventRegistrations.user_id))
+    .where(and(
+      eq(sportingEventRegistrations.event_id, eventId),
+      isNull(sportingEventRegistrations.demanded_clothing_id),
+    ))
+    .orderBy(asc(sportingEventRegistrations.full_payment_date))
+    .all();
+  for (const newClothing of newClothings) {
+    const regsToUpdate = regsToUpdateDemandedClothing.filter(
+      reg => reg.clothing_shirt_size === newClothing.size);
+    await db
+      .update(sportingEventRegistrations)
+      .set({
+        demanded_clothing_id: newClothing.id,
+      })
+      .where(inArray(
+        sportingEventRegistrations.id,
+        regsToUpdate.map(reg => reg.id)
+      ));
+  }
+  // Update registrations that had demanded_clothing_id = null,
+  // status = "paid" and reserved_clothing_id = null
+  const regsPaid = regsToUpdateDemandedClothing.filter(reg => reg.status === "paid").filter(reg => !reg.reserved_clothing_id);
+  for (const newClothing of newClothings) {
+    if (!newClothing.purchased_quantity || newClothing.purchased_quantity <= 0) {
+      continue;
+    }
+    const regsToUpdate = regsPaid
+      .filter(
+        reg => reg.clothing_shirt_size === newClothing.size)
+      .slice(0, newClothing.purchased_quantity);
+    await db
+      .update(sportingEventRegistrations)
+      .set({
+        reserved_clothing_id: newClothing.id,
+      })
+      .where(inArray(
+        sportingEventRegistrations.id,
+        regsToUpdate.map(reg => reg.id)
+      ));
+  }
+}
+
+
 const checkAndAddNewClothingSizesToSpEvent = async (
   db: DrizzleD1Database,
   eventId: number,
@@ -150,42 +213,9 @@ const checkAndAddNewClothingSizesToSpEvent = async (
     });
   console.log(`New sizes ${newSizes.map(ns => ns.size).join(', ')} added for event ${eventId}`);
 
-  const regsToUpdateDemandedClothing = await db
-    .select({
-      id: sportingEventRegistrations.id,
-      user_id: sportingEventRegistrations.user_id,
-    })
-    .from(sportingEventRegistrations)
-    .where(and(
-      eq(sportingEventRegistrations.event_id, eventId),
-      isNull(sportingEventRegistrations.demanded_clothing_id),
-    ))
-    .all();
-
-  for (const reg of regsToUpdateDemandedClothing) {
-    const userData = await db
-      .select({
-        id: users.id,
-        clothing_shirt_size: users.clothing_shirt_size,
-      })
-      .from(users)
-      .where(eq(users.id, reg.user_id))
-      .all();
-    if (!userData || userData.length === 0) {
-      console.error(`User data not found for registration ${reg.id}`);
-      continue;
-    }
-    const userShirtSize = userData[0].clothing_shirt_size;
-    const newClothing = createdClothing.find(c => c.size === userShirtSize);
-    if (!newClothing) {
-      console.debug(`No new clothing found for user ${reg.user_id} with size ${userShirtSize}`);
-      continue;
-    }
-    await db
-      .update(sportingEventRegistrations)
-      .set({ demanded_clothing_id: newClothing.id })
-      .where(eq(sportingEventRegistrations.id, reg.id));
-  }
+  await updateRegistrationsClothingForNewClothing(
+    db, eventId, createdClothing
+  )
 
   return true;
 }
