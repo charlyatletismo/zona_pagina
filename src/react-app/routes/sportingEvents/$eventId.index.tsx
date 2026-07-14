@@ -155,14 +155,14 @@ function RouteComponent() {
     <div className="container mx-auto px-4 py-8 max-w-5xl">
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
+        <div className="bg-red-500/10 text-red-600 p-3 rounded-md text-sm flex items-center gap-2 mb-3">
           <AlertCircle className="w-4 h-4" />
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm mb-3">
+        <div className="bg-green-500/10 text-green-600 p-3 rounded-md text-sm mb-3">
           {success}
         </div>
       )}
@@ -249,7 +249,7 @@ function RouteComponent() {
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base font-semibold text-foreground">Inscripto</h3>
-                  <Badge variant="secondary" className="bg-white/70 text-emerald-700">
+                  <Badge variant="secondary" className="bg-white/70 dark:bg-white/10 text-emerald-700 dark:text-emerald-300">
                     {registrationStatusDescription}
                   </Badge>
                 </div>
