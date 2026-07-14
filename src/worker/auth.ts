@@ -116,6 +116,12 @@ export const authRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
         language: user.language,
         banned: user.banned === 1,
         banReason: user.ban_reason,
+        previewFeatures: [
+          "42556386",
+          "34525736",
+          "28880983",
+          "39126016",
+        ].includes(user.id),
       }
     });
   })

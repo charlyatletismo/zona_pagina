@@ -16,20 +16,24 @@ interface UserInfo {
   language?: string;
   banned?: boolean;
   banReason?: string;
+  previewFeatures?: boolean;
 }
 
-export const setUserInfo = ({token, role, id, name, requireProfileUpdate, language, banned, banReason}: UserInfo) => {
-  localStorage.setItem('JWT_TOKEN', token);
-  localStorage.setItem('USER_ROLE', role);
-  localStorage.setItem('USER_ID', id);
-  localStorage.setItem('USER_NAME', name || 'Nuevo Usuario');
-  localStorage.setItem('USER_LANGUAGE', language || 'es');
-  localStorage.setItem('REQUIRE_PROFILE_UPDATE', requireProfileUpdate ? 'true' : '');
-  if (role === 'admin') {
+export const setUserInfo = (data: UserInfo) => {
+  localStorage.setItem('JWT_TOKEN', data.token);
+  localStorage.setItem('USER_ROLE', data.role);
+  localStorage.setItem('USER_ID', data.id);
+  localStorage.setItem('USER_NAME', data.name || 'Nuevo Usuario');
+  localStorage.setItem('USER_LANGUAGE', data.language || 'es');
+  localStorage.setItem('REQUIRE_PROFILE_UPDATE', data.requireProfileUpdate ? 'true' : '');
+  if (data.role === 'admin') {
     localStorage.setItem('ADMIN_MODE', 'active');
   }
-  localStorage.setItem('BANNED', banned ? 'true' : 'false');
-  localStorage.setItem('BAN_REASON', banReason || '');
+  localStorage.setItem('BANNED', data.banned ? 'true' : 'false');
+  localStorage.setItem('BAN_REASON', data.banReason || '');
+  if (data.previewFeatures) {
+    localStorage.setItem('PREVIEW_FEATURES', 'active');
+  }
 }
 
 export const clearUserInfo = () => {
@@ -42,6 +46,7 @@ export const clearUserInfo = () => {
   localStorage.removeItem('ADMIN_MODE');
   localStorage.removeItem('BANNED');
   localStorage.removeItem('BAN_REASON');
+  localStorage.removeItem('PREVIEW_FEATURES');
 }
 
 export const getLang = (): string => {

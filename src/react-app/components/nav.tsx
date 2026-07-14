@@ -108,7 +108,7 @@ export const Navigation = () => {
           </NavigationMenuLink>
         </NavigationMenuItem>
 
-        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && localStorage.getItem('TEST_MODE') === 'active' && (
+        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('PREVIEW_FEATURES') === 'active' && (
           <NavigationMenuItem>
             <ThemeModeToggle
               className={
