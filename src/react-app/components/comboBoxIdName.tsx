@@ -89,15 +89,19 @@ export const ComboBoxIdName = ({
           >
             {value &&
               <div
-                className="flex items-center justify-end p-2 bg-red-100 cursor-pointer hover:bg-red-200 border-b border-red-200"
+                className={
+                  "flex items-center justify-end p-2 bg-red-100 dark:bg-red-500/30 "
+                  + "cursor-pointer hover:bg-red-200 dark:hover:bg-red-700 "
+                  + "border-b border-red-200 dark:border-red-500/30"
+                }
                 onClick={() => {
                   onChange("");
                   setOpen(false);
                   onBlur();
                 }}
               >
-                 <span className="text-xs text-red-900 mr-2 font-semibold">Borrar selección</span>
-                 <Trash2 className="text-red-600 w-4 h-4" />
+                 <span className="text-xs text-red-900 dark:text-red-100 mr-2 font-semibold">Borrar selección</span>
+                 <Trash2 className="text-red-600 dark:text-red-100 w-4 h-4" />
               </div>
             }
             <CommandInput
@@ -143,7 +147,7 @@ export const ComboBoxIdName = ({
                       setOpen(false);
                       onBlur();
                     }}
-                    className={value === element.id ? "bg-green-100" : ""}
+                    className={value === element.id ? "bg-green-100 dark:bg-green-600/20" : ""}
                   >
                     {element.name}
                     <Check
