@@ -18,6 +18,7 @@ export const ConfirmButton = ({
   dgDescription = null,
   dgConfirmBtnText = "Confirmar",
   dgCancelBtnText = "Cancelar",
+  customClassName = null,
   onConfirm,
 }: {
   btnText?: string | null;
@@ -26,6 +27,7 @@ export const ConfirmButton = ({
   dgDescription?: string | null;
   dgConfirmBtnText?: string;
   dgCancelBtnText?: string;
+  customClassName?: string | null;
   onConfirm: () => Promise<void>;
 }) => {
   return (
@@ -34,9 +36,9 @@ export const ConfirmButton = ({
         <Button
           variant="default"
           type="button"
-          className='mx-auto flex gap-2 items-center cursor-pointer'
+          className={customClassName ?? 'mx-auto flex gap-2 items-center cursor-pointer'}
           title="Confirmar"
-          size={btnText ? "sm" : "icon-sm"}
+          size={customClassName ? undefined : btnText ? "sm" : "icon-sm"}
         >
           {btnIcon}
           {btnText}

@@ -12,6 +12,7 @@ import {
 import * as roles from '@shared/roles';
 import { ThemeModeToggle } from './themeModeToggle';
 import { clearUserInfo } from '@/lib/utils';
+import { ConfirmButton } from '@/components/confirmButton';
 // import { Sun, Moon } from 'lucide-react';
 // import { Code2, Laptop } from 'lucide-react';
 
@@ -104,12 +105,16 @@ export const Navigation = () => {
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             {localStorage.getItem('JWT_TOKEN') ? (
-              <a onClick={() => {
-                clearUserInfo();
-                window.location.href = '/';
-              }} className={navClass + " cursor-pointer"}>
-                <LogOutIcon className='w-4 h-4 text-foreground' />
-              </a>
+              <ConfirmButton
+                customClassName={navClass + " cursor-pointer"}
+                dgTitle="Cerrar sesión"
+                dgDescription="¿Estás seguro de que quieres cerrar sesión?"
+                btnIcon={<LogOutIcon className='w-4 h-4 text-foreground' />}
+                onConfirm={async () => {
+                  clearUserInfo();
+                  window.location.href = '/';
+                }}
+              />
             ) : (
               <Link to="/login" className={navClass}>
                 <LogInIcon className='w-4 h-4 text-foreground' />
