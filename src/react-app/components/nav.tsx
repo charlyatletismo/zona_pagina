@@ -92,6 +92,16 @@ export const Navigation = () => {
         )}
 
         <NavigationMenuItem>
+          <ThemeModeToggle
+            className={
+              navigationMenuTriggerStyle()
+              + " cursor-pointer "
+              + navClass
+            }
+          />
+        </NavigationMenuItem>
+
+        <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             {localStorage.getItem('JWT_TOKEN') ? (
               <a onClick={() => {
@@ -108,17 +118,6 @@ export const Navigation = () => {
           </NavigationMenuLink>
         </NavigationMenuItem>
 
-        {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && localStorage.getItem('TEST_MODE') === 'active' && (
-          <NavigationMenuItem>
-            <ThemeModeToggle
-              className={
-                navigationMenuTriggerStyle()
-                + " cursor-pointer "
-                + navClass
-              }
-            />
-          </NavigationMenuItem>
-        )}
         {localStorage.getItem('JWT_TOKEN') && localStorage.getItem('ADMIN_MODE') === 'active' && (
           <NavigationMenuItem>
             <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>

@@ -18,7 +18,7 @@ function RouteComponent() {
       </div>
       
       <div className="relative container mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 mb-6">
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
           Nuestros <span className="text-primary relative inline-block">
             Servicios
             <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -26,7 +26,7 @@ function RouteComponent() {
             </svg>
           </span>
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Soluciones profesionales para la organización y gestión de eventos deportivos.
         </p>
       </div>
@@ -86,8 +86,8 @@ function RouteComponent() {
 
     <div className='flex justify-center my-12'>
       <div className="relative inline-flex group">
-        <a href="https://wa.me/5493400660640?text=Hola Zona Atletismo, me interesaría organizar un evento y quisiera un presupuesto" className='flex text-gray-600 hover:text-green-600 fill-gray-600 hover:fill-green-600' target="_blank" rel="noopener noreferrer">
-          <div className="bg-white text-gray-900 group-hover:text-primary rounded-lg shadow-md border border-gray-200 group-hover:shadow-lg group-hover:border-primary transition-all duration-300 px-16 py-4 text-xl font-bold text-center">
+        <a href="https://wa.me/5493400660640?text=Hola Zona Atletismo, me interesaría organizar un evento y quisiera un presupuesto" className='flex' target="_blank" rel="noopener noreferrer">
+          <div className="group-hover:text-primary rounded-lg shadow-md border border-muted-foreground group-hover:shadow-lg group-hover:border-primary transition-all duration-300 px-16 py-4 text-xl font-bold text-center">
             Solicitar presupuesto
           </div>
         </a>
