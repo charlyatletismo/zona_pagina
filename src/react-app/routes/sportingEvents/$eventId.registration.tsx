@@ -363,14 +363,14 @@ function RouteComponent() {
           </section>
 
           {/* Chip */}
-          {(data.category !== 'General' || data.registration.chip_id !== null) && (
+          {data.registration.chip_id !== null && (
             <section>
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                 <Cpu className="w-6 h-6 text-primary" />
                 Chip de Cronometraje
               </h2>
               <div className="prose max-w-none text-muted-foreground whitespace-pre-wrap">
-                {data.registration.chip_id
+                {/* {data.registration.chip_id
                   ? `Tiene asignado el chip con ID: ${data.registration.chip_id}`
                   : data.registration.status === "paid" ? (
                     "No se pudo asignar un chip. El organizador ya fue informado y se pondrá en contacto contigo."
@@ -380,7 +380,8 @@ function RouteComponent() {
                     "No asignado"
                   ) : (
                     "Una vez pagada la inscripción, se te asignará un chip."
-                  )}
+                  )} */}
+                {`Tiene asignado el chip con ID: ${data.registration.chip_id}`}
               </div>
             </section>
           )}

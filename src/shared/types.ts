@@ -6,7 +6,7 @@ import { ALL_ROLES } from './roles';
 const USER_ID_MIN_LENGTH = 7;
 const USER_ID_MAX_LENGTH = 28;
 const now = new Date();
-const minAgeRequired = 13;
+const minAgeRequired = 5;
 const maxDateOfBirth = new Date(
   now.getFullYear() - minAgeRequired,
   now.getMonth(),
