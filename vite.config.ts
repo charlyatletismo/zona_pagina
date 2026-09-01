@@ -6,21 +6,21 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-	plugins: [
-		tanstackRouter({
+  plugins: [
+    tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
       routesDirectory: "./src/react-app/routes",
       generatedRouteTree: "./src/react-app/routeTree.gen.ts",
     }),
-		react(),
-		cloudflare(),
+    react(),
+    cloudflare(),
     tailwindcss(),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src/react-app"),
-      "@shared": path.resolve(__dirname, "./src/shared"),
+      "@": path.resolve(import.meta.dirname, "./src/react-app"),
+      "@shared": path.resolve(import.meta.dirname, "./src/shared"),
     },
   },
   server: {
