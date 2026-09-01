@@ -7,3 +7,4 @@ drizzle/0003_black_clea.sql
 drizzle/0004_fast_kid_colt.sql
 drizzle/0005_giant_network.sql
 drizzle/0006_glamorous_tinkerer.sql
+drizzle/0007_zippy_whistler.sql
