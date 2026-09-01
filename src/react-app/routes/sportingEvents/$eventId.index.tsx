@@ -495,6 +495,7 @@ function RouteComponent() {
                             circuitId={circuit.id || -1}
                             registering={registering}
                             openToRegister={openToRegister}
+                            registrationDisabled={circuit.registration_disabled || false}
                             userRegistered={data.user_registration_status?.circuit_id || -1} />
                         </div>
                       )}
@@ -567,11 +568,13 @@ export const RegisterButton = (
     circuitId,
     registering,
     openToRegister,
+    registrationDisabled,
     userRegistered }: {
       handleRegister: (circuitId: number) => void;
       circuitId: number;
       registering: number;
       openToRegister: boolean;
+      registrationDisabled?: boolean;
       userRegistered: number}
     ) => {
   const classDisabled = "w-full mt-2 bg-muted text-muted-foreground cursor-not-allowed";
@@ -595,6 +598,18 @@ export const RegisterButton = (
         disabled
       >
         Inscripto en otro circuito
+      </Button>
+    );
+  }
+  if (registrationDisabled) {
+    return (
+      <Button
+        className={classDisabled}
+        variant={'outline'}
+        size="sm"
+        disabled
+      >
+        Inscripciones cerradas
       </Button>
     );
   }

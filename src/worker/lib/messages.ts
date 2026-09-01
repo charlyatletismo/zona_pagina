@@ -217,6 +217,14 @@ export const M = {
     [ES]: "Los datos del circuito del evento deportivo no son válidos",
     [EN]: "Invalid sporting event circuit data"
   },
+  SPORTING_EVENT_CIRCUIT_NOT_FOUND: {
+    [ES]: "El circuito del evento deportivo no fue encontrado",
+    [EN]: "Sporting event circuit not found"
+  },
+  SPORTING_EVENT_CIRCUIT_REGISTRATION_DISABLED: {
+    [ES]: "Las inscripciones a este circuito están cerradas",
+    [EN]: "Registrations for this circuit are closed"
+  },
   SPORTING_EVENT_SCHEDULE_INVALID_DATA: {
     [ES]: "Los datos del cronograma del evento deportivo no son válidos",
     [EN]: "Invalid sporting event schedule data"

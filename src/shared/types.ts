@@ -169,6 +169,7 @@ export const SportingEventCircuitSchema = z.object({
   bib_number_start: z.number().min(0, 'El número de bib debe ser positivo').optional(),
   bib_number_end: z.number().min(0, 'El número de bib debe ser positivo').optional(),
   teams_enabled: z.boolean().default(false).optional(),
+  registration_disabled: z.boolean().default(false).optional(),
 });
 
 
