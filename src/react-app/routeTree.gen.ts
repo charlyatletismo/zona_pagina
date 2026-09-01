@@ -9,66 +9,51 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as ServicesRouteImport } from './routes/services'
-import { Route as ManageRouteImport } from './routes/manage'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UsersIndexRouteImport } from './routes/users/index'
-import { Route as TrainingTeamsIndexRouteImport } from './routes/trainingTeams/index'
-import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ManageRouteImport } from './routes/manage'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as LocationsIndexRouteImport } from './routes/locations/index'
-import { Route as UsersCreateRouteImport } from './routes/users/create'
-import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
-import { Route as TrainingTeamsCheckTemporaryRouteImport } from './routes/trainingTeams/checkTemporary'
-import { Route as SportingEventsMyManagedUsersEventsRouteImport } from './routes/sportingEvents/myManagedUsersEvents'
-import { Route as SportingEventsMyEventsRouteImport } from './routes/sportingEvents/myEvents'
-import { Route as SportingEventsHistoryRouteImport } from './routes/sportingEvents/history'
-import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
-import { Route as SportingEventsChipsRouteImport } from './routes/sportingEvents/chips'
-import { Route as SportingEventsActiveRouteImport } from './routes/sportingEvents/active'
-import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
-import { Route as LocationsCreateRouteImport } from './routes/locations/create'
-import { Route as LocationsCheckTemporaryRouteImport } from './routes/locations/checkTemporary'
 import { Route as LocationsLocationIdRouteImport } from './routes/locations/$locationId'
-import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
-import { Route as TrainingTeamsTrainingTeamIdIndexRouteImport } from './routes/trainingTeams/$trainingTeamId.index'
+import { Route as LocationsCheckTemporaryRouteImport } from './routes/locations/checkTemporary'
+import { Route as LocationsCreateRouteImport } from './routes/locations/create'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
+import { Route as SportingEventsIndexRouteImport } from './routes/sportingEvents/index'
+import { Route as SportingEventsActiveRouteImport } from './routes/sportingEvents/active'
+import { Route as SportingEventsChipsRouteImport } from './routes/sportingEvents/chips'
+import { Route as SportingEventsCreateRouteImport } from './routes/sportingEvents/create'
+import { Route as SportingEventsHistoryRouteImport } from './routes/sportingEvents/history'
+import { Route as SportingEventsMyEventsRouteImport } from './routes/sportingEvents/myEvents'
+import { Route as SportingEventsMyManagedUsersEventsRouteImport } from './routes/sportingEvents/myManagedUsersEvents'
+import { Route as TrainingTeamsIndexRouteImport } from './routes/trainingTeams/index'
+import { Route as TrainingTeamsCheckTemporaryRouteImport } from './routes/trainingTeams/checkTemporary'
+import { Route as TrainingTeamsCreateRouteImport } from './routes/trainingTeams/create'
+import { Route as UsersIndexRouteImport } from './routes/users/index'
+import { Route as UsersCreateRouteImport } from './routes/users/create'
 import { Route as SportingEventsEventIdIndexRouteImport } from './routes/sportingEvents/$eventId.index'
-import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
-import { Route as UsersUserIdChangeIdRouteImport } from './routes/users/$userId.changeId'
-import { Route as TrainingTeamsTrainingTeamIdEditRouteImport } from './routes/trainingTeams/$trainingTeamId.edit'
-import { Route as SportingEventsEventIdShowRegistrationsRouteImport } from './routes/sportingEvents/$eventId.showRegistrations'
-import { Route as SportingEventsEventIdRegistrationRouteImport } from './routes/sportingEvents/$eventId.registration'
-import { Route as SportingEventsEventIdRegisterAthletesRouteImport } from './routes/sportingEvents/$eventId.registerAthletes'
-import { Route as SportingEventsEventIdKitDeliveryRouteImport } from './routes/sportingEvents/$eventId.kitDelivery'
-import { Route as SportingEventsEventIdEditPhotoAndGalleryRouteImport } from './routes/sportingEvents/$eventId.editPhotoAndGallery'
-import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
-import { Route as SportingEventsEventIdClothingRouteImport } from './routes/sportingEvents/$eventId.clothing'
 import { Route as SportingEventsEventIdAllRegistrationsRouteImport } from './routes/sportingEvents/$eventId.allRegistrations'
+import { Route as SportingEventsEventIdClothingRouteImport } from './routes/sportingEvents/$eventId.clothing'
+import { Route as SportingEventsEventIdEditRouteImport } from './routes/sportingEvents/$eventId.edit'
+import { Route as SportingEventsEventIdEditPhotoAndGalleryRouteImport } from './routes/sportingEvents/$eventId.editPhotoAndGallery'
+import { Route as SportingEventsEventIdKitDeliveryRouteImport } from './routes/sportingEvents/$eventId.kitDelivery'
+import { Route as SportingEventsEventIdRegisterAthletesRouteImport } from './routes/sportingEvents/$eventId.registerAthletes'
+import { Route as SportingEventsEventIdRegistrationRouteImport } from './routes/sportingEvents/$eventId.registration'
+import { Route as SportingEventsEventIdShowRegistrationsRouteImport } from './routes/sportingEvents/$eventId.showRegistrations'
+import { Route as TrainingTeamsTrainingTeamIdIndexRouteImport } from './routes/trainingTeams/$trainingTeamId.index'
+import { Route as TrainingTeamsTrainingTeamIdEditRouteImport } from './routes/trainingTeams/$trainingTeamId.edit'
+import { Route as UsersUserIdIndexRouteImport } from './routes/users/$userId.index'
+import { Route as UsersUserIdChangeIdRouteImport } from './routes/users/$userId.changeId'
+import { Route as UsersUserIdEditRouteImport } from './routes/users/$userId.edit'
 import { Route as SportingEventsEventIdTransactionsIndexRouteImport } from './routes/sportingEvents/$eventId.transactions.index'
 import { Route as SportingEventsEventIdTransactionsCreateRouteImport } from './routes/sportingEvents/$eventId.transactions.create'
 import { Route as SportingEventsEventIdTransactionsTransactionIdIndexRouteImport } from './routes/sportingEvents/$eventId.transactions.$transactionId.index'
 
-const UnauthorizedRoute = UnauthorizedRouteImport.update({
-  id: '/unauthorized',
-  path: '/unauthorized',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicesRoute = ServicesRouteImport.update({
-  id: '/services',
-  path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ManageRoute = ManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -76,29 +61,24 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UsersIndexRoute = UsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
+const ManageRoute = ManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrainingTeamsIndexRoute = TrainingTeamsIndexRouteImport.update({
-  id: '/trainingTeams/',
-  path: '/trainingTeams/',
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SportingEventsIndexRoute = SportingEventsIndexRouteImport.update({
-  id: '/sportingEvents/',
-  path: '/sportingEvents/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocationsIndexRoute = LocationsIndexRouteImport.update({
@@ -106,14 +86,70 @@ const LocationsIndexRoute = LocationsIndexRouteImport.update({
   path: '/locations/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UsersCreateRoute = UsersCreateRouteImport.update({
-  id: '/users/create',
-  path: '/users/create',
+const LocationsLocationIdRoute = LocationsLocationIdRouteImport.update({
+  id: '/locations/$locationId',
+  path: '/locations/$locationId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrainingTeamsCreateRoute = TrainingTeamsCreateRouteImport.update({
-  id: '/trainingTeams/create',
-  path: '/trainingTeams/create',
+const LocationsCheckTemporaryRoute = LocationsCheckTemporaryRouteImport.update({
+  id: '/locations/checkTemporary',
+  path: '/locations/checkTemporary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationsCreateRoute = LocationsCreateRouteImport.update({
+  id: '/locations/create',
+  path: '/locations/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
+  id: '/settings/profile',
+  path: '/settings/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsIndexRoute = SportingEventsIndexRouteImport.update({
+  id: '/sportingEvents/',
+  path: '/sportingEvents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsActiveRoute = SportingEventsActiveRouteImport.update({
+  id: '/sportingEvents/active',
+  path: '/sportingEvents/active',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsChipsRoute = SportingEventsChipsRouteImport.update({
+  id: '/sportingEvents/chips',
+  path: '/sportingEvents/chips',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsCreateRoute = SportingEventsCreateRouteImport.update({
+  id: '/sportingEvents/create',
+  path: '/sportingEvents/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsHistoryRoute = SportingEventsHistoryRouteImport.update({
+  id: '/sportingEvents/history',
+  path: '/sportingEvents/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsMyEventsRoute = SportingEventsMyEventsRouteImport.update({
+  id: '/sportingEvents/myEvents',
+  path: '/sportingEvents/myEvents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SportingEventsMyManagedUsersEventsRoute =
+  SportingEventsMyManagedUsersEventsRouteImport.update({
+    id: '/sportingEvents/myManagedUsersEvents',
+    path: '/sportingEvents/myManagedUsersEvents',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TrainingTeamsIndexRoute = TrainingTeamsIndexRouteImport.update({
+  id: '/trainingTeams/',
+  path: '/trainingTeams/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrainingTeamsCheckTemporaryRoute =
@@ -122,130 +158,25 @@ const TrainingTeamsCheckTemporaryRoute =
     path: '/trainingTeams/checkTemporary',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SportingEventsMyManagedUsersEventsRoute =
-  SportingEventsMyManagedUsersEventsRouteImport.update({
-    id: '/sportingEvents/myManagedUsersEvents',
-    path: '/sportingEvents/myManagedUsersEvents',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsMyEventsRoute = SportingEventsMyEventsRouteImport.update({
-  id: '/sportingEvents/myEvents',
-  path: '/sportingEvents/myEvents',
+const TrainingTeamsCreateRoute = TrainingTeamsCreateRouteImport.update({
+  id: '/trainingTeams/create',
+  path: '/trainingTeams/create',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SportingEventsHistoryRoute = SportingEventsHistoryRouteImport.update({
-  id: '/sportingEvents/history',
-  path: '/sportingEvents/history',
+const UsersIndexRoute = UsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SportingEventsCreateRoute = SportingEventsCreateRouteImport.update({
-  id: '/sportingEvents/create',
-  path: '/sportingEvents/create',
+const UsersCreateRoute = UsersCreateRouteImport.update({
+  id: '/users/create',
+  path: '/users/create',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SportingEventsChipsRoute = SportingEventsChipsRouteImport.update({
-  id: '/sportingEvents/chips',
-  path: '/sportingEvents/chips',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SportingEventsActiveRoute = SportingEventsActiveRouteImport.update({
-  id: '/sportingEvents/active',
-  path: '/sportingEvents/active',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsProfileRoute = SettingsProfileRouteImport.update({
-  id: '/settings/profile',
-  path: '/settings/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocationsCreateRoute = LocationsCreateRouteImport.update({
-  id: '/locations/create',
-  path: '/locations/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocationsCheckTemporaryRoute = LocationsCheckTemporaryRouteImport.update({
-  id: '/locations/checkTemporary',
-  path: '/locations/checkTemporary',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LocationsLocationIdRoute = LocationsLocationIdRouteImport.update({
-  id: '/locations/$locationId',
-  path: '/locations/$locationId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UsersUserIdIndexRoute = UsersUserIdIndexRouteImport.update({
-  id: '/users/$userId/',
-  path: '/users/$userId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrainingTeamsTrainingTeamIdIndexRoute =
-  TrainingTeamsTrainingTeamIdIndexRouteImport.update({
-    id: '/trainingTeams/$trainingTeamId/',
-    path: '/trainingTeams/$trainingTeamId/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const SportingEventsEventIdIndexRoute =
   SportingEventsEventIdIndexRouteImport.update({
     id: '/sportingEvents/$eventId/',
     path: '/sportingEvents/$eventId/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
-  id: '/users/$userId/edit',
-  path: '/users/$userId/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UsersUserIdChangeIdRoute = UsersUserIdChangeIdRouteImport.update({
-  id: '/users/$userId/changeId',
-  path: '/users/$userId/changeId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrainingTeamsTrainingTeamIdEditRoute =
-  TrainingTeamsTrainingTeamIdEditRouteImport.update({
-    id: '/trainingTeams/$trainingTeamId/edit',
-    path: '/trainingTeams/$trainingTeamId/edit',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdShowRegistrationsRoute =
-  SportingEventsEventIdShowRegistrationsRouteImport.update({
-    id: '/sportingEvents/$eventId/showRegistrations',
-    path: '/sportingEvents/$eventId/showRegistrations',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdRegistrationRoute =
-  SportingEventsEventIdRegistrationRouteImport.update({
-    id: '/sportingEvents/$eventId/registration',
-    path: '/sportingEvents/$eventId/registration',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdRegisterAthletesRoute =
-  SportingEventsEventIdRegisterAthletesRouteImport.update({
-    id: '/sportingEvents/$eventId/registerAthletes',
-    path: '/sportingEvents/$eventId/registerAthletes',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdKitDeliveryRoute =
-  SportingEventsEventIdKitDeliveryRouteImport.update({
-    id: '/sportingEvents/$eventId/kitDelivery',
-    path: '/sportingEvents/$eventId/kitDelivery',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdEditPhotoAndGalleryRoute =
-  SportingEventsEventIdEditPhotoAndGalleryRouteImport.update({
-    id: '/sportingEvents/$eventId/editPhotoAndGallery',
-    path: '/sportingEvents/$eventId/editPhotoAndGallery',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdEditRoute =
-  SportingEventsEventIdEditRouteImport.update({
-    id: '/sportingEvents/$eventId/edit',
-    path: '/sportingEvents/$eventId/edit',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SportingEventsEventIdClothingRoute =
-  SportingEventsEventIdClothingRouteImport.update({
-    id: '/sportingEvents/$eventId/clothing',
-    path: '/sportingEvents/$eventId/clothing',
     getParentRoute: () => rootRouteImport,
   } as any)
 const SportingEventsEventIdAllRegistrationsRoute =
@@ -254,6 +185,75 @@ const SportingEventsEventIdAllRegistrationsRoute =
     path: '/sportingEvents/$eventId/allRegistrations',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SportingEventsEventIdClothingRoute =
+  SportingEventsEventIdClothingRouteImport.update({
+    id: '/sportingEvents/$eventId/clothing',
+    path: '/sportingEvents/$eventId/clothing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SportingEventsEventIdEditRoute =
+  SportingEventsEventIdEditRouteImport.update({
+    id: '/sportingEvents/$eventId/edit',
+    path: '/sportingEvents/$eventId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SportingEventsEventIdEditPhotoAndGalleryRoute =
+  SportingEventsEventIdEditPhotoAndGalleryRouteImport.update({
+    id: '/sportingEvents/$eventId/editPhotoAndGallery',
+    path: '/sportingEvents/$eventId/editPhotoAndGallery',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SportingEventsEventIdKitDeliveryRoute =
+  SportingEventsEventIdKitDeliveryRouteImport.update({
+    id: '/sportingEvents/$eventId/kitDelivery',
+    path: '/sportingEvents/$eventId/kitDelivery',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SportingEventsEventIdRegisterAthletesRoute =
+  SportingEventsEventIdRegisterAthletesRouteImport.update({
+    id: '/sportingEvents/$eventId/registerAthletes',
+    path: '/sportingEvents/$eventId/registerAthletes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SportingEventsEventIdRegistrationRoute =
+  SportingEventsEventIdRegistrationRouteImport.update({
+    id: '/sportingEvents/$eventId/registration',
+    path: '/sportingEvents/$eventId/registration',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SportingEventsEventIdShowRegistrationsRoute =
+  SportingEventsEventIdShowRegistrationsRouteImport.update({
+    id: '/sportingEvents/$eventId/showRegistrations',
+    path: '/sportingEvents/$eventId/showRegistrations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TrainingTeamsTrainingTeamIdIndexRoute =
+  TrainingTeamsTrainingTeamIdIndexRouteImport.update({
+    id: '/trainingTeams/$trainingTeamId/',
+    path: '/trainingTeams/$trainingTeamId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const TrainingTeamsTrainingTeamIdEditRoute =
+  TrainingTeamsTrainingTeamIdEditRouteImport.update({
+    id: '/trainingTeams/$trainingTeamId/edit',
+    path: '/trainingTeams/$trainingTeamId/edit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const UsersUserIdIndexRoute = UsersUserIdIndexRouteImport.update({
+  id: '/users/$userId/',
+  path: '/users/$userId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersUserIdChangeIdRoute = UsersUserIdChangeIdRouteImport.update({
+  id: '/users/$userId/changeId',
+  path: '/users/$userId/changeId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersUserIdEditRoute = UsersUserIdEditRouteImport.update({
+  id: '/users/$userId/edit',
+  path: '/users/$userId/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SportingEventsEventIdTransactionsIndexRoute =
   SportingEventsEventIdTransactionsIndexRouteImport.update({
     id: '/sportingEvents/$eventId/transactions/',
@@ -581,32 +581,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unauthorized': {
-      id: '/unauthorized'
-      path: '/unauthorized'
-      fullPath: '/unauthorized'
-      preLoaderRoute: typeof UnauthorizedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/services': {
-      id: '/services'
-      path: '/services'
-      fullPath: '/services'
-      preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/manage': {
-      id: '/manage'
-      path: '/manage'
-      fullPath: '/manage'
-      preLoaderRoute: typeof ManageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -616,39 +595,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/': {
-      id: '/users/'
-      path: '/users'
-      fullPath: '/users/'
-      preLoaderRoute: typeof UsersIndexRouteImport
+    '/manage': {
+      id: '/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof ManageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trainingTeams/': {
-      id: '/trainingTeams/'
-      path: '/trainingTeams'
-      fullPath: '/trainingTeams/'
-      preLoaderRoute: typeof TrainingTeamsIndexRouteImport
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sportingEvents/': {
-      id: '/sportingEvents/'
-      path: '/sportingEvents'
-      fullPath: '/sportingEvents/'
-      preLoaderRoute: typeof SportingEventsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/': {
-      id: '/settings/'
-      path: '/settings'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/locations/': {
@@ -658,81 +630,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/create': {
-      id: '/users/create'
-      path: '/users/create'
-      fullPath: '/users/create'
-      preLoaderRoute: typeof UsersCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trainingTeams/create': {
-      id: '/trainingTeams/create'
-      path: '/trainingTeams/create'
-      fullPath: '/trainingTeams/create'
-      preLoaderRoute: typeof TrainingTeamsCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trainingTeams/checkTemporary': {
-      id: '/trainingTeams/checkTemporary'
-      path: '/trainingTeams/checkTemporary'
-      fullPath: '/trainingTeams/checkTemporary'
-      preLoaderRoute: typeof TrainingTeamsCheckTemporaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/myManagedUsersEvents': {
-      id: '/sportingEvents/myManagedUsersEvents'
-      path: '/sportingEvents/myManagedUsersEvents'
-      fullPath: '/sportingEvents/myManagedUsersEvents'
-      preLoaderRoute: typeof SportingEventsMyManagedUsersEventsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/myEvents': {
-      id: '/sportingEvents/myEvents'
-      path: '/sportingEvents/myEvents'
-      fullPath: '/sportingEvents/myEvents'
-      preLoaderRoute: typeof SportingEventsMyEventsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/history': {
-      id: '/sportingEvents/history'
-      path: '/sportingEvents/history'
-      fullPath: '/sportingEvents/history'
-      preLoaderRoute: typeof SportingEventsHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/create': {
-      id: '/sportingEvents/create'
-      path: '/sportingEvents/create'
-      fullPath: '/sportingEvents/create'
-      preLoaderRoute: typeof SportingEventsCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/chips': {
-      id: '/sportingEvents/chips'
-      path: '/sportingEvents/chips'
-      fullPath: '/sportingEvents/chips'
-      preLoaderRoute: typeof SportingEventsChipsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/active': {
-      id: '/sportingEvents/active'
-      path: '/sportingEvents/active'
-      fullPath: '/sportingEvents/active'
-      preLoaderRoute: typeof SportingEventsActiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/profile': {
-      id: '/settings/profile'
-      path: '/settings/profile'
-      fullPath: '/settings/profile'
-      preLoaderRoute: typeof SettingsProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/locations/create': {
-      id: '/locations/create'
-      path: '/locations/create'
-      fullPath: '/locations/create'
-      preLoaderRoute: typeof LocationsCreateRouteImport
+    '/locations/$locationId': {
+      id: '/locations/$locationId'
+      path: '/locations/$locationId'
+      fullPath: '/locations/$locationId'
+      preLoaderRoute: typeof LocationsLocationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/locations/checkTemporary': {
@@ -742,25 +644,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocationsCheckTemporaryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/locations/$locationId': {
-      id: '/locations/$locationId'
-      path: '/locations/$locationId'
-      fullPath: '/locations/$locationId'
-      preLoaderRoute: typeof LocationsLocationIdRouteImport
+    '/locations/create': {
+      id: '/locations/create'
+      path: '/locations/create'
+      fullPath: '/locations/create'
+      preLoaderRoute: typeof LocationsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/$userId/': {
-      id: '/users/$userId/'
-      path: '/users/$userId'
-      fullPath: '/users/$userId/'
-      preLoaderRoute: typeof UsersUserIdIndexRouteImport
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trainingTeams/$trainingTeamId/': {
-      id: '/trainingTeams/$trainingTeamId/'
-      path: '/trainingTeams/$trainingTeamId'
-      fullPath: '/trainingTeams/$trainingTeamId/'
-      preLoaderRoute: typeof TrainingTeamsTrainingTeamIdIndexRouteImport
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/': {
+      id: '/sportingEvents/'
+      path: '/sportingEvents'
+      fullPath: '/sportingEvents/'
+      preLoaderRoute: typeof SportingEventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/active': {
+      id: '/sportingEvents/active'
+      path: '/sportingEvents/active'
+      fullPath: '/sportingEvents/active'
+      preLoaderRoute: typeof SportingEventsActiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/chips': {
+      id: '/sportingEvents/chips'
+      path: '/sportingEvents/chips'
+      fullPath: '/sportingEvents/chips'
+      preLoaderRoute: typeof SportingEventsChipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/create': {
+      id: '/sportingEvents/create'
+      path: '/sportingEvents/create'
+      fullPath: '/sportingEvents/create'
+      preLoaderRoute: typeof SportingEventsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/history': {
+      id: '/sportingEvents/history'
+      path: '/sportingEvents/history'
+      fullPath: '/sportingEvents/history'
+      preLoaderRoute: typeof SportingEventsHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/myEvents': {
+      id: '/sportingEvents/myEvents'
+      path: '/sportingEvents/myEvents'
+      fullPath: '/sportingEvents/myEvents'
+      preLoaderRoute: typeof SportingEventsMyEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/myManagedUsersEvents': {
+      id: '/sportingEvents/myManagedUsersEvents'
+      path: '/sportingEvents/myManagedUsersEvents'
+      fullPath: '/sportingEvents/myManagedUsersEvents'
+      preLoaderRoute: typeof SportingEventsMyManagedUsersEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainingTeams/': {
+      id: '/trainingTeams/'
+      path: '/trainingTeams'
+      fullPath: '/trainingTeams/'
+      preLoaderRoute: typeof TrainingTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainingTeams/checkTemporary': {
+      id: '/trainingTeams/checkTemporary'
+      path: '/trainingTeams/checkTemporary'
+      fullPath: '/trainingTeams/checkTemporary'
+      preLoaderRoute: typeof TrainingTeamsCheckTemporaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainingTeams/create': {
+      id: '/trainingTeams/create'
+      path: '/trainingTeams/create'
+      fullPath: '/trainingTeams/create'
+      preLoaderRoute: typeof TrainingTeamsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/': {
+      id: '/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof UsersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/create': {
+      id: '/users/create'
+      path: '/users/create'
+      fullPath: '/users/create'
+      preLoaderRoute: typeof UsersCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/$eventId/': {
@@ -770,67 +756,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SportingEventsEventIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/users/$userId/edit': {
-      id: '/users/$userId/edit'
-      path: '/users/$userId/edit'
-      fullPath: '/users/$userId/edit'
-      preLoaderRoute: typeof UsersUserIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/users/$userId/changeId': {
-      id: '/users/$userId/changeId'
-      path: '/users/$userId/changeId'
-      fullPath: '/users/$userId/changeId'
-      preLoaderRoute: typeof UsersUserIdChangeIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trainingTeams/$trainingTeamId/edit': {
-      id: '/trainingTeams/$trainingTeamId/edit'
-      path: '/trainingTeams/$trainingTeamId/edit'
-      fullPath: '/trainingTeams/$trainingTeamId/edit'
-      preLoaderRoute: typeof TrainingTeamsTrainingTeamIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/$eventId/showRegistrations': {
-      id: '/sportingEvents/$eventId/showRegistrations'
-      path: '/sportingEvents/$eventId/showRegistrations'
-      fullPath: '/sportingEvents/$eventId/showRegistrations'
-      preLoaderRoute: typeof SportingEventsEventIdShowRegistrationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/$eventId/registration': {
-      id: '/sportingEvents/$eventId/registration'
-      path: '/sportingEvents/$eventId/registration'
-      fullPath: '/sportingEvents/$eventId/registration'
-      preLoaderRoute: typeof SportingEventsEventIdRegistrationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/$eventId/registerAthletes': {
-      id: '/sportingEvents/$eventId/registerAthletes'
-      path: '/sportingEvents/$eventId/registerAthletes'
-      fullPath: '/sportingEvents/$eventId/registerAthletes'
-      preLoaderRoute: typeof SportingEventsEventIdRegisterAthletesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/$eventId/kitDelivery': {
-      id: '/sportingEvents/$eventId/kitDelivery'
-      path: '/sportingEvents/$eventId/kitDelivery'
-      fullPath: '/sportingEvents/$eventId/kitDelivery'
-      preLoaderRoute: typeof SportingEventsEventIdKitDeliveryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/$eventId/editPhotoAndGallery': {
-      id: '/sportingEvents/$eventId/editPhotoAndGallery'
-      path: '/sportingEvents/$eventId/editPhotoAndGallery'
-      fullPath: '/sportingEvents/$eventId/editPhotoAndGallery'
-      preLoaderRoute: typeof SportingEventsEventIdEditPhotoAndGalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sportingEvents/$eventId/edit': {
-      id: '/sportingEvents/$eventId/edit'
-      path: '/sportingEvents/$eventId/edit'
-      fullPath: '/sportingEvents/$eventId/edit'
-      preLoaderRoute: typeof SportingEventsEventIdEditRouteImport
+    '/sportingEvents/$eventId/allRegistrations': {
+      id: '/sportingEvents/$eventId/allRegistrations'
+      path: '/sportingEvents/$eventId/allRegistrations'
+      fullPath: '/sportingEvents/$eventId/allRegistrations'
+      preLoaderRoute: typeof SportingEventsEventIdAllRegistrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/$eventId/clothing': {
@@ -840,11 +770,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SportingEventsEventIdClothingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sportingEvents/$eventId/allRegistrations': {
-      id: '/sportingEvents/$eventId/allRegistrations'
-      path: '/sportingEvents/$eventId/allRegistrations'
-      fullPath: '/sportingEvents/$eventId/allRegistrations'
-      preLoaderRoute: typeof SportingEventsEventIdAllRegistrationsRouteImport
+    '/sportingEvents/$eventId/edit': {
+      id: '/sportingEvents/$eventId/edit'
+      path: '/sportingEvents/$eventId/edit'
+      fullPath: '/sportingEvents/$eventId/edit'
+      preLoaderRoute: typeof SportingEventsEventIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/$eventId/editPhotoAndGallery': {
+      id: '/sportingEvents/$eventId/editPhotoAndGallery'
+      path: '/sportingEvents/$eventId/editPhotoAndGallery'
+      fullPath: '/sportingEvents/$eventId/editPhotoAndGallery'
+      preLoaderRoute: typeof SportingEventsEventIdEditPhotoAndGalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/$eventId/kitDelivery': {
+      id: '/sportingEvents/$eventId/kitDelivery'
+      path: '/sportingEvents/$eventId/kitDelivery'
+      fullPath: '/sportingEvents/$eventId/kitDelivery'
+      preLoaderRoute: typeof SportingEventsEventIdKitDeliveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/$eventId/registerAthletes': {
+      id: '/sportingEvents/$eventId/registerAthletes'
+      path: '/sportingEvents/$eventId/registerAthletes'
+      fullPath: '/sportingEvents/$eventId/registerAthletes'
+      preLoaderRoute: typeof SportingEventsEventIdRegisterAthletesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/$eventId/registration': {
+      id: '/sportingEvents/$eventId/registration'
+      path: '/sportingEvents/$eventId/registration'
+      fullPath: '/sportingEvents/$eventId/registration'
+      preLoaderRoute: typeof SportingEventsEventIdRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sportingEvents/$eventId/showRegistrations': {
+      id: '/sportingEvents/$eventId/showRegistrations'
+      path: '/sportingEvents/$eventId/showRegistrations'
+      fullPath: '/sportingEvents/$eventId/showRegistrations'
+      preLoaderRoute: typeof SportingEventsEventIdShowRegistrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainingTeams/$trainingTeamId/': {
+      id: '/trainingTeams/$trainingTeamId/'
+      path: '/trainingTeams/$trainingTeamId'
+      fullPath: '/trainingTeams/$trainingTeamId/'
+      preLoaderRoute: typeof TrainingTeamsTrainingTeamIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainingTeams/$trainingTeamId/edit': {
+      id: '/trainingTeams/$trainingTeamId/edit'
+      path: '/trainingTeams/$trainingTeamId/edit'
+      fullPath: '/trainingTeams/$trainingTeamId/edit'
+      preLoaderRoute: typeof TrainingTeamsTrainingTeamIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId/': {
+      id: '/users/$userId/'
+      path: '/users/$userId'
+      fullPath: '/users/$userId/'
+      preLoaderRoute: typeof UsersUserIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId/changeId': {
+      id: '/users/$userId/changeId'
+      path: '/users/$userId/changeId'
+      fullPath: '/users/$userId/changeId'
+      preLoaderRoute: typeof UsersUserIdChangeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users/$userId/edit': {
+      id: '/users/$userId/edit'
+      path: '/users/$userId/edit'
+      fullPath: '/users/$userId/edit'
+      preLoaderRoute: typeof UsersUserIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sportingEvents/$eventId/transactions/': {
