@@ -1331,7 +1331,12 @@ const SportingEventForm = (
                             }}
                           />
                           <subField.Label htmlFor={subField.name}>
-                            {subField.state.value ? "Inscripciones cerradas" : "Inscripciones abiertas"}
+                            Cerrar inscripciones
+                            <HelpTooltip content={
+                              "No permitir nuevas inscripciones de atletas. "
+                              + "Los únicos que tienen permitido inscribir atletas "
+                              + "son los organizadores."}
+                            />
                           </subField.Label>
                         </div>
                       )}
