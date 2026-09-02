@@ -226,6 +226,7 @@ export const sportingEventCircuits = sqliteTable("sporting_event_circuits", {
   bib_number_start: int().notNull(),
   bib_number_end: int().notNull(),
   teams_enabled: int().notNull().default(0), // if true, allows registering in teams between circuits
+  registration_disabled: int().notNull().default(0), // if true, blocks new self-service registrations into this circuit
 });
 
 

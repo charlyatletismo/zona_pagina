@@ -161,6 +161,7 @@ export const ARSportingEventSchema = SportingEventSchema.extend({
   circuits: z.array(SportingEventCircuitSchema.extend({
     competitive: z.coerce.boolean<number>().optional(),
     teams_enabled: z.coerce.boolean<number>().default(false).optional(),
+    registration_disabled: z.coerce.boolean<number>().default(false).optional(),
   })).nullable().optional(),
   schedules: z.array(SportingEventScheduleSchema.extend({
     date_start: z.coerce.date<string>(),

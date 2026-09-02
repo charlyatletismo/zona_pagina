@@ -87,6 +87,20 @@ export const registerToSpEvent = async (
   ) {
     return { status: 400, message: M.SPORTING_EVENT_REGISTRATION_ENDED };
   }
+  const circuit = await db
+    .select({ registration_disabled: sportingEventCircuits.registration_disabled })
+    .from(sportingEventCircuits)
+    .where(and(
+      eq(sportingEventCircuits.id, circuitId),
+      eq(sportingEventCircuits.event_id, eventId),
+    ))
+    .limit(1);
+  if (circuit.length === 0) {
+    return { status: 404, message: M.SPORTING_EVENT_CIRCUIT_NOT_FOUND };
+  }
+  if (!reqIsOrganizer && circuit[0].registration_disabled) {
+    return { status: 400, message: M.SPORTING_EVENT_CIRCUIT_REGISTRATION_DISABLED };
+  }
   let feeAmount = spEvent[0].fee_amount;
   if (spEvent[0].fee_amount_promotional
     && spEvent[0].promotional_fee_end
