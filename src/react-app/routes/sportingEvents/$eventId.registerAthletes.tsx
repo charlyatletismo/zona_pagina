@@ -137,6 +137,7 @@ export const Route = createFileRoute('/sportingEvents/$eventId/registerAthletes'
           user_sex: user.sex!,
           user_date_of_birth: user.date_of_birth!,
           user_location: user.location!,
+          user_tax_id: user.tax_id ?? null,
           user_training_team_name: trainingTeams.find(
             team => team.id === user.training_team_id)?.name || '',
           demanded_clothing_size: user.clothing_shirt_size!,

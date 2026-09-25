@@ -51,6 +51,7 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
           training_team_id: users.training_team_id,
           manager_id: users.manager_id,
           role: users.role,
+          tax_id: users.tax_id,
         })
         .from(users)
         .all();
@@ -255,6 +256,7 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
           role: true,
           created_at: true,
           updated_at: true,
+          tax_id: true,
         }).parse(user)
       });
     }
@@ -312,6 +314,7 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       // Athletes Manager can only update their own athletes
       delete updateData.role; // Prevent changing role
       delete updateData.discount_percentage; // Prevent changing discount percentage
+      delete updateData.tax_id; // Prevent changing tax ID
       const managerId = c.get('jwtPayload').id;
       const res = await db.update(users)
         .set(updateData)
