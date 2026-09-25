@@ -9,6 +9,7 @@ import {
   authorizedAthMan,
   authorizedOrg
 } from '@shared/roles';
+import { uniqueViolationColumn } from './lib/utilsUsers';
 import { ATHLETE_ROLE } from '@shared/roles';
 import { ARUserSchema } from '@shared/apiRespTypes';
 import { M } from './lib/messages';
@@ -310,34 +311,43 @@ export const usersRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     delete updateData.temp_code; // Prevent changing temp_code
     updateData.updated_at = new Date().toISOString();
 
-    if (c.get('jwtPayload').role === ATHLETES_MANAGER_ROLE) {
-      // Athletes Manager can only update their own athletes
-      delete updateData.role; // Prevent changing role
-      delete updateData.discount_percentage; // Prevent changing discount percentage
-      delete updateData.tax_id; // Prevent changing tax ID
-      const managerId = c.get('jwtPayload').id;
-      const res = await db.update(users)
-        .set(updateData)
-        .where(and(
-          eq(users.id, userId),
-          eq(users.manager_id, managerId)
-        ))
-        .run();
-      if (res.meta.changes === 0) {
-        return c.json({ message: M.USER_NOT_FOUND_OR_UNAUTHORIZED }, 404);
-      };
-    } else {
-      // Admin or Organizer can update everything except admin role
-      const res = await db.update(users)
-        .set(updateData)
-        .where(and(
-          eq(users.id, userId),
-          not(eq(users.role, ADMIN_ROLE)) // Prevent changing admin role
-        ))
-        .run();
-      if (res.meta.changes === 0) {
-        return c.json({ message: M.USER_NOT_FOUND_OR_UNAUTHORIZED }, 404);
-      };
+    try {
+      if (c.get('jwtPayload').role === ATHLETES_MANAGER_ROLE) {
+        // Athletes Manager can only update their own athletes
+        delete updateData.role; // Prevent changing role
+        delete updateData.discount_percentage; // Prevent changing discount percentage
+        delete updateData.tax_id; // Prevent changing tax ID
+        const managerId = c.get('jwtPayload').id;
+        const res = await db.update(users)
+          .set(updateData)
+          .where(and(
+            eq(users.id, userId),
+            eq(users.manager_id, managerId)
+          ))
+          .run();
+        if (res.meta.changes === 0) {
+          return c.json({ message: M.USER_NOT_FOUND_OR_UNAUTHORIZED }, 404);
+        };
+      } else {
+        // Admin or Organizer can update everything except admin role
+        const res = await db.update(users)
+          .set(updateData)
+          .where(and(
+            eq(users.id, userId),
+            not(eq(users.role, ADMIN_ROLE)) // Prevent changing admin role
+          ))
+          .run();
+        if (res.meta.changes === 0) {
+          return c.json({ message: M.USER_NOT_FOUND_OR_UNAUTHORIZED }, 404);
+        };
+      }
+    } catch (err) {
+      switch (uniqueViolationColumn(err)) {
+        case "email":  return c.json({ message: M.USER_EMAIL_ALREADY_IN_USE }, 400);
+        case "phone":  return c.json({ message: M.USER_PHONE_ALREADY_IN_USE }, 400);
+        case "tax_id": return c.json({ message: M.USER_TAX_ID_ALREADY_IN_USE }, 400);
+        default: throw err; // not a duplicate, so let Hono's error handler deal with it
+      }
     }
     return c.json({ message: M.USER_PROFILE_UPDATED_SUCCESSFULLY });
   })

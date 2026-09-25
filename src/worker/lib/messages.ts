@@ -91,6 +91,10 @@ export const M = {
     [ES]: "El número de teléfono ya está en uso",
     [EN]: "Phone number already in use"
   },
+  USER_TAX_ID_ALREADY_IN_USE: {
+    [ES]: "El CUIT/CUIL ya está en uso",
+    [EN]: "The Tax ID is already in use"
+  },
   USER_DATE_OF_BIRTH_NOT_SET: {
     [ES]: "La fecha de nacimiento del usuario no está establecida",
     [EN]: "User date of birth not set"
