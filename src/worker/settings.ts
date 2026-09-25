@@ -47,6 +47,10 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     if (!updates.success) {
       return c.json({ message: M.USER_INVALID_DATA }, 400);
     }
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      // don't allow tax_id edit for non-organizers
+      delete updates.data.tax_id
+    }
 
     const userBeforeUpdate = await db
       .select({phone: users.phone, email: users.email})
@@ -56,28 +60,6 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
       .get();
     if (!userBeforeUpdate) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
-    }
-    if (updates.data.phone !== userBeforeUpdate.phone) {
-      await db.insert(userUpdates).values({
-        user_id: userId,
-        field_name: 'phone',
-        old_value: userBeforeUpdate.phone,
-        new_value: updates.data.phone,
-        updated_by: userId,
-      }).run();
-    }
-    if (updates.data.email !== userBeforeUpdate.email) {
-      await db.insert(userUpdates).values({
-        user_id: userId,
-        field_name: 'email',
-        old_value: userBeforeUpdate.email,
-        new_value: updates.data.email,
-        updated_by: userId,
-      }).run();
-    }
-    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
-      // don't allow tax_id edit for non-organizers
-      delete updates.data.tax_id
     }
 
     try {
@@ -96,6 +78,26 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
         case "tax_id": return c.json({ message: M.USER_TAX_ID_ALREADY_IN_USE }, 400);
         default: throw err; // not a duplicate, so let Hono's error handler deal with it
       }
+    }
+
+    // save sensitive info backups
+    if (updates.data.phone !== userBeforeUpdate.phone) {
+      await db.insert(userUpdates).values({
+        user_id: userId,
+        field_name: 'phone',
+        old_value: userBeforeUpdate.phone,
+        new_value: updates.data.phone,
+        updated_by: userId,
+      }).run();
+    }
+    if (updates.data.email !== userBeforeUpdate.email) {
+      await db.insert(userUpdates).values({
+        user_id: userId,
+        field_name: 'email',
+        old_value: userBeforeUpdate.email,
+        new_value: updates.data.email,
+        updated_by: userId,
+      }).run();
     }
 
     return c.json({ message: M.SETTINGS_PROFILE_UPDATED });
