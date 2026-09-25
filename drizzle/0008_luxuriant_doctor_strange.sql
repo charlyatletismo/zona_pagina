@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `tax_id` text(13);
