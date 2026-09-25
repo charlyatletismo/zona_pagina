@@ -41,7 +41,7 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     }
     const body = await c.req.json();
 
-    const updates = ARSettingsSchema.omit({ id: true }).safeParse(body);
+    const updates = ARSettingsSchema.omit({ id: true, tax_id: true }).safeParse(body);
     if (!updates.success) {
       return c.json({ message: M.USER_INVALID_DATA }, 400);
     }
