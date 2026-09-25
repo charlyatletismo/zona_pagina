@@ -7,6 +7,7 @@ import { eq, like, and } from 'drizzle-orm';
 import { M } from './lib/messages';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
 import { userIsBanned } from "./lib/checks";
+import { authorizedOrg } from "@shared/roles";
 
 
 export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
@@ -41,7 +42,11 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     }
     const body = await c.req.json();
 
-    const updates = ARSettingsSchema.omit({ id: true, tax_id: true }).safeParse(body);
+    const updates = ARSettingsSchema.omit({
+      id: true,
+      // don't allow tax_id edit for non-organizers
+      ...(authorizedOrg(c.get('jwtPayload')?.role) ? {} : {tax_id: true})
+    }).safeParse(body);
     if (!updates.success) {
       return c.json({ message: M.USER_INVALID_DATA }, 400);
     }
