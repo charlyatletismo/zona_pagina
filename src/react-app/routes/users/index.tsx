@@ -168,6 +168,7 @@ function RouteComponent() {
       enableHiding: true,
       enableSorting: true,
       sortUndefined: 'last',
+      enableGrouping: false,
     }),
     columnHelper.accessor('manager_full_name', {
       header: 'Manager',
