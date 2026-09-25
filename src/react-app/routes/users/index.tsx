@@ -161,6 +161,15 @@ function RouteComponent() {
       sortUndefined: 'last',
       enableGrouping: false,
     }),
+    columnHelper.accessor('tax_id', {
+      header: 'CUIT/CUIL',
+      cell: info => info.getValue() || '',
+      footer: props => props.column.id,
+      enableHiding: true,
+      enableSorting: true,
+      sortUndefined: 'last',
+      enableGrouping: false,
+    }),
     columnHelper.accessor('manager_full_name', {
       header: 'Manager',
       cell: info => info.getValue() || '',
@@ -229,6 +238,7 @@ function RouteComponent() {
         id: false,
         role: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
         manager_full_name: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
+        tax_id: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE,
       },
       sorting: localStorage.getItem('USER_ROLE') !== ATHLETES_MANAGER_ROLE ? [
         { id: "role", desc: true },

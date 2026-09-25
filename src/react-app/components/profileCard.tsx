@@ -230,6 +230,14 @@ export const ProfileCard = ({
           value={`${profile.discount_percentage}%`}
         />
       )}
+
+      {profile.tax_id && (
+        <GridCell
+          icon={IdCardIcon}
+          label="CUIT/CUIL"
+          value={profile.tax_id}
+        />
+      )}
     </div>
   )
 };

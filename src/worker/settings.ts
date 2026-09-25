@@ -7,6 +7,8 @@ import { eq, like, and } from 'drizzle-orm';
 import { M } from './lib/messages';
 import { ARSettingsSchema } from '@shared/apiRespTypes';
 import { userIsBanned } from "./lib/checks";
+import { authorizedOrg } from "@shared/roles";
+import { uniqueViolationColumn } from './lib/utilsUsers';
 
 
 export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
@@ -45,6 +47,10 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     if (!updates.success) {
       return c.json({ message: M.USER_INVALID_DATA }, 400);
     }
+    if (!authorizedOrg(c.get('jwtPayload')?.role)) {
+      // don't allow tax_id edit for non-organizers
+      delete updates.data.tax_id
+    }
 
     const userBeforeUpdate = await db
       .select({phone: users.phone, email: users.email})
@@ -55,6 +61,26 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
     if (!userBeforeUpdate) {
       return c.json({ message: M.USER_NOT_FOUND }, 404);
     }
+
+    try {
+      await db.update(users)
+        .set({
+          ...updates.data,
+          date_of_birth: updates.data.date_of_birth ? updates.data.date_of_birth.toISOString() : null,
+          updated_at: new Date().toISOString(),
+        })
+        .where(eq(users.id, userId))
+        .run();
+    } catch (err) {
+      switch (uniqueViolationColumn(err)) {
+        case "email":  return c.json({ message: M.USER_EMAIL_ALREADY_IN_USE }, 400);
+        case "phone":  return c.json({ message: M.USER_PHONE_ALREADY_IN_USE }, 400);
+        case "tax_id": return c.json({ message: M.USER_TAX_ID_ALREADY_IN_USE }, 400);
+        default: throw err; // not a duplicate, so let Hono's error handler deal with it
+      }
+    }
+
+    // save sensitive info backups
     if (updates.data.phone !== userBeforeUpdate.phone) {
       await db.insert(userUpdates).values({
         user_id: userId,
@@ -73,15 +99,6 @@ export const settingsRoute = new Hono<{ Bindings: Env, Variables: Variables }>()
         updated_by: userId,
       }).run();
     }
-
-    await db.update(users)
-      .set({
-        ...updates.data,
-        date_of_birth: updates.data.date_of_birth ? updates.data.date_of_birth.toISOString() : null,
-        updated_at: new Date().toISOString(),
-      })
-      .where(eq(users.id, userId))
-      .run();
 
     return c.json({ message: M.SETTINGS_PROFILE_UPDATED });
   })

@@ -81,7 +81,9 @@ export const ProfileForm = ({
       )
     )
   );
-  const specialFieldsEditable = !authorizedOrg(localStorage.getItem('USER_ROLE'));
+  // Organizers are the only ones to edit these fields
+  const specialFieldsDisabled = !authorizedOrg(localStorage.getItem('USER_ROLE'));
+  const taxIdFieldDisabled = !authorizedOrg(localStorage.getItem('USER_ROLE'));
 
   const form = useAppForm({
     defaultValues: profile || {
@@ -93,6 +95,7 @@ export const ProfileForm = ({
       emergency_contact_name: '',
       emergency_contact_phone: '',
       manager_id: defaultManagerId || null,
+      tax_id: null,
     },
     validators: {
       onBlur: UserSchema,
@@ -446,7 +449,7 @@ export const ProfileForm = ({
                     className={!field.state.meta.isValid ? 'border-destructive' : ''}
                     placeholder="Indicar si tiene alguna necesidad especial (alergias, discapacidades, etc.)"
                     rows={3}
-                    disabled={specialFieldsEditable}
+                    disabled={specialFieldsDisabled}
                   />
                   {!field.state.meta.isValid && (
                     <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
@@ -498,6 +501,27 @@ export const ProfileForm = ({
           )}
         />
 
+        <form.AppField
+          name="tax_id"
+          children={(field) => (
+            <div className="space-y-2">
+              <field.CuitInput
+                label="CUIT/CUIL"
+                name={field.name}
+                value={field.state.value || null}
+                onChange={field.handleChange}
+                onBlur={field.handleBlur}
+                borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
+                showError={!field.state.meta.isValid}
+                disabled={taxIdFieldDisabled}
+              />
+              {!field.state.meta.isValid && (
+                <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
+              )}
+            </div>
+          )}
+        />
+
         {specialFieldsShow && (
             <form.AppField
               name="discount_percentage"
@@ -516,7 +540,7 @@ export const ProfileForm = ({
                         + (!field.state.meta.isValid ? 'border-destructive' : '')
                       }
                       placeholder="descuento en porcentaje %"
-                      disabled={specialFieldsEditable}
+                      disabled={specialFieldsDisabled}
                     />
                     <div className='absolute left-24 top-1 text-gray-500'>
                       %

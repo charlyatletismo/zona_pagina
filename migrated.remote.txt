@@ -8,3 +8,5 @@ drizzle/0004_fast_kid_colt.sql
 drizzle/0005_giant_network.sql
 drizzle/0006_glamorous_tinkerer.sql
 drizzle/0007_zippy_whistler.sql
+drizzle/0008_luxuriant_doctor_strange.sql
+drizzle/0008_z_indexes.sql

@@ -75,6 +75,7 @@ export const users = sqliteTable("users", {
   location_temp: text({ length: 256 }), // temporary location text when not registered in the system
   location_address: text({ length: 256 }),
   special_needs: text({ length: 512 }), // allergies, accessibility, etc.
+  tax_id: text({ length: 13 }), // CUIT/CUIL, e.g. "20-12345678-3"
   discount_percentage: int().notNull().default(0), // for special discounts
   manager_id: text({ length: USER_ID_MAX_LENGTH })
     .references((): any => users.id,

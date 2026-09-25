@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/popover"
 import { Textarea } from '@/components/ui/textarea';
 import { PhoneInput } from '@/components/phoneInput';
+import { CuitInput } from '@/components/cuitInput';
 import { ComboBoxIdName } from '@/components/comboBoxIdName';
 import { DatePicker } from '@/components/datePicker';
 import { DateTimePicker } from '@/components/datetimePicker';
@@ -45,6 +46,7 @@ export const { useAppForm } = createFormHook({
     Calendar,
     Textarea,
     PhoneInput,
+    CuitInput,
     ComboBoxIdName,
     DatePicker,
     DateTimePicker,
