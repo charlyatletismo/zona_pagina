@@ -1,6 +1,7 @@
 import z from "zod";
 
 import { ALL_ROLES } from './roles';
+import { CUIT_REGEX, isValidCuit } from './cuit';
 
 
 const USER_ID_MIN_LENGTH = 7;
@@ -100,6 +101,10 @@ export const UserSchema = z.object({
     .min(0, 'El porcentaje de descuento no puede ser negativo')
     .max(100, 'El porcentaje de descuento no puede exceder 100%')
     .optional(),
+  tax_id: z.string()
+    .regex(CUIT_REGEX, 'El CUIT/CUIL debe tener el formato XX-XXXXXXXX-X')
+    .refine(isValidCuit, 'El CUIT/CUIL no es válido')
+    .nullable().optional(),
   manager_id: z.string()
     .max(USER_ID_MAX_LENGTH, 'El ID del manager no puede exceder los 28 caracteres')
     .nullable().optional(),
