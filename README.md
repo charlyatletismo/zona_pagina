@@ -109,5 +109,4 @@ src/react-app/   React SPA (file-based routes in routes/, components/, lib/)
 src/shared/      zod schemas, roles, labels shared by API and UI
 drizzle/         SQL migrations and seeds
 gen_test_data/   Fake-user SQL generator (Python + Faker)
-a/               Legacy static landing page (not served)
 ```

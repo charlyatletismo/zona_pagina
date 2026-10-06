@@ -106,8 +106,3 @@ frontend components that render event photos.
   `npx wrangler d1 time-travel restore zona-atletismo-webapp-db --timestamp=<ISO>`.
   This also discards data written after that time (registrations, payments), so prefer a
   forward-fix migration.
-
-## Legacy static page (`a/`)
-
-[a/](../a/) holds an old standalone HTML landing page ("Novedades 2026") with its images. The
-Worker does not serve it and the build ignores it. It is kept for reference only.

@@ -35,7 +35,6 @@ src/shared/            Code shared by worker + app: zod schemas, roles, i18n lab
 drizzle/               SQL migrations (generated + hand-written "_z_" files), meta snapshots
 migrate.sh             Applies one SQL file to local/remote D1 and logs it in migrated.<env>.txt
 gen_test_data/         Python Faker script that generates fake users SQL
-a/                     Legacy static landing page. Not part of the app, don't touch.
 ```
 
 ## Commands
