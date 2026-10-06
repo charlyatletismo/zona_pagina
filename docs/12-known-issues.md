@@ -22,7 +22,7 @@ Severity: 🔴 security/money · 🟠 correctness · 🟡 UX/maintainability.
 | | Issue | Where |
 |---|---|---|
 | 🟡 | **Webhook idempotency is best-effort.** Transactions are upserted by `external_payment_id` (`mp-<id>`), but the index is not unique. Two notifications for the same payment, processed at the same time, can both insert. Rows created before `0009` have no `external_payment_id`, so a late notification for an old payment inserts new rows | `src/worker/lib/sportingEventTransactions.ts` |
-| 🟠 | **Webhook ignores the payment status.** Every notification with items marks the registrations paid, even for pending, rejected or refunded payments | same |
+| 🟠 | **Webhook ignores the payment status.** Every notification with items marks the registrations paid, even for pending, rejected or refunded payments. The expected behavior is written as skipped tests (`MercadoPago webhook: payment status`) | `src/worker/webhookMercadoPago.ts`, `tests/webhookMercadoPago.test.ts` |
 | 🟠 | **Bib race condition.** "max bib + 1" is not atomic; two payments processed at the same time can get the same bib. The unique index `(event_id, bib_number, chip_id)` only applies when `chip_id` is not null, so non-competitive circuits are unprotected | `src/worker/lib/sportingEventRegistrationActions.ts`, `drizzle/0000_z_indexes.sql` |
 | 🟠 | The "latest chip" lookup uses a string `ORDER BY chip_id DESC`. It is only correct when every segment shares the prefix/padding ordering | same, `lib/chips.ts` |
 | 🟠 | **Inconsistent pending amount on the event page.** `userRegisteredInEvent` uses `promotional_fee_end` (not the promo *payment* due date) and ignores discounts; `getPendingToPayAmount` is the correct one | `src/worker/lib/sportingEventRegistrations.ts` |

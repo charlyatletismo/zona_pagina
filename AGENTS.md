@@ -35,6 +35,7 @@ src/shared/            Code shared by worker + app: zod schemas, roles, i18n lab
 drizzle/               SQL migrations (generated + hand-written "_z_" files), meta snapshots
 migrate.sh             Applies one SQL file to local/remote D1 and logs it in migrated.<env>.txt
 gen_test_data/         Python Faker script that generates fake users SQL
+tests/                 Vitest tests (Workers pool) + fixtures; vitest.config.ts at the root
 ```
 
 ## Commands
@@ -44,13 +45,16 @@ gen_test_data/         Python Faker script that generates fake users SQL
 | `npm run dev` | Vite dev server + local Worker + local D1 (http://localhost:5173) |
 | `npm run build` | `tsc -b && vite build` (type-checks all three tsconfigs) |
 | `npm run lint` | ESLint |
+| `npm test` | Vitest (Workers pool). Safe for agents: uses a throwaway D1, never the local/remote one |
 | `npm run check` | tsc + build + `wrangler deploy --dry-run` |
 | `npm run cf-typegen` | Regenerate `worker-configuration.d.ts` after changing wrangler.json bindings |
 | `npm run db:generate` | drizzle-kit: generate a migration from `src/worker/db/schema.ts` |
 | `./migrate.sh local drizzle/<file>.sql` | Apply a migration to the local D1 (developer only, see rule 13) |
 | `npm run deploy` | Build + deploy to production (manual, from `main`; developer only) |
 
-There is no test suite. Before you finish, verify with `npm run build` and `npm run lint`.
+Tests live in `tests/` (Vitest on the Workers runtime, isolated in-memory D1; see
+[docs/03-development.md](docs/03-development.md#testing)). Before you finish, verify with
+`npm run build`, `npm run lint` and `npm test`.
 
 ## Golden rules (non-obvious conventions)
 

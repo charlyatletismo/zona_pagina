@@ -162,13 +162,38 @@ athlete) to preview each role's menus. The API still enforces the real role in t
 | Script | What it does |
 |---|---|
 | `npm run dev` | Vite dev server with the Cloudflare plugin (Worker + local D1) |
-| `npm run build` | `tsc -b` over the app, worker and node tsconfigs, then `vite build` |
+| `npm run build` | `tsc -b` over the app, worker, node and test tsconfigs, then `vite build` |
 | `npm run preview` | Build, then serve the production build locally |
 | `npm run lint` | ESLint (TS + react-hooks + react-refresh rules) |
+| `npm test` | Vitest run (see [Testing](#testing)) |
+| `npm run test:watch` | Vitest in watch mode |
 | `npm run check` | `tsc`, build, then `wrangler deploy --dry-run` |
 | `npm run cf-typegen` | `wrangler types`: regenerates `worker-configuration.d.ts` from `wrangler.json`. Run it after adding bindings |
 | `npm run db:generate` | `drizzle-kit generate`: writes a new migration from `src/worker/db/schema.ts` |
 | `npm run deploy` | Build + `wrangler deploy` (production) |
+
+## Testing
+
+Tests use [Vitest](https://vitest.dev/) with
+[`@cloudflare/vitest-pool-workers`](https://developers.cloudflare.com/workers/testing/vitest-integration/).
+They run inside workerd, the same runtime as production.
+
+| File | Purpose |
+|---|---|
+| [vitest.config.ts](../vitest.config.ts) | Pool config: reads `wrangler.json`, passes the migrations, and sets fake MercadoPago secrets that override `.dev.vars` |
+| [tests/setup.ts](../tests/setup.ts) | Applies the migrations to the test D1 before each test file |
+| [tests/fixtures.ts](../tests/fixtures.ts) | Fixture builders (event, circuit, registrations), MercadoPago payment payloads, and `notifyPayment()`, which calls the worker with a valid `x-signature` |
+| `tests/*.test.ts` | Test files |
+| [tsconfig.test.json](../tsconfig.test.json) | Type-checks the tests in `npm run build` |
+
+- **Database:** every test file gets its own in-memory D1. Your local `.wrangler` D1 and the remote
+  database are never touched. All `drizzle/*.sql` files are applied in order except the
+  `0000_z_initial_*` seeds. Tests insert only the rows they need. Tests in the same file share
+  storage, so use unique ids (see `nextId()` in the webhook tests).
+- **External APIs:** mock them with `vi.spyOn(globalThis, 'fetch')`. The webhook tests serve
+  `GET api.mercadopago.com/v1/payments/:id` from an in-memory map.
+- **Known bugs:** tests that describe intended behavior that isn't implemented yet are written with
+  `it.skip` and linked from [12-known-issues.md](12-known-issues.md). Unskip them when fixing the bug.
 
 ## Editor notes
 
