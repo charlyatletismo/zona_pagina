@@ -1,0 +1,38 @@
+# Local environment variables for the Worker (used by `npm run dev`).
+#
+# Copy this file to `.dev.vars` and fill in the values:
+#     cp .dev.vars.example .dev.vars
+#
+# IMPORTANT: this project uses `.dev.vars`, NOT `.env`.
+# Wrangler and the Cloudflare Vite plugin load `.dev.vars` into the Worker's
+# `env` object (see the `Env` interface in src/worker/index.ts).
+# `.dev.vars*` is gitignored. Never commit real values.
+#
+# In production these are NOT read from any file. Set them with:
+#     npx wrangler secret put <NAME>
+# (BASE_URL is a plain var in wrangler.json.)
+
+# Public base URL of the app. Used to build MercadoPago back_urls.
+# Locally: the Vite dev server URL.
+BASE_URL=http://localhost:5173
+
+# Secret used to sign/verify the HS256 JWTs issued by /api/auth/login.
+# Use a long random string, e.g. `openssl rand -hex 32`.
+JWT_SECRET=change-me-to-a-long-random-string
+
+# Meta WhatsApp Cloud API: used to send the login OTP code
+# (template "verificar_otp", see src/worker/lib/whatsapp.ts).
+GRAPH_API_TOKEN=
+GRAPH_API_PHONE_NUMBER_ID=
+
+# MercadoPago Checkout Pro.
+# Access token: creates payment preferences and reads payment details.
+# Secret key: validates the webhook x-signature header.
+# NOTE: the variable name is MERCADOPAGO_ACCESS_TOKEN (watch for typos).
+MERCADOPAGO_ACCESS_TOKEN=
+MERCADOPAGO_SECRET_KEY=
+
+# Cloudflare Images: uploads/deletes event cover photos.
+# The token needs the "Cloudflare Images: Edit" permission.
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_IMAGES_API_TOKEN=

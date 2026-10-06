@@ -391,6 +391,9 @@ export const sportingEventTransactions = sqliteTable("sporting_event_transaction
   receipt_url: text({ length: 512 }), // URL to receipt/invoice document
   payment_method: text({ length: 32 }), // "cash", "bank_transfer", "card", "check", etc.
   status: text({ length: 16 }).notNull().default('completed'), // "pending", "completed", "cancelled", "refunded"
+  // Payment provider prefix + provider payment id (e.g. "mp-123456789" for MercadoPago).
+  // Not unique: one payment produces several rows (inflow + fee per registration)
+  external_payment_id: text({ length: 128 }),
   created_by: text({ length: USER_ID_MAX_LENGTH })
     .references(() => users.id,
       { onDelete: 'set null',
