@@ -211,6 +211,7 @@ All of these render `SportingEventsMinTable`:
 
   | Action | When | Calls |
   |---|---|---|
+  | Ver Detalle | any | none (opens `SeeRegistrationDetailsDialog` with the row data) |
   | Registrar pago | pending | `SpEvTransactionRegPaymentForm` → `POST /api/sportingEventTransactions/create` |
   | Aplicar descuento | pending | `…/registrations/applyDiscount` |
   | Desestimar pendiente | pending/expired | `…/registrations/dismissPending` |
