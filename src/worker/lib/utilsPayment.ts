@@ -15,3 +15,7 @@ export const parseItemId = (itemId: string) => {
     registrationId: Number(match[3]),
   };
 }
+
+export const buildExternalPaymentId = (provider: 'mp', paymentId: number | string) => {
+  return `${provider}-${paymentId}`;
+}

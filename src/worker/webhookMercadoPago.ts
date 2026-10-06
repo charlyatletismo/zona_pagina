@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Env, Variables } from './index';
 import { setRegistrationAsPaid } from './lib/sportingEventRegistrationActions';
 import { drizzle } from 'drizzle-orm/d1';
-import { parseItemId } from './lib/utilsPayment';
+import { parseItemId, buildExternalPaymentId } from './lib/utilsPayment';
 import { M } from './lib/messages';
 import { registrationPaymentThroughMP } from './lib/sportingEventTransactions';
 
@@ -114,6 +114,7 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Vari
         }
       } = await res.json();
       const db = drizzle(c.env.DB);
+      const externalPaymentId = buildExternalPaymentId('mp', paymentId);
       const netRecPerc = (
         paymentInfo.transaction_details.net_received_amount
         / paymentInfo.transaction_details.total_paid_amount
@@ -137,6 +138,7 @@ export const webhookMercadoPagoRoute = new Hono<{ Bindings: Env, Variables: Vari
         try {
           await registrationPaymentThroughMP(
             db,
+            externalPaymentId,
             eventId,
             registrationId,
             userId,
