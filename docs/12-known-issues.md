@@ -21,7 +21,7 @@ Severity: 🔴 security/money · 🟠 correctness · 🟡 UX/maintainability.
 
 | | Issue | Where |
 |---|---|---|
-| 🔴 | **Webhook is not idempotent.** MP retries notifications (and sends several per payment). `setRegistrationAsPaid` is a no-op when already paid, but `registrationPaymentThroughMP` inserts the inflow and fee transactions **every time**, so the ledger gets duplicates. Fix: store the MP payment id (e.g. in `description`, or a new column) and skip known ids; process only `status === 'approved'` payments | `src/worker/webhookMercadoPago.ts`, `src/worker/lib/sportingEventTransactions.ts` |
+| 🟡 | **Webhook idempotency is best-effort.** Transactions are upserted by `external_payment_id` (`mp-<id>`), but the index is not unique. Two notifications for the same payment, processed at the same time, can both insert. Rows created before `0009` have no `external_payment_id`, so a late notification for an old payment inserts new rows | `src/worker/lib/sportingEventTransactions.ts` |
 | 🟠 | **Webhook ignores the payment status.** Every notification with items marks the registrations paid, even for pending, rejected or refunded payments | same |
 | 🟠 | **Bib race condition.** "max bib + 1" is not atomic; two payments processed at the same time can get the same bib. The unique index `(event_id, bib_number, chip_id)` only applies when `chip_id` is not null, so non-competitive circuits are unprotected | `src/worker/lib/sportingEventRegistrationActions.ts`, `drizzle/0000_z_indexes.sql` |
 | 🟠 | The "latest chip" lookup uses a string `ORDER BY chip_id DESC`. It is only correct when every segment shares the prefix/padding ordering | same, `lib/chips.ts` |

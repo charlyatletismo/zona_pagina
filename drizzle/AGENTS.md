@@ -15,6 +15,9 @@ Full guide: [docs/07-migrations-and-seeding.md](../docs/07-migrations-and-seedin
 
 ## Applying
 
+**Agents must not apply migrations or change any database (local or remote).** Write or generate
+the SQL, then leave applying it to the developer. See golden rule 13 in [../AGENTS.md](../AGENTS.md).
+
 Migrations are **not** applied with `wrangler d1 migrations apply`. Use:
 
 ```bash

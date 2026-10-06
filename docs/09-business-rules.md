@@ -136,9 +136,13 @@ padding should stay consistent.
   (`buildItemId`), `unit_price` = current pending amount, and back URLs to the registration page
   (single) or the register-athletes page (bulk).
 - The webhook parses each item id, calls `setRegistrationAsPaid(regId, userId, unit_price)`, and
-  inserts two transactions:
+  upserts two transactions:
   - inflow `registration_payment` = unit price, method `mercado_pago_checkout_pro`;
   - outflow `mercado_pago_fee` = unit price × (1 − net_received / total_paid).
+- Both rows carry `external_payment_id = mp-<paymentId>`. A row is identified by
+  `(external_payment_id, registration_id, category)`. When MP notifies the same payment again,
+  the webhook updates the existing rows (amount, status, `updated_*`) instead of inserting new
+  ones.
 - If a registration has a pending amount ≤ 0 but is not paid, `/pay` marks it paid and returns
   "already paid" (a self-healing path that the code says "MUST NEVER happen").
 

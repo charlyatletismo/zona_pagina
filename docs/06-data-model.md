@@ -231,7 +231,10 @@ Per-event ledger.
 | `user_id`, `registration_id` | Set for registration payments (the user is derived from the registration) |
 | `payment_method` | `cash` \| `bank_transfer` \| `mercado_pago_checkout_pro` \| `other` |
 | `status` | `pending` \| `completed` \| `failed` \| `cancelled`. Only `completed` `registration_payment` rows count toward `paid_amount` |
+| `external_payment_id` | Payment provider prefix + provider payment id (`mp-<id>` for MercadoPago). Null for manual transactions. Not unique: one payment yields an inflow and a fee row per registration |
 | `created_*`, `updated_*` | |
+
+Index: `idx_transactions_external_payment_id` on `external_payment_id` (non-unique).
 
 ## Shared enumerations (zod)
 

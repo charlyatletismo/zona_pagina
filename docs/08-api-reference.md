@@ -113,7 +113,7 @@ A manager only sees and edits users whose `manager_id` is their own id.
 |---|---|---|
 | `GET /sportingEventTransactions/all/:eventId` | — | `ARSportEvTransactionMinSchema` rows, plus `vendor_or_athlete` (athlete "Surname Name (last 3 DNI digits)", or the vendor) |
 | `GET /sportingEventTransactions/:id` | — | Full row |
-| `POST /sportingEventTransactions/create` | `ARSportEvTransactionSchema` without id/timestamps | If `registration_id` is set, `user_id` is taken from it. A completed `registration_payment` increases `paid_amount` and may mark the registration paid (`newPaymentForRegistration`) |
+| `POST /sportingEventTransactions/create` | `ARSportEvTransactionSchema` without id/timestamps/`external_payment_id` (webhook-only, dropped if sent) | If `registration_id` is set, `user_id` is taken from it. A completed `registration_payment` increases `paid_amount` and may mark the registration paid (`newPaymentForRegistration`) |
 | `POST /sportingEventTransactions/update/:id` | same | A completed `registration_payment` recomputes `paid_amount` from all its completed transactions |
 | `POST /sportingEventTransactions/delete/:id` | — | Recomputes `paid_amount` as above |
 

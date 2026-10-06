@@ -1,0 +1,1 @@
+ALTER TABLE `sporting_event_transactions` ADD `external_payment_id` text(128);

@@ -47,8 +47,8 @@ gen_test_data/         Python Faker script that generates fake users SQL
 | `npm run check` | tsc + build + `wrangler deploy --dry-run` |
 | `npm run cf-typegen` | Regenerate `worker-configuration.d.ts` after changing wrangler.json bindings |
 | `npm run db:generate` | drizzle-kit: generate a migration from `src/worker/db/schema.ts` |
-| `./migrate.sh local drizzle/<file>.sql` | Apply a migration to the local D1 |
-| `npm run deploy` | Build + deploy to production (manual, from `main`) |
+| `./migrate.sh local drizzle/<file>.sql` | Apply a migration to the local D1 (developer only, see rule 13) |
+| `npm run deploy` | Build + deploy to production (manual, from `main`; developer only) |
 
 There is no test suite. Before you finish, verify with `npm run build` and `npm run lint`.
 
@@ -95,6 +95,10 @@ There is no test suite. Before you finish, verify with `npm run build` and `npm 
 12. Style: 2-space indentation, single quotes or double quotes (both exist; match the file),
     Hono routers written as one chained expression, two blank lines between top-level
     declarations in worker files.
+13. **Agents never touch the database or the environment.** Do not apply migrations
+    (`./migrate.sh`, `wrangler d1 execute`, `wrangler d1 migrations`). Do not modify D1 data,
+    secrets, `.dev.vars`, wrangler bindings, or deploy. You may write or generate the files
+    (schema, `npm run db:generate`, SQL). The developer applies them explicitly.
 
 ## Recipes
 
@@ -120,7 +124,8 @@ There is no test suite. Before you finish, verify with `npm run build` and `npm 
 **Change the DB schema**
 1. Edit `src/worker/db/schema.ts`.
 2. Run `npm run db:generate` and review the generated SQL.
-3. Run `./migrate.sh local drizzle/<new>.sql`.
+3. Ask the developer to apply it (`./migrate.sh local drizzle/<new>.sql`). Agents don't run it
+   (rule 13).
 4. Update the zod schemas in `src/shared/types.ts`/`apiRespTypes.ts`.
 5. Update [docs/06-data-model.md](docs/06-data-model.md).
 6. Details: [drizzle/AGENTS.md](drizzle/AGENTS.md).
