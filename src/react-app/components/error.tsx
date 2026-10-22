@@ -1,16 +1,11 @@
-import { Link } from '@tanstack/react-router';
+import { Link, type ErrorComponentProps } from '@tanstack/react-router';
 
 import { Button } from './ui/button';
 
 
-interface ErrorCompProps {
-  error: Error;
-  info?: { componentStack?: string };
-  reset: () => void;
-}
+export function ErrorComp({ error, info, reset }: ErrorComponentProps) {
+  const message = error instanceof Error ? error.message : undefined;
 
-
-export function ErrorComp({ error, info, reset }: ErrorCompProps) {
   return (
     <div
       className="flex flex-col items-center justify-center min-h-[70vh] w-full cursor-pointer overflow-hidden relative"
@@ -20,7 +15,7 @@ export function ErrorComp({ error, info, reset }: ErrorCompProps) {
       <div className="z-10 text-center mt-12 space-y-4">
         <h2 className="text-3xl font-bold">Ha ocurrido un error inesperado</h2>
         <p className="max-w-md mx-auto px-4">
-          {error.message || 'Algo salió mal. Haz click para intentar de nuevo o vuelve al inicio.'}
+          {message || 'Algo salió mal. Haz click para intentar de nuevo o vuelve al inicio.'}
         </p>
 
         {info?.componentStack && (
