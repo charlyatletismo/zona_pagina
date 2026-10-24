@@ -616,6 +616,7 @@ const InfoDialog = ({
             <div><strong>ID de la Inscripción (si corresponde):</strong> {transaction?.registration_id || 'N/A'}</div>
             <div><strong>ID del Usuario:</strong> {transaction?.user_id || 'N/A'}</div>
             <div><strong>URL del Comprobante:</strong> {transaction?.receipt_url || 'N/A'}</div>
+            <div><strong>ID de Pago Externo:</strong> {transaction?.external_payment_id || 'N/A'}</div>
             <div><strong>Creado por:</strong> {transaction?.created_by || 'N/A'}</div>
             <div><strong>Creado el:</strong> {transaction?.created_at ? transaction.created_at.toLocaleString('es-AR') : 'N/A'}</div>
             <div><strong>Actualizado por:</strong> {transaction?.updated_by || 'N/A'}</div>
