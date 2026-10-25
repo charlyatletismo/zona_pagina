@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import authCheck from '@/lib/authCheck';
 import { ORGANIZER_ROLE } from '@shared/roles';
 import {
@@ -9,7 +9,8 @@ import {
   ARSportingEventRegistrationMinSchema,
 } from '@shared/apiRespTypes';
 import z from 'zod';
-import { CalendarIcon, CircleCheckBig, Cpu, Medal, Mountain, Users } from 'lucide-react';
+import { CalendarIcon, CircleCheckBig, Cpu, Hash, Medal, Mountain, ScanLine, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Instagram } from '@/components/icons/instagram';
 import { Facebook } from '@/components/icons/facebook';
 import { SearchRegistrationForm } from '@/components/searchRegistrationForm';
@@ -19,21 +20,37 @@ import logo_zona_dark from "@/assets/logo_dark.png";
 import { useTheme } from '@/components/themeProvider';
 
 
-export const Route = createFileRoute('/sportingEvents/$eventId/showRegistrations')({
+const INPUT_TYPE_BIB = "bib";
+const INPUT_TYPE_RFID = "rfid";
+const INPUT_TYPE_ALL = "all";
+const VALID_INPUT_TYPES = [
+  INPUT_TYPE_BIB,
+  INPUT_TYPE_RFID,
+  INPUT_TYPE_ALL,
+]
+
+
+export const Route = createFileRoute('/sportingEvents/$eventId/showRegistrations/{-$inputType}')({
   component: RouteComponent,
   beforeLoad: authCheck([ORGANIZER_ROLE]),
   loader: async ({ params }) => {
     const res = await getAuthenticatedThrow<
       z.infer<typeof ARSportingEventSchema
       >>(`/api/sportingEvents/${params.eventId}`, ARSportingEventSchema);
-    return { eventData: res.body.data };
+    return {
+      eventData: res.body.data,
+      rfidEnabled: !(params.inputType == INPUT_TYPE_BIB),
+      bibEnabled: !(params.inputType == INPUT_TYPE_RFID),
+      selectInputType: !params.inputType || !VALID_INPUT_TYPES.includes(params.inputType),
+    };
   },
   staleTime: 0, // force reload every time
 })
 
 
 function RouteComponent() {
-  const { eventData } = Route.useLoaderData();
+  const { eventId } = Route.useParams();
+  const { eventData, rfidEnabled, bibEnabled, selectInputType } = Route.useLoaderData();
   const [data, setData] = React.useState<z.infer<typeof ARSportingEventRegistrationMinSchema>[]>([]);
   const { theme } = useTheme();
   const [resolvedTheme, setResolvedTheme] = React.useState(theme);
@@ -45,6 +62,35 @@ function RouteComponent() {
   React.useEffect(() => {
     setResolvedTheme(theme)
   }, [theme]);
+
+  if (selectInputType) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 p-6">
+        <h1 className="text-center text-2xl font-black">{eventData.title}</h1>
+        <p className="text-muted-foreground">Elegí cómo se van a buscar las inscripciones</p>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild>
+            <Link to="/sportingEvents/$eventId/showRegistrations/{-$inputType}" params={{ eventId, inputType: INPUT_TYPE_RFID }}>
+              <Cpu className="h-4 w-4" />
+              Chip RFID
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link to="/sportingEvents/$eventId/showRegistrations/{-$inputType}" params={{ eventId, inputType: INPUT_TYPE_BIB }}>
+              <Hash className="h-4 w-4" />
+              Dorsal
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link to="/sportingEvents/$eventId/showRegistrations/{-$inputType}" params={{ eventId, inputType: INPUT_TYPE_ALL }}>
+              <ScanLine className="h-4 w-4" />
+              Dorsal o chip
+            </Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="fixed inset-0 z-50 min-h-screen overflow-auto bg-background">
@@ -92,7 +138,13 @@ function RouteComponent() {
               <div className="flex items-center justify-center gap-4 sm:gap-6">
                 <span className="h-1 w-10 rounded-full bg-orange-400 sm:w-16" />
                 <h2 className="text-base font-black tracking-wide text-foreground sm:text-2xl">
-                  INGRESÁ TU NÚMERO DE DORSAL
+                  {
+                    bibEnabled && rfidEnabled ?
+                      'INGRESÁ TU DORSAL O ACERCÁ TU CHIP'
+                      : rfidEnabled ? 'ACERCÁ TU CHIP'
+                      : bibEnabled ? 'INGRESÁ TU DORSAL'
+                      : 'ERROR - VOLVER ATRÁS'
+                  }
                 </h2>
                 <span className="h-1 w-10 rounded-full bg-orange-400 sm:w-16" />
               </div>
@@ -107,7 +159,8 @@ function RouteComponent() {
                 autoReset={true}
                 showLabels={false}
                 showSearchButton={true}
-                rfidEnabled={true}
+                bibEnabled={bibEnabled}
+                rfidEnabled={rfidEnabled}
               />
             </div>
 

@@ -231,7 +231,7 @@ function RouteComponent() {
           </Button>
 
           <Button asChild variant="outline">
-            <Link to="/sportingEvents/$eventId/showRegistrations" params={{ eventId }}>
+            <Link to="/sportingEvents/$eventId/showRegistrations/{-$inputType}" params={{ eventId }}>
               <FileUserIcon className="w-4 h-4" />
               Mostrar inscrip.
             </Link>
