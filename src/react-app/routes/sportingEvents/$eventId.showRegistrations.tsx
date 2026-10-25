@@ -107,6 +107,7 @@ function RouteComponent() {
                 autoReset={true}
                 showLabels={false}
                 showSearchButton={true}
+                rfidEnabled={true}
               />
             </div>
 

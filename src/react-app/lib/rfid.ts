@@ -3,37 +3,69 @@
 // and each byte is shifted by a fixed offset.
 const OFFSETS = [-9, 7, -1, 6, -4];
 const RAW_PATTERN = /^3C2E3732([0-9A-F]{10})313734$/;
-const CHIP_PATTERN = /^CH[A-Z0-9]{5}$/;
 
-export const normalizeChip = (str: string) => str.trim().replace(/\s+/g, '').toUpperCase();
+const CHIP_PATTERN = /^[0-9]+$/;
+
+// .trim() -> removes whitespace at the start and end
+// .replace(...) -> removes any whitespace left in the middle (spaces, tabs, newlines)
+// .toUpperCase() -> RAW_PATTERN accepts only capital letters A-F
+const normalizeChip = (str: string) => str.trim().replace(/\s+/g, '').toUpperCase();
 
 // Returns the chip id (ex: CH00798) or throws if the read is not recognized
-export const decodeRFID = (raw: string): string => {
-  const s = normalizeChip(raw);
-  if (CHIP_PATTERN.test(s)) return s;
-  const match = RAW_PATTERN.exec(s);
-  if (!match) throw new Error('Lectura RFID no reconocida. Revisá que el lector esté activo.');
+const decodeRFID = (reading: string): string => {
+  const match = RAW_PATTERN.exec(reading);
+  if (!match) {
+    throw Error('Lectura RFID inválida')
+  };
+
   let label = '';
-  for (let i = 0; i < 5; i++) {
-    label += String.fromCharCode(parseInt(match[1].slice(i * 2, i * 2 + 2), 16) + OFFSETS[i]);
+  for (let i = 0; i < OFFSETS.length; i++) {
+    // TODO: add comment explaining this code
+    label += String.fromCharCode(
+      parseInt(match[1].slice(i * 2, i * 2 + 2), 16) + OFFSETS[i]
+    );
   }
   label = label.toUpperCase();
-  if (!/^[A-Z0-9]{5}$/.test(label)) throw new Error('El chip se leyó, pero no se pudo decodificar.');
-  return 'CH' + label;
+
+  if (!/^[0-9]*$/.test(label)) {
+    throw Error('El chip se leyó, pero su decodificación arrojó caracteres inválidos.')
+  };
+
+  return label;
 };
+
+const labelToBib = (label: string): number => {
+  const bib = Number(label);
+  if (isNaN(bib) || bib <= 0) {
+    throw Error(`El chip ${label} no corresponde a un número de dorsal.`)
+  }
+  return bib;
+}
 
 // Chips are mapped 1:1 with bib numbers (CH00012 -> bib 12)
-export const rfidToBib = (raw: string): number => {
-  const label = decodeRFID(raw).slice(2);
-  const bib = Number(label);
-  if (!/^\d+$/.test(label) || bib <= 0) throw new Error(`El chip ${label} no corresponde a un número de dorsal.`);
-  return bib;
+export const rfidOrChipToBib = (raw: string): number => {
+  const normalizedRaw = normalizeChip(raw);
+
+  if (CHIP_PATTERN.test(normalizedRaw)) {
+    // raw is already the chip label
+    return labelToBib(normalizedRaw);
+  };
+
+  const label = decodeRFID(normalizedRaw);
+  if (!label) {
+    throw Error("La lectura fue decodificada, pero no arrojó resultados")
+  }
+  return labelToBib(label);
 };
 
-export const tryRfidToBib = (raw: string): number | null => {
+export const safeRfidOrChipToBib = (raw: string): {bib?: number, error_msg?: string} => {
   try {
-    return rfidToBib(raw);
-  } catch {
-    return null;
+    return {
+      bib: rfidOrChipToBib(raw)
+    };
+  } catch (e) {
+    return {
+      error_msg: String(e)
+    }
   }
-};
+}

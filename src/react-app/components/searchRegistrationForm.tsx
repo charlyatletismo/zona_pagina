@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppForm } from '@/lib/genForm';
 import { getMessage } from '@/lib/utils';
 import { getAuthenticatedThrow } from '@/lib/apiCalls';
+import { safeRfidOrChipToBib } from '@/lib/rfid';
 import { Spinner } from '@/components/ui/spinner';
 import {
   AlertCircle,
@@ -14,7 +15,8 @@ import z from 'zod';
 
 const SearchSchema = z.object({
   user_id: z.string().min(3, 'Ingrese al menos 3 dígitos del DNI').optional(),
-  bib_number: z.number().positive('El número de dorsal debe ser positivo').optional(),
+  // Typed bib number and/or RFID chip read, depending on bibEnabled/rfidEnabled
+  bib_number: z.string().optional(),
 }).refine((data) => data.user_id || data.bib_number, {
   message: 'Ingrese al menos un criterio de búsqueda (DNI o número de dorsal)',
 });
@@ -29,6 +31,7 @@ export const SearchRegistrationForm = ({
   autoReset = false,
   showLabels = true,
   showSearchButton = false,
+  rfidEnabled = false,
 }: {
   eventId: number;
   setData: (data: z.infer<typeof ARSportingEventRegistrationMinSchema>[]) => void;
@@ -38,9 +41,14 @@ export const SearchRegistrationForm = ({
   autoReset?: boolean;
   showLabels?: boolean;
   showSearchButton?: boolean;
+  rfidEnabled?: boolean;
 }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const bibLabel = bibEnabled && rfidEnabled ? 'Número de dorsal o chip'
+    : rfidEnabled ? 'Chip' : 'Número de dorsal';
+  const bibPlaceholder = bibEnabled && rfidEnabled ? 'Dorsal o acercá el chip al lector'
+    : rfidEnabled ? 'Acercá el chip al lector' : 'Ejemplo: 12';
 
   const form = useAppForm({
     validators: {
@@ -50,12 +58,34 @@ export const SearchRegistrationForm = ({
       setError('');
       setSuccess('');
 
+      let bibNumber: number | null = null;
+      if (rfidEnabled && value.bib_number) {
+        const { bib, error_msg } = safeRfidOrChipToBib(value.bib_number)
+        if (bib && !error_msg) {
+          bibNumber = bib;
+        } else {
+          if (error_msg) {
+            setError(error_msg)
+          } else {
+            setError('Dorsal no detectado en la lectura RFID')
+          }
+          setTimeout(() => {
+            setError('');
+          }, 1500);
+          if (autoReset) {
+            form.reset();
+          }
+          setData([]);
+          return;
+        }
+      }
+
       const res = await getAuthenticatedThrow<
         z.infer<typeof ARSportingEventRegistrationMinSchema>[]
       >(
         `/api/sportingEvents/${eventId}/paidRegistrations`
         + `?partialUserId=${value.user_id || ''}`
-        + `&bib=${value.bib_number || ''}`,
+        + `&bib=${bibNumber || ''}`,
         z.array(ARSportingEventRegistrationMinSchema),
       );
       if (res.status !== 200) {
@@ -125,7 +155,7 @@ export const SearchRegistrationForm = ({
         )}
       />
 
-      <div className={"grid grid-cols-1 gap-6 " + (partialUserIdEnabled && bibEnabled ? "sm:grid-cols-2" : "")}>
+      <div className={"grid grid-cols-1 gap-6 " + (partialUserIdEnabled && (bibEnabled || rfidEnabled) ? "sm:grid-cols-2" : "")}>
 
         {partialUserIdEnabled && (
           <form.AppField
@@ -157,12 +187,12 @@ export const SearchRegistrationForm = ({
           />
         )}
 
-        {bibEnabled && (
+        {(bibEnabled || rfidEnabled) && (
           <form.AppField
             name="bib_number"
             children={(field) => (
               <div className="space-y-2">
-                {showLabels && <field.Label htmlFor={field.name}>Número de dorsal</field.Label>}
+                {showLabels && <field.Label htmlFor={field.name}>{bibLabel}</field.Label>}
                 <div className="relative">
                   {showSearchButton && (
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none bg-primary w-16 h-full rounded-r-lg flex items-center justify-center">
@@ -174,12 +204,24 @@ export const SearchRegistrationForm = ({
                     name={field.name}
                     value={field.state.value ?? ''}
                     onChange={(e) => {
-                      if (isNaN(Number(e.target.value))) return;
-                      field.handleChange(Number(e.target.value) || undefined);
+                      if (!rfidEnabled) {
+                        // Without RFID only digits can be typed
+                        if (isNaN(Number(e.target.value))) return;
+                        field.handleChange(String(Number(e.target.value)) || undefined);
+                        return;
+                      }
+                      field.handleChange(e.target.value || undefined);
+                    }}
+                    onKeyDown={(e) => {
+                      // Some readers end the read with Tab instead of Enter
+                      if (rfidEnabled && e.key === 'Tab') {
+                        e.preventDefault();
+                        form.handleSubmit();
+                      }
                     }}
                     onBlur={field.handleBlur}
                     className={!field.state.meta.isValid ? 'border-destructive' : ''}
-                    placeholder="Ejemplo: 12"
+                    placeholder={bibPlaceholder}
                   />
                 </div>
                 {!field.state.meta.isValid && (
