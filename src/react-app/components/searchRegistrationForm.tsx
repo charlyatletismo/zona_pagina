@@ -78,6 +78,9 @@ export const SearchRegistrationForm = ({
           setData([]);
           return;
         }
+      } else {
+        const n = Number(value.bib_number)
+        bibNumber = isNaN(n) ? null : n;
       }
 
       const res = await getAuthenticatedThrow<
