@@ -37,6 +37,7 @@ import {
   UngroupIcon,
   DownloadIcon,
   DownloadCloudIcon,
+  InfoIcon,
 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from '@/components/ui/spinner';
@@ -93,6 +94,7 @@ import React from 'react';
 import { SpEvTransactionRegPaymentForm } from '@/components/spEvTransactionRegPayment';
 import { PaginationButtons } from '@/components/paginationButtons';
 import { JoinAthletesInEvTeamButton } from '@/components/joinAthletesInEvTeamButton';
+import { SeeRegistrationDetailsDialog } from '@/components/seeRegistrationDetailsDialog';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations')({
@@ -208,6 +210,7 @@ function RouteComponent() {
   const [reactivatingRegId, setReactivatingRegId] = React.useState<number[] | null>(null);
   const [transferringRegId, setTransferringRegId] = React.useState<number | null>(null);
   const [anotherSizeRegId, setAnotherSizeRegId] = React.useState<number | null>(null);
+  const [seeDetailReg, setSeeDetailReg] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema> | null>(null);
 
 
   const statusBadges: Record<string, { text: string, color: string }> = {
@@ -460,6 +463,15 @@ function RouteComponent() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
             <DropdownMenuGroup>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                setSeeDetailReg(props.row.original);
+              }}
+            >
+              <InfoIcon className='w-4 h-4' />
+              Ver Detalle
+            </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 Acciones
@@ -780,6 +792,12 @@ function RouteComponent() {
             }
           }));
         }}
+      />
+
+      <SeeRegistrationDetailsDialog
+        reg={seeDetailReg}
+        setReg={setSeeDetailReg}
+        statusBadges={statusBadges}
       />
 
       <div className='flex flex-col sm:flex-row sm:justify-between'>
