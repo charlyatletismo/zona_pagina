@@ -821,13 +821,13 @@ const RegisterUsersDialog = ({
             Se inscribirán las personas seleccionadas al circuito que elijas.
           </DialogDescription>
 
-          <div className='flex gap-2 mt-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4'>
             {eventData.circuits?.map(circuit => (
-              <div key={circuit.id} className='flex items-center gap-2 mb-2'>
+              <div key={circuit.id} className='flex items-center gap-2'>
                 <Button
                   type="button"
                   variant={circuitId === circuit.id ? 'default' : 'outline'}
-                  className='cursor-pointer border'
+                  className='cursor-pointer border w-full'
                   onClick={() => setCircuitId(circuitId === circuit.id ? null : circuit.id!)}
                 >
                   {circuit.name}
