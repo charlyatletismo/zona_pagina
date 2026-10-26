@@ -400,6 +400,7 @@ export const ProfileForm = ({
                 }}
                 borderColor={!field.state.meta.isValid ? 'border-destructive' : ''}
                 onBlur={field.handleBlur}
+                startMonth={new Date(new Date().getFullYear() - 120, 0)}
               />
               {!field.state.meta.isValid && (
                 <div className='ml-auto text-xs text-destructive'>* {field.state.meta.errors[0]?.message} </div>
