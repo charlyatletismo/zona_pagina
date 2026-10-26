@@ -8,12 +8,16 @@ export const DateTimePicker = ({
   borderColor = '',
   onChange,
   onBlur,
+  startMonth,
+  endMonth,
 } : {
   name: string,
   value: Date | null | undefined,
   borderColor?: string,
   onChange: (value: Date | null | undefined) => void,
   onBlur: () => void,
+  startMonth?: Date,
+  endMonth?: Date,
 }) => {
   return (
     <div className='space-y-2'>
@@ -31,6 +35,8 @@ export const DateTimePicker = ({
           onChange(d || null);
         }}
         onBlur={onBlur}
+        startMonth={startMonth}
+        endMonth={endMonth}
       />
       <Input
         id={name + "_time"}

@@ -10,11 +10,15 @@ export const DatePicker = ({
   value,
   onChange,
   onBlur,
+  startMonth,
+  endMonth,
 }: {
   borderColor?: string,
   value: Date | null | undefined,
   onChange: (value: Date | null | undefined) => void,
   onBlur: () => void,
+  startMonth?: Date,
+  endMonth?: Date,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -46,6 +50,8 @@ export const DatePicker = ({
           mode="single"
           selected={value || undefined}
           captionLayout="dropdown"
+          startMonth={startMonth || new Date(new Date().getFullYear() - 15, 0)}
+          endMonth={endMonth || new Date(new Date().getFullYear() + 5, 11)}
           onSelect={(date) => {
             // console.log("selected date", date);
             onChange(!date ? null : new Date(date));
