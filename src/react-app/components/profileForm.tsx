@@ -391,7 +391,7 @@ export const ProfileForm = ({
           children={(field) => (
             <div className="space-y-2">
               <field.Label htmlFor={field.name}>Fecha de Nacimiento</field.Label>
-              <field.DatePicker
+              <field.BirthDatePicker
                 value={field.state.value || null}
                 onChange={(date) => {
                   if (date) {
