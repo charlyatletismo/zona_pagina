@@ -1,0 +1,2 @@
+ALTER TABLE `sporting_event_transactions` ADD `external_payment_id` text(128);--> statement-breakpoint
+CREATE UNIQUE INDEX `sporting_event_transactions_external_payment_uq` ON `sporting_event_transactions` (`external_payment_id`,`registration_id`,`category`);

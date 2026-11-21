@@ -10,3 +10,4 @@ drizzle/0006_glamorous_tinkerer.sql
 drizzle/0007_zippy_whistler.sql
 drizzle/0008_luxuriant_doctor_strange.sql
 drizzle/0008_z_indexes.sql
+drizzle/0009_smooth_vector.sql
