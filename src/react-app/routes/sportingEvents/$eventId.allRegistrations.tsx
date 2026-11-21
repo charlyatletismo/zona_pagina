@@ -37,6 +37,8 @@ import {
   UngroupIcon,
   DownloadIcon,
   DownloadCloudIcon,
+  ShieldIcon,
+  InfoIcon,
 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from '@/components/ui/spinner';
@@ -93,6 +95,7 @@ import React from 'react';
 import { SpEvTransactionRegPaymentForm } from '@/components/spEvTransactionRegPayment';
 import { PaginationButtons } from '@/components/paginationButtons';
 import { JoinAthletesInEvTeamButton } from '@/components/joinAthletesInEvTeamButton';
+import { SeeRegistrationDetailsDialog } from '@/components/seeRegistrationDetailsDialog';
 
 
 export const Route = createFileRoute('/sportingEvents/$eventId/allRegistrations')({
@@ -147,6 +150,26 @@ const getCsvRufus = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>
     reg.age_at_event_date,
     reg.event_team_leader_id ? reg.event_team_leader_id : '',
     reg.user_id,
+  ]);
+  const csvContent = [header, ...rows].map(e => e.join(";")).join("\n");
+  return csvContent;
+}
+
+
+const getCsvInsurance = (data: z.infer<typeof ARSportingEventRegistrationFlatSchema>[]) => {
+  const header = [
+    'nombre',
+    'apellido',
+    'dni',
+    'cuit',
+    'fecha_nacimiento', // dd/MM/yyyy
+  ];
+  const rows = data.filter(reg => reg.status === 'paid').map(reg => [
+    reg.user_name,
+    reg.user_surname,
+    reg.user_id,
+    reg.user_tax_id || '',
+    reg.user_date_of_birth ? new Date(reg.user_date_of_birth).toLocaleDateString('es-AR') : '',
   ]);
   const csvContent = [header, ...rows].map(e => e.join(";")).join("\n");
   return csvContent;
@@ -208,6 +231,7 @@ function RouteComponent() {
   const [reactivatingRegId, setReactivatingRegId] = React.useState<number[] | null>(null);
   const [transferringRegId, setTransferringRegId] = React.useState<number | null>(null);
   const [anotherSizeRegId, setAnotherSizeRegId] = React.useState<number | null>(null);
+  const [seeDetailReg, setSeeDetailReg] = React.useState<z.infer<typeof ARSportingEventRegistrationFlatSchema> | null>(null);
 
 
   const statusBadges: Record<string, { text: string, color: string }> = {
@@ -460,6 +484,15 @@ function RouteComponent() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
             <DropdownMenuGroup>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                setSeeDetailReg(props.row.original);
+              }}
+            >
+              <InfoIcon className='w-4 h-4' />
+              Ver Detalle
+            </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 Acciones
@@ -782,6 +815,12 @@ function RouteComponent() {
         }}
       />
 
+      <SeeRegistrationDetailsDialog
+        reg={seeDetailReg}
+        setReg={setSeeDetailReg}
+        statusBadges={statusBadges}
+      />
+
       <div className='flex flex-col sm:flex-row sm:justify-between'>
         <div className='mb-4 sm:mb-0 w-full'>
           <h1 className='text-2xl font-bold mb-4'>Inscripciones</h1>
@@ -832,6 +871,24 @@ function RouteComponent() {
             >
             <DownloadIcon className='w-4 h-4' />
             Pago
+          </Button>
+          <Button
+            variant='outline'
+            className='cursor-pointer'
+            onClick={() => {
+              const csvContent = getCsvInsurance(resRegApi.body.data);
+              const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.setAttribute('href', url);
+              link.setAttribute('download', `inscripciones_evento_${eventId}_seguro.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            >
+            <ShieldIcon className='w-4 h-4' />
+            Seguro
           </Button>
           <Button
             variant='outline'
