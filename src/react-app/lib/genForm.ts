@@ -31,6 +31,7 @@ import { PhoneInput } from '@/components/phoneInput';
 import { CuitInput } from '@/components/cuitInput';
 import { ComboBoxIdName } from '@/components/comboBoxIdName';
 import { DatePicker } from '@/components/datePicker';
+import { BirthDatePicker } from '@/components/birthDatePicker';
 import { DateTimePicker } from '@/components/datetimePicker';
 import { Switch } from '@/components/ui/switch';
 import { SelectCustom } from '@/components/selectCustom';
@@ -49,6 +50,7 @@ export const { useAppForm } = createFormHook({
     CuitInput,
     ComboBoxIdName,
     DatePicker,
+    BirthDatePicker,
     DateTimePicker,
     Switch,
 
