@@ -116,6 +116,7 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       id: true,
       created_at: true,
       updated_at: true,
+      external_payment_id: true,
     }).safeParse(await c.req.json());
 
     if (!data.success) {
@@ -166,6 +167,7 @@ export const sportingEventTransactionsRoute = new Hono<{ Bindings: Env, Variable
       id: true,
       created_at: true,
       updated_at: true,
+      external_payment_id: true,
     }).safeParse(await c.req.json());
 
     if (!data.success) {

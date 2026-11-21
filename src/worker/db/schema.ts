@@ -1,4 +1,4 @@
-import { int, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
+import { int, sqliteTable, text, real, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { sql } from 'drizzle-orm';
 
 
@@ -391,6 +391,10 @@ export const sportingEventTransactions = sqliteTable("sporting_event_transaction
   receipt_url: text({ length: 512 }), // URL to receipt/invoice document
   payment_method: text({ length: 32 }), // "cash", "bank_transfer", "card", "check", etc.
   status: text({ length: 16 }).notNull().default('completed'), // "pending", "completed", "cancelled", "refunded"
+  // Payment provider prefix + provider payment id (e.g. "mp-123456789" for MercadoPago).
+  // Not unique by itself: one payment produces several rows (inflow + fee per registration).
+  // See the unique index below
+  external_payment_id: text({ length: 128 }),
   created_by: text({ length: USER_ID_MAX_LENGTH })
     .references(() => users.id,
       { onDelete: 'set null',
@@ -403,4 +407,13 @@ export const sportingEventTransactions = sqliteTable("sporting_event_transaction
         onUpdate: 'cascade' }
       ),
   updated_at: text().default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => [
+  // A payment provider can notify the same payment several times (and concurrently):
+  // this keeps one row per (payment, registration, category).
+  // Rows with external_payment_id NULL (manual ones) never conflict
+  uniqueIndex("sporting_event_transactions_external_payment_uq").on(
+    table.external_payment_id,
+    table.registration_id,
+    table.category,
+  ),
+]);

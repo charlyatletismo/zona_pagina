@@ -359,6 +359,9 @@ export const SportingEventTransactionSchema = z.object({
     'failed',
     'cancelled'
   ], 'Debe indicar el estado de la transacción'),
+  // Payment provider prefix + provider payment id (e.g. "mp-123456789").
+  // Set only by payment webhooks, never by organizers
+  external_payment_id: z.string().max(128).nullable().optional(),
   created_by: UserSchema.shape.id.optional(),
   created_at: z.date().optional(),
   updated_by: UserSchema.shape.id.optional(),
